@@ -1,0 +1,216 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * 타이포그래피 시스템 (v4 — 한글·영문 괴리 최소화)
+ * ──────────────────────────────────────────────────
+ * --font-sans   : Pretendard Variable  (본문·UI 전체)
+ *                 → 한글·영문 자간·굵기 통일, Apple SD Gothic Neo 대비 영문 자연스러움 ↑
+ * --font-serif  : Noto Serif KR        (섹션 제목·강조 헤딩 전용)
+ * --font-mono   : JetBrains Mono       (코드·수치·레이블 전용)
+ *
+ * 핵심 원칙:
+ *   1. 한글·영문이 같은 줄에 섞이는 곳 → 반드시 Pretendard 사용
+ *   2. 순수 한글 제목 → Noto Serif KR 허용
+ *   3. 숫자·날짜·기술 태그 → JetBrains Mono
+ *   4. font-weight: Pretendard는 100~900 가변 지원 → 400/500/600/700 활용
+ */
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* 폰트 토큰 */
+  --font-sans:  "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+  --font-serif: "Noto Serif KR", Georgia, serif;
+  --font-mono:  "JetBrains Mono", "Fira Code", "Cascadia Code", monospace;
+}
+
+/* ── 라이트 모드 ── */
+:root {
+  --radius: 0.25rem;
+  --background: oklch(0.99 0 0);
+  --foreground: oklch(0.15 0.005 200);
+  --card: oklch(0.99 0 0);
+  --card-foreground: oklch(0.15 0.005 200);
+  --popover: oklch(0.99 0 0);
+  --popover-foreground: oklch(0.15 0.005 200);
+  --primary: oklch(0.38 0.09 155);
+  --primary-foreground: oklch(0.99 0 0);
+  --secondary: oklch(0.96 0.005 155);
+  --secondary-foreground: oklch(0.38 0.09 155);
+  --muted: oklch(0.96 0.002 200);
+  --muted-foreground: oklch(0.52 0.01 200);
+  --accent: oklch(0.94 0.015 155);
+  --accent-foreground: oklch(0.30 0.09 155);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.90 0.005 200);
+  --input: oklch(0.90 0.005 200);
+  --ring: oklch(0.38 0.09 155);
+}
+
+/* ── 다크 모드 ── */
+.dark {
+  --background: oklch(0.14 0.008 160);
+  --foreground: oklch(0.90 0.005 80);
+  --card: oklch(0.16 0.008 160);
+  --card-foreground: oklch(0.90 0.005 80);
+  --popover: oklch(0.16 0.008 160);
+  --popover-foreground: oklch(0.90 0.005 80);
+  --primary: oklch(0.62 0.12 155);
+  --primary-foreground: oklch(0.14 0.008 160);
+  --secondary: oklch(0.20 0.010 155);
+  --secondary-foreground: oklch(0.62 0.12 155);
+  --muted: oklch(0.20 0.006 160);
+  --muted-foreground: oklch(0.58 0.010 160);
+  --accent: oklch(0.22 0.012 155);
+  --accent-foreground: oklch(0.80 0.010 80);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(0.24 0.008 160);
+  --input: oklch(0.24 0.008 160);
+  --ring: oklch(0.62 0.12 155);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+    /* Pretendard 가변 폰트 기본 설정 */
+    font-feature-settings: "kern" 1, "liga" 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  html {
+    /* 한글 자간 최적화: Pretendard는 기본 자간이 좋으나 약간의 조정 */
+    word-break: keep-all;
+    overflow-wrap: break-word;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-sans);
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 1.7;
+    transition: background-color 0.25s ease, color 0.25s ease;
+  }
+
+  /* 제목 계열: Noto Serif KR 유지 (순수 한글 제목) */
+  h1, h2, h3 {
+    font-family: var(--font-serif);
+    word-break: keep-all;
+  }
+
+  /* 본문 단락: Pretendard, 한글 줄바꿈 최적화 */
+  p {
+    font-family: var(--font-sans);
+    word-break: keep-all;
+    line-height: 1.85;
+  }
+
+  /* 코드 블록 */
+  code, kbd, pre, samp {
+    font-family: var(--font-mono);
+    font-size: 0.875em;
+  }
+}
+
+@layer components {
+  .container {
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+
+  .flex {
+    min-height: 0;
+    min-width: 0;
+  }
+
+  @media (min-width: 1024px) {
+    .container {
+      max-width: 1100px;
+      padding-left: 2rem;
+      padding-right: 2rem;
+    }
+  }
+
+  /*
+   * 타이포그래피 유틸리티 클래스
+   * 인라인 스타일 대신 이 클래스를 우선 사용
+   */
+
+  /* 섹션 제목 레이블 (ABOUT, EDUCATION ...) */
+  .type-label {
+    font-family: var(--font-sans);
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  /* 카드 제목 / 프로젝트명 */
+  .type-title {
+    font-family: var(--font-serif);
+    font-size: 0.92rem;
+    font-weight: 600;
+    line-height: 1.5;
+    word-break: keep-all;
+  }
+
+  /* 본문 텍스트 */
+  .type-body {
+    font-family: var(--font-sans);
+    font-size: 0.875rem;
+    font-weight: 400;
+    line-height: 1.85;
+    word-break: keep-all;
+  }
+
+  /* 보조 텍스트 (설명, 메모) */
+  .type-caption {
+    font-family: var(--font-sans);
+    font-size: 0.78rem;
+    font-weight: 400;
+    line-height: 1.7;
+  }
+
+  /* 날짜·수치·기술 레이블 (고정폭) */
+  .type-mono {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    font-weight: 400;
+    letter-spacing: 0.02em;
+  }
+
+  /* 기술 태그 */
+  .type-tag {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    font-weight: 400;
+  }
+}
