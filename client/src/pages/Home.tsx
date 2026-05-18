@@ -21,6 +21,8 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import { useTheme } from "@/contexts/ThemeContext";
 import { getProfileAvatarUrl, portfolioContent } from "@/content";
 import { DARK, FONT_MONO, FONT_SANS, FONT_SERIF, LIGHT, type PortfolioTheme } from "@/content/theme";
+import { KnowledgeGraphRail } from "@/components/KnowledgeGraphRail";
+import { buildKnowledgeGraph } from "@/lib/knowledgeGraph";
 import { activeSectionForAnchor, scrollTopForElement } from "@/lib/scroll";
 
 const IMG = portfolioContent.site.images;
@@ -33,6 +35,7 @@ const SKILL_GROUPS = portfolioContent.skills;
 const STARRED = portfolioContent.starred;
 const PROFILE = portfolioContent.profile;
 const PROFILE_AVATAR = getProfileAvatarUrl(PROFILE);
+const KNOWLEDGE_GRAPH = buildKnowledgeGraph(portfolioContent);
 const ACTIVE_SECTION_ANCHOR = 96;
 const ACTIVE_SCROLL_END_TOLERANCE = 4;
 const SCROLL_END_PADDING = "max(clamp(4rem, 6vw, 6rem), calc(100dvh - 6rem))";
@@ -419,17 +422,18 @@ export default function Home() {
           width: "clamp(248px, 22vw, 340px)",
           flexShrink: 0,
           height: "100dvh",
-          overflowY: "auto",
+          overflow: "hidden",
           borderRight: `1px solid ${T.border}`,
           background: T.sidebarBg,
           display: "flex",
           flexDirection: "column",
-          padding: "clamp(2rem, 3vw, 3rem) clamp(1.5rem, 2.4vw, 2.25rem)",
+          padding: "clamp(1.25rem, 2.2vw, 2.35rem) clamp(1.25rem, 2vw, 2rem)",
+          boxSizing: "border-box",
           transition: "background 0.25s, border-color 0.25s",
         }}
       >
         {/* 이름 + 직함 */}
-        <div style={{ marginBottom: "2rem" }}>
+        <div style={{ marginBottom: "clamp(0.8rem, 2.4vh, 1.6rem)" }}>
           <img
             src={PROFILE_AVATAR}
             alt={`${PROFILE.name} 프로필 사진`}
@@ -440,7 +444,7 @@ export default function Home() {
               objectFit: "cover",
               border: `1px solid ${T.border}`,
               background: T.surface,
-              marginBottom: "1rem",
+              marginBottom: "0.85rem",
               filter: theme === "dark" ? "saturate(0.9) brightness(0.92)" : "saturate(0.95)",
             }}
           />
@@ -459,7 +463,7 @@ export default function Home() {
             fontSize: "clamp(0.62rem, 0.72vw, 0.74rem)",
             color: T.muted,
             letterSpacing: "0.06em",
-            marginBottom: "0.75rem",
+            marginBottom: "0.55rem",
           }}>
             {PROFILE.romanizedName} · {PROFILE.handle}
           </div>
@@ -472,7 +476,7 @@ export default function Home() {
             border: `1px solid ${T.green}30`,
             padding: "3px 9px",
             borderRadius: "3px",
-            marginBottom: "0.75rem",
+            marginBottom: "0.55rem",
             maxWidth: "100%",
           }}>
             <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: T.green, flexShrink: 0 }} />
@@ -485,7 +489,7 @@ export default function Home() {
           </div>
         </div>
         {/* 네비게이션 */}
-        <nav style={{ flex: 1 }}>
+        <nav style={{ flex: 1, minHeight: 0 }}>
           {NAV_ITEMS.map((item) => {
             const isActive = active === item.id;
             return (
@@ -499,7 +503,7 @@ export default function Home() {
                   border: "none",
                   cursor: "pointer",
                   textAlign: "left",
-                  padding: "0.4rem 0",
+                  padding: "clamp(0.26rem, 0.8vh, 0.4rem) 0",
                   fontFamily: FONT_SANS,
                   fontSize: "clamp(0.82rem, 0.92vw, 0.95rem)",
                   color: isActive ? T.green : T.muted,
@@ -529,7 +533,7 @@ export default function Home() {
         </nav>
 
         {/* 연락처 */}
-        <div style={{ marginTop: "2rem", paddingTop: "1.5rem", borderTop: `1px solid ${T.border}` }}>
+        <div style={{ marginTop: "clamp(0.75rem, 2vh, 1.4rem)", paddingTop: "clamp(0.75rem, 1.8vh, 1.2rem)", borderTop: `1px solid ${T.border}` }}>
           <div style={{
             fontFamily: FONT_MONO,
             fontSize: "0.6rem",
@@ -565,38 +569,16 @@ export default function Home() {
           ))}
         </div>
 
-        {/* 나무 일러스트 */}
-        <div style={{
-          marginTop: "1.5rem",
-          borderTop: `1px solid ${T.border}`,
-          paddingTop: "1.25rem",
-          display: "flex",
-          justifyContent: "center",
-        }}>
-          <img
-            src={IMG.heroTree}
-            alt="나무와 회로 일러스트"
-            style={{
-              width: "110px",
-              height: "110px",
-              objectFit: "contain",
-              opacity: theme === "dark" ? 0.65 : 0.85,
-              filter: theme === "dark" ? "invert(0.85) hue-rotate(120deg)" : "none",
-              transition: "opacity 0.3s",
-            }}
-          />
-        </div>
-
         {/* 다크 모드 토글 */}
         <button
           onClick={toggleTheme}
           style={{
-            marginTop: "1rem",
+            marginTop: "clamp(0.7rem, 1.8vh, 1rem)",
             background: "none",
             border: `1px solid ${T.border}`,
             borderRadius: "3px",
             cursor: "pointer",
-            padding: "6px 10px",
+            padding: "5px 9px",
             display: "flex",
             alignItems: "center",
             gap: "7px",
@@ -629,8 +611,8 @@ export default function Home() {
           className="scroll-inner"
           style={{
             width: "100%",
-            maxWidth: "clamp(720px, 68vw, 1080px)",
-            padding: `clamp(2.5rem, 5vw, 5rem) clamp(2.25rem, 5vw, 4.5rem) ${SCROLL_END_PADDING}`,
+            maxWidth: "clamp(680px, 58vw, 980px)",
+            padding: `clamp(2.5rem, 5vw, 5rem) clamp(2rem, 4vw, 4rem) ${SCROLL_END_PADDING}`,
           }}
         >
 
@@ -1090,8 +1072,14 @@ export default function Home() {
         </div>
       </div>
 
+      <KnowledgeGraphRail graph={KNOWLEDGE_GRAPH} T={T} active={active} onSection={scrollTo} />
+
       {/* ── 전역 스타일 ── */}
       <style>{`
+        @media (max-width: 1180px) {
+          #knowledge-rail { display: none !important; }
+          .scroll-inner { max-width: clamp(720px, 68vw, 1080px) !important; }
+        }
         @media (max-width: 768px) {
           #sidebar { display: none !important; }
           .mobile-menu-btn { display: flex !important; }
