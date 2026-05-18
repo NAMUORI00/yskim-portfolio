@@ -21,10 +21,11 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import { useTheme } from "@/contexts/ThemeContext";
 import { getProfileAvatarUrl, portfolioContent } from "@/content";
 import { DARK, FONT_MONO, FONT_SANS, FONT_SERIF, LIGHT, type PortfolioTheme } from "@/content/theme";
-import { scrollTopForElement } from "@/lib/scroll";
+import { activeSectionForAnchor, scrollTopForElement } from "@/lib/scroll";
 
 const IMG = portfolioContent.site.images;
 const NAV_ITEMS = portfolioContent.site.navigation;
+const NAV_IDS = NAV_ITEMS.map((item) => item.id);
 const EDUCATION = portfolioContent.education;
 const RESEARCH_INTERESTS = portfolioContent.research.filter((item) => item.status === "published");
 const PROJECTS = portfolioContent.projects.filter((item) => item.status === "published");
@@ -32,6 +33,7 @@ const SKILL_GROUPS = portfolioContent.skills;
 const STARRED = portfolioContent.starred;
 const PROFILE = portfolioContent.profile;
 const PROFILE_AVATAR = getProfileAvatarUrl(PROFILE);
+const ACTIVE_SECTION_ANCHOR = 96;
 
 /* ── SVG 아이콘 컴포넌트 ── */
 function NavIcon({ type, color, size = 13 }: { type: string; color: string; size?: number }) {
@@ -136,27 +138,37 @@ function ContactIcon({ type, color }: { type: string; color: string }) {
   );
 }
 
-/* ── Intersection Observer 기반 활성 섹션 훅 ── */
+/* ── 스크롤 앵커 기반 활성 섹션 훅 ── */
 function useActiveSection(ids: string[]) {
   const [active, setActive] = useState(ids[0]);
   useEffect(() => {
-    const observers: IntersectionObserver[] = [];
-    const visibilityMap: Record<string, number> = {};
-    ids.forEach((id) => {
-      const el = document.getElementById(id);
-      if (!el) return;
-      const obs = new IntersectionObserver(
-        ([entry]) => {
-          visibilityMap[id] = entry.intersectionRatio;
-          const best = Object.entries(visibilityMap).sort((a, b) => b[1] - a[1])[0];
-          if (best && best[1] > 0) setActive(best[0]);
-        },
-        { threshold: [0, 0.1, 0.3, 0.5, 1.0], rootMargin: "-80px 0px -40% 0px" }
-      );
-      obs.observe(el);
-      observers.push(obs);
-    });
-    return () => observers.forEach((o) => o.disconnect());
+    const container = document.getElementById("scroll-area");
+    if (!container) return;
+
+    let frame: number | null = null;
+    const updateActive = () => {
+      frame = null;
+      const containerTop = container.getBoundingClientRect().top;
+      const sections = ids.flatMap((id) => {
+        const el = document.getElementById(id);
+        return el ? [{ id, top: el.getBoundingClientRect().top - containerTop }] : [];
+      });
+      const next = activeSectionForAnchor(sections, ACTIVE_SECTION_ANCHOR);
+      if (next) setActive(next);
+    };
+    const scheduleUpdate = () => {
+      if (frame !== null) return;
+      frame = window.requestAnimationFrame(updateActive);
+    };
+
+    updateActive();
+    container.addEventListener("scroll", scheduleUpdate, { passive: true });
+    window.addEventListener("resize", scheduleUpdate);
+    return () => {
+      container.removeEventListener("scroll", scheduleUpdate);
+      window.removeEventListener("resize", scheduleUpdate);
+      if (frame !== null) window.cancelAnimationFrame(frame);
+    };
   }, [ids]);
   return active;
 }
@@ -288,7 +300,7 @@ function ExternalLink({ href, children, T }: { href: string; children: React.Rea
 export default function Home() {
   const { theme, toggleTheme } = useTheme();
   const T = theme === "dark" ? DARK : LIGHT;
-  const active = useActiveSection(NAV_ITEMS.map((n) => n.id));
+  const active = useActiveSection(NAV_IDS);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const scrollTo = useCallback((id: string) => {

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { scrollTopForElement } from "./scroll";
+import { activeSectionForAnchor, scrollTopForElement } from "./scroll";
 
 describe("scrollTopForElement", () => {
   it("calculates target scroll from viewport-relative positions", () => {
@@ -22,5 +22,33 @@ describe("scrollTopForElement", () => {
         offset: 32,
       }),
     ).toBe(0);
+  });
+});
+
+describe("activeSectionForAnchor", () => {
+  it("keeps the clicked section active when the next heading is also visible", () => {
+    expect(
+      activeSectionForAnchor(
+        [
+          { id: "about", top: 32 },
+          { id: "education", top: 395.8125 },
+          { id: "research", top: 695.875 },
+        ],
+        96,
+      ),
+    ).toBe("about");
+  });
+
+  it("does not advance to the next section after scrolling to education", () => {
+    expect(
+      activeSectionForAnchor(
+        [
+          { id: "about", top: -332 },
+          { id: "education", top: 31.8125 },
+          { id: "research", top: 331.875 },
+        ],
+        96,
+      ),
+    ).toBe("education");
   });
 });
