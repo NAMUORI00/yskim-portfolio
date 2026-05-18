@@ -1,0 +1,6 @@
+[
+  { "label": "핵심 언어", "items": ["Python", "C++", "TypeScript", "Java", "Shell", "C#"] },
+  { "label": "AI / ML / LLM", "items": ["PyTorch", "CUDA", "HuggingFace", "LangChain", "OpenAI API", "llama.cpp", "Qdrant", "RAG"] },
+  { "label": "인프라 & DevOps", "items": ["Docker", "GitHub Actions", "AWS", "Linux", "Cloudflare", "DevContainer"] },
+  { "label": "웹 & 백엔드", "items": ["Next.js", "React", "FastAPI", "Spring Boot", "PostgreSQL", "Supabase"] }
+]

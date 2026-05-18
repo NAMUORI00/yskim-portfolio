@@ -1,0 +1,17 @@
+{
+  "name": "김유석",
+  "romanizedName": "KIM YUSEOK",
+  "handle": "NAMUORI00",
+  "status": "구직 중",
+  "headline": "CS/AI 석사 진학 중\nAI 연구 · 엔지니어 지망",
+  "summaryLead": "효율적이고 확장 가능한 시스템을 구축하는 소프트웨어 엔지니어입니다. 자연에서 영감을 받은 알고리즘과 머신러닝의 교차점에 열정을 가지고 있습니다.",
+  "summary": [
+    "Python · C++ · CUDA 기반 AI 실험부터 웹 프론트엔드까지, 관심 가는 기술이라면 직접 환경을 만들고 실험해보는 개발자입니다. 나무처럼, 소프트웨어는 튼튼한 뿌리 위에 서야 합니다. 불필요한 복잡함 없이 지속 가능한 경량화 아키텍처를 지향합니다.",
+    "현재 CS/AI 석사 진학을 준비하며, LLM 시스템과 RAG 아키텍처 분야의 연구 및 엔지니어링 커리어를 목표로 하고 있습니다. DevContainer와 Docker로 재현 가능한 실험 환경을 구축하고, 음원 분리 모델 학습, 엣지 환경 LLM 추론, 실시간 음성 변환 등 다양한 도메인을 직접 실험하고 있습니다."
+  ],
+  "contacts": [
+    { "type": "email", "label": "namuori00@namuori.net", "href": "mailto:namuori00@namuori.net" },
+    { "type": "github", "label": "github.com/NAMUORI00", "href": "https://github.com/NAMUORI00" },
+    { "type": "website", "label": "namuori.net", "href": "https://namuori.net" }
+  ]
+}

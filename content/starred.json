@@ -1,0 +1,8 @@
+[
+  { "name": "czlonkowski/n8n-mcp", "stars": "20.5k", "desc": "n8n 워크플로우 MCP 서버" },
+  { "name": "typst/typst", "stars": "53.4k", "desc": "마크업 기반 조판 시스템" },
+  { "name": "google-research/timesfm", "stars": "19.6k", "desc": "시계열 파운데이션 모델" },
+  { "name": "terrastruct/d2", "stars": "23.7k", "desc": "텍스트 → 다이어그램" },
+  { "name": "bokeh/bokeh", "stars": "20.4k", "desc": "Python 인터랙티브 시각화" },
+  { "name": "steipete/oracle", "stars": "2.2k", "desc": "GPT-5 Pro 컨텍스트 활용" }
+]

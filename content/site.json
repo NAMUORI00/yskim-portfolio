@@ -1,0 +1,18 @@
+{
+  "title": "김유석 | AI 연구 엔지니어 포트폴리오",
+  "description": "CS/AI 석사 진학 중. LLM 시스템, RAG 아키텍처, 경량 추론 분야 연구 지향.",
+  "url": "https://namuori.net",
+  "navigation": [
+    { "id": "about", "label": "소개", "icon": "user" },
+    { "id": "education", "label": "학력", "icon": "graduation" },
+    { "id": "research", "label": "연구 관심사", "icon": "flask" },
+    { "id": "projects", "label": "프로젝트", "icon": "code" },
+    { "id": "skills", "label": "기술 스택", "icon": "layers" },
+    { "id": "interests", "label": "관심 저장소", "icon": "star" }
+  ],
+  "images": {
+    "heroTree": "https://d2xsxph8kpxj0f.cloudfront.net/106867672/XFaxs2Z8r6G3GyzQNwSSoE/hero_abstract-QnvWc7iMMJmimwoF3wARey.webp",
+    "ragDiagram": "https://d2xsxph8kpxj0f.cloudfront.net/106867672/XFaxs2Z8r6G3GyzQNwSSoE/research_rag-jArZ5FsJdCJiktQYGMp6rA.webp",
+    "dotPattern": "https://d2xsxph8kpxj0f.cloudfront.net/106867672/XFaxs2Z8r6G3GyzQNwSSoE/profile_card_bg-hV5HrJ3CNXxcdXaMYuNA6G.webp"
+  }
+}

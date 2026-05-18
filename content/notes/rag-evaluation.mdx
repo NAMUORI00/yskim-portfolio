@@ -1,0 +1,25 @@
+---
+slug: rag-evaluation
+title: RAG 평가 노트
+status: published
+date: 2026-05-18
+summary: RAG 시스템을 비교할 때 검색 품질, 답변 근거성, 운영 비용을 함께 보는 기준입니다.
+tags:
+  - RAG
+  - Evaluation
+relatedProjects:
+  - aerospace-rag
+  - llm-rag-research
+relatedResearch:
+  - rag
+---
+
+## 왜 평가가 먼저인가
+
+RAG 시스템은 답변 품질만 보면 원인을 놓치기 쉽습니다. 검색 단계에서 문서가 누락됐는지, 재랭킹에서 밀렸는지, 생성 단계에서 근거를 잃었는지 분리해서 봐야 합니다.
+
+## 기본 지표
+
+- Recall@5: 정답 근거가 상위 5개 문서에 들어오는지 봅니다.
+- MRR: 첫 번째 유효 근거가 얼마나 앞에 있는지 봅니다.
+- Groundedness: 답변이 검색된 문서에 실제로 근거하는지 봅니다.
