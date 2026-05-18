@@ -19,184 +19,17 @@
  */
 import { useEffect, useRef, useState, useCallback } from "react";
 import { useTheme } from "@/contexts/ThemeContext";
+import { portfolioContent } from "@/content";
+import { DARK, FONT_MONO, FONT_SANS, FONT_SERIF, LIGHT, type PortfolioTheme } from "@/content/theme";
 
-/* ── 폰트 상수 (인라인 스타일에서 직접 참조) ── */
-const FONT_SANS  = "'Pretendard Variable', Pretendard, -apple-system, 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif";
-const FONT_SERIF = "'Noto Serif KR', Georgia, serif";
-const FONT_MONO  = "'JetBrains Mono', 'Fira Code', monospace";
-
-/* ── 색상 토큰 ── */
-const LIGHT = {
-  bg: "#f5f5f3",
-  surface: "#ffffff",
-  border: "#e8e8e5",
-  text: "#1a1a1a",
-  sub: "#555550",
-  muted: "#999993",
-  green: "#2d6a4f",
-  greenLight: "#52b788",
-  greenBg: "#f0faf3",
-  sidebarBg: "#ffffff",
-};
-const DARK = {
-  bg: "#1a1c1b",
-  surface: "#212523",
-  border: "#2e3330",
-  text: "#e8e4dc",
-  sub: "#a8a49c",
-  muted: "#6b6862",
-  green: "#52b788",
-  greenLight: "#74c69d",
-  greenBg: "#1e2b24",
-  sidebarBg: "#1e2220",
-};
-
-/* ── 이미지 URL ── */
-const IMG = {
-  heroTree: "https://d2xsxph8kpxj0f.cloudfront.net/106867672/XFaxs2Z8r6G3GyzQNwSSoE/hero_abstract-QnvWc7iMMJmimwoF3wARey.webp",
-  ragDiagram: "https://d2xsxph8kpxj0f.cloudfront.net/106867672/XFaxs2Z8r6G3GyzQNwSSoE/research_rag-jArZ5FsJdCJiktQYGMp6rA.webp",
-  dotPattern: "https://d2xsxph8kpxj0f.cloudfront.net/106867672/XFaxs2Z8r6G3GyzQNwSSoE/profile_card_bg-hV5HrJ3CNXxcdXaMYuNA6G.webp",
-};
-
-/* ── 섹션 ID ── */
-const NAV_ITEMS = [
-  { id: "about",     label: "소개",       icon: "user" },
-  { id: "education", label: "학력",       icon: "graduation" },
-  { id: "research",  label: "연구 관심사", icon: "flask" },
-  { id: "projects",  label: "프로젝트",   icon: "code" },
-  { id: "skills",    label: "기술 스택",  icon: "layers" },
-  { id: "interests", label: "관심 저장소", icon: "star" },
-];
-
-/* ── 데이터 ── */
-const EDUCATION = [
-  {
-    degree: "CS / AI 석사 과정",
-    school: "진학 준비 중",
-    period: "2025 — 예정",
-    note: "LLM 시스템, RAG 아키텍처, 경량 추론 분야 연구 지향",
-    current: true,
-  },
-  {
-    degree: "컴퓨터 공학 학사",
-    school: "공과대학교",
-    period: "2014 — 2018",
-    note: "",
-    current: false,
-  },
-];
-
-const RESEARCH_INTERESTS = [
-  {
-    title: "Retrieval-Augmented Generation (RAG)",
-    desc: "Dense / Sparse / Graph 3채널 하이브리드 검색, Weighted RRF 통합, 도메인 특화 문서 인덱싱. 항공우주 문서 대상 RAG 파이프라인 구현 경험.",
-    showDiagram: true,
-  },
-  {
-    title: "경량 LLM 추론 및 Edge AI",
-    desc: "llama.cpp, Qwen3, GGUF 양자화 기반 로컬 추론 환경 구축. GPU 없는 환경에서의 실용적 LLM 배포 방법론 탐구.",
-    showDiagram: false,
-  },
-  {
-    title: "음원 분리 및 음성 변환",
-    desc: "MDX23C, Demucs4HT 아키텍처 학습 실험. RVC / Applio 기반 보이스 변환. Hydra config 기반 실험 체계 관리.",
-    showDiagram: false,
-  },
-  {
-    title: "Agentic Workflow & MCP",
-    desc: "Model Context Protocol 기반 에이전트 워크플로우 설계. 인간 승인 루프가 포함된 크로스 리뷰 자동화 시스템 구현.",
-    showDiagram: false,
-  },
-];
-
-const PROJECTS = [
-  {
-    name: "aerospace-rag",
-    period: "2026.05",
-    desc: "항공우주 업무 문서를 대상으로 한 RAG 시스템. Qdrant + BM25 + Graph 3채널 검색, Weighted RRF 통합, Ollama 기반 답변 생성. Colab T4 환경 최적화.",
-    metric: "3채널 하이브리드 검색으로 단일 채널 대비 MRR +31% 향상",
-    tags: ["Python", "Qdrant", "Ollama", "RAG", "LLM"],
-    link: "https://github.com/NAMUORI00/aerospace-rag",
-    highlight: true,
-    private: false,
-  },
-  {
-    name: "LLM + RAG 연구 시스템",
-    period: "진행 중",
-    desc: "비공개 레포지토리. 다양한 RAG 전략 비교 실험, 검색 품질 평가 파이프라인, 도메인 적응형 청킹 전략 연구.",
-    metric: "5가지 RAG 전략 비교 실험 — Recall@5 기준 23% 차이 확인",
-    tags: ["Python", "LangChain", "HuggingFace", "실험 연구"],
-    link: "",
-    highlight: true,
-    private: true,
-  },
-  {
-    name: "cross-review-bridge",
-    period: "2026.05",
-    desc: "외부 AI 리뷰어와의 인간 승인 기반 크로스 리뷰 워크플로우. Codex 스킬 기반 자동화.",
-    metric: "코드 리뷰 사이클 수동 대비 약 70% 단축",
-    tags: ["PowerShell", "AI", "자동화"],
-    link: "https://github.com/NAMUORI00/cross-review-bridge",
-    highlight: false,
-    private: false,
-  },
-  {
-    name: "Music-Source-Separation",
-    period: "2025.04",
-    desc: "MDX23C, Demucs4HT 아키텍처 기반 음원 분리 모델 학습. Hydra config로 실험 체계 관리. CUDA 환경 GPU 학습.",
-    metric: "Demucs4HT 기반 보컬 분리 SDR 8.2 dB 달성",
-    tags: ["Python", "PyTorch", "CUDA", "Hydra"],
-    link: "https://github.com/NAMUORI00/Music-Source-Separation",
-    highlight: false,
-    private: false,
-  },
-  {
-    name: "mediamtx-installer",
-    period: "2026.01",
-    desc: "Ubuntu 24.04 환경에서 MediaMTX 스트리밍 서버를 원라인으로 설치하는 자동화 스크립트.",
-    metric: "설치 시간 수동 대비 15분 → 30초로 단축",
-    tags: ["Shell", "Ubuntu", "스트리밍"],
-    link: "https://github.com/NAMUORI00/mediamtx-installer",
-    highlight: false,
-    private: false,
-  },
-  {
-    name: "IntroduceCvPage (namu-log)",
-    period: "2025.11",
-    desc: "WYSIWYG 마크다운 에디터로 글 작성 시 GitHub PR을 자동 생성하는 블로그 + CV 시스템. Next.js 16, Tiptap 기반.",
-    metric: "글 발행부터 PR 생성까지 전 과정 완전 자동화",
-    tags: ["TypeScript", "Next.js", "React", "GitHub API"],
-    link: "https://github.com/NAMUORI00/IntroduceCvPage",
-    highlight: false,
-    private: false,
-  },
-  {
-    name: "SpringCommunityBoard",
-    period: "2023.07",
-    desc: "Spring Boot + JPA 기반 CRUD 커뮤니티 게시판. 회원 관리, 게시글, 댓글 기능.",
-    metric: "JPA N+1 문제 해결로 목록 조회 응답 시간 40% 개선",
-    tags: ["Java", "Spring Boot", "JPA"],
-    link: "https://github.com/NAMUORI00/SpringCommunityBoard",
-    highlight: false,
-    private: false,
-  },
-];
-
-const SKILL_GROUPS = [
-  { label: "핵심 언어",      items: ["Python", "C++", "TypeScript", "Java", "Shell", "C#"] },
-  { label: "AI / ML / LLM", items: ["PyTorch", "CUDA", "HuggingFace", "LangChain", "OpenAI API", "llama.cpp", "Qdrant", "RAG"] },
-  { label: "인프라 & DevOps", items: ["Docker", "GitHub Actions", "AWS", "Linux", "Cloudflare", "DevContainer"] },
-  { label: "웹 & 백엔드",    items: ["Next.js", "React", "FastAPI", "Spring Boot", "PostgreSQL", "Supabase"] },
-];
-
-const STARRED = [
-  { name: "czlonkowski/n8n-mcp",     stars: "20.5k", desc: "n8n 워크플로우 MCP 서버" },
-  { name: "typst/typst",             stars: "53.4k", desc: "마크업 기반 조판 시스템" },
-  { name: "google-research/timesfm", stars: "19.6k", desc: "시계열 파운데이션 모델" },
-  { name: "terrastruct/d2",          stars: "23.7k", desc: "텍스트 → 다이어그램" },
-  { name: "bokeh/bokeh",             stars: "20.4k", desc: "Python 인터랙티브 시각화" },
-  { name: "steipete/oracle",         stars: "2.2k",  desc: "GPT-5 Pro 컨텍스트 활용" },
-];
+const IMG = portfolioContent.site.images;
+const NAV_ITEMS = portfolioContent.site.navigation;
+const EDUCATION = portfolioContent.education;
+const RESEARCH_INTERESTS = portfolioContent.research.filter((item) => item.status === "published");
+const PROJECTS = portfolioContent.projects.filter((item) => item.status === "published");
+const SKILL_GROUPS = portfolioContent.skills;
+const STARRED = portfolioContent.starred;
+const PROFILE = portfolioContent.profile;
 
 /* ── SVG 아이콘 컴포넌트 ── */
 function NavIcon({ type, color, size = 13 }: { type: string; color: string; size?: number }) {
@@ -272,6 +105,31 @@ function ExternalArrow({ color }: { color: string }) {
   return (
     <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.5">
       <path d="M7 17L17 7M17 7H7M17 7v10"/>
+    </svg>
+  );
+}
+
+function ContactIcon({ type, color }: { type: string; color: string }) {
+  if (type === "email") {
+    return (
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8">
+        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+        <polyline points="22,6 12,13 2,6"/>
+      </svg>
+    );
+  }
+  if (type === "github") {
+    return (
+      <svg width="11" height="11" viewBox="0 0 24 24" fill={color}>
+        <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+      </svg>
+    );
+  }
+  return (
+    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8">
+      <circle cx="12" cy="12" r="10"/>
+      <line x1="2" y1="12" x2="22" y2="12"/>
+      <path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/>
     </svg>
   );
 }
@@ -486,10 +344,10 @@ export default function Home() {
       <div className={`mobile-drawer${mobileMenuOpen ? " open" : ""}`}
         style={{ background: T.sidebarBg, borderRight: `1px solid ${T.border}` }}>
         <div style={{ fontFamily: FONT_SANS, fontSize: "1.1rem", fontWeight: 700, color: T.text, marginBottom: "0.25rem" }}>
-          김유석
+          {PROFILE.name}
         </div>
         <div style={{ fontFamily: FONT_MONO, fontSize: "0.6rem", color: T.muted, marginBottom: "1.5rem" }}>
-          KIM YUSEOK · NAMUORI00
+          {PROFILE.romanizedName} · {PROFILE.handle}
         </div>
         <nav style={{ display: "flex", flexDirection: "column", gap: "0.1rem" }}>
           {NAV_ITEMS.map((item) => (
@@ -545,7 +403,7 @@ export default function Home() {
             lineHeight: 1.2,
             marginBottom: "0.35rem",
           }}>
-            김유석
+            {PROFILE.name}
           </div>
           <div style={{
             fontFamily: FONT_MONO,
@@ -554,7 +412,7 @@ export default function Home() {
             letterSpacing: "0.06em",
             marginBottom: "0.75rem",
           }}>
-            KIM YUSEOK · NAMUORI00
+            {PROFILE.romanizedName} · {PROFILE.handle}
           </div>
           {/* 구직 상태 배지 */}
           <div style={{
@@ -568,11 +426,12 @@ export default function Home() {
             marginBottom: "0.75rem",
           }}>
             <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: T.green, flexShrink: 0 }} />
-            <span style={{ fontFamily: FONT_MONO, fontSize: "0.62rem", color: T.green }}>구직 중</span>
+            <span style={{ fontFamily: FONT_MONO, fontSize: "0.62rem", color: T.green }}>{PROFILE.status}</span>
           </div>
            <div style={{ fontFamily: FONT_SANS, fontSize: "0.75rem", color: T.sub, lineHeight: 1.7, wordBreak: "keep-all" }}>
-            CS/AI 석사 진학 중<br />
-            AI 연구 · 엔지니어 지망
+            {PROFILE.headline.split("\n").map((line) => (
+              <span key={line}>{line}<br /></span>
+            ))}
           </div>
         </div>
         {/* 네비게이션 */}
@@ -630,38 +489,7 @@ export default function Home() {
           }}>
             CONTACT
           </div>
-          {[
-            {
-              href: "mailto:namuori00@namuori.net",
-              label: "namuori00@namuori.net",
-              icon: (
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke={T.muted} strokeWidth="1.8">
-                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                  <polyline points="22,6 12,13 2,6"/>
-                </svg>
-              ),
-            },
-            {
-              href: "https://github.com/NAMUORI00",
-              label: "github.com/NAMUORI00",
-              icon: (
-                <svg width="11" height="11" viewBox="0 0 24 24" fill={T.muted}>
-                  <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
-                </svg>
-              ),
-            },
-            {
-              href: "https://namuori.net",
-              label: "namuori.net",
-              icon: (
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke={T.muted} strokeWidth="1.8">
-                  <circle cx="12" cy="12" r="10"/>
-                  <line x1="2" y1="12" x2="22" y2="12"/>
-                  <path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/>
-                </svg>
-              ),
-            },
-          ].map((c) => (
+          {PROFILE.contacts.map((c) => (
             <a
               key={c.href}
               href={c.href}
@@ -681,7 +509,7 @@ export default function Home() {
               onMouseEnter={(e) => (e.currentTarget.style.color = T.green)}
               onMouseLeave={(e) => (e.currentTarget.style.color = T.sub)}
             >
-              {c.icon}
+              <ContactIcon type={c.type} color={T.muted} />
               {c.label}
             </a>
           ))}
@@ -789,33 +617,23 @@ export default function Home() {
                   marginBottom: "1.25rem",
                   wordBreak: "keep-all",
                 }}>
-                  효율적이고 확장 가능한 시스템을 구축하는 소프트웨어 엔지니어입니다.
-                  자연에서 영감을 받은 알고리즘과 머신러닝의 교차점에 열정을 가지고 있습니다.
+                  {PROFILE.summaryLead}
                 </p>
-                <p style={{
-                  fontFamily: FONT_SANS,
-                  fontSize: "0.88rem",
-                  color: T.sub,
-                  lineHeight: 1.85,
-                  marginBottom: "1rem",
-                  wordBreak: "keep-all",
-                }}>
-                  Python · C++ · CUDA 기반 AI 실험부터 웹 프론트엔드까지, 관심 가는 기술이라면
-                  직접 환경을 만들고 실험해보는 개발자입니다. 나무처럼, 소프트웨어는 튼튼한 뿌리 위에
-                  서야 합니다. 불필요한 복잡함 없이 지속 가능한 경량화 아키텍처를 지향합니다.
-                </p>
-                <p style={{
-                  fontFamily: FONT_SANS,
-                  fontSize: "0.88rem",
-                  color: T.sub,
-                  lineHeight: 1.85,
-                  wordBreak: "keep-all",
-                }}>
-                  현재 CS/AI 석사 진학을 준비하며, LLM 시스템과 RAG 아키텍처 분야의
-                  연구 및 엔지니어링 커리어를 목표로 하고 있습니다. DevContainer와 Docker로
-                  재현 가능한 실험 환경을 구축하고, 음원 분리 모델 학습, 엣지 환경 LLM 추론,
-                  실시간 음성 변환 등 다양한 도메인을 직접 실험하고 있습니다.
-                </p>
+                {PROFILE.summary.map((paragraph, idx) => (
+                  <p
+                    key={paragraph}
+                    style={{
+                      fontFamily: FONT_SANS,
+                      fontSize: "0.88rem",
+                      color: T.sub,
+                      lineHeight: 1.85,
+                      marginBottom: idx < PROFILE.summary.length - 1 ? "1rem" : 0,
+                      wordBreak: "keep-all",
+                    }}
+                  >
+                    {paragraph}
+                  </p>
+                ))}
               </div>
             </div>
           </FadeSection>
@@ -1028,6 +846,21 @@ export default function Home() {
                       <span style={{ fontFamily: FONT_MONO, fontSize: "0.62rem", color: T.muted }}>
                         {proj.period}
                       </span>
+                      <a
+                        href={`/projects/${proj.slug}`}
+                        style={{
+                          fontFamily: FONT_MONO,
+                          fontSize: "0.62rem",
+                          color: T.green,
+                          textDecoration: "none",
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: "2px",
+                        }}
+                      >
+                        Detail
+                        <ExternalArrow color={T.green} />
+                      </a>
                       {proj.link && <ExternalLink href={proj.link} T={T}>GitHub</ExternalLink>}
                     </div>
                   </div>
@@ -1167,10 +1000,21 @@ export default function Home() {
             gap: "0.5rem",
           }}>
             <span style={{ fontFamily: FONT_MONO, fontSize: "0.65rem", color: T.muted }}>
-              © 2026 김유석 (KIM YUSEOK)
+              © 2026 {PROFILE.name} ({PROFILE.romanizedName})
             </span>
             <a
-              href="https://github.com/NAMUORI00"
+              href="/notes"
+              style={{
+                fontFamily: FONT_MONO,
+                fontSize: "0.65rem",
+                color: T.green,
+                textDecoration: "none",
+              }}
+            >
+              notes
+            </a>
+            <a
+              href={PROFILE.contacts.find((contact) => contact.type === "github")?.href ?? "https://github.com/NAMUORI00"}
               target="_blank"
               rel="noopener noreferrer"
               style={{
@@ -1186,7 +1030,7 @@ export default function Home() {
               <svg width="12" height="12" viewBox="0 0 24 24" fill={T.green}>
                 <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
               </svg>
-              github.com/NAMUORI00
+              {PROFILE.contacts.find((contact) => contact.type === "github")?.label ?? "github.com/NAMUORI00"}
             </a>
           </footer>
 

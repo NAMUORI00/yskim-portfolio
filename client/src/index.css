@@ -42,7 +42,7 @@
   --color-ring: var(--ring);
 
   /* 폰트 토큰 */
-  --font-sans:  "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+  --font-sans:  "Nanum Gothic", "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif;
   --font-serif: "Noto Serif KR", Georgia, serif;
   --font-mono:  "JetBrains Mono", "Fira Code", "Cascadia Code", monospace;
 }
@@ -51,7 +51,7 @@
 :root {
   --radius: 0.25rem;
   --background: oklch(0.99 0 0);
-  --foreground: oklch(0.15 0.005 200);
+  --foreground: oklch(0.13 0.006 155);
   --card: oklch(0.99 0 0);
   --card-foreground: oklch(0.15 0.005 200);
   --popover: oklch(0.99 0 0);
@@ -61,7 +61,7 @@
   --secondary: oklch(0.96 0.005 155);
   --secondary-foreground: oklch(0.38 0.09 155);
   --muted: oklch(0.96 0.002 200);
-  --muted-foreground: oklch(0.52 0.01 200);
+  --muted-foreground: oklch(0.42 0.012 155);
   --accent: oklch(0.94 0.015 155);
   --accent-foreground: oklch(0.30 0.09 155);
   --destructive: oklch(0.577 0.245 27.325);
@@ -72,18 +72,18 @@
 
 /* ── 다크 모드 ── */
 .dark {
-  --background: oklch(0.14 0.008 160);
-  --foreground: oklch(0.90 0.005 80);
-  --card: oklch(0.16 0.008 160);
-  --card-foreground: oklch(0.90 0.005 80);
-  --popover: oklch(0.16 0.008 160);
-  --popover-foreground: oklch(0.90 0.005 80);
+  --background: oklch(0.16 0.008 155);
+  --foreground: oklch(0.92 0.010 85);
+  --card: oklch(0.20 0.010 155);
+  --card-foreground: oklch(0.92 0.010 85);
+  --popover: oklch(0.20 0.010 155);
+  --popover-foreground: oklch(0.92 0.010 85);
   --primary: oklch(0.62 0.12 155);
   --primary-foreground: oklch(0.14 0.008 160);
   --secondary: oklch(0.20 0.010 155);
   --secondary-foreground: oklch(0.62 0.12 155);
   --muted: oklch(0.20 0.006 160);
-  --muted-foreground: oklch(0.58 0.010 160);
+  --muted-foreground: oklch(0.76 0.012 145);
   --accent: oklch(0.22 0.012 155);
   --accent-foreground: oklch(0.80 0.010 80);
   --destructive: oklch(0.704 0.191 22.216);
@@ -212,5 +212,33 @@
     font-family: var(--font-mono);
     font-size: 0.65rem;
     font-weight: 400;
+  }
+
+  .markdown-body {
+    font-family: var(--font-sans);
+    font-size: 0.94rem;
+    line-height: 1.9;
+  }
+
+  .markdown-body h2,
+  .markdown-body h3 {
+    margin-top: 1.8rem;
+    margin-bottom: 0.65rem;
+  }
+
+  .markdown-body p {
+    margin: 0 0 1rem;
+  }
+
+  .markdown-body a {
+    color: var(--primary);
+    text-decoration: none;
+    border-bottom: 1px solid color-mix(in oklch, var(--primary) 35%, transparent);
+  }
+
+  .markdown-body code {
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 0.05rem 0.25rem;
   }
 }
