@@ -57,27 +57,28 @@ async function importProfile(env, source) {
   const selectedRepos = Array.isArray(repos)
     ? repos.filter((repo) => !repo.archived && !repo.fork).slice(0, 8)
     : [];
-  const bundles = [];
-  for (const repo of selectedRepos) {
-    try {
-      bundles.push(await fetchRepositoryBundle(env, source.owner, repo.name, warnings));
-    } catch (error) {
-      warnings.push(`${repo.full_name || repo.name}: ${error instanceof Error ? error.message : "Repository import failed"}`);
-    }
-  }
-
   const starred =
     (await optionalGitHubFetch(env, `/users/${encodeURIComponent(source.owner)}/starred?sort=updated&per_page=12`, warnings, `${source.owner} starred repositories`)) ||
     [];
-  if (bundles.length === 0) warnings.push("가져올 수 있는 공개 프로젝트 후보가 없습니다.");
+  const languageMaps = [];
+  for (const repo of selectedRepos.slice(0, 6)) {
+    const languages = await optionalGitHubFetch(
+      env,
+      `/repos/${encodeURIComponent(source.owner)}/${encodeURIComponent(repo.name)}/languages`,
+      warnings,
+      `${repo.full_name || repo.name} languages`,
+    );
+    languageMaps.push(languages || {});
+  }
+  if (selectedRepos.length === 0) warnings.push("가져올 수 있는 공개 프로젝트 후보가 없습니다.");
 
   return {
     source: `https://github.com/${source.owner}`,
     owner: source.owner,
-    projects: bundles.map((bundle) => repositoryToProjectCandidate(bundle.repo, { languages: bundle.languages, readme: bundle.readme })),
+    projects: selectedRepos.map((repo, index) => repositoryToProjectCandidate(repo, { languages: languageMaps[index] || {}, readme: "" })),
     skills: buildSkillGroupsFromRepositories(
-      bundles.map((bundle) => bundle.repo),
-      bundles.map((bundle) => bundle.languages),
+      selectedRepos,
+      languageMaps,
     ),
     starred: Array.isArray(starred) ? starred.slice(0, 8).map(repositoryToStarredCandidate) : [],
     warnings,
