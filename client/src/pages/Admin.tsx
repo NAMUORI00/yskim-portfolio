@@ -7,6 +7,15 @@ import { useTheme } from "@/contexts/ThemeContext";
 import { adminAccessState, type AdminSessionInfo } from "@/lib/adminAccess";
 import { buildSavePayload, type SavePayload, type SaveTarget } from "@/lib/adminContent";
 import {
+  demoGitHubImportResponse,
+  mergeProjectCandidate,
+  mergeSkillCandidates,
+  mergeStarredCandidates,
+  parseGitHubSource,
+  type GitHubImportMode,
+  type GitHubImportResponse,
+} from "@/lib/githubImport";
+import {
   appendItem,
   archiveEntry,
   createEducationEntry,
@@ -38,6 +47,8 @@ const SECTIONS: Array<{ key: SectionKey; label: string }> = [
 ];
 
 const STATUS_OPTIONS: PublicationStatus[] = ["draft", "published", "archived"];
+const INITIAL_GITHUB_IMPORT_SOURCE =
+  portfolioContent.profile.contacts.find((contact) => contact.type === "github")?.href ?? `https://github.com/${portfolioContent.profile.handle}`;
 
 function splitList(value: string): string[] {
   return value
@@ -213,6 +224,10 @@ export default function Admin() {
   const [noteIndex, setNoteIndex] = useState(0);
   const [mode, setMode] = useState<EditorMode>("write");
   const [status, setStatus] = useState("변경사항을 저장하면 draft 브랜치 커밋으로 전송됩니다.");
+  const [importSource, setImportSource] = useState(INITIAL_GITHUB_IMPORT_SOURCE);
+  const [importMode, setImportMode] = useState<GitHubImportMode>("profile");
+  const [importResult, setImportResult] = useState<GitHubImportResponse | null>(null);
+  const [importLoading, setImportLoading] = useState(false);
 
   const access = adminAccessState(session, localPreview);
   const canEdit = access === "granted";
@@ -254,6 +269,60 @@ export default function Admin() {
     const data = await response.json().catch(() => ({}));
     if (!response.ok) throw new Error(data.error || `Request failed: ${response.status}`);
     return data;
+  }
+
+  async function loadGitHubCandidates() {
+    if (!canEdit || importLoading) return;
+    if (!parseGitHubSource(importSource, importMode)) {
+      setStatus(importMode === "repo" ? "GitHub 저장소 URL 또는 owner/repo 형식이 필요합니다." : "GitHub 프로필 URL 또는 owner 형식이 필요합니다.");
+      return;
+    }
+    setImportLoading(true);
+    try {
+      if (localPreview) {
+        setImportResult({ ...demoGitHubImportResponse, source: importSource });
+        setStatus("로컬 미리보기: GitHub 후보 샘플을 불러왔습니다. Apply 후 저장 흐름을 확인할 수 있습니다.");
+        return;
+      }
+      const result = await postJson("/api/github/import", { source: importSource, mode: importMode });
+      setImportResult(result as GitHubImportResponse);
+      setStatus(`GitHub 후보를 불러왔습니다: Projects ${result.projects?.length ?? 0}, Skills ${result.skills?.length ?? 0}, Starred ${result.starred?.length ?? 0}`);
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : "GitHub 후보를 가져오지 못했습니다.");
+    } finally {
+      setImportLoading(false);
+    }
+  }
+
+  function applyProjectCandidate(candidate: ProjectEntry) {
+    setProjects((items) => {
+      const result = mergeProjectCandidate(items, candidate);
+      setProjectIndex(result.index);
+      return result.items;
+    });
+    setActive("projects");
+    setStatus(`프로젝트 후보를 편집 목록에 적용했습니다: ${candidate.name}`);
+  }
+
+  function applySkillCandidates(candidates = importResult?.skills ?? []) {
+    if (candidates.length === 0) return;
+    setSkills((items) => mergeSkillCandidates(items, candidates));
+    setActive("skills");
+    setStatus(`기술 스택 후보 ${candidates.length}개 그룹을 병합했습니다. 저장 전 항목을 검토하세요.`);
+  }
+
+  function applyStarredCandidate(candidate: StarredRepo) {
+    setStarred((items) => mergeStarredCandidates(items, [candidate]));
+    setActive("starred");
+    setStatus(`관심 저장소 후보를 적용했습니다: ${candidate.name}`);
+  }
+
+  function applyAllStarredCandidates() {
+    const candidates = importResult?.starred ?? [];
+    if (candidates.length === 0) return;
+    setStarred((items) => mergeStarredCandidates(items, candidates));
+    setActive("starred");
+    setStatus(`관심 저장소 후보를 병합했습니다. 중복 저장소는 유지하지 않았습니다.`);
   }
 
   async function saveDraft() {
@@ -495,6 +564,93 @@ export default function Admin() {
     setStarred((items) => removeItem(items, index).items);
   }
 
+  function renderGitHubImportPanel(scope: "projects" | "skills" | "starred") {
+    const projectCandidates = importResult?.projects ?? [];
+    const skillCandidates = importResult?.skills ?? [];
+    const starredCandidates = importResult?.starred ?? [];
+    return (
+      <div className="admin-import">
+        <div className="admin-import-head">
+          <div>
+            <span className="admin-kicker">github import</span>
+            <strong>GitHub 후보 가져오기</strong>
+          </div>
+          <span className="admin-import-count">
+            P {projectCandidates.length} · S {skillCandidates.length} · ★ {starredCandidates.length}
+          </span>
+        </div>
+        <div className="admin-import-form">
+          <label>
+            <span>Source</span>
+            <input disabled={!canEdit || importLoading} value={importSource} onChange={(event) => setImportSource(event.target.value)} placeholder="https://github.com/NAMUORI00 또는 owner/repo" />
+          </label>
+          <label>
+            <span>Mode</span>
+            <select disabled={!canEdit || importLoading} value={importMode} onChange={(event) => setImportMode(event.target.value as GitHubImportMode)}>
+              <option value="profile">Profile</option>
+              <option value="repo">Repository</option>
+            </select>
+          </label>
+          <button type="button" disabled={!canEdit || importLoading} onClick={loadGitHubCandidates}>
+            {importLoading ? "Fetching..." : "Fetch candidates"}
+          </button>
+        </div>
+        {importResult?.warnings.length ? (
+          <div className="admin-import-warnings">
+            {importResult.warnings.map((warning) => (
+              <span key={warning}>{warning}</span>
+            ))}
+          </div>
+        ) : null}
+        {scope === "projects" && (
+          <div className="admin-candidate-list">
+            {projectCandidates.length === 0 && <div className="admin-empty">프로젝트 후보가 없습니다. GitHub source를 가져오세요.</div>}
+            {projectCandidates.map((candidate) => (
+              <div className="admin-candidate" key={candidate.slug}>
+                <div>
+                  <strong>{candidate.name}</strong>
+                  <p>{candidate.desc}</p>
+                  <span>{candidate.tags.join(", ") || "no tags"}</span>
+                </div>
+                <button type="button" disabled={!canEdit} onClick={() => applyProjectCandidate(candidate)}>Apply</button>
+              </div>
+            ))}
+          </div>
+        )}
+        {scope === "skills" && (
+          <div className="admin-candidate-list">
+            {skillCandidates.length === 0 && <div className="admin-empty">기술 스택 후보가 없습니다. GitHub profile 또는 repo를 가져오세요.</div>}
+            {skillCandidates.length > 0 && <button type="button" disabled={!canEdit} onClick={() => applySkillCandidates()}>Apply skill groups</button>}
+            {skillCandidates.map((candidate) => (
+              <div className="admin-candidate" key={candidate.label}>
+                <div>
+                  <strong>{candidate.label}</strong>
+                  <p>{candidate.items.join(", ")}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+        {scope === "starred" && (
+          <div className="admin-candidate-list">
+            {starredCandidates.length === 0 && <div className="admin-empty">관심 저장소 후보가 없습니다. GitHub profile을 가져오세요.</div>}
+            {starredCandidates.length > 0 && <button type="button" disabled={!canEdit} onClick={applyAllStarredCandidates}>Apply all starred</button>}
+            {starredCandidates.map((candidate) => (
+              <div className="admin-candidate" key={candidate.name}>
+                <div>
+                  <strong>{candidate.name}</strong>
+                  <p>{candidate.desc}</p>
+                  <span>★ {candidate.stars}</span>
+                </div>
+                <button type="button" disabled={!canEdit} onClick={() => applyStarredCandidate(candidate)}>Apply</button>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  }
+
   function renderEditor() {
     if (active === "profile") {
       return (
@@ -542,6 +698,7 @@ export default function Admin() {
       if (!project) {
         return (
           <div className="admin-stack">
+            {renderGitHubImportPanel("projects")}
             <div className="admin-empty">프로젝트가 없습니다.</div>
             <div className="admin-toolbar">
               <ControlButton disabled={!canEdit} onClick={addProject}>Add project</ControlButton>
@@ -551,6 +708,7 @@ export default function Admin() {
       }
       return (
         <div className="admin-stack">
+          {renderGitHubImportPanel("projects")}
           <div className="admin-toolbar">
             <ControlButton disabled={!canEdit} onClick={addProject}>Add project</ControlButton>
             <ControlButton disabled={!canEdit} onClick={duplicateSelectedProject}>Duplicate</ControlButton>
@@ -617,6 +775,7 @@ export default function Admin() {
     if (active === "skills") {
       return (
         <div className="admin-stack">
+          {renderGitHubImportPanel("skills")}
           <div className="admin-toolbar">
             <ControlButton disabled={!canEdit} onClick={addSkillGroup}>Add group</ControlButton>
           </div>
@@ -651,6 +810,7 @@ export default function Admin() {
     if (active === "starred") {
       return (
         <div className="admin-stack">
+          {renderGitHubImportPanel("starred")}
           <div className="admin-toolbar">
             <ControlButton disabled={!canEdit} onClick={addStarredRepo}>Add repository</ControlButton>
           </div>
@@ -793,13 +953,13 @@ export default function Admin() {
         .admin-back { font-family: ${FONT_MONO}; font-size: .75rem; text-decoration: none; }
         .admin-sidebar nav { display: grid; gap: 4px; margin-top: 28px; }
         .admin-sidebar button, .admin-actions button, .admin-actions a, .admin-editor-bar button,
-        .admin-toolbar button, .admin-card-actions button, .admin-inline-list button {
+        .admin-toolbar button, .admin-card-actions button, .admin-inline-list button, .admin-import button, .admin-candidate button {
           border: 1px solid ${T.border}; background: ${T.surface}; color: ${T.sub};
           border-radius: 4px; padding: 8px 10px; font-family: ${FONT_MONO}; cursor: pointer; text-decoration: none;
         }
         .admin-sidebar button { text-align: left; }
         .admin-sidebar button.active, .admin-editor-bar button.active { color: ${T.green}; border-color: ${T.green}; background: ${T.greenBg}; }
-        .admin-actions button:disabled, .admin-toolbar button:disabled, .admin-card-actions button:disabled, .admin-inline-list button:disabled { opacity: .45; cursor: not-allowed; }
+        .admin-actions button:disabled, .admin-toolbar button:disabled, .admin-card-actions button:disabled, .admin-inline-list button:disabled, .admin-import button:disabled, .admin-candidate button:disabled { opacity: .45; cursor: not-allowed; }
         .admin-toolbar button.danger, .admin-card-actions button.danger, .admin-inline-list button.danger { color: ${T.red}; border-color: ${T.red}; background: ${T.redBg}; }
         .admin-main { border-left: 0; min-width: 0; padding: 28px; }
         .admin-header { display: flex; justify-content: space-between; gap: 20px; align-items: flex-start; margin-bottom: 22px; }
@@ -813,6 +973,21 @@ export default function Admin() {
         .admin-card-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
         .admin-card strong { color: ${T.text}; font-size: .95rem; }
         .admin-card-actions, .admin-toolbar { display: flex; flex-wrap: wrap; gap: 8px; }
+        .admin-import { border: 1px solid ${T.border}; background: ${T.surface}; border-radius: 6px; padding: 14px; display: grid; gap: 12px; }
+        .admin-import-head { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; }
+        .admin-import-head strong { display: block; margin-top: 4px; color: ${T.text}; }
+        .admin-import-count { color: ${T.green}; font-family: ${FONT_MONO}; font-size: .72rem; }
+        .admin-import-form { display: grid; grid-template-columns: minmax(180px, 1fr) 150px auto; gap: 10px; align-items: end; }
+        .admin-import-form label { display: grid; gap: 6px; color: ${T.sub}; font-size: .72rem; font-family: ${FONT_MONO}; }
+        .admin-import-form input, .admin-import-form select {
+          width: 100%; box-sizing: border-box; border: 1px solid ${T.border}; background: ${T.bg}; color: ${T.text};
+          border-radius: 4px; padding: 9px 10px; font-family: ${FONT_SANS}; font-size: .9rem;
+        }
+        .admin-import-warnings { display: grid; gap: 4px; color: ${T.muted}; font-family: ${FONT_MONO}; font-size: .68rem; }
+        .admin-candidate-list { display: grid; gap: 8px; }
+        .admin-candidate { border: 1px solid ${T.border}; background: ${T.bg}; border-radius: 4px; padding: 11px; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; align-items: center; }
+        .admin-candidate p { color: ${T.sub}; margin: 5px 0; line-height: 1.6; }
+        .admin-candidate span { color: ${T.muted}; font-family: ${FONT_MONO}; font-size: .68rem; }
         .admin-field { display: grid; gap: 6px; color: ${T.sub}; font-size: .78rem; font-family: ${FONT_MONO}; }
         .admin-field-block { grid-column: 1 / -1; }
         .admin-field input, .admin-field textarea, .admin-field select, .admin-stack select, .admin-inline-row input, .admin-editor textarea, .admin-wysiwyg {
@@ -836,6 +1011,8 @@ export default function Admin() {
           .admin-header { flex-direction: column; }
           .admin-actions { justify-content: flex-start; }
           .admin-card-head { flex-direction: column; }
+          .admin-import-form { grid-template-columns: 1fr; }
+          .admin-candidate { grid-template-columns: 1fr; }
           .admin-inline-row { grid-template-columns: 1fr; }
         }
       `}</style>
