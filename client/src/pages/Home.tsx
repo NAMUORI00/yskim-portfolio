@@ -308,6 +308,7 @@ export default function Home() {
   const T = theme === "dark" ? DARK : LIGHT;
   const active = useActiveSection(NAV_IDS);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [focusedGraphNodeId, setFocusedGraphNodeId] = useState<string | null>(null);
 
   const scrollTo = useCallback((id: string) => {
     const el = document.getElementById(id);
@@ -825,21 +826,30 @@ export default function Home() {
               overflow: "hidden",
               background: T.surface,
             }}>
-              {PROJECTS.map((proj, idx) => (
-                <div
-                  key={proj.name}
-                  className="proj-row"
-                  style={{
-                    padding: "1rem 1.25rem",
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "0.4rem",
-                    borderBottom: idx < PROJECTS.length - 1 ? `1px solid ${T.border}` : "none",
-                    transition: "background 0.15s",
-                  }}
-                  onMouseEnter={(e) => (e.currentTarget.style.background = T.bg)}
-                  onMouseLeave={(e) => (e.currentTarget.style.background = T.surface)}
-                >
+              {PROJECTS.map((proj, idx) => {
+                const graphNodeId = `project:${proj.slug}`;
+                return (
+                  <div
+                    key={proj.name}
+                    className="proj-row"
+                    data-kg-node-id={graphNodeId}
+                    style={{
+                      padding: "1rem 1.25rem",
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "0.4rem",
+                      borderBottom: idx < PROJECTS.length - 1 ? `1px solid ${T.border}` : "none",
+                      transition: "background 0.15s",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background = T.bg;
+                      setFocusedGraphNodeId(graphNodeId);
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = T.surface;
+                      setFocusedGraphNodeId(null);
+                    }}
+                  >
                   {/* 헤더 */}
                   <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "0.75rem" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
@@ -925,8 +935,9 @@ export default function Home() {
                   <div style={{ display: "flex", flexWrap: "wrap", gap: "4px" }}>
                     {proj.tags.map((tag) => <Tag key={tag} T={T}>{tag}</Tag>)}
                   </div>
-                </div>
-              ))}
+                  </div>
+                );
+              })}
             </div>
           </FadeSection>
 
@@ -1072,7 +1083,7 @@ export default function Home() {
         </div>
       </div>
 
-      <KnowledgeGraphRail graph={KNOWLEDGE_GRAPH} T={T} active={active} />
+      <KnowledgeGraphRail graph={KNOWLEDGE_GRAPH} T={T} active={active} focusNodeId={focusedGraphNodeId} />
 
       {/* ── 전역 스타일 ── */}
       <style>{`

@@ -37,18 +37,22 @@ export function KnowledgeGraphRail({
   graph,
   T,
   active,
+  focusNodeId,
 }: {
   graph: KnowledgeGraphData;
   T: PortfolioTheme;
   active: string;
+  focusNodeId?: string | null;
 }) {
   const [hovered, setHovered] = useState<string | null>(null);
   const [pointer, setPointer] = useState<KnowledgeGraphPointer | null>(null);
   const layout = useMemo(() => layoutKnowledgeGraph(graph, WIDTH, HEIGHT), [graph]);
   const projectedNodes = useMemo(() => new Map(layout.nodes.map((node) => [node.id, projectKnowledgeNode(node, pointer)])), [layout.nodes, pointer]);
   const hoveredNode = layout.nodes.find((node) => node.id === hovered) ?? null;
+  const externalFocusNode = focusNodeId ? layout.nodes.find((node) => node.id === focusNodeId) ?? null : null;
   const activeNode = layout.nodes.find((node) => node.section === active) ?? null;
-  const focusNode = hoveredNode ?? activeNode;
+  const focusNode = hoveredNode ?? externalFocusNode ?? activeNode;
+  const hasSpecificFocus = Boolean(hoveredNode || externalFocusNode);
   const connected = useMemo(() => {
     if (!focusNode) return new Set<string>();
     const ids = new Set<string>([focusNode.id]);
@@ -88,6 +92,7 @@ export function KnowledgeGraphRail({
     <aside
       id="knowledge-rail"
       aria-label="포트폴리오 지식 그래프"
+      data-focus-node-id={focusNode?.id ?? ""}
       style={{
         width: "clamp(236px, 20vw, 312px)",
         flexShrink: 0,
@@ -106,9 +111,6 @@ export function KnowledgeGraphRail({
         <div style={{ color: T.green, fontFamily: FONT_MONO, fontSize: "0.62rem", letterSpacing: "0.08em", textTransform: "uppercase" }}>
           Knowledge Graph
         </div>
-        <p style={{ margin: "0.35rem 0 0", color: T.sub, fontFamily: FONT_SANS, fontSize: "0.72rem", lineHeight: 1.6, wordBreak: "keep-all" }}>
-          스킬과 프로젝트를 중심으로 은은히 반응하는 원형 관심사 KG입니다.
-        </p>
       </div>
 
       <div
@@ -163,7 +165,7 @@ export function KnowledgeGraphRail({
                   fill="none"
                   stroke={link.kind === "related" ? T.greenLight : T.muted}
                   strokeWidth={isLit ? Math.max(0.7, Math.min(1.7, link.weight / 1.7)) : 0.52}
-                  strokeOpacity={edgeState === "active" ? (hoveredNode ? 0.58 : 0.34) : 0.09}
+                  strokeOpacity={edgeState === "active" ? (hasSpecificFocus ? 0.58 : 0.34) : 0.09}
                   strokeLinecap="round"
                 />
               </g>
@@ -172,16 +174,19 @@ export function KnowledgeGraphRail({
           {layout.nodes.map((node) => {
             const projected = projectedNodes.get(node.id) ?? projectKnowledgeNode(node, pointer);
             const color = nodeColor(node, T);
-            const isActive = node.section === active || node.id === hovered;
             const isLit = !focusNode || connected.has(node.id);
             const isHovered = node.id === hovered;
+            const isFocusNode = focusNode?.id === node.id;
+            const isActive = isHovered || isFocusNode;
+            const focusState = !focusNode ? "idle" : isFocusNode ? "focus" : isLit ? "connected" : "dim";
             return (
               <g
                 className="knowledge-node-group"
                 key={node.id}
                 data-node-id={node.id}
                 data-neural-node={node.id}
-                data-node-state={isHovered ? "hovered" : isLit ? "connected" : "dim"}
+                data-node-state={isHovered ? "hovered" : focusState}
+                data-focus-state={focusState}
                 data-pointer-influence={projected.influence.toFixed(2)}
                 aria-label={`${node.label} ${kindLabel(node.kind)}`}
                 onPointerEnter={() => setHovered(node.id)}
@@ -218,7 +223,7 @@ export function KnowledgeGraphRail({
                   stroke={isActive ? T.green : T.bg}
                   strokeWidth={isActive ? 1.45 : 0.85}
                 />
-                {(node.kind === "profile" || isHovered || (!hoveredNode && isActive)) && (
+                {(node.kind === "profile" || isHovered || isFocusNode) && (
                   <text
                     x={projected.x}
                     y={projected.y - node.radius * projected.scale - 7}
@@ -337,13 +342,15 @@ export function KnowledgeGraphRail({
       </div>
 
       <div style={{ display: "grid", gap: "0.5rem", minHeight: 0 }}>
-        {(hoveredNode ? [hoveredNode] : topNodes).map((node) => (
+        {(hoveredNode ? [hoveredNode] : externalFocusNode ? [externalFocusNode] : topNodes).map((node) => {
+          const isCardActive = focusNode?.id === node.id;
+          return (
           <div
             key={node.id}
             style={{
-              border: `1px solid ${node.section === active ? T.green : T.border}`,
-              background: node.section === active ? T.greenBg : T.surface,
-              color: node.section === active ? T.green : T.sub,
+              border: `1px solid ${isCardActive ? T.green : T.border}`,
+              background: isCardActive ? T.greenBg : T.surface,
+              color: isCardActive ? T.green : T.sub,
               borderRadius: "4px",
               padding: "0.55rem 0.65rem",
               textAlign: "left",
@@ -356,7 +363,8 @@ export function KnowledgeGraphRail({
               {node.label}
             </span>
           </div>
-        ))}
+          );
+        })}
       </div>
     </aside>
   );

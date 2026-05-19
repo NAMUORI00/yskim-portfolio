@@ -8,12 +8,14 @@ const graph: KnowledgeGraphData = {
   nodes: [
     { id: "profile", label: "NAMUORI00", kind: "profile", weight: 5, section: "about" },
     { id: "project:a", label: "Project A", kind: "project", weight: 3, section: "projects" },
+    { id: "project:b", label: "Project B", kind: "project", weight: 3, section: "projects" },
     { id: "skill:python", label: "Python", kind: "skill", weight: 2, section: "skills" },
     { id: "note:n", label: "Note N", kind: "note", weight: 2, section: "interests" },
     { id: "term:rag", label: "RAG", kind: "term", weight: 2 },
   ],
   links: [
     { source: "profile", target: "project:a", kind: "profile", weight: 1 },
+    { source: "profile", target: "project:b", kind: "profile", weight: 1 },
     { source: "project:a", target: "skill:python", kind: "skill", weight: 1 },
     { source: "project:a", target: "note:n", kind: "related", weight: 1 },
     { source: "project:a", target: "term:rag", kind: "term", weight: 1 },
@@ -50,5 +52,17 @@ describe("KnowledgeGraphRail", () => {
     expect(html).not.toContain('role="button"');
     expect(html).not.toContain("<button");
     expect(html).not.toContain("tabindex");
+  });
+
+  it("focuses the hovered content project path instead of the whole projects section", () => {
+    const html = renderToStaticMarkup(
+      <KnowledgeGraphRail graph={graph} T={LIGHT} active="projects" focusNodeId="project:a" />,
+    );
+
+    expect(html).toContain('data-focus-node-id="project:a"');
+    expect(html).toMatch(/data-node-id="profile"[^>]+data-focus-state="connected"/);
+    expect(html).toMatch(/data-node-id="project:a"[^>]+data-focus-state="focus"/);
+    expect(html).toMatch(/data-node-id="skill:python"[^>]+data-focus-state="connected"/);
+    expect(html).toMatch(/data-node-id="project:b"[^>]+data-focus-state="dim"/);
   });
 });
