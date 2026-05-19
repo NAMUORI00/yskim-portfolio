@@ -120,6 +120,14 @@ function addLink(links: Map<string, KnowledgeGraphLink>, link: KnowledgeGraphLin
   links.set(key, { ...current, weight: Math.max(current.weight, link.weight) });
 }
 
+function compactLinkPriority(link: KnowledgeGraphLink): number {
+  if (link.kind === "skill") return 4;
+  if (link.kind === "profile") return 3;
+  if (link.kind === "repo") return 2;
+  if (link.kind === "related") return 1;
+  return 0;
+}
+
 function projectDocument(project: ProjectEntry): DocumentNode {
   return {
     id: `project:${project.slug}`,
@@ -268,7 +276,7 @@ export function buildKnowledgeGraph(content: PortfolioContent, options: Knowledg
   const nodeIds = new Set(nodes.keys());
   const compactLinks = Array.from(links.values())
     .filter((link) => nodeIds.has(link.source) && nodeIds.has(link.target))
-    .sort((a, b) => b.weight - a.weight || a.source.localeCompare(b.source))
+    .sort((a, b) => compactLinkPriority(b) - compactLinkPriority(a) || b.weight - a.weight || a.source.localeCompare(b.source))
     .slice(0, maxLinks);
 
   return {

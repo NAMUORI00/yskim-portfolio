@@ -8,10 +8,14 @@ const graph: KnowledgeGraphData = {
   nodes: [
     { id: "profile", label: "NAMUORI00", kind: "profile", weight: 5, section: "about" },
     { id: "project:a", label: "Project A", kind: "project", weight: 3, section: "projects" },
+    { id: "skill:python", label: "Python", kind: "skill", weight: 2, section: "skills" },
+    { id: "note:n", label: "Note N", kind: "note", weight: 2, section: "interests" },
     { id: "term:rag", label: "RAG", kind: "term", weight: 2 },
   ],
   links: [
     { source: "profile", target: "project:a", kind: "profile", weight: 1 },
+    { source: "profile", target: "skill:python", kind: "skill", weight: 1 },
+    { source: "project:a", target: "note:n", kind: "related", weight: 1 },
     { source: "project:a", target: "term:rag", kind: "term", weight: 1 },
   ],
 };
@@ -29,11 +33,16 @@ describe("KnowledgeGraphRail", () => {
     expect(html).toContain('class="knowledge-hover-layer"');
     expect(html).toContain('pointer-events="all"');
     expect(html).toContain('data-connects="profile project:a"');
+    expect(html).toContain('data-node-id="skill:python"');
+    expect(html).toContain('data-connects="profile skill:python"');
+    expect(html).not.toContain('data-node-id="note:n"');
+    expect(html).not.toContain('data-connects="project:a note:n"');
     expect(html).not.toContain('data-node-id="term:rag"');
     expect(html).not.toContain('data-connects="project:a term:rag"');
     expect(html).toContain('data-edge-state="active"');
     expect(html).toContain("data-neural-node=");
     expect(html).toContain("neuralDrift");
+    expect(html).toContain("knowledge-focus-glow");
     expect(html).not.toContain("knowledge-root-spine");
     expect(html).not.toContain(":has(");
     expect(html).not.toContain("nodeBreathe");

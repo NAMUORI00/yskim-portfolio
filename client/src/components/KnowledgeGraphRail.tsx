@@ -107,7 +107,7 @@ export function KnowledgeGraphRail({
           Knowledge Graph
         </div>
         <p style={{ margin: "0.35rem 0 0", color: T.sub, fontFamily: FONT_SANS, fontSize: "0.72rem", lineHeight: 1.6, wordBreak: "keep-all" }}>
-          마우스 위치에 따라 부드럽게 반응하는 원형 관심사 KG입니다.
+          스킬과 프로젝트를 중심으로 은은히 반응하는 원형 관심사 KG입니다.
         </p>
       </div>
 
@@ -201,12 +201,12 @@ export function KnowledgeGraphRail({
                   />
                 )}
                 <circle
-                  className={isHovered || (!hoveredNode && isActive) ? "knowledge-halo active" : "knowledge-halo"}
+                  className={isHovered || (!hoveredNode && isActive) ? "knowledge-halo knowledge-focus-glow active" : "knowledge-halo knowledge-focus-glow"}
                   cx={projected.x}
                   cy={projected.y}
                   r={node.radius * projected.scale + (isActive ? 8 : 4)}
                   fill={color}
-                  opacity={isActive ? 0.18 : 0.045}
+                  opacity={Math.max(isActive ? 0.18 : 0.045, projected.influence * 0.16)}
                 />
                 <circle
                   className={isLit ? "knowledge-node lit" : "knowledge-node"}
@@ -214,7 +214,7 @@ export function KnowledgeGraphRail({
                   cy={projected.y}
                   r={node.radius * projected.scale}
                   fill={color}
-                  opacity={isLit ? (hoveredNode ? 0.86 : 0.72) : 0.2}
+                  opacity={isLit ? Math.min(0.96, (hoveredNode ? 0.86 : 0.72) + projected.influence * 0.12) : Math.max(0.2, projected.influence * 0.42)}
                   stroke={isActive ? T.green : T.bg}
                   strokeWidth={isActive ? 1.45 : 0.85}
                 />
@@ -263,7 +263,7 @@ export function KnowledgeGraphRail({
             cursor: default;
           }
           #knowledge-rail .knowledge-edge {
-            transition: stroke-opacity 180ms ease, stroke-width 180ms ease, d 120ms ease;
+            transition: stroke-opacity 180ms ease, stroke-width 180ms ease;
           }
           #knowledge-rail .knowledge-orbit {
             stroke-dasharray: 2 10;
@@ -282,12 +282,15 @@ export function KnowledgeGraphRail({
           #knowledge-rail .knowledge-node {
             transform-box: fill-box;
             transform-origin: center;
-            transition: opacity 180ms ease, stroke 180ms ease, r 120ms ease, cx 120ms ease, cy 120ms ease;
+            transition: opacity 180ms ease, stroke 180ms ease, r 140ms ease;
           }
           #knowledge-rail .knowledge-halo {
             transform-box: fill-box;
             transform-origin: center;
-            transition: opacity 160ms ease, r 120ms ease, cx 120ms ease, cy 120ms ease;
+            transition: opacity 160ms ease, r 140ms ease;
+          }
+          #knowledge-rail .knowledge-focus-glow {
+            filter: drop-shadow(0 0 10px ${T.green}22);
           }
           #knowledge-rail .knowledge-halo.active {
             animation: neuralPulse 2.2s ease-out infinite;

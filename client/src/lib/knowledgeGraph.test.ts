@@ -116,4 +116,16 @@ describe("buildKnowledgeGraph", () => {
     expect(graph.nodes.length).toBeLessThanOrEqual(1 + 1 + 1 + 1 + 3 + 1 + 8 + 1);
     expect(graph.links.length).toBeLessThanOrEqual(24);
   });
+
+  it("keeps skill links when compacting the graph", () => {
+    const graph = buildKnowledgeGraph(content, { maxTerms: 8, maxLinks: 6 });
+
+    expect(graph.links).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ source: "profile", target: "skill:python", kind: "skill" }),
+        expect.objectContaining({ source: "profile", target: "skill:typescript", kind: "skill" }),
+      ]),
+    );
+    expect(graph.links.length).toBeLessThanOrEqual(6);
+  });
 });

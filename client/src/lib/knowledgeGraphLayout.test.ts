@@ -13,6 +13,7 @@ const graph: KnowledgeGraphData = {
   ],
   links: [
     { source: "profile", target: "project:a", kind: "profile", weight: 1 },
+    { source: "profile", target: "skill:python", kind: "skill", weight: 0.8 },
     { source: "project:a", target: "note:n", kind: "related", weight: 2 },
     { source: "project:a", target: "term:rag", kind: "term", weight: 1 },
   ],
@@ -36,13 +37,14 @@ describe("layoutKnowledgeGraph", () => {
     const layout = layoutKnowledgeGraph(graph, 260, 340);
     const profile = nodeById(layout, "profile");
     const project = nodeById(layout, "project:a");
-    const note = nodeById(layout, "note:n");
+    const skill = nodeById(layout, "skill:python");
 
     expect(profile.x).toBe(130);
     expect(profile.y).toBe(170);
     expect(distanceBetween(layout, "profile", "project:a")).toBeGreaterThanOrEqual(54);
     expect(distanceBetween(layout, "profile", "project:a")).toBeLessThanOrEqual(78);
-    expect(distanceBetween(layout, "profile", "note:n")).toBeGreaterThan(distanceBetween(layout, "profile", "project:a") + 26);
+    expect(distanceBetween(layout, "profile", "skill:python")).toBeGreaterThanOrEqual(88);
+    expect(skill.kind).toBe("skill");
     for (const node of layout.nodes) {
       expect(node.x).toBeGreaterThanOrEqual(22);
       expect(node.x).toBeLessThanOrEqual(238);
@@ -69,17 +71,19 @@ describe("layoutKnowledgeGraph", () => {
     expect(path).not.toContain(" L ");
   });
 
-  it("excludes term nodes and term links from the visual neural graph", () => {
+  it("excludes notes and terms while keeping linked skills in the visual neural graph", () => {
     const clustered: KnowledgeGraphData = {
       nodes: [
         { id: "profile", label: "NAMUORI00", kind: "profile", weight: 5 },
         { id: "project:a", label: "Project A", kind: "project", weight: 3, section: "projects" },
+        { id: "skill:cuda", label: "CUDA", kind: "skill", weight: 2, section: "skills" },
         { id: "note:linked", label: "Linked Note", kind: "note", weight: 2, section: "interests" },
         { id: "term:unlinked", label: "Unlinked", kind: "term", weight: 2 },
         { id: "term:linked", label: "Linked", kind: "term", weight: 2 },
       ],
       links: [
         { source: "profile", target: "project:a", kind: "profile", weight: 1 },
+        { source: "profile", target: "skill:cuda", kind: "skill", weight: 1 },
         { source: "project:a", target: "note:linked", kind: "related", weight: 2.4 },
         { source: "project:a", target: "term:linked", kind: "term", weight: 2.4 },
       ],
@@ -87,23 +91,25 @@ describe("layoutKnowledgeGraph", () => {
     const layout = layoutKnowledgeGraph(clustered, 260, 340);
 
     expect(layout.nodes.some((node) => node.kind === "term")).toBe(false);
+    expect(layout.nodes.some((node) => node.kind === "note")).toBe(false);
+    expect(layout.nodes.some((node) => node.id === "skill:cuda")).toBe(true);
     expect(layout.links.some((link) => link.sourceId.startsWith("term:") || link.targetId.startsWith("term:"))).toBe(false);
-    expect(distanceBetween(layout, "profile", "note:linked")).toBeGreaterThan(distanceBetween(layout, "profile", "project:a"));
+    expect(layout.links.some((link) => link.sourceId.startsWith("note:") || link.targetId.startsWith("note:"))).toBe(false);
   });
 
-  it("omits unlinked visual nodes so the tree stays clean", () => {
+  it("omits unlinked visual nodes so the graph stays clean", () => {
     const layout = layoutKnowledgeGraph(graph, 260, 340);
 
-    expect(layout.nodes.some((node) => node.id === "skill:python")).toBe(false);
+    expect(layout.nodes.some((node) => node.id === "skill:python")).toBe(true);
     expect(layout.nodes.every((node) => node.id === "profile" || layout.links.some((link) => link.sourceId === node.id || link.targetId === node.id))).toBe(true);
   });
 
-  it("projects nodes away from the pointer and scales nearby nodes", () => {
+  it("highlights nearby nodes without moving them away from the pointer", () => {
     const layout = layoutKnowledgeGraph(graph, 260, 340);
     const project = nodeById(layout, "project:a");
     const projected = projectKnowledgeNode(project, { x: project.x + 8, y: project.y });
 
-    expect(projected.x).toBeLessThan(project.x);
+    expect(projected.x).toBe(project.x);
     expect(projected.y).toBe(project.y);
     expect(projected.scale).toBeGreaterThan(1.08);
     expect(projected.influence).toBeGreaterThan(0.7);

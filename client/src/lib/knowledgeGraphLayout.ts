@@ -73,7 +73,7 @@ export function layoutKnowledgeGraph(graph: KnowledgeGraphData, width: number, h
   const centerX = Math.round(width / 2);
   const centerY = Math.round(height / 2);
   const padding = 22;
-  const visualNodePool = graph.nodes.filter((node) => node.kind !== "term");
+  const visualNodePool = graph.nodes.filter((node) => node.kind !== "term" && node.kind !== "note");
   const poolIds = new Set(visualNodePool.map((node) => node.id));
   const visualLinks = graph.links.filter((link) => poolIds.has(link.source) && poolIds.has(link.target));
   const connectedIds = new Set<string>(["profile"]);
@@ -163,23 +163,12 @@ export function layoutKnowledgeGraph(graph: KnowledgeGraphData, width: number, h
 
 export function projectKnowledgeNode(node: PositionedKnowledgeNode, pointer: KnowledgeGraphPointer | null): ProjectedKnowledgeNode {
   if (!pointer) return { ...node, influence: 0, scale: 1 };
-  let dx = node.x - pointer.x;
-  let dy = node.y - pointer.y;
-  let distance = Math.hypot(dx, dy);
-  if (distance < 0.001) {
-    const angle = hashFraction(node.id, "pointer-angle") * Math.PI * 2;
-    dx = Math.cos(angle);
-    dy = Math.sin(angle);
-    distance = 1;
-  }
+  const distance = Math.hypot(node.x - pointer.x, node.y - pointer.y);
   const influence = clamp(1 - distance / 84, 0, 1);
-  const force = influence * influence * 16;
-  const unitX = dx / distance;
-  const unitY = dy / distance;
   return {
     ...node,
-    x: Number((node.x + unitX * force).toFixed(2)),
-    y: Number((node.y + unitY * force).toFixed(2)),
+    x: node.x,
+    y: node.y,
     influence,
     scale: Number((1 + influence * 0.16).toFixed(3)),
   };
