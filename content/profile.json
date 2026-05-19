@@ -12,6 +12,7 @@
   "contacts": [
     { "type": "email", "label": "namuori00@namuori.net", "href": "mailto:namuori00@namuori.net" },
     { "type": "github", "label": "github.com/NAMUORI00", "href": "https://github.com/NAMUORI00" },
-    { "type": "website", "label": "namuori.net", "href": "https://namuori.net" }
+    { "type": "website", "label": "namuori.net", "href": "https://namuori.net" },
+    { "type": "external", "label": "blog.namuori.net", "href": "https://blog.namuori.net" }
   ]
 }
