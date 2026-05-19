@@ -29,6 +29,8 @@ describe("KnowledgeGraphRail", () => {
     expect(html).toContain('class="knowledge-hover-layer"');
     expect(html).toContain('pointer-events="all"');
     expect(html).toContain('data-connects="profile project:a"');
+    expect(html).not.toContain('data-node-id="term:rag"');
+    expect(html).not.toContain('data-connects="project:a term:rag"');
     expect(html).toContain('data-edge-state="active"');
     expect(html).toContain('knowledge-node-group[data-node-id="profile"]:hover');
     expect(html).not.toContain(":has(");

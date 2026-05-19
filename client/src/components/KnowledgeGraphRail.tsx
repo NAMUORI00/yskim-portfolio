@@ -95,7 +95,7 @@ export function KnowledgeGraphRail({
           Knowledge Roots
         </div>
         <p style={{ margin: "0.35rem 0 0", color: T.sub, fontFamily: FONT_SANS, fontSize: "0.72rem", lineHeight: 1.6, wordBreak: "keep-all" }}>
-          프로필에서 프로젝트와 키워드가 나무뿌리처럼 갈라지는 관심사 지도입니다.
+          프로필에서 프로젝트와 노트가 나무뿌리처럼 갈라지는 관심사 지도입니다.
         </p>
       </div>
 

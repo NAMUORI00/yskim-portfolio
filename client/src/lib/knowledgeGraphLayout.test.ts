@@ -13,6 +13,7 @@ const graph: KnowledgeGraphData = {
   ],
   links: [
     { source: "profile", target: "project:a", kind: "profile", weight: 1 },
+    { source: "project:a", target: "note:n", kind: "related", weight: 2 },
     { source: "project:a", target: "term:rag", kind: "term", weight: 1 },
   ],
 };
@@ -35,12 +36,12 @@ describe("layoutKnowledgeGraph", () => {
     const layout = layoutKnowledgeGraph(graph, 260, 340);
     const profile = nodeById(layout, "profile");
     const project = nodeById(layout, "project:a");
-    const term = nodeById(layout, "term:rag");
+    const note = nodeById(layout, "note:n");
 
     expect(profile.x).toBe(130);
     expect(profile.y).toBeLessThan(118);
     expect(project.y).toBeGreaterThan(profile.y + 34);
-    expect(term.y).toBeGreaterThan(project.y + 34);
+    expect(note.y).toBeGreaterThan(project.y + 34);
     for (const node of layout.nodes) {
       expect(node.x).toBeGreaterThanOrEqual(22);
       expect(node.x).toBeLessThanOrEqual(238);
@@ -55,7 +56,7 @@ describe("layoutKnowledgeGraph", () => {
 
     expect(layout.links[0]).toEqual(expect.objectContaining({ sourceId: "profile", targetId: "project:a" }));
     expect(layout.links[0].source.x).toBe(130);
-    expect(layout.links.length).toBe(graph.links.length);
+    expect(layout.links.length).toBe(2);
   });
 
   it("generates root-like cubic paths instead of straight line commands", () => {
@@ -67,24 +68,35 @@ describe("layoutKnowledgeGraph", () => {
     expect(path).not.toContain(" L ");
   });
 
-  it("pulls linked terms under their parent branch for a root-like cluster", () => {
+  it("excludes term nodes and term links from the visual root tree", () => {
     const clustered: KnowledgeGraphData = {
       nodes: [
         { id: "profile", label: "NAMUORI00", kind: "profile", weight: 5 },
         { id: "project:a", label: "Project A", kind: "project", weight: 3, section: "projects" },
+        { id: "note:linked", label: "Linked Note", kind: "note", weight: 2, section: "interests" },
         { id: "term:unlinked", label: "Unlinked", kind: "term", weight: 2 },
         { id: "term:linked", label: "Linked", kind: "term", weight: 2 },
       ],
       links: [
         { source: "profile", target: "project:a", kind: "profile", weight: 1 },
+        { source: "project:a", target: "note:linked", kind: "related", weight: 2.4 },
         { source: "project:a", target: "term:linked", kind: "term", weight: 2.4 },
       ],
     };
     const layout = layoutKnowledgeGraph(clustered, 260, 340);
     const project = nodeById(layout, "project:a");
-    const linked = nodeById(layout, "term:linked");
+    const linked = nodeById(layout, "note:linked");
 
     expect(linked.y).toBeGreaterThan(project.y);
-    expect(distanceBetween(layout, "project:a", "term:linked")).toBeLessThan(distanceBetween(layout, "project:a", "term:unlinked"));
+    expect(layout.nodes.some((node) => node.kind === "term")).toBe(false);
+    expect(layout.links.some((link) => link.sourceId.startsWith("term:") || link.targetId.startsWith("term:"))).toBe(false);
+    expect(distanceBetween(layout, "project:a", "note:linked")).toBeLessThan(120);
+  });
+
+  it("omits unlinked visual nodes so the tree stays clean", () => {
+    const layout = layoutKnowledgeGraph(graph, 260, 340);
+
+    expect(layout.nodes.some((node) => node.id === "skill:python")).toBe(false);
+    expect(layout.nodes.every((node) => node.id === "profile" || layout.links.some((link) => link.sourceId === node.id || link.targetId === node.id))).toBe(true);
   });
 });

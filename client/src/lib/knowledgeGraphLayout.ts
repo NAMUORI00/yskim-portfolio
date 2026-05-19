@@ -60,12 +60,21 @@ function branchSpread(level: number, width: number): number {
 export function layoutKnowledgeGraph(graph: KnowledgeGraphData, width: number, height: number): PositionedKnowledgeGraph {
   const centerX = Math.round(width / 2);
   const padding = 22;
-  const nodeIds = new Set(graph.nodes.map((node) => node.id));
+  const visualNodePool = graph.nodes.filter((node) => node.kind !== "term");
+  const poolIds = new Set(visualNodePool.map((node) => node.id));
+  const visualLinks = graph.links.filter((link) => poolIds.has(link.source) && poolIds.has(link.target));
+  const connectedIds = new Set<string>(["profile"]);
+  for (const link of visualLinks) {
+    connectedIds.add(link.source);
+    connectedIds.add(link.target);
+  }
+  const visualNodes = visualNodePool.filter((node) => connectedIds.has(node.id));
+  const nodeIds = new Set(visualNodes.map((node) => node.id));
   const linksByNode = new Map<string, KnowledgeGraphLink[]>();
   const positioned: PositionedKnowledgeNode[] = [];
   const byId = new Map<string, PositionedKnowledgeNode>();
 
-  for (const link of graph.links) {
+  for (const link of visualLinks) {
     if (!nodeIds.has(link.source) || !nodeIds.has(link.target)) continue;
     linksByNode.set(link.source, [...(linksByNode.get(link.source) ?? []), link]);
     linksByNode.set(link.target, [...(linksByNode.get(link.target) ?? []), link]);
@@ -76,7 +85,7 @@ export function layoutKnowledgeGraph(graph: KnowledgeGraphData, width: number, h
     const candidates = (linksByNode.get(node.id) ?? [])
       .map((link) => {
         const otherId = link.source === node.id ? link.target : link.source;
-        const other = graph.nodes.find((item) => item.id === otherId);
+        const other = visualNodes.find((item) => item.id === otherId);
         return other && rootLevel(other.kind) < level ? { id: otherId, link } : null;
       })
       .filter((item): item is { id: string; link: KnowledgeGraphLink } => item !== null)
@@ -85,7 +94,7 @@ export function layoutKnowledgeGraph(graph: KnowledgeGraphData, width: number, h
   }
 
   for (let level = 0; level <= 3; level += 1) {
-    const levelNodes = graph.nodes
+    const levelNodes = visualNodes
       .filter((node) => rootLevel(node.kind) === level)
       .sort((a, b) => hashFraction(a.id, "order") - hashFraction(b.id, "order") || a.id.localeCompare(b.id));
     const parentGroups = new Map<string, KnowledgeGraphNode[]>();
@@ -131,7 +140,7 @@ export function layoutKnowledgeGraph(graph: KnowledgeGraphData, width: number, h
     }
   }
 
-  const links = graph.links.flatMap((link) => {
+  const links = visualLinks.flatMap((link) => {
     const source = byId.get(link.source);
     const target = byId.get(link.target);
     if (!source || !target) return [];
