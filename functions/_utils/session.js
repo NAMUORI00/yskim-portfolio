@@ -1,4 +1,5 @@
 import { parseCookies, serializeCookie } from "./cookies.js";
+import { isAllowedAdmin } from "./github.js";
 
 const SESSION_COOKIE = "namuori_session";
 const encoder = new TextEncoder();
@@ -52,6 +53,9 @@ export async function requireSession(env, request) {
   const session = await readSession(env, request);
   if (!session) {
     return { response: Response.json({ error: "Authentication required" }, { status: 401 }) };
+  }
+  if (!isAllowedAdmin(env, session.login)) {
+    return { response: Response.json({ error: "Admin account is not allowed" }, { status: 403 }) };
   }
   return { session };
 }
