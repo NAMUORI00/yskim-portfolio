@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { activeSectionForAnchor, scrollTopForElement, scrollTopForElementCenter } from "./scroll";
+import { activeSectionForAnchor, scrollEndPaddingForCenteredSection, scrollTopForElement, scrollTopForElementCenter } from "./scroll";
 
 describe("scrollTopForElement", () => {
   it("calculates target scroll from viewport-relative positions", () => {
@@ -48,6 +48,32 @@ describe("scrollTopForElementCenter", () => {
         scrollTop: 0,
       }),
     ).toBe(0);
+  });
+});
+
+describe("scrollEndPaddingForCenteredSection", () => {
+  it("uses only the extra padding needed to center the final section", () => {
+    expect(
+      scrollEndPaddingForCenteredSection({
+        containerHeight: 900,
+        sectionCenterOffset: 2400,
+        contentBottomOffset: 2720,
+        minPadding: 48,
+        gap: 16,
+      }),
+    ).toBe(146);
+  });
+
+  it("keeps a compact minimum when the real content already fills the viewport below the section", () => {
+    expect(
+      scrollEndPaddingForCenteredSection({
+        containerHeight: 900,
+        sectionCenterOffset: 2400,
+        contentBottomOffset: 2920,
+        minPadding: 48,
+        gap: 16,
+      }),
+    ).toBe(48);
   });
 });
 

@@ -13,6 +13,14 @@ interface CenterScrollTargetInput {
   scrollTop: number;
 }
 
+interface ScrollEndPaddingInput {
+  containerHeight: number;
+  sectionCenterOffset: number;
+  contentBottomOffset: number;
+  minPadding: number;
+  gap?: number;
+}
+
 interface SectionAnchor {
   id: string;
   top: number;
@@ -25,6 +33,18 @@ export function scrollTopForElement({ containerTop, elementTop, scrollTop, offse
 export function scrollTopForElementCenter({ containerTop, containerHeight, elementTop, elementHeight, scrollTop }: CenterScrollTargetInput): number {
   const centeredOffset = (containerHeight - elementHeight) / 2;
   return Math.max(0, scrollTop + elementTop - containerTop - centeredOffset);
+}
+
+export function scrollEndPaddingForCenteredSection({
+  containerHeight,
+  sectionCenterOffset,
+  contentBottomOffset,
+  minPadding,
+  gap = 0,
+}: ScrollEndPaddingInput): number {
+  const contentBelowSectionCenter = contentBottomOffset - sectionCenterOffset;
+  const requiredPadding = containerHeight / 2 - contentBelowSectionCenter + gap;
+  return Math.max(minPadding, Math.ceil(requiredPadding));
 }
 
 export function activeSectionForAnchor(sections: SectionAnchor[], anchorTop: number, isAtEnd = false): string | undefined {

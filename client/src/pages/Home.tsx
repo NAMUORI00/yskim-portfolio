@@ -26,11 +26,12 @@ import { KnowledgeGraphRail } from "@/components/KnowledgeGraphRail";
 import { readAdminPreviewDraftFromLocation, withAdminPreviewUrl } from "@/lib/adminPreview";
 import { localizePortfolioContent, uiText } from "@/lib/i18nContent";
 import { buildKnowledgeGraph } from "@/lib/knowledgeGraph";
-import { activeSectionForAnchor, scrollTopForElementCenter } from "@/lib/scroll";
+import { activeSectionForAnchor, scrollEndPaddingForCenteredSection, scrollTopForElementCenter } from "@/lib/scroll";
 
 const ACTIVE_SECTION_ANCHOR_RATIO = 0.5;
 const ACTIVE_SCROLL_END_TOLERANCE = 4;
-const SCROLL_END_PADDING = "max(clamp(4rem, 6vw, 6rem), calc(100dvh - 6rem))";
+const MIN_SCROLL_END_PADDING = 48;
+const SCROLL_END_PADDING_GAP = 16;
 
 /* ── SVG 아이콘 컴포넌트 ── */
 function NavIcon({ type, color, size = 13 }: { type: string; color: string; size?: number }) {
@@ -170,6 +171,53 @@ function useActiveSection(ids: string[]) {
     };
   }, [ids]);
   return active;
+}
+
+function useScrollEndPadding(lastSectionId: string) {
+  const [padding, setPadding] = useState(MIN_SCROLL_END_PADDING);
+
+  useEffect(() => {
+    const container = document.getElementById("scroll-area");
+    const scrollInner = container?.querySelector(".scroll-inner") as HTMLElement | null;
+    const lastSection = document.getElementById(lastSectionId);
+    const footer = scrollInner?.querySelector("footer") as HTMLElement | null;
+    if (!container || !scrollInner || !lastSection) return;
+
+    let frame: number | null = null;
+    const updatePadding = () => {
+      frame = null;
+      const innerRect = scrollInner.getBoundingClientRect();
+      const sectionRect = lastSection.getBoundingClientRect();
+      const contentEndRect = (footer ?? scrollInner).getBoundingClientRect();
+      const next = scrollEndPaddingForCenteredSection({
+        containerHeight: container.clientHeight,
+        sectionCenterOffset: sectionRect.top - innerRect.top + sectionRect.height / 2,
+        contentBottomOffset: contentEndRect.bottom - innerRect.top,
+        minPadding: MIN_SCROLL_END_PADDING,
+        gap: SCROLL_END_PADDING_GAP,
+      });
+      setPadding((current) => (current === next ? current : next));
+    };
+    const scheduleUpdate = () => {
+      if (frame !== null) return;
+      frame = window.requestAnimationFrame(updatePadding);
+    };
+
+    updatePadding();
+    const observer = new ResizeObserver(scheduleUpdate);
+    observer.observe(container);
+    observer.observe(scrollInner);
+    observer.observe(lastSection);
+    if (footer) observer.observe(footer);
+    window.addEventListener("resize", scheduleUpdate);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("resize", scheduleUpdate);
+      if (frame !== null) window.cancelAnimationFrame(frame);
+    };
+  }, [lastSectionId]);
+
+  return `${padding}px`;
 }
 
 /* ── fade-up 애니메이션 훅 ── */
@@ -317,6 +365,7 @@ export default function Home() {
   const PROFILE_AVATAR = getProfileAvatarUrl(PROFILE);
   const KNOWLEDGE_GRAPH = useMemo(() => buildKnowledgeGraph(content), [content]);
   const active = useActiveSection(NAV_IDS);
+  const scrollEndPadding = useScrollEndPadding("interests");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [focusedGraphNodeId, setFocusedGraphNodeId] = useState<string | null>(null);
   const previewHref = useCallback((path: string) => withAdminPreviewUrl(path, previewId), [previewId]);
@@ -674,7 +723,7 @@ export default function Home() {
           style={{
             width: "100%",
             maxWidth: "clamp(680px, 58vw, 980px)",
-            padding: `clamp(2.5rem, 5vw, 5rem) clamp(2rem, 4vw, 4rem) ${SCROLL_END_PADDING}`,
+            padding: `clamp(2.5rem, 5vw, 5rem) clamp(2rem, 4vw, 4rem) ${scrollEndPadding}`,
           }}
         >
 
