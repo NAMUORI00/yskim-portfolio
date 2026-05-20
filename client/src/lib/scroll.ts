@@ -5,6 +5,14 @@ interface ScrollTargetInput {
   offset: number;
 }
 
+interface CenterScrollTargetInput {
+  containerTop: number;
+  containerHeight: number;
+  elementTop: number;
+  elementHeight: number;
+  scrollTop: number;
+}
+
 interface SectionAnchor {
   id: string;
   top: number;
@@ -12,6 +20,11 @@ interface SectionAnchor {
 
 export function scrollTopForElement({ containerTop, elementTop, scrollTop, offset }: ScrollTargetInput): number {
   return Math.max(0, scrollTop + elementTop - containerTop - offset);
+}
+
+export function scrollTopForElementCenter({ containerTop, containerHeight, elementTop, elementHeight, scrollTop }: CenterScrollTargetInput): number {
+  const centeredOffset = (containerHeight - elementHeight) / 2;
+  return Math.max(0, scrollTop + elementTop - containerTop - centeredOffset);
 }
 
 export function activeSectionForAnchor(sections: SectionAnchor[], anchorTop: number, isAtEnd = false): string | undefined {

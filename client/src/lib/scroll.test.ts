@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { activeSectionForAnchor, scrollTopForElement } from "./scroll";
+import { activeSectionForAnchor, scrollTopForElement, scrollTopForElementCenter } from "./scroll";
 
 describe("scrollTopForElement", () => {
   it("calculates target scroll from viewport-relative positions", () => {
@@ -20,6 +20,32 @@ describe("scrollTopForElement", () => {
         elementTop: 132,
         scrollTop: 0,
         offset: 32,
+      }),
+    ).toBe(0);
+  });
+});
+
+describe("scrollTopForElementCenter", () => {
+  it("centers the target element in the scroll container", () => {
+    expect(
+      scrollTopForElementCenter({
+        containerTop: 0,
+        containerHeight: 800,
+        elementTop: 1200,
+        elementHeight: 160,
+        scrollTop: 200,
+      }),
+    ).toBe(1080);
+  });
+
+  it("keeps the centered target non-negative near the top", () => {
+    expect(
+      scrollTopForElementCenter({
+        containerTop: 0,
+        containerHeight: 800,
+        elementTop: 80,
+        elementHeight: 120,
+        scrollTop: 0,
       }),
     ).toBe(0);
   });

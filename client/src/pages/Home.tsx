@@ -26,9 +26,9 @@ import { KnowledgeGraphRail } from "@/components/KnowledgeGraphRail";
 import { readAdminPreviewDraftFromLocation, withAdminPreviewUrl } from "@/lib/adminPreview";
 import { localizePortfolioContent, uiText } from "@/lib/i18nContent";
 import { buildKnowledgeGraph } from "@/lib/knowledgeGraph";
-import { activeSectionForAnchor, scrollTopForElement } from "@/lib/scroll";
+import { activeSectionForAnchor, scrollTopForElementCenter } from "@/lib/scroll";
 
-const ACTIVE_SECTION_ANCHOR = 96;
+const ACTIVE_SECTION_ANCHOR_RATIO = 0.5;
 const ACTIVE_SCROLL_END_TOLERANCE = 4;
 const SCROLL_END_PADDING = "max(clamp(4rem, 6vw, 6rem), calc(100dvh - 6rem))";
 
@@ -151,7 +151,8 @@ function useActiveSection(ids: string[]) {
         return el ? [{ id, top: el.getBoundingClientRect().top - containerTop }] : [];
       });
       const isAtEnd = container.scrollTop + container.clientHeight >= container.scrollHeight - ACTIVE_SCROLL_END_TOLERANCE;
-      const next = activeSectionForAnchor(sections, ACTIVE_SECTION_ANCHOR, isAtEnd);
+      const anchorTop = container.clientHeight * ACTIVE_SECTION_ANCHOR_RATIO;
+      const next = activeSectionForAnchor(sections, anchorTop, isAtEnd);
       if (next) setActive(next);
     };
     const scheduleUpdate = () => {
@@ -327,11 +328,14 @@ export default function Home() {
     const el = document.getElementById(id);
     const container = document.getElementById("scroll-area");
     if (el && container) {
-      const top = scrollTopForElement({
-        containerTop: container.getBoundingClientRect().top,
-        elementTop: el.getBoundingClientRect().top,
+      const elRect = el.getBoundingClientRect();
+      const containerRect = container.getBoundingClientRect();
+      const top = scrollTopForElementCenter({
+        containerTop: containerRect.top,
+        containerHeight: container.clientHeight,
+        elementTop: elRect.top,
+        elementHeight: elRect.height,
         scrollTop: container.scrollTop,
-        offset: 32,
       });
       container.scrollTo({ top, behavior: "smooth" });
     }
