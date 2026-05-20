@@ -1,0 +1,183 @@
+import type { NoteEntry, ProfileContent, ProjectEntry, ResearchEntry } from "@/content";
+import { createEnglishTranslations, type EnglishTranslations } from "./i18nContent";
+
+export type TranslationSource =
+  | { kind: "profile"; value: ProfileContent }
+  | { kind: "project"; value: ProjectEntry }
+  | { kind: "research"; value: ResearchEntry }
+  | { kind: "note"; value: NoteEntry };
+
+export interface TranslationEntry {
+  key: string;
+  label: string;
+  text: string;
+}
+
+export interface TranslationStats {
+  total: number;
+  translated: number;
+  stale: number;
+}
+
+export function sourceHash(value: string): string {
+  let hash = 2166136261;
+  for (let index = 0; index < value.length; index += 1) {
+    hash ^= value.charCodeAt(index);
+    hash = Math.imul(hash, 16777619);
+  }
+  return (hash >>> 0).toString(36);
+}
+
+function entry(key: string, label: string, text: string): TranslationEntry[] {
+  const clean = text.trim();
+  return clean ? [{ key, label, text }] : [];
+}
+
+export function buildTranslationEntries(source: TranslationSource): TranslationEntry[] {
+  if (source.kind === "profile") {
+    return [
+      ...entry("profile.status", "Profile status", source.value.status),
+      ...entry("profile.headline", "Profile headline", source.value.headline),
+      ...entry("profile.summaryLead", "Profile lead", source.value.summaryLead),
+      ...source.value.summary.flatMap((paragraph, index) => entry(`profile.summary.${index}`, `Profile paragraph ${index + 1}`, paragraph)),
+    ];
+  }
+
+  if (source.kind === "project") {
+    const slug = source.value.slug;
+    return [
+      ...entry(`projects.${slug}.name`, "Project name", source.value.name),
+      ...entry(`projects.${slug}.period`, "Project period", source.value.period),
+      ...entry(`projects.${slug}.desc`, "Project description", source.value.desc),
+      ...entry(`projects.${slug}.metric`, "Project metric", source.value.metric),
+      ...source.value.tags.flatMap((tag, index) => entry(`projects.${slug}.tags.${index}`, `Project tag ${index + 1}`, tag)),
+      ...entry(`projects.${slug}.body`, "Project body", source.value.body),
+    ];
+  }
+
+  if (source.kind === "research") {
+    const slug = source.value.slug;
+    return [
+      ...entry(`research.${slug}.title`, "Research title", source.value.title),
+      ...entry(`research.${slug}.desc`, "Research description", source.value.desc),
+      ...entry(`research.${slug}.body`, "Research body", source.value.body),
+    ];
+  }
+
+  const slug = source.value.slug;
+  return [
+    ...entry(`notes.${slug}.title`, "Note title", source.value.title),
+    ...entry(`notes.${slug}.summary`, "Note summary", source.value.summary),
+    ...source.value.tags.flatMap((tag, index) => entry(`notes.${slug}.tags.${index}`, `Note tag ${index + 1}`, tag)),
+    ...entry(`notes.${slug}.body`, "Note body", source.value.body),
+  ];
+}
+
+function cloneTranslations(translations: EnglishTranslations): EnglishTranslations {
+  return {
+    ...createEnglishTranslations(),
+    ...translations,
+    ui: { ...translations.ui, nav: { ...translations.ui?.nav }, labels: { ...translations.ui?.labels } },
+    profile: translations.profile ? { ...translations.profile, summary: [...(translations.profile.summary ?? [])] } : undefined,
+    education: translations.education?.map((item) => ({ ...item })),
+    research: Object.fromEntries(Object.entries(translations.research ?? {}).map(([key, value]) => [key, { ...value }])),
+    projects: Object.fromEntries(Object.entries(translations.projects ?? {}).map(([key, value]) => [key, { ...value, tags: value.tags ? [...value.tags] : undefined }])),
+    skills: Object.fromEntries(Object.entries(translations.skills ?? {}).map(([key, value]) => [key, { ...value, items: value.items ? [...value.items] : undefined }])),
+    starred: Object.fromEntries(Object.entries(translations.starred ?? {}).map(([key, value]) => [key, { ...value }])),
+    notes: Object.fromEntries(Object.entries(translations.notes ?? {}).map(([key, value]) => [key, { ...value, tags: value.tags ? [...value.tags] : undefined }])),
+    sourceHashes: { ...translations.sourceHashes },
+  };
+}
+
+function ensureArrayItem<T>(items: T[] | undefined, index: number, create: () => T): T[] {
+  const next = [...(items ?? [])];
+  while (next.length <= index) next.push(create());
+  return next;
+}
+
+export function getTranslationValue(translations: EnglishTranslations, key: string): string {
+  const parts = key.split(".");
+  if (parts[0] === "profile" && parts[1] === "summary") return translations.profile?.summary?.[Number(parts[2])] ?? "";
+  if (parts[0] === "profile") return String(translations.profile?.[parts[1] as keyof NonNullable<EnglishTranslations["profile"]>] ?? "");
+  if (parts[0] === "projects" && parts[2] === "tags") return translations.projects?.[parts[1]]?.tags?.[Number(parts[3])] ?? "";
+  if (parts[0] === "projects") return String(translations.projects?.[parts[1]]?.[parts[2] as keyof NonNullable<EnglishTranslations["projects"]>[string]] ?? "");
+  if (parts[0] === "research") return String(translations.research?.[parts[1]]?.[parts[2] as keyof NonNullable<EnglishTranslations["research"]>[string]] ?? "");
+  if (parts[0] === "notes" && parts[2] === "tags") return translations.notes?.[parts[1]]?.tags?.[Number(parts[3])] ?? "";
+  if (parts[0] === "notes") return String(translations.notes?.[parts[1]]?.[parts[2] as keyof NonNullable<EnglishTranslations["notes"]>[string]] ?? "");
+  return "";
+}
+
+function setTranslationValue(translations: EnglishTranslations, key: string, value: string) {
+  const parts = key.split(".");
+  if (parts[0] === "profile") {
+    translations.profile = translations.profile ?? {};
+    if (parts[1] === "summary") {
+      translations.profile.summary = ensureArrayItem(translations.profile.summary, Number(parts[2]), () => "");
+      translations.profile.summary[Number(parts[2])] = value;
+    } else {
+      translations.profile[parts[1] as "status" | "headline" | "summaryLead"] = value;
+    }
+  }
+  if (parts[0] === "projects") {
+    translations.projects = translations.projects ?? {};
+    const project = (translations.projects[parts[1]] = translations.projects[parts[1]] ?? {});
+    if (parts[2] === "tags") {
+      project.tags = ensureArrayItem(project.tags, Number(parts[3]), () => "");
+      project.tags[Number(parts[3])] = value;
+    } else {
+      project[parts[2] as "name" | "period" | "desc" | "metric" | "body"] = value;
+    }
+  }
+  if (parts[0] === "research") {
+    translations.research = translations.research ?? {};
+    translations.research[parts[1]] = translations.research[parts[1]] ?? {};
+    translations.research[parts[1]][parts[2] as "title" | "desc" | "body"] = value;
+  }
+  if (parts[0] === "notes") {
+    translations.notes = translations.notes ?? {};
+    const note = (translations.notes[parts[1]] = translations.notes[parts[1]] ?? {});
+    if (parts[2] === "tags") {
+      note.tags = ensureArrayItem(note.tags, Number(parts[3]), () => "");
+      note.tags[Number(parts[3])] = value;
+    } else {
+      note[parts[2] as "title" | "summary" | "body"] = value;
+    }
+  }
+}
+
+export function applyTranslationValues(
+  translations: EnglishTranslations,
+  entries: TranslationEntry[],
+  values: Record<string, string>,
+): EnglishTranslations {
+  const next = cloneTranslations(translations);
+  next.sourceHashes = next.sourceHashes ?? {};
+  for (const item of entries) {
+    if (!Object.prototype.hasOwnProperty.call(values, item.key)) continue;
+    const value = values[item.key]?.trim() ?? "";
+    setTranslationValue(next, item.key, value);
+    if (value) {
+      next.sourceHashes[item.key] = sourceHash(item.text);
+    } else {
+      delete next.sourceHashes[item.key];
+    }
+  }
+  next.generatedAt = new Date().toISOString();
+  return next;
+}
+
+export function translationStats(translations: EnglishTranslations, source: TranslationSource): TranslationStats {
+  const entries = buildTranslationEntries(source);
+  return entries.reduce<TranslationStats>(
+    (stats, item) => {
+      const translated = getTranslationValue(translations, item.key).trim();
+      const stale = translated && translations.sourceHashes?.[item.key] && translations.sourceHashes[item.key] !== sourceHash(item.text);
+      return {
+        total: stats.total + 1,
+        translated: stats.translated + (translated ? 1 : 0),
+        stale: stats.stale + (stale ? 1 : 0),
+      };
+    },
+    { total: 0, translated: 0, stale: 0 },
+  );
+}

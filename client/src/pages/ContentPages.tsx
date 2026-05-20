@@ -1,41 +1,64 @@
 import { Link, useRoute } from "wouter";
-import { portfolioContent } from "@/content";
+import { useMemo } from "react";
+import { englishTranslations, portfolioContent } from "@/content";
 import { toMarkdownHtml } from "@/content/markdown";
 import { DARK, FONT_MONO, FONT_SANS, LIGHT } from "@/content/theme";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { useTheme } from "@/contexts/ThemeContext";
+import { localizePortfolioContent, uiText } from "@/lib/i18nContent";
 
 function usePalette() {
   const { theme, toggleTheme } = useTheme();
-  return { T: theme === "dark" ? DARK : LIGHT, theme, toggleTheme };
+  const { locale, toggleLocale } = useLanguage();
+  const content = useMemo(() => localizePortfolioContent(portfolioContent, englishTranslations, locale), [locale]);
+  const label = (key: string, fallback: string) => (locale === "en" ? uiText(englishTranslations, key, fallback) : fallback);
+  return { T: theme === "dark" ? DARK : LIGHT, theme, toggleTheme, locale, toggleLocale, content, label };
 }
 
 function PageFrame({ children, title }: { children: React.ReactNode; title: string }) {
-  const { T, theme, toggleTheme } = usePalette();
+  const { T, theme, toggleTheme, locale, toggleLocale, label } = usePalette();
   return (
     <main style={{ minHeight: "100dvh", background: T.bg, color: T.text, fontFamily: FONT_SANS }}>
       <div style={{ maxWidth: "880px", margin: "0 auto", padding: "32px 24px 56px" }}>
         <header style={{ display: "flex", justifyContent: "space-between", gap: "16px", marginBottom: "32px" }}>
           <div>
             <Link href="/" style={{ color: T.green, fontFamily: FONT_MONO, fontSize: "0.75rem", textDecoration: "none" }}>
-              ← Portfolio
+              ← {label("portfolio", "Portfolio")}
             </Link>
             <h1 style={{ margin: "14px 0 0", fontSize: "2rem", lineHeight: 1.3 }}>{title}</h1>
           </div>
-          <button
-            onClick={toggleTheme}
-            style={{
-              alignSelf: "flex-start",
-              border: `1px solid ${T.border}`,
-              background: T.surface,
-              color: T.sub,
-              borderRadius: "4px",
-              padding: "8px 12px",
-              fontFamily: FONT_MONO,
-              cursor: "pointer",
-            }}
-          >
-            {theme === "dark" ? "Light" : "Dark"}
-          </button>
+          <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", justifyContent: "flex-end" }}>
+            <button
+              onClick={toggleLocale}
+              style={{
+                alignSelf: "flex-start",
+                border: `1px solid ${T.border}`,
+                background: T.surface,
+                color: T.sub,
+                borderRadius: "4px",
+                padding: "8px 12px",
+                fontFamily: FONT_MONO,
+                cursor: "pointer",
+              }}
+            >
+              {locale === "en" ? "KO" : "EN"}
+            </button>
+            <button
+              onClick={toggleTheme}
+              style={{
+                alignSelf: "flex-start",
+                border: `1px solid ${T.border}`,
+                background: T.surface,
+                color: T.sub,
+                borderRadius: "4px",
+                padding: "8px 12px",
+                fontFamily: FONT_MONO,
+                cursor: "pointer",
+              }}
+            >
+              {theme === "dark" ? "Light" : "Dark"}
+            </button>
+          </div>
         </header>
         {children}
       </div>
@@ -55,8 +78,8 @@ function MarkdownBody({ markdown }: { markdown: string }) {
 }
 
 export function Notes() {
-  const { T } = usePalette();
-  const notes = portfolioContent.notes.filter((note) => note.status === "published");
+  const { T, content } = usePalette();
+  const notes = content.notes.filter((note) => note.status === "published");
   return (
     <PageFrame title="Notes">
       <div style={{ display: "grid", gap: "12px" }}>
@@ -86,11 +109,11 @@ export function Notes() {
 
 export function NoteDetail() {
   const [, params] = useRoute("/notes/:slug");
-  const note = portfolioContent.notes.find((item) => item.slug === params?.slug);
-  const { T } = usePalette();
-  if (!note) return <PageFrame title="Note not found">존재하지 않는 노트입니다.</PageFrame>;
-  const relatedProjects = portfolioContent.projects.filter((project) => note.relatedProjects.includes(project.slug));
-  const relatedResearch = portfolioContent.research.filter((research) => note.relatedResearch.includes(research.slug));
+  const { T, content, locale } = usePalette();
+  const note = content.notes.find((item) => item.slug === params?.slug);
+  if (!note) return <PageFrame title="Note not found">{locale === "en" ? "This note does not exist." : "존재하지 않는 노트입니다."}</PageFrame>;
+  const relatedProjects = content.projects.filter((project) => note.relatedProjects.includes(project.slug));
+  const relatedResearch = content.research.filter((research) => note.relatedResearch.includes(research.slug));
   return (
     <PageFrame title={note.title}>
       <p style={{ color: T.sub, marginTop: "-18px" }}>{note.summary}</p>
@@ -109,8 +132,9 @@ export function NoteDetail() {
 
 export function ProjectDetail() {
   const [, params] = useRoute("/projects/:slug");
-  const project = portfolioContent.projects.find((item) => item.slug === params?.slug);
-  if (!project) return <PageFrame title="Project not found">존재하지 않는 프로젝트입니다.</PageFrame>;
+  const { content, locale } = usePalette();
+  const project = content.projects.find((item) => item.slug === params?.slug);
+  if (!project) return <PageFrame title="Project not found">{locale === "en" ? "This project does not exist." : "존재하지 않는 프로젝트입니다."}</PageFrame>;
   return (
     <PageFrame title={project.name}>
       <MarkdownBody markdown={project.body} />
@@ -120,8 +144,9 @@ export function ProjectDetail() {
 
 export function ResearchDetail() {
   const [, params] = useRoute("/research/:slug");
-  const research = portfolioContent.research.find((item) => item.slug === params?.slug);
-  if (!research) return <PageFrame title="Research not found">존재하지 않는 연구 항목입니다.</PageFrame>;
+  const { content, locale } = usePalette();
+  const research = content.research.find((item) => item.slug === params?.slug);
+  if (!research) return <PageFrame title="Research not found">{locale === "en" ? "This research item does not exist." : "존재하지 않는 연구 항목입니다."}</PageFrame>;
   return (
     <PageFrame title={research.title}>
       <MarkdownBody markdown={research.body} />

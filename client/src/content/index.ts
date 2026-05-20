@@ -4,8 +4,10 @@ import education from "@content/education.json";
 import skills from "@content/skills.json";
 import starred from "@content/starred.json";
 import order from "@content/order.json";
+import englishTranslationsData from "@content/i18n/en.json";
 import { parseFrontmatter } from "./markdown";
 import { validatePortfolioContent } from "./schema";
+import type { EnglishTranslations } from "@/lib/i18nContent";
 import type { NoteEntry, ProjectEntry, ResearchEntry } from "./types";
 
 const researchModules = import.meta.glob<string>("@content/research/*.mdx", { eager: true, import: "default", query: "?raw" });
@@ -96,6 +98,8 @@ export const portfolioContent = validatePortfolioContent({
   starred,
   notes: orderedBySlug(moduleSources(noteModules).map(parseNote), order.notes),
 });
+
+export const englishTranslations = englishTranslationsData as EnglishTranslations;
 
 export { getProfileAvatarUrl } from "./profile";
 

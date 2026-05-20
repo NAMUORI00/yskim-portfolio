@@ -1,0 +1,251 @@
+{
+  "locale": "en",
+  "generatedAt": "2026-05-20T00:00:00.000Z",
+  "ui": {
+    "nav": {
+      "about": "About",
+      "education": "Education",
+      "research": "Research",
+      "projects": "Projects",
+      "skills": "Skills",
+      "interests": "Starred"
+    },
+    "labels": {
+      "contact": "CONTACT",
+      "darkMode": "Dark mode",
+      "lightMode": "Light mode",
+      "languageToEnglish": "English",
+      "languageToKorean": "Korean",
+      "current": "In progress",
+      "featured": "Featured",
+      "private": "Private",
+      "portfolio": "Portfolio",
+      "notes": "notes",
+      "detail": "Detail",
+      "github": "GitHub",
+      "ragCaption": "Dense + Sparse + Graph hybrid retrieval architecture"
+    }
+  },
+  "profile": {
+    "status": "Open to opportunities",
+    "headline": "CS/AI master's track\nAspiring AI research engineer",
+    "summaryLead": "I am a software engineer focused on building efficient, scalable systems, with a strong interest in the intersection of nature-inspired algorithms and machine learning.",
+    "summary": [
+      "From AI experiments with Python, C++, and CUDA to web front-end work, I tend to build the environment myself and test the technologies that catch my attention. Like a tree, software should stand on strong roots. I aim for sustainable, lightweight architecture without unnecessary complexity.",
+      "I am preparing for a CS/AI master's program and aiming for a research and engineering career around LLM systems and RAG architecture. I build reproducible experiment environments with DevContainer and Docker, and I actively explore music source separation, edge LLM inference, real-time voice conversion, and related domains."
+    ]
+  },
+  "education": [
+    {
+      "degree": "M.S. track in CS / AI",
+      "school": "Preparing for graduate admission",
+      "period": "2025 — planned",
+      "note": "Research focus: LLM systems, RAG architecture, and lightweight inference"
+    },
+    {
+      "degree": "B.S. in Computer Engineering",
+      "school": "College of Engineering",
+      "period": "2014 — 2018",
+      "note": ""
+    }
+  ],
+  "research": {
+    "agentic-workflow": {
+      "title": "Agentic Workflow & MCP",
+      "desc": "Designing agent workflows based on the Model Context Protocol, including a cross-review automation system with a human approval loop.",
+      "body": "## Interest\n\nI design workflows where AI agents can use tools safely while operating with human approval loops."
+    },
+    "audio-voice": {
+      "title": "Music Source Separation and Voice Conversion",
+      "desc": "Training experiments with MDX23C and Demucs4HT architectures, RVC / Applio-based voice conversion, and Hydra-configured experiment management.",
+      "body": "## Interest\n\nI work with music source separation and voice conversion models in reproducible experiment environments."
+    },
+    "edge-llm": {
+      "title": "Lightweight LLM Inference and Edge AI",
+      "desc": "Building local inference environments with llama.cpp, Qwen3, and GGUF quantization while exploring practical LLM deployment on constrained hardware.",
+      "body": "## Interest\n\nI explore practical LLM inference setups that can run on constrained hardware."
+    },
+    "rag": {
+      "title": "Retrieval-Augmented Generation (RAG)",
+      "desc": "Hybrid retrieval with Dense / Sparse / Graph channels, Weighted RRF integration, and domain-specific document indexing, with hands-on experience building RAG pipelines for aerospace documents.",
+      "body": "## Interest\n\nI experiment with hybrid RAG architectures that combine Dense, Sparse, and Graph retrieval and integrate them through Weighted RRF.\n\n## Current Focus\n\n- Domain-specific document chunking\n- Retrieval quality evaluation\n- Source-grounded answer generation"
+    }
+  },
+  "projects": {
+    "aerospace-rag": {
+      "name": "aerospace-rag",
+      "period": "2026.05",
+      "desc": "A RAG system for aerospace work documents. It combines Qdrant + BM25 + Graph three-channel retrieval, Weighted RRF fusion, and Ollama-based answer generation, optimized for a Colab T4 environment.",
+      "metric": "Improved MRR by 31% over single-channel retrieval through three-channel hybrid search",
+      "tags": ["Python", "Qdrant", "Ollama", "RAG", "LLM"],
+      "body": "## Overview\n\nA RAG system that combines Dense, Sparse, and Graph retrieval channels for aerospace work documents."
+    },
+    "cross-review-bridge": {
+      "name": "cross-review-bridge",
+      "period": "2026.05",
+      "desc": "A human-approved cross-review workflow with external AI reviewers, automated as a Codex skill.",
+      "metric": "Reduced the code review cycle by about 70% compared with manual review",
+      "tags": ["PowerShell", "AI", "Automation"],
+      "body": "## Overview\n\nAn automation system that connects external AI reviewers and Codex through a human-approved review loop."
+    },
+    "introduce-cv-page": {
+      "name": "IntroduceCvPage (namu-log)",
+      "period": "2025.11",
+      "desc": "A blog + CV system where writing in a WYSIWYG Markdown editor automatically creates GitHub PRs. Built with Next.js 16 and Tiptap.",
+      "metric": "Fully automated the flow from article publishing to PR creation",
+      "tags": ["TypeScript", "Next.js", "React", "GitHub API"],
+      "body": "## Overview\n\nA blog and CV system that experiments with a GitHub PR-based publishing workflow."
+    },
+    "llm-rag-research": {
+      "name": "LLM + RAG Research System",
+      "period": "Ongoing",
+      "desc": "A private repository for comparing RAG strategies, building retrieval quality evaluation pipelines, and researching domain-adaptive chunking strategies.",
+      "metric": "Compared five RAG strategies and observed a 23% gap in Recall@5",
+      "tags": ["Python", "LangChain", "HuggingFace", "Research"],
+      "body": "## Overview\n\nA private research system for comparing and evaluating different RAG strategies."
+    },
+    "mediamtx-installer": {
+      "name": "mediamtx-installer",
+      "period": "2026.01",
+      "desc": "An automation script that installs a MediaMTX streaming server on Ubuntu 24.04 with a single command.",
+      "metric": "Reduced setup time from 15 minutes manually to about 30 seconds",
+      "tags": ["Shell", "Ubuntu", "Streaming"],
+      "body": "## Overview\n\nAn operations automation script that simplifies the MediaMTX installation process."
+    },
+    "music-source-separation": {
+      "name": "Music-Source-Separation",
+      "period": "2025.04",
+      "desc": "Training music source separation models based on MDX23C and Demucs4HT architectures, with Hydra configs for experiment management and CUDA-based GPU training.",
+      "metric": "Reached 8.2 dB vocal separation SDR with a Demucs4HT-based setup",
+      "tags": ["Python", "PyTorch", "CUDA", "Hydra"],
+      "body": "## Overview\n\nA project for training music source separation models and managing experiment configuration."
+    },
+    "spring-community-board": {
+      "name": "SpringCommunityBoard",
+      "period": "2023.07",
+      "desc": "A CRUD community board built with Spring Boot and JPA, including member management, posts, and comments.",
+      "metric": "Improved list query response time by 40% by resolving a JPA N+1 issue",
+      "tags": ["Java", "Spring Boot", "JPA"],
+      "body": "## Overview\n\nA Spring Boot-based CRUD board with member, post, and comment features."
+    }
+  },
+  "skills": {
+    "핵심 언어": {
+      "label": "Core Languages",
+      "items": ["Python", "C++", "TypeScript", "Java", "Shell", "C#"]
+    },
+    "AI / ML / LLM": {
+      "label": "AI / ML / LLM",
+      "items": ["PyTorch", "CUDA", "HuggingFace", "LangChain", "OpenAI API", "llama.cpp", "Qdrant", "RAG"]
+    },
+    "인프라 & DevOps": {
+      "label": "Infra & DevOps",
+      "items": ["Docker", "GitHub Actions", "AWS", "Linux", "Cloudflare", "DevContainer"]
+    },
+    "웹 & 백엔드": {
+      "label": "Web & Backend",
+      "items": ["Next.js", "React", "FastAPI", "Spring Boot", "PostgreSQL", "Supabase"]
+    }
+  },
+  "starred": {
+    "czlonkowski/n8n-mcp": { "desc": "MCP server for n8n workflows" },
+    "typst/typst": { "desc": "Markup-based typesetting system" },
+    "google-research/timesfm": { "desc": "Time-series foundation model" },
+    "terrastruct/d2": { "desc": "Text-to-diagram tooling" },
+    "bokeh/bokeh": { "desc": "Interactive visualization for Python" },
+    "steipete/oracle": { "desc": "GPT-5 Pro context usage" }
+  },
+  "notes": {
+    "rag-evaluation": {
+      "title": "RAG Evaluation Notes",
+      "summary": "A practical evaluation lens for comparing RAG systems across retrieval quality, answer grounding, and operating cost.",
+      "tags": ["RAG", "Evaluation"],
+      "body": "## Why Evaluation Comes First\n\nIf you only look at answer quality in a RAG system, it is easy to miss the cause of failure. The retrieval, reranking, and generation stages need to be separated so you can see whether documents were missed, pushed down, or ignored during answer generation.\n\n## Basic Metrics\n\n- Recall@5: checks whether the supporting evidence appears in the top five retrieved documents.\n- MRR: measures how early the first useful evidence appears.\n- Groundedness: checks whether the answer is actually supported by retrieved documents."
+    }
+  },
+  "sourceHashes": {
+    "profile.status": "1mmth81",
+    "profile.headline": "791qbr",
+    "profile.summaryLead": "mqga3m",
+    "profile.summary.0": "1ptqopq",
+    "profile.summary.1": "1hrr6lo",
+    "projects.aerospace-rag.name": "19un6i1",
+    "projects.aerospace-rag.period": "372puo",
+    "projects.aerospace-rag.desc": "m5c61o",
+    "projects.aerospace-rag.metric": "1c18iju",
+    "projects.aerospace-rag.tags.0": "1r8306v",
+    "projects.aerospace-rag.tags.1": "1417oh3",
+    "projects.aerospace-rag.tags.2": "wwohj7",
+    "projects.aerospace-rag.tags.3": "15us9xd",
+    "projects.aerospace-rag.tags.4": "1f3yed4",
+    "projects.aerospace-rag.body": "ks6cob",
+    "projects.cross-review-bridge.name": "bmumu8",
+    "projects.cross-review-bridge.period": "372puo",
+    "projects.cross-review-bridge.desc": "1xczm2i",
+    "projects.cross-review-bridge.metric": "z9tufm",
+    "projects.cross-review-bridge.tags.0": "jv2ziw",
+    "projects.cross-review-bridge.tags.1": "9xx36n",
+    "projects.cross-review-bridge.tags.2": "1ywxxdu",
+    "projects.cross-review-bridge.body": "19lanvr",
+    "projects.introduce-cv-page.name": "sw8843",
+    "projects.introduce-cv-page.period": "eki5vy",
+    "projects.introduce-cv-page.desc": "1bxnnhv",
+    "projects.introduce-cv-page.metric": "1sx65bu",
+    "projects.introduce-cv-page.tags.0": "5cskiq",
+    "projects.introduce-cv-page.tags.1": "1pkc88x",
+    "projects.introduce-cv-page.tags.2": "1yochrw",
+    "projects.introduce-cv-page.tags.3": "1khb4jm",
+    "projects.introduce-cv-page.body": "cdly95",
+    "projects.llm-rag-research.name": "1ojjv6h",
+    "projects.llm-rag-research.period": "1xt0n5t",
+    "projects.llm-rag-research.desc": "y03h3u",
+    "projects.llm-rag-research.metric": "1mpxlr0",
+    "projects.llm-rag-research.tags.0": "1r8306v",
+    "projects.llm-rag-research.tags.1": "13zvh6u",
+    "projects.llm-rag-research.tags.2": "178cdf1",
+    "projects.llm-rag-research.tags.3": "1to1prz",
+    "projects.llm-rag-research.body": "1dqrwts",
+    "projects.mediamtx-installer.name": "1scvayb",
+    "projects.mediamtx-installer.period": "4b14mk",
+    "projects.mediamtx-installer.desc": "1frz081",
+    "projects.mediamtx-installer.metric": "rhzkew",
+    "projects.mediamtx-installer.tags.0": "1fmw68x",
+    "projects.mediamtx-installer.tags.1": "1hwpnaq",
+    "projects.mediamtx-installer.tags.2": "xrfrsu",
+    "projects.mediamtx-installer.body": "o1668p",
+    "projects.music-source-separation.name": "8074ah",
+    "projects.music-source-separation.period": "1dsybvo",
+    "projects.music-source-separation.desc": "2e7sfi",
+    "projects.music-source-separation.metric": "loui5s",
+    "projects.music-source-separation.tags.0": "1r8306v",
+    "projects.music-source-separation.tags.1": "1erevh0",
+    "projects.music-source-separation.tags.2": "1jw7wza",
+    "projects.music-source-separation.tags.3": "10bfayz",
+    "projects.music-source-separation.body": "b52u4i",
+    "projects.spring-community-board.name": "1rvfit3",
+    "projects.spring-community-board.period": "g3iegf",
+    "projects.spring-community-board.desc": "10ftuhq",
+    "projects.spring-community-board.metric": "qtqgvt",
+    "projects.spring-community-board.tags.0": "uspy11",
+    "projects.spring-community-board.tags.1": "1nkh8hw",
+    "projects.spring-community-board.tags.2": "s5snuq",
+    "projects.spring-community-board.body": "xoytf5",
+    "research.agentic-workflow.title": "1futqy9",
+    "research.agentic-workflow.desc": "1ywfvtz",
+    "research.agentic-workflow.body": "146leof",
+    "research.audio-voice.title": "1siv3hr",
+    "research.audio-voice.desc": "r950or",
+    "research.audio-voice.body": "17iz1a3",
+    "research.edge-llm.title": "552uus",
+    "research.edge-llm.desc": "1lo5nxd",
+    "research.edge-llm.body": "1bhd01b",
+    "research.rag.title": "9cb5aj",
+    "research.rag.desc": "p6upkk",
+    "research.rag.body": "1l7ekfh",
+    "notes.rag-evaluation.title": "oq5na6",
+    "notes.rag-evaluation.summary": "eskc0l",
+    "notes.rag-evaluation.tags.0": "15us9xd",
+    "notes.rag-evaluation.tags.1": "1p47csf",
+    "notes.rag-evaluation.body": "xfhy9l"
+  }
+}

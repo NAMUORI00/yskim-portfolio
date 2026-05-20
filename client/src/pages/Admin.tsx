@@ -1,11 +1,20 @@
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { Link } from "wouter";
-import { portfolioContent, type ContentOrder, type EducationEntry, type NoteEntry, type ProfileContent, type ProjectEntry, type PublicationStatus, type ResearchEntry, type SkillGroup, type StarredRepo } from "@/content";
+import { englishTranslations, portfolioContent, type ContentOrder, type EducationEntry, type NoteEntry, type ProfileContent, type ProjectEntry, type PublicationStatus, type ResearchEntry, type SkillGroup, type StarredRepo } from "@/content";
 import { toMarkdownHtml } from "@/content/markdown";
 import { DARK, FONT_MONO, FONT_SANS, LIGHT } from "@/content/theme";
 import { useTheme } from "@/contexts/ThemeContext";
 import { adminAccessState, type AdminSessionInfo } from "@/lib/adminAccess";
 import { buildSavePayload, type SavePayload, type SaveTarget } from "@/lib/adminContent";
+import {
+  applyTranslationValues,
+  buildTranslationEntries,
+  getTranslationValue,
+  translationStats,
+  type TranslationEntry,
+  type TranslationSource,
+} from "@/lib/adminTranslation";
+import type { EnglishTranslations } from "@/lib/i18nContent";
 import {
   clearDirtySection,
   clearImportApplied,
@@ -234,6 +243,7 @@ export default function Admin() {
   const [skills, setSkills] = useState<SkillGroup[]>(portfolioContent.skills);
   const [starred, setStarred] = useState<StarredRepo[]>(portfolioContent.starred);
   const [notes, setNotes] = useState<NoteEntry[]>(portfolioContent.notes);
+  const [enTranslations, setEnTranslations] = useState<EnglishTranslations>(englishTranslations);
   const [researchIndex, setResearchIndex] = useState(0);
   const [projectIndex, setProjectIndex] = useState(0);
   const [noteIndex, setNoteIndex] = useState(0);
@@ -243,6 +253,7 @@ export default function Admin() {
   const [importMode, setImportMode] = useState<GitHubImportMode>("profile");
   const [importResult, setImportResult] = useState<GitHubImportResponse | null>(null);
   const [importLoading, setImportLoading] = useState(false);
+  const [translationLoading, setTranslationLoading] = useState(false);
   const [dirtySections, setDirtySections] = useState<SectionKey[]>([]);
   const [appliedImport, setAppliedImport] = useState<ImportAppliedState>(() => createImportAppliedState());
   const [undoAction, setUndoAction] = useState<UndoAction | null>(null);
@@ -277,6 +288,18 @@ export default function Admin() {
   }, [active, contentOrder, education, noteIndex, notes, profile, projectIndex, projects, research, researchIndex, skills, starred]);
 
   const savePayload = useMemo<SavePayload>(() => buildSavePayload(target), [target]);
+  const translationSource = useMemo<TranslationSource | null>(() => {
+    if (active === "profile") return { kind: "profile", value: profile };
+    if (active === "projects" && projects[projectIndex]) return { kind: "project", value: projects[projectIndex] };
+    if (active === "research" && research[researchIndex]) return { kind: "research", value: research[researchIndex] };
+    if (active === "notes" && notes[noteIndex]) return { kind: "note", value: notes[noteIndex] };
+    return null;
+  }, [active, noteIndex, notes, profile, projectIndex, projects, research, researchIndex]);
+  const translationEntries = useMemo<TranslationEntry[]>(
+    () => (translationSource ? buildTranslationEntries(translationSource) : []),
+    [translationSource],
+  );
+  const activeTranslationStats = translationSource ? translationStats(enTranslations, translationSource) : null;
   const activeDirty = hasDirtySection(dirtySections, active);
   const dirtySectionLabels = dirtySections.map(sectionLabel).join(", ");
   const currentScope = saveScopeSummary(active, savePayload.branch);
@@ -317,6 +340,79 @@ export default function Admin() {
     const data = await response.json().catch(() => ({}));
     if (!response.ok) throw new Error(data.error || `Request failed: ${response.status}`);
     return data;
+  }
+
+  function updateEnglishTranslation(entry: TranslationEntry, value: string) {
+    setEnTranslations((current) => applyTranslationValues(current, [entry], { [entry.key]: value }));
+  }
+
+  async function generateEnglishDraft() {
+    if (!canEdit || !translationSource || translationEntries.length === 0 || translationLoading) return;
+    setTranslationLoading(true);
+    try {
+      if (localPreview && !session?.authenticated) {
+        const fallback = Object.fromEntries(translationEntries.map((entryItem) => [entryItem.key, getTranslationValue(enTranslations, entryItem.key) || entryItem.text]));
+        setEnTranslations((current) => applyTranslationValues(current, translationEntries, fallback));
+        setStatus("로컬 미리보기: 영어 번역 초안 흐름을 적용했습니다. 실제 번역은 배포 환경의 Workers AI에서 실행됩니다.");
+        return;
+      }
+      setStatus("영어 번역 초안을 생성 중...");
+      const result = await postJson("/api/translate/en", { entries: translationEntries });
+      const values = Object.fromEntries(
+        ((result.entries ?? []) as Array<{ key: string; text: string }>).map((item) => [item.key, item.text]),
+      );
+      setEnTranslations((current) => applyTranslationValues(current, translationEntries, values));
+      setStatus(`영어 번역 초안을 생성했습니다: ${translationEntries.length}개 항목`);
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : "영어 번역 초안 생성에 실패했습니다.");
+    } finally {
+      setTranslationLoading(false);
+    }
+  }
+
+  async function saveEnglishTranslations() {
+    if (!canEdit) return;
+    const payload: SavePayload = {
+      branch: "draft/i18n-en",
+      message: "Update English translations",
+      files: [
+        {
+          path: "content/i18n/en.json",
+          content: `${JSON.stringify(enTranslations, null, 2)}\n`,
+        },
+      ],
+    };
+    if (localPreview && !session?.authenticated) {
+      setStatus("로컬 미리보기: content/i18n/en.json 저장 흐름을 확인했습니다.");
+      return;
+    }
+    try {
+      setStatus("영어 번역 파일을 GitHub draft 브랜치에 저장 중...");
+      const result = await postJson("/api/github/save", payload);
+      setStatus(`영어 번역 저장 완료: ${result.branch || payload.branch}`);
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : "영어 번역 저장에 실패했습니다.");
+    }
+  }
+
+  async function publishEnglishTranslations() {
+    if (!canEdit) return;
+    const payload = {
+      branch: "draft/i18n-en",
+      title: "Update English translations",
+      body: "Portfolio admin에서 생성한 영어 번역 발행 요청입니다.",
+    };
+    if (localPreview && !session?.authenticated) {
+      setStatus("로컬 미리보기: draft/i18n-en에서 영어 번역 PR을 만들 준비가 됐습니다.");
+      return;
+    }
+    try {
+      setStatus("영어 번역 PR 생성/업데이트 중...");
+      const result = await postJson("/api/github/publish", payload);
+      setStatus(`영어 번역 PR 준비 완료: ${result.html_url || result.url || payload.branch}`);
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : "영어 번역 PR 발행에 실패했습니다.");
+    }
   }
 
   async function loadGitHubCandidates() {
@@ -807,17 +903,67 @@ export default function Admin() {
     );
   }
 
+  function renderTranslationPanel() {
+    if (!translationSource || translationEntries.length === 0 || !activeTranslationStats) return null;
+    return (
+      <div className="admin-translation">
+        <div className="admin-translation-head">
+          <div>
+            <span className="admin-kicker">english page</span>
+            <strong>영어 번역 초안</strong>
+            <p>
+              한국어 원문 기준으로 EN 초안을 만들고, 필요한 문장만 직접 다듬은 뒤 content/i18n/en.json으로 저장합니다.
+            </p>
+          </div>
+          <div className="admin-translation-actions">
+            <span>
+              {activeTranslationStats.translated}/{activeTranslationStats.total}
+              {activeTranslationStats.stale > 0 ? ` · stale ${activeTranslationStats.stale}` : ""}
+            </span>
+            <button type="button" disabled={!canEdit || translationLoading} onClick={generateEnglishDraft}>
+              {translationLoading ? "Generating..." : "Generate EN draft"}
+            </button>
+            <button type="button" disabled={!canEdit} onClick={saveEnglishTranslations}>
+              Save EN file
+            </button>
+            <button type="button" disabled={!canEdit} onClick={publishEnglishTranslations}>
+              Publish EN PR
+            </button>
+          </div>
+        </div>
+        <div className="admin-translation-list">
+          {translationEntries.map((entryItem) => (
+            <label key={entryItem.key} className="admin-translation-field">
+              <span>{entryItem.label}</span>
+              <small>{entryItem.text}</small>
+              <textarea
+                disabled={!canEdit}
+                rows={entryItem.text.length > 220 ? 5 : 3}
+                value={getTranslationValue(enTranslations, entryItem.key)}
+                onChange={(event) => updateEnglishTranslation(entryItem, event.target.value)}
+                placeholder="English translation"
+              />
+            </label>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   function renderEditor() {
     if (active === "profile") {
       return (
-        <div className="admin-grid">
-          <Field disabled={!canEdit} label="Name" value={profile.name} onChange={(name) => updateProfile({ name })} />
-          <Field disabled={!canEdit} label="Handle" value={profile.handle} onChange={(handle) => updateProfile({ handle })} />
-          <Field disabled={!canEdit} label="Status" value={profile.status} onChange={(status) => updateProfile({ status })} />
-          <Field disabled={!canEdit} label="Avatar URL" value={profile.avatarUrl ?? ""} onChange={(avatarUrl) => updateProfile({ avatarUrl })} />
-          <TextArea disabled={!canEdit} label="Headline" value={profile.headline} onChange={(headline) => updateProfile({ headline })} rows={3} />
-          <TextArea disabled={!canEdit} label="Lead" value={profile.summaryLead} onChange={(summaryLead) => updateProfile({ summaryLead })} rows={4} />
-          <TextArea disabled={!canEdit} label="Summary paragraphs" value={profile.summary.join("\n\n")} onChange={(value) => updateProfile({ summary: value.split(/\n\s*\n/).filter(Boolean) })} rows={8} />
+        <div className="admin-stack">
+          <div className="admin-grid">
+            <Field disabled={!canEdit} label="Name" value={profile.name} onChange={(name) => updateProfile({ name })} />
+            <Field disabled={!canEdit} label="Handle" value={profile.handle} onChange={(handle) => updateProfile({ handle })} />
+            <Field disabled={!canEdit} label="Status" value={profile.status} onChange={(status) => updateProfile({ status })} />
+            <Field disabled={!canEdit} label="Avatar URL" value={profile.avatarUrl ?? ""} onChange={(avatarUrl) => updateProfile({ avatarUrl })} />
+            <TextArea disabled={!canEdit} label="Headline" value={profile.headline} onChange={(headline) => updateProfile({ headline })} rows={3} />
+            <TextArea disabled={!canEdit} label="Lead" value={profile.summaryLead} onChange={(summaryLead) => updateProfile({ summaryLead })} rows={4} />
+            <TextArea disabled={!canEdit} label="Summary paragraphs" value={profile.summary.join("\n\n")} onChange={(value) => updateProfile({ summary: value.split(/\n\s*\n/).filter(Boolean) })} rows={8} />
+          </div>
+          {renderTranslationPanel()}
         </div>
       );
     }
@@ -889,6 +1035,7 @@ export default function Admin() {
             <Field disabled={!canEdit} label="Related notes" value={project.relatedNotes.join(", ")} onChange={(value) => updateProject({ relatedNotes: splitList(value) })} />
           </div>
           <MarkdownEditor disabled={!canEdit} label="Project body" body={project.body} mode={mode} onMode={setMode} onChange={(body) => updateProject({ body })} />
+          {renderTranslationPanel()}
         </div>
       );
     }
@@ -925,6 +1072,7 @@ export default function Admin() {
             <Field disabled={!canEdit} label="Related notes" value={item.relatedNotes.join(", ")} onChange={(value) => updateResearch({ relatedNotes: splitList(value) })} />
           </div>
           <MarkdownEditor disabled={!canEdit} label="Research body" body={item.body} mode={mode} onMode={setMode} onChange={(body) => updateResearch({ body })} />
+          {renderTranslationPanel()}
         </div>
       );
     }
@@ -1024,6 +1172,7 @@ export default function Admin() {
           <Field disabled={!canEdit} label="Related research" value={note.relatedResearch.join(", ")} onChange={(value) => updateNote({ relatedResearch: splitList(value) })} />
         </div>
         <MarkdownEditor disabled={!canEdit} label="Note body" body={note.body} mode={mode} onMode={setMode} onChange={(body) => updateNote({ body })} />
+        {renderTranslationPanel()}
       </div>
     );
   }
@@ -1124,7 +1273,7 @@ export default function Admin() {
         .admin-back { font-family: ${FONT_MONO}; font-size: .75rem; text-decoration: none; }
         .admin-sidebar nav { display: grid; gap: 4px; margin-top: 28px; }
         .admin-sidebar button, .admin-actions button, .admin-actions a, .admin-editor-bar button,
-        .admin-toolbar button, .admin-card-actions button, .admin-inline-list button, .admin-import button, .admin-candidate button, .admin-undo-toast button {
+        .admin-toolbar button, .admin-card-actions button, .admin-inline-list button, .admin-import button, .admin-candidate button, .admin-undo-toast button, .admin-translation button {
           border: 1px solid ${T.border}; background: ${T.surface}; color: ${T.sub};
           border-radius: 4px; padding: 8px 10px; font-family: ${FONT_MONO}; cursor: pointer; text-decoration: none;
         }
@@ -1132,7 +1281,7 @@ export default function Admin() {
         .admin-sidebar button.active, .admin-editor-bar button.active { color: ${T.green}; border-color: ${T.green}; background: ${T.greenBg}; }
         .admin-sidebar button.dirty { border-color: ${T.green}; }
         .admin-dirty-dot { width: 7px; height: 7px; border-radius: 999px; background: ${T.green}; box-shadow: 0 0 0 3px ${T.greenBg}; flex: 0 0 auto; }
-        .admin-actions button:disabled, .admin-toolbar button:disabled, .admin-card-actions button:disabled, .admin-inline-list button:disabled, .admin-import button:disabled, .admin-candidate button:disabled { opacity: .45; cursor: not-allowed; }
+        .admin-actions button:disabled, .admin-toolbar button:disabled, .admin-card-actions button:disabled, .admin-inline-list button:disabled, .admin-import button:disabled, .admin-candidate button:disabled, .admin-translation button:disabled { opacity: .45; cursor: not-allowed; }
         .admin-toolbar button.danger, .admin-card-actions button.danger, .admin-inline-list button.danger { color: ${T.red}; border-color: ${T.red}; background: ${T.redBg}; }
         .admin-main { border-left: 0; min-width: 0; padding: 28px; }
         .admin-header { display: flex; justify-content: space-between; gap: 20px; align-items: flex-start; margin-bottom: 22px; }
@@ -1173,9 +1322,18 @@ export default function Admin() {
         .admin-candidate p { color: ${T.sub}; margin: 5px 0; line-height: 1.6; }
         .admin-candidate span { color: ${T.muted}; font-family: ${FONT_MONO}; font-size: .68rem; }
         .admin-candidate .admin-applied-badge { width: fit-content; color: ${T.green}; border: 1px solid ${T.green}; background: ${T.greenBg}; border-radius: 999px; padding: 3px 7px; }
+        .admin-translation { border: 1px solid ${T.border}; background: ${T.surface}; border-radius: 6px; padding: 14px; display: grid; gap: 12px; }
+        .admin-translation-head { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; }
+        .admin-translation-head strong { display: block; margin-top: 4px; color: ${T.text}; }
+        .admin-translation-head p { color: ${T.sub}; margin: 6px 0 0; line-height: 1.6; }
+        .admin-translation-actions { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; align-items: center; }
+        .admin-translation-actions span { color: ${T.green}; font-family: ${FONT_MONO}; font-size: .72rem; }
+        .admin-translation-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+        .admin-translation-field { display: grid; gap: 6px; color: ${T.sub}; font-family: ${FONT_MONO}; font-size: .76rem; }
+        .admin-translation-field small { min-height: 3.2em; color: ${T.muted}; font-family: ${FONT_SANS}; line-height: 1.6; }
         .admin-field { display: grid; gap: 6px; color: ${T.sub}; font-size: .78rem; font-family: ${FONT_MONO}; }
         .admin-field-block { grid-column: 1 / -1; }
-        .admin-field input, .admin-field textarea, .admin-field select, .admin-stack select, .admin-inline-row input, .admin-editor textarea, .admin-wysiwyg {
+        .admin-field input, .admin-field textarea, .admin-field select, .admin-stack select, .admin-inline-row input, .admin-editor textarea, .admin-wysiwyg, .admin-translation-field textarea {
           width: 100%; box-sizing: border-box; border: 1px solid ${T.border}; background: ${T.surface}; color: ${T.text};
           border-radius: 4px; padding: 10px 11px; font-family: ${FONT_SANS}; font-size: .92rem; line-height: 1.7;
         }
@@ -1201,6 +1359,9 @@ export default function Admin() {
           .admin-import-form { grid-template-columns: 1fr; }
           .admin-candidate { grid-template-columns: 1fr; }
           .admin-inline-row { grid-template-columns: 1fr; }
+          .admin-translation-head { flex-direction: column; }
+          .admin-translation-actions { justify-content: flex-start; }
+          .admin-translation-list { grid-template-columns: 1fr; }
         }
       `}</style>
     </main>

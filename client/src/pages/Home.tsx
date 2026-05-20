@@ -17,25 +17,16 @@
  * Layout: 좌측 고정 사이드바 + 우측 스크롤 콘텐츠
  * Colors: #1a1a1a (텍스트), #2d6a4f (포인트), #f5f5f3 (배경)
  */
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import { useTheme } from "@/contexts/ThemeContext";
-import { getProfileAvatarUrl, portfolioContent } from "@/content";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { englishTranslations, getProfileAvatarUrl, portfolioContent } from "@/content";
 import { DARK, FONT_MONO, FONT_SANS, FONT_SERIF, LIGHT, type PortfolioTheme } from "@/content/theme";
 import { KnowledgeGraphRail } from "@/components/KnowledgeGraphRail";
+import { localizePortfolioContent, uiText } from "@/lib/i18nContent";
 import { buildKnowledgeGraph } from "@/lib/knowledgeGraph";
 import { activeSectionForAnchor, scrollTopForElement } from "@/lib/scroll";
 
-const IMG = portfolioContent.site.images;
-const NAV_ITEMS = portfolioContent.site.navigation;
-const NAV_IDS = NAV_ITEMS.map((item) => item.id);
-const EDUCATION = portfolioContent.education;
-const RESEARCH_INTERESTS = portfolioContent.research.filter((item) => item.status === "published");
-const PROJECTS = portfolioContent.projects.filter((item) => item.status === "published");
-const SKILL_GROUPS = portfolioContent.skills;
-const STARRED = portfolioContent.starred;
-const PROFILE = portfolioContent.profile;
-const PROFILE_AVATAR = getProfileAvatarUrl(PROFILE);
-const KNOWLEDGE_GRAPH = buildKnowledgeGraph(portfolioContent);
 const ACTIVE_SECTION_ANCHOR = 96;
 const ACTIVE_SCROLL_END_TOLERANCE = 4;
 const SCROLL_END_PADDING = "max(clamp(4rem, 6vw, 6rem), calc(100dvh - 6rem))";
@@ -305,10 +296,26 @@ function ExternalLink({ href, children, T }: { href: string; children: React.Rea
 ════════════════════════════ */
 export default function Home() {
   const { theme, toggleTheme } = useTheme();
+  const { locale, toggleLocale } = useLanguage();
   const T = theme === "dark" ? DARK : LIGHT;
+  const content = useMemo(() => localizePortfolioContent(portfolioContent, englishTranslations, locale), [locale]);
+  const IMG = content.site.images;
+  const NAV_ITEMS = content.site.navigation;
+  const NAV_IDS = useMemo(() => NAV_ITEMS.map((item) => item.id), [NAV_ITEMS]);
+  const EDUCATION = content.education;
+  const RESEARCH_INTERESTS = content.research.filter((item) => item.status === "published");
+  const PROJECTS = content.projects.filter((item) => item.status === "published");
+  const SKILL_GROUPS = content.skills;
+  const STARRED = content.starred;
+  const PROFILE = content.profile;
+  const PROFILE_AVATAR = getProfileAvatarUrl(PROFILE);
+  const KNOWLEDGE_GRAPH = useMemo(() => buildKnowledgeGraph(content), [content]);
   const active = useActiveSection(NAV_IDS);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [focusedGraphNodeId, setFocusedGraphNodeId] = useState<string | null>(null);
+  const label = (key: string, fallback: string) => (locale === "en" ? uiText(englishTranslations, key, fallback) : fallback);
+  const themeToggleLabel = theme === "dark" ? label("lightMode", "라이트 모드") : label("darkMode", "다크 모드");
+  const languageToggleLabel = locale === "en" ? label("languageToKorean", "한국어") : label("languageToEnglish", "English");
 
   const scrollTo = useCallback((id: string) => {
     const el = document.getElementById(id);
@@ -372,7 +379,7 @@ export default function Home() {
         style={{ background: T.sidebarBg, borderRight: `1px solid ${T.border}` }}>
         <img
           src={PROFILE_AVATAR}
-          alt={`${PROFILE.name} 프로필 사진`}
+          alt={locale === "en" ? `${PROFILE.name} profile photo` : `${PROFILE.name} 프로필 사진`}
           style={{
             width: "64px",
             height: "64px",
@@ -412,6 +419,23 @@ export default function Home() {
             </button>
           ))}
         </nav>
+        <button
+          onClick={toggleLocale}
+          style={{
+            marginTop: "1rem",
+            background: "none",
+            border: `1px solid ${T.border}`,
+            borderRadius: "3px",
+            cursor: "pointer",
+            padding: "7px 9px",
+            color: T.muted,
+            fontFamily: FONT_MONO,
+            fontSize: "0.64rem",
+            width: "100%",
+          }}
+        >
+          {languageToggleLabel}
+        </button>
       </div>
 
       {/* ════════════════════════════
@@ -437,7 +461,7 @@ export default function Home() {
         <div style={{ marginBottom: "clamp(0.8rem, 2.4vh, 1.6rem)" }}>
           <img
             src={PROFILE_AVATAR}
-            alt={`${PROFILE.name} 프로필 사진`}
+            alt={locale === "en" ? `${PROFILE.name} profile photo` : `${PROFILE.name} 프로필 사진`}
             style={{
               width: "clamp(72px, 7vw, 104px)",
               height: "clamp(72px, 7vw, 104px)",
@@ -542,7 +566,7 @@ export default function Home() {
             letterSpacing: "0.08em",
             marginBottom: "0.75rem",
           }}>
-            CONTACT
+            {label("contact", "CONTACT")}
           </div>
           {PROFILE.contacts.map((c) => (
             <a
@@ -597,7 +621,34 @@ export default function Home() {
             ? <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
             : <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
           }
-          {theme === "dark" ? "라이트 모드" : "다크 모드"}
+          {themeToggleLabel}
+        </button>
+        <button
+          onClick={toggleLocale}
+          style={{
+            marginTop: "0.45rem",
+            background: "none",
+            border: `1px solid ${T.border}`,
+            borderRadius: "3px",
+            cursor: "pointer",
+            padding: "5px 9px",
+            display: "flex",
+            alignItems: "center",
+            gap: "7px",
+            color: T.muted,
+            fontFamily: FONT_MONO,
+            fontSize: "0.62rem",
+            transition: "border-color 0.15s, color 0.15s",
+            width: "100%",
+          }}
+          onMouseEnter={(e) => { e.currentTarget.style.borderColor = T.green; e.currentTarget.style.color = T.green; }}
+          onMouseLeave={(e) => { e.currentTarget.style.borderColor = T.border; e.currentTarget.style.color = T.muted; }}
+          aria-label={locale === "en" ? "Switch language to Korean" : "영어 페이지로 전환"}
+        >
+          <span style={{ fontFamily: FONT_MONO, fontSize: "0.68rem", color: "currentColor" }}>
+            {locale === "en" ? "KO" : "EN"}
+          </span>
+          {languageToggleLabel}
         </button>
       </aside>
 
@@ -726,7 +777,7 @@ export default function Home() {
                           borderRadius: "2px",
                           fontWeight: 400,
                         }}>
-                          진행 중
+                          {label("current", "진행 중")}
                         </span>
                       )}
                     </div>
@@ -790,7 +841,7 @@ export default function Home() {
                     }}>
                       <img
                         src={IMG.ragDiagram}
-                        alt="RAG 시스템 아키텍처 다이어그램"
+                        alt={locale === "en" ? "RAG system architecture diagram" : "RAG 시스템 아키텍처 다이어그램"}
                         style={{
                           width: "100%",
                           height: "clamp(140px, 24vw, 180px)",
@@ -808,7 +859,7 @@ export default function Home() {
                         color: T.muted,
                         borderTop: `1px solid ${T.border}`,
                       }}>
-                        Dense + Sparse + Graph 3채널 하이브리드 검색 아키텍처
+                        {label("ragCaption", "Dense + Sparse + Graph 3채널 하이브리드 검색 아키텍처")}
                       </div>
                     </div>
                   )}
@@ -871,7 +922,7 @@ export default function Home() {
                           padding: "1px 5px",
                           borderRadius: "2px",
                         }}>
-                          핵심
+                          {label("featured", "핵심")}
                         </span>
                       )}
                       {proj.private && (
@@ -883,7 +934,7 @@ export default function Home() {
                           padding: "1px 5px",
                           borderRadius: "2px",
                         }}>
-                          비공개
+                          {label("private", "비공개")}
                         </span>
                       )}
                     </div>
@@ -903,7 +954,7 @@ export default function Home() {
                           gap: "2px",
                         }}
                       >
-                        Detail
+                        {label("detail", "Detail")}
                         <ExternalArrow color={T.green} />
                       </a>
                       {proj.link && <ExternalLink href={proj.link} T={T}>GitHub</ExternalLink>}
@@ -1057,7 +1108,7 @@ export default function Home() {
                 textDecoration: "none",
               }}
             >
-              notes
+              {label("notes", "notes")}
             </a>
             <a
               href={PROFILE.contacts.find((contact) => contact.type === "github")?.href ?? "https://github.com/NAMUORI00"}
