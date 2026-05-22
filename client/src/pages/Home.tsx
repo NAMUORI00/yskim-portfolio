@@ -984,14 +984,13 @@ export default function Home() {
                       flexDirection: "column",
                       gap: "0.4rem",
                       borderBottom: idx < PROJECTS.length - 1 ? `1px solid ${T.border}` : "none",
+                      background: focusedGraphNodeId === graphNodeId ? T.bg : T.surface,
                       transition: "background 0.15s",
                     }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.background = T.bg;
+                    onMouseEnter={() => {
                       setFocusedGraphNodeId(graphNodeId);
                     }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.background = T.surface;
+                    onMouseLeave={() => {
                       setFocusedGraphNodeId(null);
                     }}
                   >
