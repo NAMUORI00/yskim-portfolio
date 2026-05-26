@@ -571,6 +571,7 @@ export default function Home() {
             </button>
           ))}
         </nav>
+        <MobileKnowledgeGraph graph={KNOWLEDGE_GRAPH} T={T} active={active} />
         <div
           style={{
             marginTop: "1.15rem",
@@ -1005,8 +1006,6 @@ export default function Home() {
               })}
             </div>
           </FadeSection>
-
-          <MobileKnowledgeGraph graph={KNOWLEDGE_GRAPH} T={T} active={active} />
 
           {/* ── 프로젝트 ── */}
           <FadeSection>
@@ -1535,14 +1534,17 @@ export default function Home() {
         @media (max-width: 1180px) {
           #knowledge-rail { display: none !important; }
           .scroll-inner { max-width: clamp(720px, 68vw, 1080px) !important; }
-          .mobile-knowledge-section { display: block; }
         }
         @media (max-width: 768px) {
           #sidebar { display: none !important; }
           .mobile-menu-btn { display: flex !important; }
           .scroll-inner { padding: 2rem 1.5rem 3rem !important; }
-          .mobile-knowledge-section {
-            margin-bottom: 2.1rem !important;
+          .mobile-drawer .mobile-knowledge-section {
+            display: block;
+            margin: 1.05rem 0 1rem !important;
+          }
+          .mobile-drawer .mobile-knowledge-canvas {
+            max-height: 154px;
           }
           .research-card.has-cover,
           .project-content.has-cover { grid-template-columns: 1fr; }
