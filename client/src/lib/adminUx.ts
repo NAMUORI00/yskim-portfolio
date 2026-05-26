@@ -18,6 +18,11 @@ export interface PublishCompletionNotice {
   link: PublishResultLink | null;
 }
 
+export interface EditableSkillGroup {
+  label: string;
+  items: string[];
+}
+
 const SECTION_LABELS: Record<AdminUxSectionKey, string> = {
   profile: "Profile",
   education: "Timeline",
@@ -48,6 +53,22 @@ export function canSaveDraft(canEdit: boolean, dirty: boolean): boolean {
 
 export function canPublishDraft(canEdit: boolean, dirty: boolean, draftReady: boolean): boolean {
   return canEdit && draftReady && !dirty;
+}
+
+function normalizeSkillItem(value: string): string {
+  return value.trim().replace(/\s+/g, " ");
+}
+
+export function hasSkillItem(groups: EditableSkillGroup[], value: string): boolean {
+  const clean = normalizeSkillItem(value).toLowerCase();
+  if (!clean) return false;
+  return groups.some((group) => group.items.some((item) => normalizeSkillItem(item).toLowerCase() === clean));
+}
+
+export function appendSkillItemToGroup<T extends EditableSkillGroup>(groups: T[], groupIndex: number, value: string): T[] {
+  const clean = normalizeSkillItem(value);
+  if (!clean || groupIndex < 0 || groupIndex >= groups.length || hasSkillItem(groups, clean)) return groups;
+  return groups.map((group, index) => (index === groupIndex ? { ...group, items: [...group.items, clean] } : group));
 }
 
 function recordValue(record: Record<string, unknown>, key: string): unknown {

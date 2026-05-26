@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type ChangeEvent, type FormEvent, type MouseEvent, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type ChangeEvent, type FormEvent, type KeyboardEvent, type MouseEvent, type ReactNode } from "react";
 import { Link } from "wouter";
 import { englishTranslations, getProfileAvatarUrl, portfolioContent, type ContentOrder, type EducationEntry, type NoteEntry, type PortfolioContent, type ProfileContent, type ProjectEntry, type PublicationStatus, type ResearchEntry, type SkillGroup, type StarredRepo } from "@/content";
 import { DARK, FONT_MONO, FONT_SANS, LIGHT } from "@/content/theme";
@@ -23,6 +23,8 @@ import {
   canSaveDraft,
   createImportAppliedState,
   editableListKey,
+  appendSkillItemToGroup,
+  hasSkillItem,
   hasDirtySection,
   isImportApplied,
   markDirtySection,
@@ -289,6 +291,8 @@ export default function Admin() {
   const [mode, setMode] = useState<EditorMode>("write");
   const [status, setStatusMessage] = useState("변경사항을 저장하면 draft 브랜치 커밋으로 전송됩니다.");
   const [publishLink, setPublishLink] = useState<PublishResultLink | null>(null);
+  const [skillDrafts, setSkillDrafts] = useState<Record<number, string>>({});
+  const [skillCandidateTargetIndex, setSkillCandidateTargetIndex] = useState(0);
   const [importSource, setImportSource] = useState(INITIAL_GITHUB_IMPORT_SOURCE);
   const [importMode, setImportMode] = useState<GitHubImportMode>("profile");
   const [importResult, setImportResult] = useState<GitHubImportResponse | null>(null);
@@ -333,6 +337,10 @@ export default function Admin() {
       .then((data) => setSession(data))
       .catch(() => setSession({ authenticated: false }));
   }, []);
+
+  useEffect(() => {
+    setSkillCandidateTargetIndex((index) => Math.min(index, Math.max(0, skills.length - 1)));
+  }, [skills.length]);
 
   const target = useMemo<SaveTarget>(() => {
     if (active === "profile") return { kind: "profile", value: profile };
@@ -672,6 +680,25 @@ export default function Admin() {
     setStatus(`기술 스택 후보 ${candidates.length}개 그룹을 병합했습니다. 저장 전 항목을 검토하세요.`);
   }
 
+  function applySkillCandidateItem(candidateLabel: string, skill: string) {
+    if (!canEdit) return;
+    if (hasSkillItem(skills, skill)) {
+      setAppliedImport((state) => markImportApplied(state, "skills", [`${candidateLabel}:${skill}`]));
+      setStatus(`이미 추가된 기술입니다: ${skill}`);
+      return;
+    }
+    const targetLabel = skills[skillCandidateTargetIndex]?.label || "GitHub inferred";
+    setSkills((items) => {
+      const base = items.length > 0 ? items : [{ label: "GitHub inferred", items: [] }];
+      const targetIndex = Math.min(skillCandidateTargetIndex, base.length - 1);
+      return appendSkillItemToGroup(base, targetIndex, skill);
+    });
+    setActive("skills");
+    markSectionDirty("skills");
+    setAppliedImport((state) => markImportApplied(state, "skills", [`${candidateLabel}:${skill}`]));
+    setStatus(`${targetLabel} 그룹에 기술을 추가했습니다: ${skill}. 저장 전입니다.`);
+  }
+
   function applyStarredCandidate(candidate: StarredRepo) {
     setStarred((items) => mergeStarredCandidates(items, [candidate]));
     setActive("starred");
@@ -923,18 +950,25 @@ export default function Admin() {
   }
 
   function addSkillGroup() {
-    setSkills((items) => appendItem(items, createSkillGroup()).items);
+    setSkills((items) => {
+      const result = appendItem(items, createSkillGroup());
+      setSkillCandidateTargetIndex(result.index);
+      return result.items;
+    });
     markSectionDirty("skills");
+    setStatus("새 기술 그룹을 추가했습니다. 그룹명을 입력하고 기술을 하나씩 추가하세요.");
   }
 
   function moveSkillGroup(index: number, direction: MoveDirection) {
     setSkills((items) => moveItem(items, index, direction).items);
+    setSkillDrafts({});
     markSectionDirty("skills");
   }
 
   function removeSkillGroup(index: number) {
     const previous = skills;
     setSkills(removeItem(previous, index).items);
+    setSkillDrafts({});
     markSectionDirty("skills");
     queueUndo("기술 그룹을 제거했습니다. 저장 전에는 되돌릴 수 있습니다.", () => {
       setSkills(previous);
@@ -943,10 +977,25 @@ export default function Admin() {
   }
 
   function addSkillItem(groupIndex: number) {
-    setSkills((items) =>
-      items.map((group, index) => (index === groupIndex ? { ...group, items: [...group.items, "새 기술"] } : group)),
-    );
+    const value = skillDrafts[groupIndex] ?? "";
+    if (!value.trim()) {
+      setStatus("추가할 기술 이름을 입력하세요.");
+      return;
+    }
+    if (hasSkillItem(skills, value)) {
+      setStatus(`이미 추가된 기술입니다: ${value.trim()}`);
+      return;
+    }
+    setSkills((items) => appendSkillItemToGroup(items, groupIndex, value));
+    setSkillDrafts((drafts) => ({ ...drafts, [groupIndex]: "" }));
     markSectionDirty("skills");
+    setStatus(`기술을 추가했습니다: ${value.trim()}. 저장 전입니다.`);
+  }
+
+  function handleSkillAddKeyDown(event: KeyboardEvent<HTMLInputElement>, groupIndex: number) {
+    if (event.key !== "Enter") return;
+    event.preventDefault();
+    addSkillItem(groupIndex);
   }
 
   function updateSkillItem(groupIndex: number, itemIndex: number, value: string) {
@@ -1077,9 +1126,29 @@ export default function Admin() {
           <div className="admin-candidate-list">
             {skillCandidates.length === 0 && <div className="admin-empty">기술 스택 후보가 없습니다. GitHub profile 또는 repo를 가져오세요.</div>}
             {skillCandidates.length > 0 && (
-              <button type="button" disabled={!canEdit || allSkillCandidatesApplied} onClick={() => applySkillCandidates()}>
-                {allSkillCandidatesApplied ? "Skill groups applied" : "Apply skill groups"}
-              </button>
+              <div className="admin-skill-candidate-toolbar">
+                <label>
+                  <span>Target group</span>
+                  {skills.length > 0 ? (
+                    <select
+                      disabled={!canEdit}
+                      value={skillCandidateTargetIndex}
+                      onChange={(event) => setSkillCandidateTargetIndex(Number(event.target.value))}
+                    >
+                      {skills.map((group, index) => (
+                        <option key={editableListKey("skill-target", index)} value={index}>
+                          {group.label || `Group ${index + 1}`}
+                        </option>
+                      ))}
+                    </select>
+                  ) : (
+                    <strong>GitHub inferred</strong>
+                  )}
+                </label>
+                <button type="button" disabled={!canEdit || allSkillCandidatesApplied} onClick={() => applySkillCandidates()}>
+                  {allSkillCandidatesApplied ? "Skill groups applied" : "Apply all groups"}
+                </button>
+              </div>
             )}
             {skillCandidates.map((candidate) => {
               const applied = isImportApplied(appliedImport, "skills", candidate.label);
@@ -1087,7 +1156,22 @@ export default function Admin() {
                 <div className="admin-candidate" key={candidate.label}>
                   <div>
                     <strong>{candidate.label}</strong>
-                    <p>{candidate.items.join(", ")}</p>
+                    <div className="admin-skill-candidate-chips">
+                      {candidate.items.map((skill) => {
+                        const itemApplied = applied || isImportApplied(appliedImport, "skills", `${candidate.label}:${skill}`) || hasSkillItem(skills, skill);
+                        return (
+                          <button
+                            key={`${candidate.label}:${skill}`}
+                            type="button"
+                            className="admin-skill-candidate-chip"
+                            disabled={!canEdit || itemApplied}
+                            onClick={() => applySkillCandidateItem(candidate.label, skill)}
+                          >
+                            {itemApplied ? `Added ${skill}` : `+ ${skill}`}
+                          </button>
+                        );
+                      })}
+                    </div>
                     {applied && <span className="admin-applied-badge">Applied · not saved</span>}
                   </div>
                 </div>
@@ -1385,26 +1469,42 @@ export default function Admin() {
           </div>
           {skills.map((group, index) => (
             <div className="admin-card" key={editableListKey("skill-group", index)}>
-              <div className="admin-card-head">
-                <strong>{group.label || "Skill group"}</strong>
+              <div className="admin-card-head admin-skill-group-head">
+                <label className="admin-skill-group-name">
+                  <span>Group</span>
+                  <input disabled={!canEdit} value={group.label} onChange={(event) => updateSkillGroup(index, { label: event.target.value })} />
+                </label>
                 <div className="admin-card-actions">
                   <ControlButton disabled={!canEdit || index === 0} onClick={() => moveSkillGroup(index, "up")}>Up</ControlButton>
                   <ControlButton disabled={!canEdit || index === skills.length - 1} onClick={() => moveSkillGroup(index, "down")}>Down</ControlButton>
                   <ControlButton danger disabled={!canEdit} onClick={() => removeSkillGroup(index)}>Remove</ControlButton>
                 </div>
               </div>
-              <Field disabled={!canEdit} label="Group" value={group.label} onChange={(label) => updateSkillGroup(index, { label })} />
-              <div className="admin-inline-list">
-                <span>Items</span>
+              <div className="admin-skill-chip-list">
+                {group.items.length === 0 && <span className="admin-empty">아직 기술이 없습니다. 아래 입력창에서 하나씩 추가하세요.</span>}
                 {group.items.map((skill, itemIndex) => (
-                  <div className="admin-inline-row" key={editableListKey("skill-item", index, itemIndex)}>
-                    <input disabled={!canEdit} value={skill} onChange={(event) => updateSkillItem(index, itemIndex, event.target.value)} />
-                    <ControlButton disabled={!canEdit || itemIndex === 0} onClick={() => moveSkillItem(index, itemIndex, "up")}>Up</ControlButton>
-                    <ControlButton disabled={!canEdit || itemIndex === group.items.length - 1} onClick={() => moveSkillItem(index, itemIndex, "down")}>Down</ControlButton>
-                    <ControlButton danger disabled={!canEdit} onClick={() => removeSkillItem(index, itemIndex)}>Remove</ControlButton>
+                  <div className="admin-skill-chip" key={editableListKey("skill-item", index, itemIndex)}>
+                    <input
+                      aria-label={`${group.label || "Skill group"} skill ${itemIndex + 1}`}
+                      disabled={!canEdit}
+                      value={skill}
+                      onChange={(event) => updateSkillItem(index, itemIndex, event.target.value)}
+                    />
+                    <button type="button" disabled={!canEdit || itemIndex === 0} aria-label={`${skill} move left`} onClick={() => moveSkillItem(index, itemIndex, "up")}>←</button>
+                    <button type="button" disabled={!canEdit || itemIndex === group.items.length - 1} aria-label={`${skill} move right`} onClick={() => moveSkillItem(index, itemIndex, "down")}>→</button>
+                    <button type="button" className="danger" disabled={!canEdit} aria-label={`${skill} remove`} onClick={() => removeSkillItem(index, itemIndex)}>×</button>
                   </div>
                 ))}
-                <ControlButton disabled={!canEdit} onClick={() => addSkillItem(index)}>Add skill</ControlButton>
+                <div className="admin-skill-add-form">
+                  <input
+                    disabled={!canEdit}
+                    value={skillDrafts[index] ?? ""}
+                    onChange={(event) => setSkillDrafts((drafts) => ({ ...drafts, [index]: event.target.value }))}
+                    onKeyDown={(event) => handleSkillAddKeyDown(event, index)}
+                    placeholder="Add skill and press Enter"
+                  />
+                  <button type="button" disabled={!canEdit} onClick={() => addSkillItem(index)}>Add</button>
+                </div>
               </div>
             </div>
           ))}
@@ -1580,7 +1680,7 @@ export default function Admin() {
         .admin-sidebar nav { display: grid; gap: 4px; margin-top: 28px; }
         .admin-sidebar button, .admin-actions button, .admin-actions a, .admin-editor-bar button, .admin-editor-bar a, .admin-file-button,
         .admin-cover-actions button,
-        .admin-toolbar button, .admin-card-actions button, .admin-inline-list button, .admin-import button, .admin-candidate button, .admin-undo-toast button, .admin-translation button {
+        .admin-toolbar button, .admin-card-actions button, .admin-inline-list button, .admin-skill-chip button, .admin-skill-add-form button, .admin-import button, .admin-candidate button, .admin-undo-toast button, .admin-translation button {
           border: 1px solid ${T.border}; background: ${T.surface}; color: ${T.sub};
           border-radius: 4px; padding: 8px 10px; font-family: ${FONT_MONO}; cursor: pointer; text-decoration: none;
         }
@@ -1588,8 +1688,8 @@ export default function Admin() {
         .admin-sidebar button.active, .admin-editor-bar button.active { color: ${T.green}; border-color: ${T.green}; background: ${T.greenBg}; }
         .admin-sidebar button.dirty { border-color: ${T.green}; }
         .admin-dirty-dot { width: 7px; height: 7px; border-radius: 999px; background: ${T.green}; box-shadow: 0 0 0 3px ${T.greenBg}; flex: 0 0 auto; }
-        .admin-actions button:disabled, .admin-actions a[aria-disabled="true"], .admin-editor-bar button:disabled, .admin-editor-bar a[aria-disabled="true"], .admin-file-button[aria-disabled="true"], .admin-cover-actions button:disabled, .admin-toolbar button:disabled, .admin-card-actions button:disabled, .admin-inline-list button:disabled, .admin-import button:disabled, .admin-candidate button:disabled, .admin-translation button:disabled { opacity: .45; cursor: not-allowed; }
-        .admin-toolbar button.danger, .admin-card-actions button.danger, .admin-inline-list button.danger { color: ${T.red}; border-color: ${T.red}; background: ${T.redBg}; }
+        .admin-actions button:disabled, .admin-actions a[aria-disabled="true"], .admin-editor-bar button:disabled, .admin-editor-bar a[aria-disabled="true"], .admin-file-button[aria-disabled="true"], .admin-cover-actions button:disabled, .admin-toolbar button:disabled, .admin-card-actions button:disabled, .admin-inline-list button:disabled, .admin-skill-chip button:disabled, .admin-skill-add-form button:disabled, .admin-import button:disabled, .admin-candidate button:disabled, .admin-translation button:disabled { opacity: .45; cursor: not-allowed; }
+        .admin-toolbar button.danger, .admin-card-actions button.danger, .admin-inline-list button.danger, .admin-skill-chip button.danger { color: ${T.red}; border-color: ${T.red}; background: ${T.redBg}; }
         .admin-main { border-left: 0; min-width: 0; padding: 28px; }
         .admin-header { display: flex; justify-content: space-between; gap: 20px; align-items: flex-start; margin-bottom: 22px; }
         .admin-header h2 { margin: 4px 0 6px; font-size: 1.35rem; font-family: ${FONT_MONO}; }
@@ -1624,6 +1724,38 @@ export default function Admin() {
         .admin-card-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
         .admin-card strong { color: ${T.text}; font-size: .95rem; }
         .admin-card-actions, .admin-toolbar { display: flex; flex-wrap: wrap; gap: 8px; }
+        .admin-skill-group-head { align-items: center; }
+        .admin-skill-group-name {
+          display: grid; gap: 6px; min-width: min(360px, 100%); flex: 1;
+          color: ${T.sub}; font-family: ${FONT_MONO}; font-size: .72rem;
+        }
+        .admin-skill-group-name input,
+        .admin-skill-candidate-toolbar select {
+          width: 100%; box-sizing: border-box; border: 1px solid ${T.border}; background: ${T.bg}; color: ${T.text};
+          border-radius: 4px; padding: 9px 10px; font-family: ${FONT_SANS}; font-size: .9rem;
+        }
+        .admin-skill-chip-list { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; min-width: 0; }
+        .admin-skill-chip {
+          display: inline-flex; align-items: center; gap: 4px; max-width: 100%;
+          border: 1px solid ${T.border}; background: ${T.bg}; border-radius: 999px; padding: 4px;
+        }
+        .admin-skill-chip input {
+          width: clamp(82px, 13vw, 156px); min-width: 0; border: 0; outline: none;
+          background: transparent; color: ${T.text}; font-family: ${FONT_MONO}; font-size: .74rem;
+        }
+        .admin-skill-chip button {
+          display: inline-grid; place-items: center; min-width: 26px; height: 26px;
+          border-radius: 999px; padding: 0 6px; line-height: 1;
+        }
+        .admin-skill-add-form {
+          display: inline-flex; align-items: center; gap: 6px; max-width: 100%;
+          border: 1px dashed ${T.border}; background: ${T.surface}; border-radius: 999px; padding: 4px;
+        }
+        .admin-skill-add-form input {
+          width: clamp(150px, 18vw, 220px); min-width: 0; border: 0; outline: none;
+          background: transparent; color: ${T.text}; font-family: ${FONT_SANS}; font-size: .86rem;
+        }
+        .admin-skill-add-form button { border-radius: 999px; padding: 6px 10px; }
         .admin-import { border: 1px solid ${T.border}; background: ${T.surface}; border-radius: 6px; padding: 14px; display: grid; gap: 12px; }
         .admin-import-head { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; }
         .admin-import-head strong { display: block; margin-top: 4px; color: ${T.text}; }
@@ -1642,6 +1774,17 @@ export default function Admin() {
         .admin-candidate p { color: ${T.sub}; margin: 5px 0; line-height: 1.6; }
         .admin-candidate span { color: ${T.muted}; font-family: ${FONT_MONO}; font-size: .68rem; }
         .admin-candidate .admin-applied-badge { width: fit-content; color: ${T.green}; border: 1px solid ${T.green}; background: ${T.greenBg}; border-radius: 999px; padding: 3px 7px; }
+        .admin-skill-candidate-toolbar { display: flex; justify-content: space-between; align-items: end; gap: 10px; flex-wrap: wrap; }
+        .admin-skill-candidate-toolbar label {
+          display: grid; gap: 6px; min-width: min(240px, 100%);
+          color: ${T.sub}; font-family: ${FONT_MONO}; font-size: .72rem;
+        }
+        .admin-skill-candidate-toolbar strong { color: ${T.green}; font-family: ${FONT_MONO}; font-size: .8rem; }
+        .admin-skill-candidate-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 2px; }
+        .admin-skill-candidate-chip {
+          border-radius: 999px !important; padding: 6px 9px !important; font-size: .72rem;
+          border-color: ${T.green} !important; background: ${T.greenBg} !important; color: ${T.green} !important;
+        }
         .admin-translation { border: 1px solid ${T.border}; background: ${T.surface}; border-radius: 6px; padding: 14px; display: grid; gap: 12px; }
         .admin-translation-head { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; }
         .admin-translation-head strong { display: block; margin-top: 4px; color: ${T.text}; }

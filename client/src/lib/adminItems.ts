@@ -140,7 +140,7 @@ export function createEducationEntry(): EducationEntry {
 export function createSkillGroup(): SkillGroup {
   return {
     label: "새 그룹",
-    items: ["새 기술"],
+    items: [],
   };
 }
 

@@ -6,10 +6,12 @@ import {
   canSaveDraft,
   createImportAppliedState,
   editableListKey,
+  hasSkillItem,
   hasDirtySection,
   isImportApplied,
   markDirtySection,
   markImportApplied,
+  appendSkillItemToGroup,
   publishCompletionNotice,
   saveScopeSummary,
   sectionActionLabel,
@@ -55,6 +57,17 @@ describe("admin UX helpers", () => {
     expect(editableListKey("education", 1)).toBe(editableListKey("education", 1));
     expect(editableListKey("skill-item", 2, 3)).toBe("skill-item:2:3");
     expect(editableListKey("starred", 0)).not.toContain("repo-name");
+  });
+
+  it("adds skill items as normalized unique text entries", () => {
+    const groups = [{ label: "Language", items: ["Python"] }];
+
+    expect(appendSkillItemToGroup(groups, 0, "  TypeScript  ")).toEqual([
+      { label: "Language", items: ["Python", "TypeScript"] },
+    ]);
+    expect(appendSkillItemToGroup(groups, 0, " python ")).toBe(groups);
+    expect(appendSkillItemToGroup(groups, 0, "   ")).toBe(groups);
+    expect(hasSkillItem(groups, "python")).toBe(true);
   });
 
   it("returns a browser-ready GitHub PR link from publish responses", () => {

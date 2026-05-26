@@ -52,7 +52,7 @@ describe("admin item helpers", () => {
     expect(createResearchDraft(["new-research"]).status).toBe("draft");
     expect(createNoteDraft(["new-note"], "2026-05-18").date).toBe("2026-05-18");
     expect(createEducationEntry().current).toBe(false);
-    expect(createSkillGroup().items).toEqual(["새 기술"]);
+    expect(createSkillGroup()).toEqual({ label: "새 그룹", items: [] });
     expect(createStarredRepo().stars).toBe("0");
   });
 
