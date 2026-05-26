@@ -27,11 +27,13 @@ import {
   isImportApplied,
   markDirtySection,
   markImportApplied,
+  publishCompletionNotice,
   saveScopeSummary,
   sectionActionLabel,
   sectionLabel,
   type AdminUxSectionKey,
   type ImportAppliedState,
+  type PublishResultLink,
 } from "@/lib/adminUx";
 import {
   demoGitHubImportResponse,
@@ -285,7 +287,8 @@ export default function Admin() {
   const [projectIndex, setProjectIndex] = useState(0);
   const [noteIndex, setNoteIndex] = useState(0);
   const [mode, setMode] = useState<EditorMode>("write");
-  const [status, setStatus] = useState("변경사항을 저장하면 draft 브랜치 커밋으로 전송됩니다.");
+  const [status, setStatusMessage] = useState("변경사항을 저장하면 draft 브랜치 커밋으로 전송됩니다.");
+  const [publishLink, setPublishLink] = useState<PublishResultLink | null>(null);
   const [importSource, setImportSource] = useState(INITIAL_GITHUB_IMPORT_SOURCE);
   const [importMode, setImportMode] = useState<GitHubImportMode>("profile");
   const [importResult, setImportResult] = useState<GitHubImportResponse | null>(null);
@@ -303,6 +306,17 @@ export default function Admin() {
 
   const access = adminAccessState(session, localPreview);
   const canEdit = access === "granted";
+
+  function setStatus(message: string) {
+    setStatusMessage(message);
+    setPublishLink(null);
+  }
+
+  function setPublishStatus(prefix: string, result: unknown, fallbackBranch: string) {
+    const notice = publishCompletionNotice(prefix, result, fallbackBranch);
+    setStatusMessage(notice.message);
+    setPublishLink(notice.link);
+  }
 
   const contentOrder = useMemo<ContentOrder>(
     () => ({
@@ -606,7 +620,7 @@ export default function Admin() {
     try {
       setStatus("영어 번역 PR 생성/업데이트 중...");
       const result = await postJson("/api/github/publish", payload);
-      setStatus(`영어 번역 PR 준비 완료: ${result.html_url || result.url || payload.branch}`);
+      setPublishStatus("영어 번역 PR 준비 완료", result, payload.branch);
     } catch (error) {
       setStatus(error instanceof Error ? error.message : "영어 번역 PR 발행에 실패했습니다.");
     }
@@ -715,7 +729,7 @@ export default function Admin() {
     try {
       setStatus("Pull request 생성/업데이트 중...");
       const result = await postJson("/api/github/publish", payload);
-      setStatus(`PR 준비 완료: ${result.html_url || result.url || payload.branch}`);
+      setPublishStatus("PR 준비 완료", result, payload.branch);
     } catch (error) {
       setStatus(error instanceof Error ? error.message : "PR 발행에 실패했습니다.");
     }
@@ -1529,6 +1543,11 @@ export default function Admin() {
               <p className="admin-scope">{currentScope}{activeDirty ? " · unsaved changes" : ""}</p>
               {dirtySections.length > 0 && <p className="admin-unsaved-summary">Unsaved sections: {dirtySectionLabels}</p>}
               <p>{status}</p>
+              {publishLink && (
+                <a className="admin-pr-result" href={publishLink.href} target="_blank" rel="noopener noreferrer">
+                  {publishLink.label}
+                </a>
+              )}
             </div>
             <div className="admin-actions">
               <button type="button" onClick={toggleTheme}>{theme === "dark" ? "Light" : "Dark"}</button>
@@ -1576,6 +1595,19 @@ export default function Admin() {
         .admin-header h2 { margin: 4px 0 6px; font-size: 1.35rem; font-family: ${FONT_MONO}; }
         .admin-scope { font-family: ${FONT_MONO}; font-size: .76rem; }
         .admin-unsaved-summary { color: ${T.green} !important; font-family: ${FONT_MONO}; font-size: .76rem; }
+        .admin-pr-result {
+          display: inline-flex;
+          align-items: center;
+          margin-top: 8px;
+          border: 1px solid ${T.green};
+          background: ${T.greenBg};
+          color: ${T.green};
+          border-radius: 4px;
+          padding: 7px 9px;
+          font-family: ${FONT_MONO};
+          font-size: .72rem;
+          text-decoration: none;
+        }
         .admin-kicker { color: ${T.green}; font-family: ${FONT_MONO}; font-size: .72rem; text-transform: uppercase; }
         .admin-actions { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
         .admin-undo-toast {

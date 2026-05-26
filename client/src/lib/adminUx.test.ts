@@ -10,6 +10,7 @@ import {
   isImportApplied,
   markDirtySection,
   markImportApplied,
+  publishCompletionNotice,
   saveScopeSummary,
   sectionActionLabel,
   sectionLabel,
@@ -54,5 +55,25 @@ describe("admin UX helpers", () => {
     expect(editableListKey("education", 1)).toBe(editableListKey("education", 1));
     expect(editableListKey("skill-item", 2, 3)).toBe("skill-item:2:3");
     expect(editableListKey("starred", 0)).not.toContain("repo-name");
+  });
+
+  it("returns a browser-ready GitHub PR link from publish responses", () => {
+    const notice = publishCompletionNotice(
+      "PR 준비 완료",
+      { number: 12, html_url: "https://github.com/NAMUORI00/namuori-portfolio-cms/pull/12", url: "https://api.github.com/repos/NAMUORI00/namuori-portfolio-cms/pulls/12" },
+      "draft/profile",
+    );
+
+    expect(notice.message).toBe("PR 준비 완료: GitHub PR #12");
+    expect(notice.link).toEqual({
+      href: "https://github.com/NAMUORI00/namuori-portfolio-cms/pull/12",
+      label: "GitHub PR #12 열기",
+    });
+  });
+
+  it("falls back to branch text when publish responses do not include a GitHub web URL", () => {
+    const notice = publishCompletionNotice("PR 준비 완료", { url: "https://api.github.com/repos/NAMUORI00/namuori-portfolio-cms/pulls/12" }, "draft/profile");
+
+    expect(notice).toEqual({ message: "PR 준비 완료: draft/profile", link: null });
   });
 });

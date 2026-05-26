@@ -8,6 +8,16 @@ export interface ImportAppliedState {
   starred: string[];
 }
 
+export interface PublishResultLink {
+  href: string;
+  label: string;
+}
+
+export interface PublishCompletionNotice {
+  message: string;
+  link: PublishResultLink | null;
+}
+
 const SECTION_LABELS: Record<AdminUxSectionKey, string> = {
   profile: "Profile",
   education: "Timeline",
@@ -38,6 +48,39 @@ export function canSaveDraft(canEdit: boolean, dirty: boolean): boolean {
 
 export function canPublishDraft(canEdit: boolean, dirty: boolean, draftReady: boolean): boolean {
   return canEdit && draftReady && !dirty;
+}
+
+function recordValue(record: Record<string, unknown>, key: string): unknown {
+  return Object.prototype.hasOwnProperty.call(record, key) ? record[key] : undefined;
+}
+
+function isGitHubWebUrl(value: unknown): value is string {
+  if (typeof value !== "string") return false;
+  try {
+    const url = new URL(value);
+    return url.protocol === "https:" && url.hostname === "github.com";
+  } catch {
+    return false;
+  }
+}
+
+export function publishCompletionNotice(prefix: string, result: unknown, fallbackBranch: string): PublishCompletionNotice {
+  const record = result && typeof result === "object" ? (result as Record<string, unknown>) : {};
+  const htmlUrl = recordValue(record, "html_url");
+  const prNumber = recordValue(record, "number");
+  if (!isGitHubWebUrl(htmlUrl)) {
+    return { message: `${prefix}: ${fallbackBranch}`, link: null };
+  }
+
+  const suffix = typeof prNumber === "number" || typeof prNumber === "string" ? `#${prNumber}` : "";
+  const labelBase = suffix ? `GitHub PR ${suffix}` : "GitHub PR";
+  return {
+    message: `${prefix}: ${labelBase}`,
+    link: {
+      href: htmlUrl,
+      label: `${labelBase} 열기`,
+    },
+  };
 }
 
 export function editableListKey(scope: string, index: number, nestedIndex?: number): string {
