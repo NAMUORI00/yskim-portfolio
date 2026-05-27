@@ -35,6 +35,9 @@ const ACTIVE_SECTION_ANCHOR_RATIO = 0.5;
 const ACTIVE_SCROLL_END_TOLERANCE = 4;
 const MIN_SCROLL_END_PADDING = 48;
 const SCROLL_END_PADDING_GAP = 16;
+const TIMELINE_AUTOSCROLL_STEP = 1.25;
+const TIMELINE_AUTOSCROLL_INTERVAL = 90;
+const TIMELINE_AUTOSCROLL_PAUSE_MS = 2800;
 
 /* ── SVG 아이콘 컴포넌트 ── */
 function NavIcon({ type, color, size = 13 }: { type: string; color: string; size?: number }) {
@@ -221,6 +224,94 @@ function useScrollEndPadding(lastSectionId: string) {
   }, [lastSectionId]);
 
   return `${padding}px`;
+}
+
+function useTimelineFocusScroll(ref: React.RefObject<HTMLElement | null>) {
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let active = false;
+    let scrollTimer: number | null = null;
+    let syncTimer: number | null = null;
+    let pausedUntil = 0;
+
+    const stop = () => {
+      active = false;
+      if (scrollTimer !== null) {
+        window.clearInterval(scrollTimer);
+        scrollTimer = null;
+      }
+    };
+
+    const scrollOnce = () => {
+      if (!active || reduceMotion.matches || el.scrollHeight <= el.clientHeight + 2) {
+        stop();
+        return;
+      }
+
+      const maxScroll = el.scrollHeight - el.clientHeight;
+      const next = Math.min(maxScroll, el.scrollTop + TIMELINE_AUTOSCROLL_STEP);
+      el.scrollTop = next;
+
+      if (next >= maxScroll) {
+        stop();
+      }
+    };
+
+    const start = () => {
+      if (Date.now() < pausedUntil || reduceMotion.matches || active || el.scrollHeight <= el.clientHeight + 2) return;
+      active = true;
+      scrollOnce();
+      scrollTimer = window.setInterval(scrollOnce, TIMELINE_AUTOSCROLL_INTERVAL);
+    };
+
+    const pauseAfterUserInput = () => {
+      if (!active) return;
+      pausedUntil = Date.now() + TIMELINE_AUTOSCROLL_PAUSE_MS;
+      stop();
+    };
+
+    const syncFromInteractionState = () => {
+      const isFocused = document.activeElement === el || el.contains(document.activeElement);
+      const isHovered = el.matches(":hover");
+      if (isFocused || isHovered) {
+        start();
+      } else {
+        stop();
+      }
+    };
+
+    const stopWhenFocusLeaves = (event: FocusEvent) => {
+      const nextTarget = event.relatedTarget;
+      if (nextTarget instanceof Node && el.contains(nextTarget)) return;
+      stop();
+    };
+
+    el.addEventListener("mouseenter", start);
+    el.addEventListener("focusin", start);
+    el.addEventListener("mouseleave", stop);
+    el.addEventListener("focusout", stopWhenFocusLeaves);
+    el.addEventListener("wheel", pauseAfterUserInput, { passive: true });
+    el.addEventListener("keydown", pauseAfterUserInput);
+    el.addEventListener("pointerdown", pauseAfterUserInput);
+    reduceMotion.addEventListener("change", stop);
+    syncTimer = window.setInterval(syncFromInteractionState, 250);
+
+    return () => {
+      el.removeEventListener("mouseenter", start);
+      el.removeEventListener("focusin", start);
+      el.removeEventListener("mouseleave", stop);
+      el.removeEventListener("focusout", stopWhenFocusLeaves);
+      el.removeEventListener("wheel", pauseAfterUserInput);
+      el.removeEventListener("keydown", pauseAfterUserInput);
+      el.removeEventListener("pointerdown", pauseAfterUserInput);
+      reduceMotion.removeEventListener("change", stop);
+      if (syncTimer !== null) window.clearInterval(syncTimer);
+      stop();
+    };
+  }, [ref]);
 }
 
 /* ── fade-up 애니메이션 훅 ── */
@@ -462,7 +553,7 @@ export default function Home() {
   const IMG = content.site.images;
   const NAV_ITEMS = content.site.navigation;
   const NAV_IDS = useMemo(() => NAV_ITEMS.map((item) => item.id), [NAV_ITEMS]);
-  const EDUCATION = content.education.filter((item) => item.status === "published" && item.highlight);
+  const TIMELINE_ENTRIES = content.education.filter((item) => item.status === "published");
   const RESEARCH_INTERESTS = content.research.filter((item) => item.status === "published");
   const PROJECTS = content.projects.filter((item) => item.status === "published");
   const SKILL_GROUPS = content.skills;
@@ -475,6 +566,7 @@ export default function Home() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [focusedGraphNodeId, setFocusedGraphNodeId] = useState<string | null>(null);
   const [coverPreview, setCoverPreview] = useState<CoverPreviewPayload | null>(null);
+  const timelinePanelRef = useRef<HTMLDivElement>(null);
   const previewHref = useCallback((path: string) => withAdminPreviewUrl(path, previewId), [previewId]);
   const label = (key: string, fallback: string) => (locale === "en" ? uiText(sourceTranslations, key, fallback) : fallback);
   const themeToggleLabel = theme === "dark" ? label("lightMode", "라이트 모드") : label("darkMode", "다크 모드");
@@ -495,6 +587,8 @@ export default function Home() {
       window.removeEventListener("keydown", closeOnEscape);
     };
   }, [coverPreview]);
+
+  useTimelineFocusScroll(timelinePanelRef);
 
   const scrollTo = useCallback((id: string) => {
     const el = document.getElementById(id);
@@ -902,9 +996,25 @@ export default function Home() {
           {/* ── 학력 ── */}
           <FadeSection>
             <SectionTitle id="education" icon="graduation" T={T}>Timeline</SectionTitle>
-            <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
-              {EDUCATION.map((edu) => (
-                <div key={`${edu.type}:${edu.degree}:${edu.period}`} style={{ display: "flex", gap: "1.25rem", alignItems: "flex-start" }}>
+            <div
+              ref={timelinePanelRef}
+              className="timeline-focus-panel"
+              tabIndex={0}
+              aria-label={locale === "en" ? "Timeline entries" : "타임라인 항목"}
+              style={{
+                border: `1px solid ${T.border}`,
+                background: T.surface,
+                borderRadius: "6px",
+                padding: "clamp(1rem, 2vw, 1.35rem)",
+                outline: "none",
+                transition: "border-color 0.18s ease, background 0.18s ease",
+              }}
+            >
+              {TIMELINE_ENTRIES.map((edu) => {
+                const relatedProjects = PROJECTS.filter((project) => edu.relatedProjects.includes(project.slug));
+                const detailParts = [edu.note, ...edu.bullets].filter(Boolean);
+                return (
+                <article key={`${edu.type}:${edu.degree}:${edu.period}`} className="timeline-entry">
                   {/* 타임라인 점 */}
                   <div style={{ display: "flex", flexDirection: "column", alignItems: "center", paddingTop: "4px", flexShrink: 0 }}>
                     <div style={{
@@ -934,17 +1044,20 @@ export default function Home() {
                       <span>·</span>
                       <span>{edu.period}</span>
                     </div>
-                    <div style={{
+                    <p className="timeline-entry-summary" style={{
                       fontFamily: FONT_SANS,
                       fontSize: "0.9rem",
                       fontWeight: 600,
                       color: edu.current ? T.green : T.text,
-                      marginBottom: "2px",
+                      margin: "0 0 0.35rem",
                       display: "flex",
                       alignItems: "center",
                       gap: "8px",
+                      flexWrap: "wrap",
+                      lineHeight: 1.55,
                     }}>
-                      {edu.degree}
+                      <span>{edu.degree}</span>
+                      <span style={{ color: T.sub, fontWeight: 500 }}>{edu.school}</span>
                       {edu.current && (
                         <span style={{
                           fontFamily: FONT_MONO,
@@ -959,25 +1072,22 @@ export default function Home() {
                           {label("current", "진행 중")}
                         </span>
                       )}
-                    </div>
-                    <div style={{ fontFamily: FONT_SANS, fontSize: "0.82rem", color: T.sub, marginBottom: edu.note ? "4px" : 0 }}>
-                      {edu.school}
-                    </div>
-                    {edu.note && (
-                      <div style={{ fontFamily: FONT_SANS, fontSize: "0.78rem", color: T.muted, wordBreak: "keep-all", lineHeight: 1.7 }}>
-                        {edu.note}
-                      </div>
+                    </p>
+                    {detailParts.length > 0 && (
+                      <p className="timeline-entry-detail" style={{ fontFamily: FONT_SANS, fontSize: "0.79rem", color: T.muted, wordBreak: "keep-all", lineHeight: 1.78, margin: 0 }}>
+                        {detailParts.join(" ")}
+                      </p>
                     )}
-                    {edu.bullets.length > 0 && (
-                      <ul style={{ margin: "8px 0 0", paddingLeft: "1rem", color: T.muted, fontFamily: FONT_SANS, fontSize: "0.76rem", lineHeight: 1.7 }}>
-                        {edu.bullets.slice(0, 3).map((bullet) => <li key={bullet}>{bullet}</li>)}
-                      </ul>
-                    )}
-                    {(edu.links.length > 0 || edu.relatedSkills.length > 0) && (
+                    {(edu.links.length > 0 || relatedProjects.length > 0 || edu.relatedSkills.length > 0) && (
                       <div style={{ display: "flex", gap: "6px", flexWrap: "wrap", marginTop: "10px" }}>
                         {edu.links.map((link) => (
                           <a key={`${link.label}:${link.href}`} href={link.href} target="_blank" rel="noopener noreferrer" style={{ color: T.green, background: T.greenBg, border: `1px solid ${T.green}40`, borderRadius: "999px", padding: "3px 7px", fontFamily: FONT_MONO, fontSize: "0.65rem", textDecoration: "none" }}>
                             {link.label}
+                          </a>
+                        ))}
+                        {relatedProjects.map((project) => (
+                          <a key={project.slug} href={previewHref(`/projects/${project.slug}`)} style={{ color: T.green, border: `1px solid ${T.border}`, borderRadius: "999px", padding: "3px 7px", fontFamily: FONT_MONO, fontSize: "0.65rem", textDecoration: "none" }}>
+                            {project.name}
                           </a>
                         ))}
                         {edu.relatedSkills.slice(0, 5).map((skill) => (
@@ -988,8 +1098,9 @@ export default function Home() {
                       </div>
                     )}
                   </div>
-                </div>
-              ))}
+                </article>
+              );
+              })}
               <a href={previewHref("/cv")} style={{ alignSelf: "flex-start", color: T.green, fontFamily: FONT_MONO, fontSize: "0.72rem", textDecoration: "none", borderBottom: `1px solid ${T.green}` }}>
                 {label("fullCv", "전체 CV 타임라인 보기")}
               </a>
@@ -1454,16 +1565,43 @@ export default function Home() {
           flex: 0 0 1px;
           align-self: stretch;
         }
-        .preference-code {
-          font-size: 0.68rem;
-          font-weight: 700;
-          letter-spacing: 0;
-        }
-        .research-card.has-cover {
-          display: grid;
-          grid-template-columns: minmax(0, 1fr) clamp(76px, 12vw, 108px);
-          gap: 0.75rem;
-          align-items: start;
+         .preference-code {
+           font-size: 0.68rem;
+           font-weight: 700;
+           letter-spacing: 0;
+         }
+         .timeline-focus-panel {
+           display: flex;
+           flex-direction: column;
+           gap: 1.15rem;
+           max-height: clamp(340px, 48vh, 440px);
+           overflow-y: auto;
+           scrollbar-gutter: stable;
+         }
+         .timeline-focus-panel:focus-visible {
+           border-color: ${T.green} !important;
+           box-shadow: inset 0 0 0 1px ${T.green}33;
+         }
+         .timeline-entry {
+           display: flex;
+           gap: 1.1rem;
+           align-items: flex-start;
+           padding-bottom: 1.15rem;
+           border-bottom: 1px solid ${T.border};
+         }
+         .timeline-entry:last-of-type {
+           padding-bottom: 0.2rem;
+           border-bottom: 0;
+         }
+         .timeline-entry-summary,
+         .timeline-entry-detail {
+           max-width: 70ch;
+         }
+         .research-card.has-cover {
+           display: grid;
+           grid-template-columns: minmax(0, 1fr) clamp(76px, 12vw, 108px);
+           gap: 0.75rem;
+           align-items: start;
         }
         .project-content {
           display: flex;
@@ -1604,11 +1742,19 @@ export default function Home() {
           .mobile-drawer .mobile-knowledge-canvas {
             max-height: 154px;
           }
-          .research-card.has-cover,
-          .project-content.has-cover { grid-template-columns: 1fr; }
-          .content-cover-button {
-            justify-self: start;
-            width: min(38vw, 116px);
+           .research-card.has-cover,
+           .project-content.has-cover { grid-template-columns: 1fr; }
+           .timeline-focus-panel {
+             max-height: none;
+             overflow: visible;
+             scrollbar-gutter: auto;
+           }
+           .timeline-entry {
+             gap: 0.85rem;
+           }
+           .content-cover-button {
+             justify-self: start;
+             width: min(38vw, 116px);
             max-width: 116px;
           }
           .cover-preview-modal {
