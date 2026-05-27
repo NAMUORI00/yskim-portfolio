@@ -20,7 +20,7 @@
 import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { englishTranslations, getProfileAvatarUrl, portfolioContent } from "@/content";
+import { englishTranslations, getProfileAvatarUrl, portfolioContent, type ProjectEntry, type TimelineLink } from "@/content";
 import { DARK, FONT_MONO, FONT_SANS, FONT_SERIF, LIGHT, type PortfolioTheme } from "@/content/theme";
 import { KnowledgeGraphRail } from "@/components/KnowledgeGraphRail";
 import { MobileKnowledgeGraph } from "@/components/MobileKnowledgeGraph";
@@ -375,6 +375,90 @@ function isCvArchiveHref(href: string): boolean {
   } catch {
     return href.trim().replace(/\/+$/, "") === "/cv";
   }
+}
+
+type TimelineChipItem = {
+  key: string;
+  label: string;
+  href?: string;
+  kind: "link" | "project" | "skill";
+  external?: boolean;
+};
+
+function normalizeTimelineChipLabel(value: string): string {
+  return value.trim().toLowerCase().replace(/\s+/g, " ");
+}
+
+function timelineHrefTail(href: string): string {
+  try {
+    const url = new URL(href, "https://namuori.net");
+    const parts = url.pathname.split("/").filter(Boolean);
+    return normalizeTimelineChipLabel(parts[parts.length - 1] ?? "");
+  } catch {
+    const parts = href.split(/[/?#]/)[0].split("/").filter(Boolean);
+    return normalizeTimelineChipLabel(parts[parts.length - 1] ?? href);
+  }
+}
+
+function matchesTimelineProject(link: TimelineLink, project: Pick<ProjectEntry, "name" | "slug">): boolean {
+  const label = normalizeTimelineChipLabel(link.label);
+  const hrefTail = timelineHrefTail(link.href);
+  const projectName = normalizeTimelineChipLabel(project.name);
+  const projectSlug = normalizeTimelineChipLabel(project.slug);
+  return label === projectName || label === projectSlug || hrefTail === projectSlug;
+}
+
+function buildTimelineChipItems({
+  links,
+  relatedProjects,
+  relatedSkills,
+  previewHref,
+}: {
+  links: TimelineLink[];
+  relatedProjects: Pick<ProjectEntry, "name" | "slug">[];
+  relatedSkills: string[];
+  previewHref: (path: string) => string;
+}): TimelineChipItem[] {
+  const seen = new Set<string>();
+  const items: TimelineChipItem[] = [];
+  const add = (item: TimelineChipItem) => {
+    const identity = `${item.kind}:${normalizeTimelineChipLabel(item.label)}`;
+    if (seen.has(identity)) return;
+    seen.add(identity);
+    items.push(item);
+  };
+
+  relatedProjects.forEach((project) => {
+    add({
+      key: `project:${project.slug}`,
+      kind: "project",
+      label: project.name,
+      href: previewHref(`/projects/${project.slug}`),
+    });
+  });
+
+  links
+    .filter((link) => !isCvArchiveHref(link.href))
+    .filter((link) => !relatedProjects.some((project) => matchesTimelineProject(link, project)))
+    .forEach((link) => {
+      add({
+        key: `link:${link.label}:${link.href}`,
+        kind: "link",
+        label: link.label,
+        href: link.href,
+        external: true,
+      });
+    });
+
+  relatedSkills.slice(0, 5).forEach((skill) => {
+    add({
+      key: `skill:${skill}`,
+      kind: "skill",
+      label: skill,
+    });
+  });
+
+  return items;
 }
 
 function ThemeModeIcon({ theme }: { theme: "light" | "dark" }) {
@@ -929,9 +1013,13 @@ export default function Home() {
                 const timelineKey = `${edu.type}:${edu.degree}:${edu.period}`;
                 const detailId = `timeline-detail-${index}`;
                 const isExpanded = expandedTimelineKeys.has(timelineKey);
-                const timelineLinks = edu.links.filter((link) => !isCvArchiveHref(link.href));
                 const relatedProjects = PROJECTS.filter((project) => edu.relatedProjects.includes(project.slug));
-                const detailParts = [edu.note, ...edu.bullets].filter(Boolean);
+                const timelineChipItems = buildTimelineChipItems({
+                  links: edu.links,
+                  relatedProjects,
+                  relatedSkills: edu.relatedSkills,
+                  previewHref,
+                });
                 return (
                 <article key={timelineKey} className="timeline-connection-entry">
                   <div className="timeline-spine" aria-hidden="true">
@@ -953,31 +1041,43 @@ export default function Home() {
                         <span className="timeline-school">{edu.school}</span>
                         {edu.current && <span className="timeline-current">{label("current", "진행 중")}</span>}
                       </span>
-                      <span className="timeline-toggle-hint">{isExpanded ? (locale === "en" ? "Collapse" : "접기") : (locale === "en" ? "Expand" : "펼치기")}</span>
+                      <span className="timeline-toggle-action">
+                        <span className="timeline-toggle-hint">{isExpanded ? (locale === "en" ? "Collapse" : "접기") : (locale === "en" ? "Expand" : "펼치기")}</span>
+                        <svg className="timeline-toggle-icon" aria-hidden="true" viewBox="0 0 16 16" fill="none">
+                          <path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                      </span>
                     </button>
-                    {detailParts.length > 0 && (
+                    {(edu.note || edu.bullets.length > 0) && (
                       <div id={detailId} className={isExpanded ? "timeline-entry-detail expanded" : "timeline-entry-detail collapsed"}>
-                        <p>{detailParts.join(" ")}</p>
+                        {edu.note && <p className="timeline-entry-note">{edu.note}</p>}
+                        {edu.bullets.length > 0 && (
+                          <ul className="timeline-entry-bullets">
+                            {edu.bullets.map((bullet) => (
+                              <li key={bullet}>{bullet}</li>
+                            ))}
+                          </ul>
+                        )}
                       </div>
                     )}
                   </div>
-                  {(timelineLinks.length > 0 || relatedProjects.length > 0 || edu.relatedSkills.length > 0) && (
+                  {timelineChipItems.length > 0 && (
                     <>
                       <div className="timeline-chip-connector" aria-hidden="true" />
                       <div className="timeline-chip-panel">
-                        {timelineLinks.map((link) => (
-                          <a key={`${link.label}:${link.href}`} className="timeline-chip accent" href={link.href} target="_blank" rel="noopener noreferrer">
-                            {link.label}
+                        {timelineChipItems.map((item) => item.href ? (
+                          <a
+                            key={item.key}
+                            className={`timeline-chip ${item.kind}`}
+                            href={item.href}
+                            target={item.external ? "_blank" : undefined}
+                            rel={item.external ? "noopener noreferrer" : undefined}
+                          >
+                            {item.label}
                           </a>
-                        ))}
-                        {relatedProjects.map((project) => (
-                          <a key={project.slug} className="timeline-chip project" href={previewHref(`/projects/${project.slug}`)}>
-                            {project.name}
-                          </a>
-                        ))}
-                        {edu.relatedSkills.slice(0, 5).map((skill) => (
-                          <span key={skill} className="timeline-chip skill">
-                            {skill}
+                        ) : (
+                          <span key={item.key} className={`timeline-chip ${item.kind}`}>
+                            {item.label}
                           </span>
                         ))}
                       </div>
@@ -1509,7 +1609,13 @@ export default function Home() {
            cursor: pointer;
            display: block;
            text-align: left;
-           padding: 0;
+           padding: 0.1rem 0.15rem 0.2rem;
+           margin: -0.1rem -0.15rem 0;
+           border-radius: 5px;
+           transition: background 0.16s ease;
+         }
+         .timeline-entry-toggle:hover {
+           background: ${T.greenBg}55;
          }
          .timeline-entry-toggle:focus-visible {
            outline: 2px solid ${T.green};
@@ -1549,44 +1655,82 @@ export default function Home() {
            border-radius: 2px;
            font-weight: 400;
          }
+         .timeline-toggle-action {
+           display: inline-flex;
+           align-items: center;
+           gap: 0.3rem;
+           margin-top: 0.45rem;
+           padding: 2px 7px;
+           border: 1px solid ${T.green}40;
+           border-radius: 999px;
+           background: ${T.greenBg};
+           color: ${T.green};
+           line-height: 1.2;
+         }
          .timeline-toggle-hint {
            display: inline-flex;
-           margin-top: 0.45rem;
            font-family: ${FONT_MONO};
            font-size: 0.64rem;
-           color: ${T.green};
+         }
+         .timeline-toggle-icon {
+           width: 12px;
+           height: 12px;
+           transform: rotate(0deg);
+           transition: transform 0.18s ease;
+         }
+         .timeline-entry-toggle[aria-expanded="true"] .timeline-toggle-icon {
+           transform: rotate(180deg);
          }
          .timeline-entry-detail {
            position: relative;
            max-width: 70ch;
            margin-top: 0.55rem;
            overflow: hidden;
-           color: ${T.muted};
+           color: ${T.sub};
            font-family: ${FONT_SANS};
-           font-size: 0.79rem;
+           font-size: 0.8rem;
            line-height: 1.78;
            word-break: keep-all;
            transition: max-height 0.22s ease, opacity 0.18s ease;
          }
-         .timeline-entry-detail p {
+         .timeline-entry-note {
            margin: 0;
          }
+         .timeline-entry-bullets {
+           display: grid;
+           gap: 0.28rem;
+           margin: 0.45rem 0 0;
+           padding-left: 1rem;
+         }
+         .timeline-entry-bullets li::marker {
+           color: ${T.green};
+         }
          .timeline-entry-detail.collapsed {
-           max-height: 3.6rem;
-           opacity: 0.72;
-           -webkit-mask-image: linear-gradient(to bottom, #000 62%, transparent 100%);
-           mask-image: linear-gradient(to bottom, #000 62%, transparent 100%);
+           max-height: 4.2rem;
+           opacity: 0.88;
+           -webkit-mask-image: linear-gradient(to bottom, #000 78%, transparent 100%);
+           mask-image: linear-gradient(to bottom, #000 78%, transparent 100%);
          }
          .timeline-entry-detail.expanded {
-           max-height: 18rem;
+           max-height: none;
            opacity: 1;
+           overflow: visible;
            -webkit-mask-image: none;
            mask-image: none;
          }
          .timeline-chip-connector {
            align-self: start;
+           position: relative;
            height: 1px;
-           margin-top: 2.35rem;
+           min-height: 2.6rem;
+         }
+         .timeline-chip-connector::before {
+           content: "";
+           position: absolute;
+           left: 0;
+           right: 0;
+           top: 50%;
+           height: 1px;
            background: linear-gradient(to right, ${T.border}, ${T.green}70);
          }
          .timeline-chip-panel {
@@ -1594,7 +1738,7 @@ export default function Home() {
            flex-wrap: wrap;
            align-content: flex-start;
            gap: 0.38rem;
-           padding-top: 1.45rem;
+           padding-top: 1.35rem;
            min-width: 0;
          }
          .timeline-chip {
@@ -1610,7 +1754,7 @@ export default function Home() {
            text-decoration: none;
            word-break: break-word;
          }
-         .timeline-chip.accent {
+         .timeline-chip.link {
            color: ${T.green};
            background: ${T.greenBg};
            border: 1px solid ${T.green}40;

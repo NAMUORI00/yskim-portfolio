@@ -22,16 +22,19 @@ describe("Home timeline section", () => {
   it("uses a connected B-type expandable timeline structure", () => {
     const block = timelineBlock();
 
+    expect(source).toContain("function buildTimelineChipItems");
     expect(block).toContain('className="timeline-connection-list"');
     expect(block).toContain('className="timeline-connection-entry"');
     expect(block).toContain('className="timeline-entry-toggle"');
     expect(block).toContain("aria-expanded");
+    expect(block).toContain('className="timeline-toggle-icon"');
     expect(block).toContain('className="timeline-entry-summary"');
     expect(block).toContain('className={isExpanded ? "timeline-entry-detail expanded" : "timeline-entry-detail collapsed"}');
     expect(block).toContain('className="timeline-chip-connector"');
     expect(block).toContain('className="timeline-chip-panel"');
-    expect(block).toContain("timelineLinks");
-    expect(block).toContain("relatedProjects");
+    expect(block).toContain("timelineChipItems");
+    expect(block).not.toContain("timelineLinks.map");
+    expect(block).not.toContain("relatedProjects.map");
     expect(source).toContain("function isCvArchiveHref");
     expect(source).toContain("expandedTimelineKeys");
     expect(source).toContain("toggleTimelineEntry");
@@ -44,5 +47,18 @@ describe("Home timeline section", () => {
     expect(block).not.toContain('className="timeline-focus-panel"');
     expect(source).not.toContain("function useTimelineFocusScroll");
     expect(source).not.toContain("TIMELINE_AUTOSCROLL_STEP");
+  });
+
+  it("keeps expanded content structured, readable, and unclipped", () => {
+    const block = timelineBlock();
+
+    expect(block).toContain('className="timeline-entry-note"');
+    expect(block).toContain('className="timeline-entry-bullets"');
+    expect(block).not.toContain('detailParts.join(" ")');
+    expect(source).toContain(".timeline-entry-detail.expanded");
+    expect(source).toContain("max-height: none");
+    expect(source).not.toContain("max-height: 18rem");
+    expect(source).not.toContain("opacity: 0.72");
+    expect(source).not.toContain("margin-top: 2.35rem");
   });
 });
