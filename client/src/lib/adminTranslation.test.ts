@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { NoteEntry, ProfileContent, ProjectEntry, ResearchEntry } from "@/content";
+import type { EducationEntry, NoteEntry, ProfileContent, ProjectEntry, ResearchEntry, SkillGroup, StarredRepo } from "@/content";
 import {
   applyTranslationValues,
   buildTranslationEntries,
@@ -58,6 +58,18 @@ const note: NoteEntry = {
   body: "노트 본문",
 };
 
+const education: EducationEntry[] = [
+  { degree: "석사 과정", school: "한국대학", period: "2025 - 현재", note: "AI 연구실", current: true },
+];
+
+const skills: SkillGroup[] = [
+  { label: "핵심 언어", items: ["Python", "TypeScript"] },
+];
+
+const starred: StarredRepo[] = [
+  { name: "ggerganov/llama.cpp", stars: "82k", desc: "LLM inference in C/C++" },
+];
+
 describe("admin translation helpers", () => {
   it("builds translation entries for editable content", () => {
     expect(buildTranslationEntries({ kind: "profile", value: profile }).map((entry) => entry.key)).toEqual([
@@ -70,6 +82,20 @@ describe("admin translation helpers", () => {
     expect(buildTranslationEntries({ kind: "project", value: project }).map((entry) => entry.key)).toContain("projects.portfolio.body");
     expect(buildTranslationEntries({ kind: "research", value: research }).map((entry) => entry.key)).toContain("research.rag.title");
     expect(buildTranslationEntries({ kind: "note", value: note }).map((entry) => entry.key)).toContain("notes.note.summary");
+    expect(buildTranslationEntries({ kind: "education", value: education }).map((entry) => entry.key)).toEqual([
+      "education.0.degree",
+      "education.0.school",
+      "education.0.period",
+      "education.0.note",
+    ]);
+    expect(buildTranslationEntries({ kind: "skills", value: skills }).map((entry) => entry.key)).toEqual([
+      "skills.%ED%95%B5%EC%8B%AC%20%EC%96%B8%EC%96%B4.label",
+      "skills.%ED%95%B5%EC%8B%AC%20%EC%96%B8%EC%96%B4.items.0",
+      "skills.%ED%95%B5%EC%8B%AC%20%EC%96%B8%EC%96%B4.items.1",
+    ]);
+    expect(buildTranslationEntries({ kind: "starred", value: starred }).map((entry) => entry.key)).toEqual([
+      "starred.ggerganov%2Fllama%2Ecpp.desc",
+    ]);
   });
 
   it("applies translated values and records source hashes", () => {
@@ -96,6 +122,25 @@ describe("admin translation helpers", () => {
 
     expect(getTranslationValue(cleared, "projects.portfolio.name")).toBe("");
     expect(cleared.sourceHashes?.["projects.portfolio.name"]).toBeUndefined();
+  });
+
+  it("applies translations for education, skills, and starred repositories", () => {
+    const entries = [
+      ...buildTranslationEntries({ kind: "education", value: education }),
+      ...buildTranslationEntries({ kind: "skills", value: skills }),
+      ...buildTranslationEntries({ kind: "starred", value: starred }),
+    ];
+    const translated = applyTranslationValues(createEnglishTranslations(), entries, {
+      "education.0.degree": "M.S. candidate",
+      "skills.%ED%95%B5%EC%8B%AC%20%EC%96%B8%EC%96%B4.label": "Core languages",
+      "skills.%ED%95%B5%EC%8B%AC%20%EC%96%B8%EC%96%B4.items.0": "Python",
+      "starred.ggerganov%2Fllama%2Ecpp.desc": "LLM inference in C/C++",
+    });
+
+    expect(getTranslationValue(translated, "education.0.degree")).toBe("M.S. candidate");
+    expect(getTranslationValue(translated, "skills.%ED%95%B5%EC%8B%AC%20%EC%96%B8%EC%96%B4.label")).toBe("Core languages");
+    expect(getTranslationValue(translated, "skills.%ED%95%B5%EC%8B%AC%20%EC%96%B8%EC%96%B4.items.0")).toBe("Python");
+    expect(getTranslationValue(translated, "starred.ggerganov%2Fllama%2Ecpp.desc")).toBe("LLM inference in C/C++");
   });
 
   it("reports stale translations when Korean source changes", () => {

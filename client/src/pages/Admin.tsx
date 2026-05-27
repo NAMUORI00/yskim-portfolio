@@ -65,6 +65,7 @@ import {
 
 type SectionKey = AdminUxSectionKey;
 type EditorMode = "write" | "source";
+type AdminEditorLocale = "ko" | "en";
 type MoveDirection = "up" | "down";
 type UndoAction = { message: string; onUndo: () => void };
 type PendingAvatarUpload = AvatarUploadDraft & { fileName: string; previewUrl: string };
@@ -289,6 +290,7 @@ export default function Admin() {
   const [projectIndex, setProjectIndex] = useState(0);
   const [noteIndex, setNoteIndex] = useState(0);
   const [mode, setMode] = useState<EditorMode>("write");
+  const [adminEditorLocale, setAdminEditorLocale] = useState<AdminEditorLocale>("ko");
   const [status, setStatusMessage] = useState("변경사항을 저장하면 draft 브랜치 커밋으로 전송됩니다.");
   const [publishLink, setPublishLink] = useState<PublishResultLink | null>(null);
   const [skillDrafts, setSkillDrafts] = useState<Record<number, string>>({});
@@ -342,6 +344,10 @@ export default function Admin() {
     setSkillCandidateTargetIndex((index) => Math.min(index, Math.max(0, skills.length - 1)));
   }, [skills.length]);
 
+  useEffect(() => {
+    setAdminEditorLocale("ko");
+  }, [active]);
+
   const target = useMemo<SaveTarget>(() => {
     if (active === "profile") return { kind: "profile", value: profile };
     if (active === "education") return { kind: "education", value: education };
@@ -367,16 +373,20 @@ export default function Admin() {
   }, [active, avatarUpload, baseSavePayload, coverUploads, projectIndex, projects, research, researchIndex]);
   const translationSource = useMemo<TranslationSource | null>(() => {
     if (active === "profile") return { kind: "profile", value: profile };
+    if (active === "education") return { kind: "education", value: education };
+    if (active === "skills") return { kind: "skills", value: skills };
+    if (active === "starred") return { kind: "starred", value: starred };
     if (active === "projects" && projects[projectIndex]) return { kind: "project", value: projects[projectIndex] };
     if (active === "research" && research[researchIndex]) return { kind: "research", value: research[researchIndex] };
     if (active === "notes" && notes[noteIndex]) return { kind: "note", value: notes[noteIndex] };
     return null;
-  }, [active, noteIndex, notes, profile, projectIndex, projects, research, researchIndex]);
+  }, [active, education, noteIndex, notes, profile, projectIndex, projects, research, researchIndex, skills, starred]);
   const translationEntries = useMemo<TranslationEntry[]>(
     () => (translationSource ? buildTranslationEntries(translationSource) : []),
     [translationSource],
   );
   const activeTranslationStats = translationSource ? translationStats(enTranslations, translationSource) : null;
+  const hasEnglishEditor = translationEntries.length > 0 && Boolean(activeTranslationStats);
   const activeDirty = hasDirtySection(dirtySections, active);
   const activeDraftReady = hasDirtySection(readyDraftSections, active);
   const dirtySectionLabels = dirtySections.map(sectionLabel).join(", ");
@@ -425,6 +435,10 @@ export default function Admin() {
       translations: enTranslations,
     });
   }, [active, canEdit, enTranslations, previewContent, previewId]);
+
+  useEffect(() => {
+    if (adminEditorLocale === "en" && !hasEnglishEditor) setAdminEditorLocale("ko");
+  }, [adminEditorLocale, hasEnglishEditor]);
 
   function markSectionDirty(section: SectionKey) {
     setDirtySections((items) => markDirtySection(items, section));
@@ -1207,8 +1221,36 @@ export default function Admin() {
     );
   }
 
-  function renderTranslationPanel() {
-    if (!translationSource || translationEntries.length === 0 || !activeTranslationStats) return null;
+  function renderLocaleTabs() {
+    return (
+      <div className="admin-locale-tabs" aria-label="Admin editor language">
+        <button type="button" className={adminEditorLocale === "ko" ? "active" : ""} onClick={() => setAdminEditorLocale("ko")}>
+          KO 원문
+          {activeDirty && <span>unsaved</span>}
+        </button>
+        <button
+          type="button"
+          className={adminEditorLocale === "en" ? "active" : ""}
+          disabled={!hasEnglishEditor}
+          onClick={() => setAdminEditorLocale("en")}
+        >
+          EN 초안
+          {activeTranslationStats && (
+            <span>
+              {activeTranslationStats.translated}/{activeTranslationStats.total}
+              {activeTranslationStats.stale > 0 ? ` stale ${activeTranslationStats.stale}` : ""}
+            </span>
+          )}
+          {translationDirty && <span>unsaved</span>}
+        </button>
+      </div>
+    );
+  }
+
+  function renderEnglishEditor() {
+    if (!translationSource || translationEntries.length === 0 || !activeTranslationStats) {
+      return <div className="admin-empty">이 섹션에는 영어 초안으로 관리할 텍스트가 없습니다.</div>;
+    }
     return (
       <div className="admin-translation">
         <div className="admin-translation-head">
@@ -1216,7 +1258,7 @@ export default function Admin() {
             <span className="admin-kicker">english page</span>
             <strong>영어 번역 초안</strong>
             <p>
-              한국어 원문 기준으로 EN 초안을 만들고, 필요한 문장만 직접 다듬은 뒤 content/i18n/en.json으로 저장합니다.
+              한국어 원문은 각 필드 아래에 읽기 전용으로 표시됩니다. EN 초안을 만든 뒤 필요한 문장만 직접 다듬고 저장하세요.
             </p>
           </div>
           <div className="admin-translation-actions">
@@ -1331,7 +1373,6 @@ export default function Admin() {
             <TextArea disabled={!canEdit} label="Lead" value={profile.summaryLead} onChange={(summaryLead) => updateProfile({ summaryLead })} rows={4} />
             <TextArea disabled={!canEdit} label="Summary paragraphs" value={profile.summary.join("\n\n")} onChange={(value) => updateProfile({ summary: value.split(/\n\s*\n/).filter(Boolean) })} rows={8} />
           </div>
-          {renderTranslationPanel()}
         </div>
       );
     }
@@ -1411,7 +1452,6 @@ export default function Admin() {
             <Field disabled={!canEdit} label="Related notes" value={project.relatedNotes.join(", ")} onChange={(value) => updateProject({ relatedNotes: splitList(value) })} />
           </div>
           <MarkdownEditor disabled={!canEdit} label="Project body" body={project.body} mode={mode} onMode={setMode} onChange={(body) => updateProject({ body })} onPreviewClick={handlePreviewClick} previewUrl={adminPreviewUrl} />
-          {renderTranslationPanel()}
         </div>
       );
     }
@@ -1456,7 +1496,6 @@ export default function Admin() {
             <Field disabled={!canEdit} label="Related notes" value={item.relatedNotes.join(", ")} onChange={(value) => updateResearch({ relatedNotes: splitList(value) })} />
           </div>
           <MarkdownEditor disabled={!canEdit} label="Research body" body={item.body} mode={mode} onMode={setMode} onChange={(body) => updateResearch({ body })} onPreviewClick={handlePreviewClick} previewUrl={adminPreviewUrl} />
-          {renderTranslationPanel()}
         </div>
       );
     }
@@ -1571,8 +1610,7 @@ export default function Admin() {
           <Field disabled={!canEdit} label="Related projects" value={note.relatedProjects.join(", ")} onChange={(value) => updateNote({ relatedProjects: splitList(value) })} />
           <Field disabled={!canEdit} label="Related research" value={note.relatedResearch.join(", ")} onChange={(value) => updateNote({ relatedResearch: splitList(value) })} />
         </div>
-        <MarkdownEditor disabled={!canEdit} label="Note body" body={note.body} mode={mode} onMode={setMode} onChange={(body) => updateNote({ body })} onPreviewClick={handlePreviewClick} previewUrl={adminPreviewUrl} />
-        {renderTranslationPanel()}
+      <MarkdownEditor disabled={!canEdit} label="Note body" body={note.body} mode={mode} onMode={setMode} onChange={(body) => updateNote({ body })} onPreviewClick={handlePreviewClick} previewUrl={adminPreviewUrl} />
       </div>
     );
   }
@@ -1668,7 +1706,10 @@ export default function Admin() {
               </div>
             </div>
           )}
-          <div className="admin-panel">{renderEditor()}</div>
+          <div className="admin-panel">
+            {renderLocaleTabs()}
+            {adminEditorLocale === "en" ? renderEnglishEditor() : renderEditor()}
+          </div>
         </section>
       </div>
       <style>{`
@@ -1680,15 +1721,15 @@ export default function Admin() {
         .admin-sidebar nav { display: grid; gap: 4px; margin-top: 28px; }
         .admin-sidebar button, .admin-actions button, .admin-actions a, .admin-editor-bar button, .admin-editor-bar a, .admin-file-button,
         .admin-cover-actions button,
-        .admin-toolbar button, .admin-card-actions button, .admin-inline-list button, .admin-skill-chip button, .admin-skill-add-form button, .admin-import button, .admin-candidate button, .admin-undo-toast button, .admin-translation button {
+        .admin-toolbar button, .admin-card-actions button, .admin-inline-list button, .admin-skill-chip button, .admin-skill-add-form button, .admin-import button, .admin-candidate button, .admin-undo-toast button, .admin-translation button, .admin-locale-tabs button {
           border: 1px solid ${T.border}; background: ${T.surface}; color: ${T.sub};
           border-radius: 4px; padding: 8px 10px; font-family: ${FONT_MONO}; cursor: pointer; text-decoration: none;
         }
         .admin-sidebar button { text-align: left; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
-        .admin-sidebar button.active, .admin-editor-bar button.active { color: ${T.green}; border-color: ${T.green}; background: ${T.greenBg}; }
+        .admin-sidebar button.active, .admin-editor-bar button.active, .admin-locale-tabs button.active { color: ${T.green}; border-color: ${T.green}; background: ${T.greenBg}; }
         .admin-sidebar button.dirty { border-color: ${T.green}; }
         .admin-dirty-dot { width: 7px; height: 7px; border-radius: 999px; background: ${T.green}; box-shadow: 0 0 0 3px ${T.greenBg}; flex: 0 0 auto; }
-        .admin-actions button:disabled, .admin-actions a[aria-disabled="true"], .admin-editor-bar button:disabled, .admin-editor-bar a[aria-disabled="true"], .admin-file-button[aria-disabled="true"], .admin-cover-actions button:disabled, .admin-toolbar button:disabled, .admin-card-actions button:disabled, .admin-inline-list button:disabled, .admin-skill-chip button:disabled, .admin-skill-add-form button:disabled, .admin-import button:disabled, .admin-candidate button:disabled, .admin-translation button:disabled { opacity: .45; cursor: not-allowed; }
+        .admin-actions button:disabled, .admin-actions a[aria-disabled="true"], .admin-editor-bar button:disabled, .admin-editor-bar a[aria-disabled="true"], .admin-file-button[aria-disabled="true"], .admin-cover-actions button:disabled, .admin-toolbar button:disabled, .admin-card-actions button:disabled, .admin-inline-list button:disabled, .admin-skill-chip button:disabled, .admin-skill-add-form button:disabled, .admin-import button:disabled, .admin-candidate button:disabled, .admin-translation button:disabled, .admin-locale-tabs button:disabled { opacity: .45; cursor: not-allowed; }
         .admin-toolbar button.danger, .admin-card-actions button.danger, .admin-inline-list button.danger, .admin-skill-chip button.danger { color: ${T.red}; border-color: ${T.red}; background: ${T.redBg}; }
         .admin-main { border-left: 0; min-width: 0; padding: 28px; }
         .admin-header { display: flex; justify-content: space-between; gap: 20px; align-items: flex-start; margin-bottom: 22px; }
@@ -1717,7 +1758,17 @@ export default function Admin() {
         .admin-undo-toast span { line-height: 1.6; }
         .admin-undo-toast div { display: flex; gap: 8px; flex-wrap: wrap; }
         .admin-undo-toast button { border-color: ${T.green}; color: ${T.green}; background: ${T.surface}; }
-        .admin-panel { border: 1px solid ${T.border}; border-radius: 6px; padding: 18px; background: ${T.bg}; }
+        .admin-panel { border: 1px solid ${T.border}; border-radius: 6px; padding: 18px; background: ${T.bg}; display: grid; gap: 14px; }
+        .admin-locale-tabs {
+          display: inline-flex; width: fit-content; max-width: 100%; border: 1px solid ${T.border};
+          background: ${T.surface}; border-radius: 6px; padding: 4px; gap: 4px; flex-wrap: wrap;
+        }
+        .admin-locale-tabs button {
+          display: inline-flex; align-items: center; gap: 8px; border-radius: 4px; min-height: 34px;
+        }
+        .admin-locale-tabs button span {
+          color: inherit; opacity: .78; font-size: .66rem; text-transform: uppercase;
+        }
         .admin-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
         .admin-stack { display: grid; gap: 14px; }
         .admin-card { border: 1px solid ${T.border}; background: ${T.surface}; border-radius: 6px; padding: 14px; display: grid; gap: 12px; }

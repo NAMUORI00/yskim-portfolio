@@ -1,10 +1,13 @@
-import type { NoteEntry, ProfileContent, ProjectEntry, ResearchEntry } from "@/content";
+import type { EducationEntry, NoteEntry, ProfileContent, ProjectEntry, ResearchEntry, SkillGroup, StarredRepo } from "@/content";
 import { createEnglishTranslations, type EnglishTranslations } from "./i18nContent";
 
 export type TranslationSource =
   | { kind: "profile"; value: ProfileContent }
+  | { kind: "education"; value: EducationEntry[] }
   | { kind: "project"; value: ProjectEntry }
   | { kind: "research"; value: ResearchEntry }
+  | { kind: "skills"; value: SkillGroup[] }
+  | { kind: "starred"; value: StarredRepo[] }
   | { kind: "note"; value: NoteEntry };
 
 export interface TranslationEntry {
@@ -33,6 +36,14 @@ function entry(key: string, label: string, text: string): TranslationEntry[] {
   return clean ? [{ key, label, text }] : [];
 }
 
+function encodeKeySegment(value: string): string {
+  return encodeURIComponent(value).replace(/\./g, "%2E");
+}
+
+function decodeKeySegment(value: string): string {
+  return decodeURIComponent(value);
+}
+
 export function buildTranslationEntries(source: TranslationSource): TranslationEntry[] {
   if (source.kind === "profile") {
     return [
@@ -41,6 +52,15 @@ export function buildTranslationEntries(source: TranslationSource): TranslationE
       ...entry("profile.summaryLead", "Profile lead", source.value.summaryLead),
       ...source.value.summary.flatMap((paragraph, index) => entry(`profile.summary.${index}`, `Profile paragraph ${index + 1}`, paragraph)),
     ];
+  }
+
+  if (source.kind === "education") {
+    return source.value.flatMap((item, index) => [
+      ...entry(`education.${index}.degree`, `Timeline ${index + 1} degree`, item.degree),
+      ...entry(`education.${index}.school`, `Timeline ${index + 1} school`, item.school),
+      ...entry(`education.${index}.period`, `Timeline ${index + 1} period`, item.period),
+      ...entry(`education.${index}.note`, `Timeline ${index + 1} note`, item.note),
+    ]);
   }
 
   if (source.kind === "project") {
@@ -62,6 +82,22 @@ export function buildTranslationEntries(source: TranslationSource): TranslationE
       ...entry(`research.${slug}.desc`, "Research description", source.value.desc),
       ...entry(`research.${slug}.body`, "Research body", source.value.body),
     ];
+  }
+
+  if (source.kind === "skills") {
+    return source.value.flatMap((group) => {
+      const groupKey = encodeKeySegment(group.label);
+      return [
+        ...entry(`skills.${groupKey}.label`, `Skill group: ${group.label}`, group.label),
+        ...group.items.flatMap((item, index) => entry(`skills.${groupKey}.items.${index}`, `${group.label} skill ${index + 1}`, item)),
+      ];
+    });
+  }
+
+  if (source.kind === "starred") {
+    return source.value.flatMap((repo) =>
+      entry(`starred.${encodeKeySegment(repo.name)}.desc`, `Starred repository: ${repo.name}`, repo.desc),
+    );
   }
 
   const slug = source.value.slug;
@@ -99,9 +135,13 @@ export function getTranslationValue(translations: EnglishTranslations, key: stri
   const parts = key.split(".");
   if (parts[0] === "profile" && parts[1] === "summary") return translations.profile?.summary?.[Number(parts[2])] ?? "";
   if (parts[0] === "profile") return String(translations.profile?.[parts[1] as keyof NonNullable<EnglishTranslations["profile"]>] ?? "");
+  if (parts[0] === "education") return String(translations.education?.[Number(parts[1])]?.[parts[2] as keyof NonNullable<EnglishTranslations["education"]>[number]] ?? "");
   if (parts[0] === "projects" && parts[2] === "tags") return translations.projects?.[parts[1]]?.tags?.[Number(parts[3])] ?? "";
   if (parts[0] === "projects") return String(translations.projects?.[parts[1]]?.[parts[2] as keyof NonNullable<EnglishTranslations["projects"]>[string]] ?? "");
   if (parts[0] === "research") return String(translations.research?.[parts[1]]?.[parts[2] as keyof NonNullable<EnglishTranslations["research"]>[string]] ?? "");
+  if (parts[0] === "skills" && parts[2] === "items") return translations.skills?.[decodeKeySegment(parts[1])]?.items?.[Number(parts[3])] ?? "";
+  if (parts[0] === "skills") return String(translations.skills?.[decodeKeySegment(parts[1])]?.[parts[2] as keyof NonNullable<EnglishTranslations["skills"]>[string]] ?? "");
+  if (parts[0] === "starred") return String(translations.starred?.[decodeKeySegment(parts[1])]?.[parts[2] as keyof NonNullable<EnglishTranslations["starred"]>[string]] ?? "");
   if (parts[0] === "notes" && parts[2] === "tags") return translations.notes?.[parts[1]]?.tags?.[Number(parts[3])] ?? "";
   if (parts[0] === "notes") return String(translations.notes?.[parts[1]]?.[parts[2] as keyof NonNullable<EnglishTranslations["notes"]>[string]] ?? "");
   return "";
@@ -118,6 +158,10 @@ function setTranslationValue(translations: EnglishTranslations, key: string, val
       translations.profile[parts[1] as "status" | "headline" | "summaryLead"] = value;
     }
   }
+  if (parts[0] === "education") {
+    translations.education = ensureArrayItem(translations.education, Number(parts[1]), () => ({}));
+    translations.education[Number(parts[1])][parts[2] as "degree" | "school" | "period" | "note"] = value;
+  }
   if (parts[0] === "projects") {
     translations.projects = translations.projects ?? {};
     const project = (translations.projects[parts[1]] = translations.projects[parts[1]] ?? {});
@@ -132,6 +176,22 @@ function setTranslationValue(translations: EnglishTranslations, key: string, val
     translations.research = translations.research ?? {};
     translations.research[parts[1]] = translations.research[parts[1]] ?? {};
     translations.research[parts[1]][parts[2] as "title" | "desc" | "body"] = value;
+  }
+  if (parts[0] === "skills") {
+    translations.skills = translations.skills ?? {};
+    const groupKey = decodeKeySegment(parts[1]);
+    const group = (translations.skills[groupKey] = translations.skills[groupKey] ?? {});
+    if (parts[2] === "items") {
+      group.items = ensureArrayItem(group.items, Number(parts[3]), () => "");
+      group.items[Number(parts[3])] = value;
+    } else {
+      group.label = value;
+    }
+  }
+  if (parts[0] === "starred") {
+    translations.starred = translations.starred ?? {};
+    const repo = (translations.starred[decodeKeySegment(parts[1])] = translations.starred[decodeKeySegment(parts[1])] ?? {});
+    repo.desc = value;
   }
   if (parts[0] === "notes") {
     translations.notes = translations.notes ?? {};
