@@ -19,25 +19,30 @@ describe("Home timeline section", () => {
     expect(timelineDeclaration).not.toContain("item.highlight");
   });
 
-  it("uses a connected B-type expandable timeline structure", () => {
+  it("uses a connected B-type progressive timeline structure", () => {
     const block = timelineBlock();
 
     expect(source).toContain("function buildTimelineChipItems");
+    expect(source).toContain("function useTimelineProgressiveReveal");
+    expect(source).toContain("TIMELINE_BATCH_SIZE");
     expect(block).toContain('className="timeline-connection-list"');
     expect(block).toContain('className="timeline-connection-entry"');
-    expect(block).toContain('className="timeline-entry-toggle"');
-    expect(block).toContain("aria-expanded");
-    expect(block).toContain('className="timeline-toggle-icon"');
     expect(block).toContain('className="timeline-entry-summary"');
-    expect(block).toContain('className={isExpanded ? "timeline-entry-detail expanded" : "timeline-entry-detail collapsed"}');
+    expect(block).toContain('className="timeline-entry-detail"');
     expect(block).toContain('className="timeline-chip-connector"');
     expect(block).toContain('className="timeline-chip-panel"');
+    expect(block).toContain("visibleTimelineEntries.map");
+    expect(block).toContain('className="timeline-load-sentinel"');
+    expect(block).toContain('className="timeline-load-more"');
     expect(block).toContain("timelineChipItems");
     expect(block).not.toContain("timelineLinks.map");
     expect(block).not.toContain("relatedProjects.map");
     expect(source).toContain("function isCvArchiveHref");
-    expect(source).toContain("expandedTimelineKeys");
-    expect(source).toContain("toggleTimelineEntry");
+    expect(source).not.toContain("expandedTimelineKeys");
+    expect(source).not.toContain("toggleTimelineEntry");
+    expect(block).not.toContain("aria-expanded");
+    expect(block).not.toContain("timeline-entry-toggle");
+    expect(block).not.toContain("timeline-toggle-icon");
   });
 
   it("keeps archive detail on the main page instead of depending on a CV link or auto-scroll panel", () => {
@@ -49,13 +54,14 @@ describe("Home timeline section", () => {
     expect(source).not.toContain("TIMELINE_AUTOSCROLL_STEP");
   });
 
-  it("keeps expanded content structured, readable, and unclipped", () => {
+  it("keeps timeline entry content fully visible, structured, readable, and unclipped", () => {
     const block = timelineBlock();
 
     expect(block).toContain('className="timeline-entry-note"');
     expect(block).toContain('className="timeline-entry-bullets"');
     expect(block).not.toContain('detailParts.join(" ")');
-    expect(source).toContain(".timeline-entry-detail.expanded");
+    expect(source).not.toContain(".timeline-entry-detail.collapsed");
+    expect(source).not.toContain(".timeline-entry-detail.expanded");
     expect(source).toContain("max-height: none");
     expect(source).not.toContain("max-height: 18rem");
     expect(source).not.toContain("opacity: 0.72");

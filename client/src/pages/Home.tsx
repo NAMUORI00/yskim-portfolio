@@ -35,6 +35,7 @@ const ACTIVE_SECTION_ANCHOR_RATIO = 0.5;
 const ACTIVE_SCROLL_END_TOLERANCE = 4;
 const MIN_SCROLL_END_PADDING = 48;
 const SCROLL_END_PADDING_GAP = 16;
+const TIMELINE_BATCH_SIZE = 4;
 
 /* ── SVG 아이콘 컴포넌트 ── */
 function NavIcon({ type, color, size = 13 }: { type: string; color: string; size?: number }) {
@@ -221,6 +222,41 @@ function useScrollEndPadding(lastSectionId: string) {
   }, [lastSectionId]);
 
   return `${padding}px`;
+}
+
+function useTimelineProgressiveReveal(totalCount: number) {
+  const [visibleCount, setVisibleCount] = useState(() => Math.min(TIMELINE_BATCH_SIZE, totalCount));
+  const sentinelRef = useRef<HTMLDivElement>(null);
+  const hasMore = visibleCount < totalCount;
+
+  const revealMore = useCallback(() => {
+    setVisibleCount((current) => Math.min(totalCount, current + TIMELINE_BATCH_SIZE));
+  }, [totalCount]);
+
+  useEffect(() => {
+    setVisibleCount((current) => {
+      const minimum = Math.min(TIMELINE_BATCH_SIZE, totalCount);
+      return Math.min(Math.max(current, minimum), totalCount);
+    });
+  }, [totalCount]);
+
+  useEffect(() => {
+    const sentinel = sentinelRef.current;
+    if (!sentinel || !hasMore) return;
+
+    const root = document.getElementById("scroll-area");
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry?.isIntersecting) revealMore();
+      },
+      { root, rootMargin: "400px 0px", threshold: 0 }
+    );
+
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [hasMore, revealMore]);
+
+  return { visibleCount, hasMore, revealMore, sentinelRef };
 }
 
 /* ── fade-up 애니메이션 훅 ── */
@@ -565,10 +601,16 @@ export default function Home() {
   const KNOWLEDGE_GRAPH = useMemo(() => buildKnowledgeGraph(content), [content]);
   const active = useActiveSection(NAV_IDS);
   const scrollEndPadding = useScrollEndPadding("interests");
+  const {
+    visibleCount: visibleTimelineCount,
+    hasMore: hasMoreTimelineEntries,
+    revealMore: revealMoreTimelineEntries,
+    sentinelRef: timelineLoadSentinelRef,
+  } = useTimelineProgressiveReveal(TIMELINE_ENTRIES.length);
+  const visibleTimelineEntries = TIMELINE_ENTRIES.slice(0, visibleTimelineCount);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [focusedGraphNodeId, setFocusedGraphNodeId] = useState<string | null>(null);
   const [coverPreview, setCoverPreview] = useState<CoverPreviewPayload | null>(null);
-  const [expandedTimelineKeys, setExpandedTimelineKeys] = useState<Set<string>>(() => new Set());
   const previewHref = useCallback((path: string) => withAdminPreviewUrl(path, previewId), [previewId]);
   const label = (key: string, fallback: string) => (locale === "en" ? uiText(sourceTranslations, key, fallback) : fallback);
   const themeToggleLabel = theme === "dark" ? label("lightMode", "라이트 모드") : label("darkMode", "다크 모드");
@@ -589,18 +631,6 @@ export default function Home() {
       window.removeEventListener("keydown", closeOnEscape);
     };
   }, [coverPreview]);
-
-  const toggleTimelineEntry = useCallback((key: string) => {
-    setExpandedTimelineKeys((current) => {
-      const next = new Set(current);
-      if (next.has(key)) {
-        next.delete(key);
-      } else {
-        next.add(key);
-      }
-      return next;
-    });
-  }, []);
 
   const scrollTo = useCallback((id: string) => {
     const el = document.getElementById(id);
@@ -1009,10 +1039,8 @@ export default function Home() {
           <FadeSection>
             <SectionTitle id="education" icon="graduation" T={T}>Timeline</SectionTitle>
             <div className="timeline-connection-list" aria-label={locale === "en" ? "Timeline entries" : "타임라인 항목"}>
-              {TIMELINE_ENTRIES.map((edu, index) => {
+              {visibleTimelineEntries.map((edu) => {
                 const timelineKey = `${edu.type}:${edu.degree}:${edu.period}`;
-                const detailId = `timeline-detail-${index}`;
-                const isExpanded = expandedTimelineKeys.has(timelineKey);
                 const relatedProjects = PROJECTS.filter((project) => edu.relatedProjects.includes(project.slug));
                 const timelineChipItems = buildTimelineChipItems({
                   links: edu.links,
@@ -1026,13 +1054,7 @@ export default function Home() {
                     <span className={edu.current ? "timeline-node current" : "timeline-node"} />
                   </div>
                   <div className="timeline-main-copy">
-                    <button
-                      type="button"
-                      className="timeline-entry-toggle"
-                      aria-expanded={isExpanded}
-                      aria-controls={detailId}
-                      onClick={() => toggleTimelineEntry(timelineKey)}
-                    >
+                    <div className="timeline-entry-head">
                       <span className="timeline-kicker">
                         {timelineTypeLabel(edu.type, locale)} · {edu.period}
                       </span>
@@ -1041,15 +1063,9 @@ export default function Home() {
                         <span className="timeline-school">{edu.school}</span>
                         {edu.current && <span className="timeline-current">{label("current", "진행 중")}</span>}
                       </span>
-                      <span className="timeline-toggle-action">
-                        <span className="timeline-toggle-hint">{isExpanded ? (locale === "en" ? "Collapse" : "접기") : (locale === "en" ? "Expand" : "펼치기")}</span>
-                        <svg className="timeline-toggle-icon" aria-hidden="true" viewBox="0 0 16 16" fill="none">
-                          <path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
-                        </svg>
-                      </span>
-                    </button>
+                    </div>
                     {(edu.note || edu.bullets.length > 0) && (
-                      <div id={detailId} className={isExpanded ? "timeline-entry-detail expanded" : "timeline-entry-detail collapsed"}>
+                      <div className="timeline-entry-detail">
                         {edu.note && <p className="timeline-entry-note">{edu.note}</p>}
                         {edu.bullets.length > 0 && (
                           <ul className="timeline-entry-bullets">
@@ -1086,6 +1102,14 @@ export default function Home() {
                 </article>
               );
               })}
+              {hasMoreTimelineEntries && (
+                <>
+                  <div ref={timelineLoadSentinelRef} className="timeline-load-sentinel" aria-hidden="true" />
+                  <button type="button" className="timeline-load-more" onClick={revealMoreTimelineEntries}>
+                    {locale === "en" ? "Load more timeline entries" : "타임라인 더 보기"}
+                  </button>
+                </>
+              )}
             </div>
           </FadeSection>
 
@@ -1600,28 +1624,9 @@ export default function Home() {
            min-width: 0;
            padding-bottom: 0.15rem;
          }
-         .timeline-entry-toggle {
-           appearance: none;
-           width: 100%;
-           border: 0;
-           background: transparent;
-           color: inherit;
-           cursor: pointer;
-           display: block;
-           text-align: left;
-           padding: 0.1rem 0.15rem 0.2rem;
-           margin: -0.1rem -0.15rem 0;
-           border-radius: 5px;
-           transition: background 0.16s ease;
-         }
-         .timeline-entry-toggle:hover {
-           background: ${T.greenBg}55;
-         }
-         .timeline-entry-toggle:focus-visible {
-           outline: 2px solid ${T.green};
-           outline-offset: 4px;
-           border-radius: 3px;
-         }
+          .timeline-entry-head {
+            padding: 0.05rem 0 0;
+          }
          .timeline-kicker {
            display: block;
            font-family: ${FONT_MONO};
@@ -1655,44 +1660,18 @@ export default function Home() {
            border-radius: 2px;
            font-weight: 400;
          }
-         .timeline-toggle-action {
-           display: inline-flex;
-           align-items: center;
-           gap: 0.3rem;
-           margin-top: 0.45rem;
-           padding: 2px 7px;
-           border: 1px solid ${T.green}40;
-           border-radius: 999px;
-           background: ${T.greenBg};
-           color: ${T.green};
-           line-height: 1.2;
-         }
-         .timeline-toggle-hint {
-           display: inline-flex;
-           font-family: ${FONT_MONO};
-           font-size: 0.64rem;
-         }
-         .timeline-toggle-icon {
-           width: 12px;
-           height: 12px;
-           transform: rotate(0deg);
-           transition: transform 0.18s ease;
-         }
-         .timeline-entry-toggle[aria-expanded="true"] .timeline-toggle-icon {
-           transform: rotate(180deg);
-         }
-         .timeline-entry-detail {
-           position: relative;
-           max-width: 70ch;
-           margin-top: 0.55rem;
-           overflow: hidden;
-           color: ${T.sub};
-           font-family: ${FONT_SANS};
-           font-size: 0.8rem;
-           line-height: 1.78;
-           word-break: keep-all;
-           transition: max-height 0.22s ease, opacity 0.18s ease;
-         }
+          .timeline-entry-detail {
+            position: relative;
+            max-width: 70ch;
+            max-height: none;
+            margin-top: 0.65rem;
+            overflow: visible;
+            color: ${T.sub};
+            font-family: ${FONT_SANS};
+            font-size: 0.8rem;
+            line-height: 1.78;
+            word-break: keep-all;
+          }
          .timeline-entry-note {
            margin: 0;
          }
@@ -1705,20 +1684,7 @@ export default function Home() {
          .timeline-entry-bullets li::marker {
            color: ${T.green};
          }
-         .timeline-entry-detail.collapsed {
-           max-height: 4.2rem;
-           opacity: 0.88;
-           -webkit-mask-image: linear-gradient(to bottom, #000 78%, transparent 100%);
-           mask-image: linear-gradient(to bottom, #000 78%, transparent 100%);
-         }
-         .timeline-entry-detail.expanded {
-           max-height: none;
-           opacity: 1;
-           overflow: visible;
-           -webkit-mask-image: none;
-           mask-image: none;
-         }
-         .timeline-chip-connector {
+          .timeline-chip-connector {
            align-self: start;
            position: relative;
            height: 1px;
@@ -1769,12 +1735,34 @@ export default function Home() {
            border: 1px solid ${T.border};
            background: ${T.bg};
          }
-         .timeline-chip:hover,
-         .timeline-chip:focus-visible {
-           border-color: ${T.green};
-           color: ${T.green};
-           outline: none;
-         }
+          .timeline-chip:hover,
+          .timeline-chip:focus-visible {
+            border-color: ${T.green};
+            color: ${T.green};
+            outline: none;
+          }
+          .timeline-load-sentinel {
+            width: 100%;
+            height: 1px;
+          }
+          .timeline-load-more {
+            align-self: flex-start;
+            margin: 0.2rem 0 0 18px;
+            border: 1px solid ${T.green}40;
+            background: ${T.greenBg};
+            color: ${T.green};
+            border-radius: 999px;
+            padding: 0.35rem 0.7rem;
+            font-family: ${FONT_MONO};
+            font-size: 0.68rem;
+            line-height: 1.3;
+            cursor: pointer;
+          }
+          .timeline-load-more:hover,
+          .timeline-load-more:focus-visible {
+            border-color: ${T.green};
+            outline: none;
+          }
          .research-card.has-cover {
            display: grid;
            grid-template-columns: minmax(0, 1fr) clamp(76px, 12vw, 108px);
@@ -1932,6 +1920,9 @@ export default function Home() {
            .timeline-chip-panel {
              grid-column: 2;
              padding-top: 0.65rem;
+           }
+           .timeline-load-more {
+             margin-left: 16px;
            }
            .content-cover-button {
              justify-self: start;
