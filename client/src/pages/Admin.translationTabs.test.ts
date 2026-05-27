@@ -23,4 +23,12 @@ describe("Admin translation tabs source", () => {
     expect(source).toContain('label="Site title"');
     expect(source).toContain('label="Contact label"');
   });
+
+  it("presents English editing as a draft workflow", () => {
+    expect(source).toContain("영어 드래프트 편집");
+    expect(source).toContain("draft/i18n-en");
+    expect(source).toContain("Save EN draft");
+    expect(source).toContain("Publish EN draft PR");
+    expect(source).not.toContain("Save EN file");
+  });
 });

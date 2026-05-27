@@ -628,19 +628,19 @@ export default function Admin() {
         const fallback = Object.fromEntries(translationEntries.map((entryItem) => [entryItem.key, getTranslationValue(enTranslations, entryItem.key) || entryItem.text]));
         setEnTranslations((current) => applyTranslationValues(current, translationEntries, fallback));
         markTranslationsDirty();
-        setStatus("로컬 미리보기: 영어 번역 초안 흐름을 적용했습니다. 실제 번역은 배포 환경의 Workers AI에서 실행됩니다.");
+        setStatus("로컬 미리보기: EN 드래프트를 갱신했습니다. 실제 번역은 배포 환경의 Workers AI에서 실행됩니다.");
         return;
       }
-      setStatus("영어 번역 초안을 생성 중...");
+      setStatus("EN 드래프트를 생성 중...");
       const result = await postJson("/api/translate/en", { entries: translationEntries });
       const values = Object.fromEntries(
         ((result.entries ?? []) as Array<{ key: string; text: string }>).map((item) => [item.key, item.text]),
       );
       setEnTranslations((current) => applyTranslationValues(current, translationEntries, values));
       markTranslationsDirty();
-      setStatus(`영어 번역 초안을 생성했습니다: ${translationEntries.length}개 항목`);
+      setStatus(`EN 드래프트를 생성했습니다: ${translationEntries.length}개 항목`);
     } catch (error) {
-      setStatus(error instanceof Error ? error.message : "영어 번역 초안 생성에 실패했습니다.");
+      setStatus(error instanceof Error ? error.message : "EN 드래프트 생성에 실패했습니다.");
     } finally {
       setTranslationLoading(false);
     }
@@ -650,7 +650,7 @@ export default function Admin() {
     if (!canSaveDraft(canEdit, translationDirty)) return;
     const payload: SavePayload = {
       branch: "draft/i18n-en",
-      message: "Update English translations",
+      message: "Update English translation draft",
       files: [
         {
           path: "content/i18n/en.json",
@@ -661,17 +661,17 @@ export default function Admin() {
     if (localPreview && !session?.authenticated) {
       setTranslationDirty(false);
       setTranslationDraftReady(true);
-      setStatus("로컬 미리보기: content/i18n/en.json 저장 흐름을 확인했습니다.");
+      setStatus("로컬 미리보기: draft/i18n-en 저장 흐름을 확인했습니다.");
       return;
     }
     try {
-      setStatus("영어 번역 파일을 GitHub draft 브랜치에 저장 중...");
+      setStatus("EN 드래프트를 draft/i18n-en 브랜치에 저장 중...");
       const result = await postJson("/api/github/save", payload);
       setTranslationDirty(false);
       setTranslationDraftReady(true);
-      setStatus(`영어 번역 저장 완료: ${result.branch || payload.branch}`);
+      setStatus(`EN 드래프트 저장 완료: ${result.branch || payload.branch}`);
     } catch (error) {
-      setStatus(error instanceof Error ? error.message : "영어 번역 저장에 실패했습니다.");
+      setStatus(error instanceof Error ? error.message : "EN 드래프트 저장에 실패했습니다.");
     }
   }
 
@@ -679,19 +679,19 @@ export default function Admin() {
     if (!canPublishDraft(canEdit, translationDirty, translationDraftReady)) return;
     const payload = {
       branch: "draft/i18n-en",
-      title: "Update English translations",
-      body: "Portfolio admin에서 생성한 영어 번역 발행 요청입니다.",
+      title: "Update English translation draft",
+      body: "Portfolio admin에서 수정한 EN 드래프트 발행 요청입니다.",
     };
     if (localPreview && !session?.authenticated) {
-      setStatus("로컬 미리보기: draft/i18n-en에서 영어 번역 PR을 만들 준비가 됐습니다.");
+      setStatus("로컬 미리보기: draft/i18n-en에서 EN 드래프트 PR을 만들 준비가 됐습니다.");
       return;
     }
     try {
-      setStatus("영어 번역 PR 생성/업데이트 중...");
+      setStatus("EN 드래프트 PR 생성/업데이트 중...");
       const result = await postJson("/api/github/publish", payload);
-      setPublishStatus("영어 번역 PR 준비 완료", result, payload.branch);
+      setPublishStatus("EN 드래프트 PR 준비 완료", result, payload.branch);
     } catch (error) {
-      setStatus(error instanceof Error ? error.message : "영어 번역 PR 발행에 실패했습니다.");
+      setStatus(error instanceof Error ? error.message : "EN 드래프트 PR 발행에 실패했습니다.");
     }
   }
 
@@ -1288,7 +1288,7 @@ export default function Admin() {
               {activeTranslationStats.stale > 0 ? ` stale ${activeTranslationStats.stale}` : ""}
             </span>
           )}
-          {translationDirty && <span>unsaved</span>}
+          {translationDirty && <span>draft changed</span>}
         </button>
       </div>
     );
@@ -1303,9 +1303,9 @@ export default function Admin() {
         <div className="admin-translation-head">
           <div>
             <span className="admin-kicker">english page</span>
-            <strong>영어 번역 초안</strong>
+            <strong>영어 드래프트 편집</strong>
             <p>
-              한국어 원문은 각 필드 아래에 읽기 전용으로 표시됩니다. EN 초안을 만든 뒤 필요한 문장만 직접 다듬고 저장하세요.
+              아래 입력값은 draft/i18n-en 브랜치에 저장될 EN 드래프트입니다. 한국어 원문은 각 필드 아래에 읽기 전용으로 표시됩니다.
             </p>
           </div>
           <div className="admin-translation-actions">
@@ -1316,11 +1316,16 @@ export default function Admin() {
             <button type="button" disabled={!canEdit || translationLoading} onClick={generateEnglishDraft}>
               {translationLoading ? "Generating..." : "Generate EN draft"}
             </button>
-            <button type="button" disabled={!canSaveDraft(canEdit, translationDirty)} onClick={saveEnglishTranslations}>
-              Save EN file
+            <button
+              type="button"
+              disabled={!canSaveDraft(canEdit, translationDirty)}
+              title={translationDirty ? "draft/i18n-en에 EN 드래프트를 저장합니다." : "EN 입력값을 수정하면 저장할 수 있습니다."}
+              onClick={saveEnglishTranslations}
+            >
+              Save EN draft
             </button>
             <button type="button" disabled={!canPublishDraft(canEdit, translationDirty, translationDraftReady)} onClick={publishEnglishTranslations}>
-              Publish EN PR
+              Publish EN draft PR
             </button>
           </div>
         </div>
