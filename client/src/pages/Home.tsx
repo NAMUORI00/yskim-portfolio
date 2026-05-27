@@ -35,9 +35,6 @@ const ACTIVE_SECTION_ANCHOR_RATIO = 0.5;
 const ACTIVE_SCROLL_END_TOLERANCE = 4;
 const MIN_SCROLL_END_PADDING = 48;
 const SCROLL_END_PADDING_GAP = 16;
-const TIMELINE_AUTOSCROLL_STEP = 1.25;
-const TIMELINE_AUTOSCROLL_INTERVAL = 90;
-const TIMELINE_AUTOSCROLL_PAUSE_MS = 2800;
 
 /* ── SVG 아이콘 컴포넌트 ── */
 function NavIcon({ type, color, size = 13 }: { type: string; color: string; size?: number }) {
@@ -226,94 +223,6 @@ function useScrollEndPadding(lastSectionId: string) {
   return `${padding}px`;
 }
 
-function useTimelineFocusScroll(ref: React.RefObject<HTMLElement | null>) {
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-
-    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-    let active = false;
-    let scrollTimer: number | null = null;
-    let syncTimer: number | null = null;
-    let pausedUntil = 0;
-
-    const stop = () => {
-      active = false;
-      if (scrollTimer !== null) {
-        window.clearInterval(scrollTimer);
-        scrollTimer = null;
-      }
-    };
-
-    const scrollOnce = () => {
-      if (!active || reduceMotion.matches || el.scrollHeight <= el.clientHeight + 2) {
-        stop();
-        return;
-      }
-
-      const maxScroll = el.scrollHeight - el.clientHeight;
-      const next = Math.min(maxScroll, el.scrollTop + TIMELINE_AUTOSCROLL_STEP);
-      el.scrollTop = next;
-
-      if (next >= maxScroll) {
-        stop();
-      }
-    };
-
-    const start = () => {
-      if (Date.now() < pausedUntil || reduceMotion.matches || active || el.scrollHeight <= el.clientHeight + 2) return;
-      active = true;
-      scrollOnce();
-      scrollTimer = window.setInterval(scrollOnce, TIMELINE_AUTOSCROLL_INTERVAL);
-    };
-
-    const pauseAfterUserInput = () => {
-      if (!active) return;
-      pausedUntil = Date.now() + TIMELINE_AUTOSCROLL_PAUSE_MS;
-      stop();
-    };
-
-    const syncFromInteractionState = () => {
-      const isFocused = document.activeElement === el || el.contains(document.activeElement);
-      const isHovered = el.matches(":hover");
-      if (isFocused || isHovered) {
-        start();
-      } else {
-        stop();
-      }
-    };
-
-    const stopWhenFocusLeaves = (event: FocusEvent) => {
-      const nextTarget = event.relatedTarget;
-      if (nextTarget instanceof Node && el.contains(nextTarget)) return;
-      stop();
-    };
-
-    el.addEventListener("mouseenter", start);
-    el.addEventListener("focusin", start);
-    el.addEventListener("mouseleave", stop);
-    el.addEventListener("focusout", stopWhenFocusLeaves);
-    el.addEventListener("wheel", pauseAfterUserInput, { passive: true });
-    el.addEventListener("keydown", pauseAfterUserInput);
-    el.addEventListener("pointerdown", pauseAfterUserInput);
-    reduceMotion.addEventListener("change", stop);
-    syncTimer = window.setInterval(syncFromInteractionState, 250);
-
-    return () => {
-      el.removeEventListener("mouseenter", start);
-      el.removeEventListener("focusin", start);
-      el.removeEventListener("mouseleave", stop);
-      el.removeEventListener("focusout", stopWhenFocusLeaves);
-      el.removeEventListener("wheel", pauseAfterUserInput);
-      el.removeEventListener("keydown", pauseAfterUserInput);
-      el.removeEventListener("pointerdown", pauseAfterUserInput);
-      reduceMotion.removeEventListener("change", stop);
-      if (syncTimer !== null) window.clearInterval(syncTimer);
-      stop();
-    };
-  }, [ref]);
-}
-
 /* ── fade-up 애니메이션 훅 ── */
 function useFadeIn(ref: React.RefObject<HTMLElement | null>) {
   useEffect(() => {
@@ -459,6 +368,15 @@ function timelineTypeLabel(type: string, locale: "ko" | "en"): string {
   return (locale === "en" ? en : ko)[type] ?? type;
 }
 
+function isCvArchiveHref(href: string): boolean {
+  try {
+    const url = new URL(href, "https://namuori.net");
+    return url.pathname.replace(/\/+$/, "") === "/cv";
+  } catch {
+    return href.trim().replace(/\/+$/, "") === "/cv";
+  }
+}
+
 function ThemeModeIcon({ theme }: { theme: "light" | "dark" }) {
   if (theme === "dark") {
     return (
@@ -566,7 +484,7 @@ export default function Home() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [focusedGraphNodeId, setFocusedGraphNodeId] = useState<string | null>(null);
   const [coverPreview, setCoverPreview] = useState<CoverPreviewPayload | null>(null);
-  const timelinePanelRef = useRef<HTMLDivElement>(null);
+  const [expandedTimelineKeys, setExpandedTimelineKeys] = useState<Set<string>>(() => new Set());
   const previewHref = useCallback((path: string) => withAdminPreviewUrl(path, previewId), [previewId]);
   const label = (key: string, fallback: string) => (locale === "en" ? uiText(sourceTranslations, key, fallback) : fallback);
   const themeToggleLabel = theme === "dark" ? label("lightMode", "라이트 모드") : label("darkMode", "다크 모드");
@@ -588,7 +506,17 @@ export default function Home() {
     };
   }, [coverPreview]);
 
-  useTimelineFocusScroll(timelinePanelRef);
+  const toggleTimelineEntry = useCallback((key: string) => {
+    setExpandedTimelineKeys((current) => {
+      const next = new Set(current);
+      if (next.has(key)) {
+        next.delete(key);
+      } else {
+        next.add(key);
+      }
+      return next;
+    });
+  }, []);
 
   const scrollTo = useCallback((id: string) => {
     const el = document.getElementById(id);
@@ -996,114 +924,68 @@ export default function Home() {
           {/* ── 학력 ── */}
           <FadeSection>
             <SectionTitle id="education" icon="graduation" T={T}>Timeline</SectionTitle>
-            <div
-              ref={timelinePanelRef}
-              className="timeline-focus-panel"
-              tabIndex={0}
-              aria-label={locale === "en" ? "Timeline entries" : "타임라인 항목"}
-              style={{
-                border: `1px solid ${T.border}`,
-                background: T.surface,
-                borderRadius: "6px",
-                padding: "clamp(1rem, 2vw, 1.35rem)",
-                outline: "none",
-                transition: "border-color 0.18s ease, background 0.18s ease",
-              }}
-            >
-              {TIMELINE_ENTRIES.map((edu) => {
+            <div className="timeline-connection-list" aria-label={locale === "en" ? "Timeline entries" : "타임라인 항목"}>
+              {TIMELINE_ENTRIES.map((edu, index) => {
+                const timelineKey = `${edu.type}:${edu.degree}:${edu.period}`;
+                const detailId = `timeline-detail-${index}`;
+                const isExpanded = expandedTimelineKeys.has(timelineKey);
+                const timelineLinks = edu.links.filter((link) => !isCvArchiveHref(link.href));
                 const relatedProjects = PROJECTS.filter((project) => edu.relatedProjects.includes(project.slug));
                 const detailParts = [edu.note, ...edu.bullets].filter(Boolean);
                 return (
-                <article key={`${edu.type}:${edu.degree}:${edu.period}`} className="timeline-entry">
-                  {/* 타임라인 점 */}
-                  <div style={{ display: "flex", flexDirection: "column", alignItems: "center", paddingTop: "4px", flexShrink: 0 }}>
-                    <div style={{
-                      width: "8px",
-                      height: "8px",
-                      borderRadius: "50%",
-                      background: edu.current ? T.green : T.border,
-                      border: `2px solid ${edu.current ? T.green : T.muted}`,
-                      flexShrink: 0,
-                    }} />
-                    {edu.current && (
-                      <div style={{ width: "1px", height: "100%", background: `${T.green}30`, marginTop: "4px" }} />
+                <article key={timelineKey} className="timeline-connection-entry">
+                  <div className="timeline-spine" aria-hidden="true">
+                    <span className={edu.current ? "timeline-node current" : "timeline-node"} />
+                  </div>
+                  <div className="timeline-main-copy">
+                    <button
+                      type="button"
+                      className="timeline-entry-toggle"
+                      aria-expanded={isExpanded}
+                      aria-controls={detailId}
+                      onClick={() => toggleTimelineEntry(timelineKey)}
+                    >
+                      <span className="timeline-kicker">
+                        {timelineTypeLabel(edu.type, locale)} · {edu.period}
+                      </span>
+                      <span className="timeline-entry-summary">
+                        <span>{edu.degree}</span>
+                        <span className="timeline-school">{edu.school}</span>
+                        {edu.current && <span className="timeline-current">{label("current", "진행 중")}</span>}
+                      </span>
+                      <span className="timeline-toggle-hint">{isExpanded ? (locale === "en" ? "Collapse" : "접기") : (locale === "en" ? "Expand" : "펼치기")}</span>
+                    </button>
+                    {detailParts.length > 0 && (
+                      <div id={detailId} className={isExpanded ? "timeline-entry-detail expanded" : "timeline-entry-detail collapsed"}>
+                        <p>{detailParts.join(" ")}</p>
+                      </div>
                     )}
                   </div>
-                  <div style={{ flex: 1 }}>
-                    <div style={{
-                      display: "flex",
-                      gap: "8px",
-                      flexWrap: "wrap",
-                      alignItems: "center",
-                      fontFamily: FONT_MONO,
-                      fontSize: "0.65rem",
-                      color: T.muted,
-                      marginBottom: "4px",
-                    }}>
-                      <span>{timelineTypeLabel(edu.type, locale)}</span>
-                      <span>·</span>
-                      <span>{edu.period}</span>
-                    </div>
-                    <p className="timeline-entry-summary" style={{
-                      fontFamily: FONT_SANS,
-                      fontSize: "0.9rem",
-                      fontWeight: 600,
-                      color: edu.current ? T.green : T.text,
-                      margin: "0 0 0.35rem",
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "8px",
-                      flexWrap: "wrap",
-                      lineHeight: 1.55,
-                    }}>
-                      <span>{edu.degree}</span>
-                      <span style={{ color: T.sub, fontWeight: 500 }}>{edu.school}</span>
-                      {edu.current && (
-                        <span style={{
-                          fontFamily: FONT_MONO,
-                          fontSize: "0.6rem",
-                          color: T.green,
-                          background: T.greenBg,
-                          border: `1px solid ${T.green}40`,
-                          padding: "1px 6px",
-                          borderRadius: "2px",
-                          fontWeight: 400,
-                        }}>
-                          {label("current", "진행 중")}
-                        </span>
-                      )}
-                    </p>
-                    {detailParts.length > 0 && (
-                      <p className="timeline-entry-detail" style={{ fontFamily: FONT_SANS, fontSize: "0.79rem", color: T.muted, wordBreak: "keep-all", lineHeight: 1.78, margin: 0 }}>
-                        {detailParts.join(" ")}
-                      </p>
-                    )}
-                    {(edu.links.length > 0 || relatedProjects.length > 0 || edu.relatedSkills.length > 0) && (
-                      <div style={{ display: "flex", gap: "6px", flexWrap: "wrap", marginTop: "10px" }}>
-                        {edu.links.map((link) => (
-                          <a key={`${link.label}:${link.href}`} href={link.href} target="_blank" rel="noopener noreferrer" style={{ color: T.green, background: T.greenBg, border: `1px solid ${T.green}40`, borderRadius: "999px", padding: "3px 7px", fontFamily: FONT_MONO, fontSize: "0.65rem", textDecoration: "none" }}>
+                  {(timelineLinks.length > 0 || relatedProjects.length > 0 || edu.relatedSkills.length > 0) && (
+                    <>
+                      <div className="timeline-chip-connector" aria-hidden="true" />
+                      <div className="timeline-chip-panel">
+                        {timelineLinks.map((link) => (
+                          <a key={`${link.label}:${link.href}`} className="timeline-chip accent" href={link.href} target="_blank" rel="noopener noreferrer">
                             {link.label}
                           </a>
                         ))}
                         {relatedProjects.map((project) => (
-                          <a key={project.slug} href={previewHref(`/projects/${project.slug}`)} style={{ color: T.green, border: `1px solid ${T.border}`, borderRadius: "999px", padding: "3px 7px", fontFamily: FONT_MONO, fontSize: "0.65rem", textDecoration: "none" }}>
+                          <a key={project.slug} className="timeline-chip project" href={previewHref(`/projects/${project.slug}`)}>
                             {project.name}
                           </a>
                         ))}
                         {edu.relatedSkills.slice(0, 5).map((skill) => (
-                          <span key={skill} style={{ color: T.sub, border: `1px solid ${T.border}`, borderRadius: "999px", padding: "3px 7px", fontFamily: FONT_MONO, fontSize: "0.65rem" }}>
+                          <span key={skill} className="timeline-chip skill">
                             {skill}
                           </span>
                         ))}
                       </div>
-                    )}
-                  </div>
+                    </>
+                  )}
                 </article>
               );
               })}
-              <a href={previewHref("/cv")} style={{ alignSelf: "flex-start", color: T.green, fontFamily: FONT_MONO, fontSize: "0.72rem", textDecoration: "none", borderBottom: `1px solid ${T.green}` }}>
-                {label("fullCv", "전체 CV 타임라인 보기")}
-              </a>
             </div>
           </FadeSection>
 
@@ -1570,32 +1452,184 @@ export default function Home() {
            font-weight: 700;
            letter-spacing: 0;
          }
-         .timeline-focus-panel {
+         .timeline-connection-list {
            display: flex;
            flex-direction: column;
-           gap: 1.15rem;
-           max-height: clamp(340px, 48vh, 440px);
-           overflow-y: auto;
-           scrollbar-gutter: stable;
+           gap: 0;
          }
-         .timeline-focus-panel:focus-visible {
-           border-color: ${T.green} !important;
-           box-shadow: inset 0 0 0 1px ${T.green}33;
+         .timeline-connection-entry {
+           display: grid;
+           grid-template-columns: 18px minmax(0, 1fr) clamp(28px, 4vw, 54px) minmax(160px, 0.42fr);
+           gap: 0 clamp(0.75rem, 1.5vw, 1.15rem);
+           position: relative;
+           padding: 0 0 1.35rem;
          }
-         .timeline-entry {
+         .timeline-spine {
+           position: relative;
            display: flex;
-           gap: 1.1rem;
-           align-items: flex-start;
-           padding-bottom: 1.15rem;
-           border-bottom: 1px solid ${T.border};
+           justify-content: center;
+           padding-top: 0.55rem;
          }
-         .timeline-entry:last-of-type {
-           padding-bottom: 0.2rem;
-           border-bottom: 0;
+         .timeline-spine::before {
+           content: "";
+           position: absolute;
+           top: 1.35rem;
+           bottom: -1.35rem;
+           width: 1px;
+           background: linear-gradient(to bottom, ${T.green}55, ${T.border});
          }
-         .timeline-entry-summary,
-         .timeline-entry-detail {
+         .timeline-connection-entry:last-child .timeline-spine::before {
+           display: none;
+         }
+         .timeline-node {
+           position: relative;
+           z-index: 1;
+           width: 8px;
+           height: 8px;
+           border-radius: 50%;
+           border: 2px solid ${T.muted};
+           background: ${T.surface};
+           box-shadow: 0 0 0 5px ${T.bg};
+         }
+         .timeline-node.current {
+           border-color: ${T.green};
+           background: ${T.green};
+           box-shadow: 0 0 0 5px ${T.greenBg};
+         }
+         .timeline-main-copy {
+           min-width: 0;
+           padding-bottom: 0.15rem;
+         }
+         .timeline-entry-toggle {
+           appearance: none;
+           width: 100%;
+           border: 0;
+           background: transparent;
+           color: inherit;
+           cursor: pointer;
+           display: block;
+           text-align: left;
+           padding: 0;
+         }
+         .timeline-entry-toggle:focus-visible {
+           outline: 2px solid ${T.green};
+           outline-offset: 4px;
+           border-radius: 3px;
+         }
+         .timeline-kicker {
+           display: block;
+           font-family: ${FONT_MONO};
+           font-size: 0.65rem;
+           color: ${T.muted};
+           margin-bottom: 0.35rem;
+         }
+         .timeline-entry-summary {
+           display: flex;
+           align-items: center;
+           gap: 0.5rem;
+           flex-wrap: wrap;
            max-width: 70ch;
+           font-family: ${FONT_SANS};
+           font-size: 0.9rem;
+           font-weight: 600;
+           color: ${T.text};
+           line-height: 1.55;
+         }
+         .timeline-school {
+           color: ${T.sub};
+           font-weight: 500;
+         }
+         .timeline-current {
+           font-family: ${FONT_MONO};
+           font-size: 0.6rem;
+           color: ${T.green};
+           background: ${T.greenBg};
+           border: 1px solid ${T.green}40;
+           padding: 1px 6px;
+           border-radius: 2px;
+           font-weight: 400;
+         }
+         .timeline-toggle-hint {
+           display: inline-flex;
+           margin-top: 0.45rem;
+           font-family: ${FONT_MONO};
+           font-size: 0.64rem;
+           color: ${T.green};
+         }
+         .timeline-entry-detail {
+           position: relative;
+           max-width: 70ch;
+           margin-top: 0.55rem;
+           overflow: hidden;
+           color: ${T.muted};
+           font-family: ${FONT_SANS};
+           font-size: 0.79rem;
+           line-height: 1.78;
+           word-break: keep-all;
+           transition: max-height 0.22s ease, opacity 0.18s ease;
+         }
+         .timeline-entry-detail p {
+           margin: 0;
+         }
+         .timeline-entry-detail.collapsed {
+           max-height: 3.6rem;
+           opacity: 0.72;
+           -webkit-mask-image: linear-gradient(to bottom, #000 62%, transparent 100%);
+           mask-image: linear-gradient(to bottom, #000 62%, transparent 100%);
+         }
+         .timeline-entry-detail.expanded {
+           max-height: 18rem;
+           opacity: 1;
+           -webkit-mask-image: none;
+           mask-image: none;
+         }
+         .timeline-chip-connector {
+           align-self: start;
+           height: 1px;
+           margin-top: 2.35rem;
+           background: linear-gradient(to right, ${T.border}, ${T.green}70);
+         }
+         .timeline-chip-panel {
+           display: flex;
+           flex-wrap: wrap;
+           align-content: flex-start;
+           gap: 0.38rem;
+           padding-top: 1.45rem;
+           min-width: 0;
+         }
+         .timeline-chip {
+           display: inline-flex;
+           align-items: center;
+           max-width: 100%;
+           min-height: 22px;
+           border-radius: 999px;
+           padding: 3px 7px;
+           font-family: ${FONT_MONO};
+           font-size: 0.64rem;
+           line-height: 1.25;
+           text-decoration: none;
+           word-break: break-word;
+         }
+         .timeline-chip.accent {
+           color: ${T.green};
+           background: ${T.greenBg};
+           border: 1px solid ${T.green}40;
+         }
+         .timeline-chip.project {
+           color: ${T.green};
+           border: 1px solid ${T.green}30;
+           background: ${T.surface};
+         }
+         .timeline-chip.skill {
+           color: ${T.sub};
+           border: 1px solid ${T.border};
+           background: ${T.bg};
+         }
+         .timeline-chip:hover,
+         .timeline-chip:focus-visible {
+           border-color: ${T.green};
+           color: ${T.green};
+           outline: none;
          }
          .research-card.has-cover {
            display: grid;
@@ -1744,13 +1778,16 @@ export default function Home() {
           }
            .research-card.has-cover,
            .project-content.has-cover { grid-template-columns: 1fr; }
-           .timeline-focus-panel {
-             max-height: none;
-             overflow: visible;
-             scrollbar-gutter: auto;
+           .timeline-connection-entry {
+             grid-template-columns: 16px minmax(0, 1fr);
+             gap: 0 0.85rem;
            }
-           .timeline-entry {
-             gap: 0.85rem;
+           .timeline-chip-connector {
+             display: none;
+           }
+           .timeline-chip-panel {
+             grid-column: 2;
+             padding-top: 0.65rem;
            }
            .content-cover-button {
              justify-self: start;

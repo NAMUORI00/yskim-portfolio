@@ -19,26 +19,30 @@ describe("Home timeline section", () => {
     expect(timelineDeclaration).not.toContain("item.highlight");
   });
 
-  it("uses a two-paragraph main-page timeline structure", () => {
+  it("uses a connected B-type expandable timeline structure", () => {
     const block = timelineBlock();
 
-    expect(block).toContain('className="timeline-focus-panel"');
+    expect(block).toContain('className="timeline-connection-list"');
+    expect(block).toContain('className="timeline-connection-entry"');
+    expect(block).toContain('className="timeline-entry-toggle"');
+    expect(block).toContain("aria-expanded");
     expect(block).toContain('className="timeline-entry-summary"');
-    expect(block).toContain('className="timeline-entry-detail"');
+    expect(block).toContain('className={isExpanded ? "timeline-entry-detail expanded" : "timeline-entry-detail collapsed"}');
+    expect(block).toContain('className="timeline-chip-connector"');
+    expect(block).toContain('className="timeline-chip-panel"');
+    expect(block).toContain("timelineLinks");
     expect(block).toContain("relatedProjects");
+    expect(source).toContain("function isCvArchiveHref");
+    expect(source).toContain("expandedTimelineKeys");
+    expect(source).toContain("toggleTimelineEntry");
   });
 
-  it("auto-scrolls gently only while the timeline is focused or hovered and motion is allowed", () => {
-    expect(source).toContain("function useTimelineFocusScroll");
-    expect(source).toContain("prefers-reduced-motion: reduce");
-    expect(source).toContain("TIMELINE_AUTOSCROLL_STEP");
-    expect(source).toContain('"mouseenter"');
-    expect(source).toContain('"focusin"');
-    expect(source).toContain('"mouseleave"');
-    expect(source).toContain('"focusout"');
-    expect(source).toContain("pauseAfterUserInput");
-    expect(source).toContain('"wheel"');
-    expect(source).toContain('"keydown"');
-    expect(source).toContain('"pointerdown"');
+  it("keeps archive detail on the main page instead of depending on a CV link or auto-scroll panel", () => {
+    const block = timelineBlock();
+
+    expect(block).not.toContain('previewHref("/cv")');
+    expect(block).not.toContain('className="timeline-focus-panel"');
+    expect(source).not.toContain("function useTimelineFocusScroll");
+    expect(source).not.toContain("TIMELINE_AUTOSCROLL_STEP");
   });
 });
