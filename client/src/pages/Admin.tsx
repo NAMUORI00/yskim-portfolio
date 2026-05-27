@@ -87,6 +87,8 @@ const CONTACT_TYPE_OPTIONS: ProfileContact["type"][] = ["email", "github", "webs
 const INITIAL_GITHUB_IMPORT_SOURCE =
   portfolioContent.profile.contacts.find((contact) => contact.type === "github")?.href ?? `https://github.com/${portfolioContent.profile.handle}`;
 
+type ProjectListField = "tags" | "relatedNotes";
+
 function coverUploadKey(kind: ContentCoverKind, slug: string): string {
   return `${kind}:${slug}`;
 }
@@ -96,6 +98,14 @@ function splitList(value: string): string[] {
     .split(",")
     .map((item) => item.trim())
     .filter(Boolean);
+}
+
+function normalizeList(items: string[]): string[] {
+  return Array.from(new Set(items.flatMap((item) => splitList(item))));
+}
+
+function sameList(left: string[], right: string[]): boolean {
+  return left.length === right.length && left.every((item, index) => item === right[index]);
 }
 
 function Field({
@@ -297,7 +307,10 @@ export default function Admin() {
   const [status, setStatusMessage] = useState("변경사항을 저장하면 draft 브랜치 커밋으로 전송됩니다.");
   const [publishLink, setPublishLink] = useState<PublishResultLink | null>(null);
   const [skillDrafts, setSkillDrafts] = useState<Record<number, string>>({});
+  const [projectTagDraft, setProjectTagDraft] = useState("");
+  const [projectRelatedNoteDraft, setProjectRelatedNoteDraft] = useState("");
   const [skillCandidateTargetIndex, setSkillCandidateTargetIndex] = useState(0);
+  const [projectImportOpen, setProjectImportOpen] = useState(false);
   const [importSource, setImportSource] = useState(INITIAL_GITHUB_IMPORT_SOURCE);
   const [importMode, setImportMode] = useState<GitHubImportMode>("profile");
   const [importResult, setImportResult] = useState<GitHubImportResponse | null>(null);
@@ -726,6 +739,8 @@ export default function Admin() {
       setProjectIndex(result.index);
       return result.items;
     });
+    setProjectTagDraft("");
+    setProjectRelatedNoteDraft("");
     setActive("projects");
     markSectionDirty("projects");
     setAppliedImport((state) => markImportApplied(state, "projects", [candidate.slug]));
@@ -828,6 +843,54 @@ export default function Admin() {
     markSectionDirty("projects");
   }
 
+  function selectProject(index: number) {
+    setProjectIndex(index);
+    setProjectTagDraft("");
+    setProjectRelatedNoteDraft("");
+  }
+
+  function updateProjectListField(field: ProjectListField, values: string[]) {
+    updateProject({ [field]: values } as Partial<ProjectEntry>);
+  }
+
+  function updateProjectListItem(field: ProjectListField, itemIndex: number, value: string) {
+    const items = projects[projectIndex]?.[field] ?? [];
+    updateProjectListField(field, items.map((item, index) => (index === itemIndex ? value : item)));
+  }
+
+  function normalizeProjectListField(field: ProjectListField) {
+    const items = projects[projectIndex]?.[field] ?? [];
+    const normalized = normalizeList(items);
+    if (!sameList(items, normalized)) updateProjectListField(field, normalized);
+  }
+
+  function addProjectListItems(field: ProjectListField, draft: string, onDraftChange: (value: string) => void) {
+    const nextItems = splitList(draft);
+    if (nextItems.length === 0) {
+      setStatus(field === "tags" ? "추가할 태그를 입력하세요." : "추가할 관련 노트 slug를 입력하세요.");
+      return;
+    }
+    const current = projects[projectIndex]?.[field] ?? [];
+    const merged = normalizeList([...current, ...nextItems]);
+    if (sameList(current, merged)) {
+      setStatus(field === "tags" ? "이미 추가된 태그입니다." : "이미 추가된 관련 노트입니다.");
+      return;
+    }
+    updateProjectListField(field, merged);
+    onDraftChange("");
+    setStatus(field === "tags" ? "프로젝트 태그를 추가했습니다. 저장 전입니다." : "프로젝트 관련 노트를 추가했습니다. 저장 전입니다.");
+  }
+
+  function moveProjectListItem(field: ProjectListField, itemIndex: number, direction: MoveDirection) {
+    const items = projects[projectIndex]?.[field] ?? [];
+    updateProjectListField(field, moveItem(items, itemIndex, direction).items);
+  }
+
+  function removeProjectListItem(field: ProjectListField, itemIndex: number) {
+    const items = projects[projectIndex]?.[field] ?? [];
+    updateProjectListField(field, removeItem(items, itemIndex).items);
+  }
+
   function updateResearch(next: Partial<ResearchEntry>) {
     setResearch((items) => items.map((item, index) => (index === researchIndex ? { ...item, ...next } : item)));
     markSectionDirty("research");
@@ -870,6 +933,8 @@ export default function Admin() {
       setProjectIndex(result.index);
       return result.items;
     });
+    setProjectTagDraft("");
+    setProjectRelatedNoteDraft("");
     setActive("projects");
     markSectionDirty("projects");
     setStatus("새 프로젝트 초안을 추가했습니다. 저장하면 새 MDX 파일과 목록 순서가 함께 저장됩니다.");
@@ -883,6 +948,8 @@ export default function Admin() {
       setProjectIndex(result.index);
       return result.items;
     });
+    setProjectTagDraft("");
+    setProjectRelatedNoteDraft("");
     markSectionDirty("projects");
     setStatus("선택한 프로젝트를 draft 복사본으로 만들었습니다.");
   }
@@ -1118,6 +1185,57 @@ export default function Admin() {
     });
   }
 
+  function renderProjectChipList({
+    label,
+    field,
+    items,
+    draft,
+    onDraftChange,
+    placeholder,
+  }: {
+    label: string;
+    field: ProjectListField;
+    items: string[];
+    draft: string;
+    onDraftChange: (value: string) => void;
+    placeholder: string;
+  }) {
+    return (
+      <div className="admin-project-chip-panel">
+        <div className="admin-project-chip-head">
+          <span>{label}</span>
+          <small>{items.length} item{items.length === 1 ? "" : "s"}</small>
+        </div>
+        <div className="admin-skill-chip-list admin-project-chip-list">
+          {items.map((item, itemIndex) => (
+            <div className="admin-skill-chip admin-project-chip" key={editableListKey(`project-${field}`, projectIndex, itemIndex)}>
+              <input
+                aria-label={`${label} ${itemIndex + 1}`}
+                disabled={!canEdit}
+                value={item}
+                onBlur={() => normalizeProjectListField(field)}
+                onChange={(event) => updateProjectListItem(field, itemIndex, event.target.value)}
+              />
+              <button type="button" disabled={!canEdit || itemIndex === 0} onClick={() => moveProjectListItem(field, itemIndex, "up")}>Up</button>
+              <button type="button" disabled={!canEdit || itemIndex === items.length - 1} onClick={() => moveProjectListItem(field, itemIndex, "down")}>Down</button>
+              <button type="button" className="danger" disabled={!canEdit} onClick={() => removeProjectListItem(field, itemIndex)}>Remove</button>
+            </div>
+          ))}
+          <form
+            className="admin-skill-add-form admin-project-chip-add"
+            onSubmit={(event) => {
+              event.preventDefault();
+              addProjectListItems(field, draft, onDraftChange);
+            }}
+          >
+            <input disabled={!canEdit} value={draft} onChange={(event) => onDraftChange(event.target.value)} placeholder={placeholder} />
+            <button type="submit" disabled={!canEdit}>Add</button>
+          </form>
+        </div>
+      </div>
+    );
+  }
+
   function renderGitHubImportPanel(scope: "projects" | "skills" | "starred") {
     const projectCandidates = importResult?.projects ?? [];
     const skillCandidates = importResult?.skills ?? [];
@@ -1125,6 +1243,7 @@ export default function Admin() {
     const appliedCount = appliedImport[scope].length;
     const allSkillCandidatesApplied = skillCandidates.length > 0 && skillCandidates.every((candidate) => isImportApplied(appliedImport, "skills", candidate.label));
     const allStarredCandidatesApplied = starredCandidates.length > 0 && starredCandidates.every((candidate) => isImportApplied(appliedImport, "starred", candidate.name));
+    const isImportOpen = scope !== "projects" || projectImportOpen;
     return (
       <div className="admin-import">
         <div className="admin-import-head">
@@ -1132,10 +1251,19 @@ export default function Admin() {
             <span className="admin-kicker">github import</span>
             <strong>GitHub 후보 가져오기</strong>
           </div>
-          <span className="admin-import-count">
-            P {projectCandidates.length} · S {skillCandidates.length} · ★ {starredCandidates.length}
-          </span>
+          <div className="admin-import-head-actions">
+            <span className="admin-import-count">
+              P {projectCandidates.length} · S {skillCandidates.length} · ★ {starredCandidates.length}
+            </span>
+            {scope === "projects" && (
+              <button type="button" onClick={() => setProjectImportOpen((open) => !open)}>
+                {projectImportOpen ? "Hide import" : "Show import"}
+              </button>
+            )}
+          </div>
         </div>
+        {isImportOpen && (
+          <>
         <div className="admin-import-form">
           <label>
             <span>Source</span>
@@ -1263,6 +1391,8 @@ export default function Admin() {
               );
             })}
           </div>
+        )}
+          </>
         )}
       </div>
     );
@@ -1525,17 +1655,50 @@ export default function Admin() {
             <ControlButton disabled={!canEdit || projectIndex === projects.length - 1} onClick={() => moveSelectedProject("down")}>Move down</ControlButton>
             <ControlButton danger disabled={!canEdit || project.status === "archived"} onClick={archiveSelectedProject}>Archive</ControlButton>
           </div>
-          <select disabled={!canEdit} value={projectIndex} onChange={(event) => setProjectIndex(Number(event.target.value))}>
-            {projects.map((item, index) => <option key={item.slug} value={index}>{item.name}</option>)}
-          </select>
-          <div className="admin-grid">
-            <Field disabled={!canEdit} label="Name" value={project.name} onChange={(name) => updateProject({ name })} />
-            <Field disabled={!canEdit} label="Slug" value={project.slug} onChange={(slug) => updateProject({ slug })} />
-            <SelectField disabled={!canEdit} label="Status" value={project.status} options={STATUS_OPTIONS} onChange={(status) => updateProject({ status })} />
-            <Field disabled={!canEdit} label="Period" value={project.period} onChange={(period) => updateProject({ period })} />
-            <Field disabled={!canEdit} label="Link" value={project.link} onChange={(link) => updateProject({ link })} />
-            <CheckField disabled={!canEdit} label="Highlight on home" checked={project.highlight} onChange={(highlight) => updateProject({ highlight })} />
-            <CheckField disabled={!canEdit} label="Private project" checked={project.private} onChange={(privateProject) => updateProject({ private: privateProject })} />
+          <div className="admin-project-selector" aria-label="Project selector">
+            {projects.map((item, index) => (
+              <button
+                key={item.slug}
+                type="button"
+                className={index === projectIndex ? "active" : ""}
+                disabled={!canEdit}
+                aria-current={index === projectIndex ? "true" : undefined}
+                onClick={() => selectProject(index)}
+              >
+                <strong>{item.name || `Project ${index + 1}`}</strong>
+                <span>{item.status} · {item.period || "no period"}</span>
+                <small>{item.tags.length} tags · {item.relatedNotes.length} notes</small>
+              </button>
+            ))}
+          </div>
+          <div className="admin-project-layout">
+            <div className="admin-project-card">
+              <div className="admin-card-head">
+                <div>
+                  <span className="admin-kicker">project</span>
+                  <strong>Basic info</strong>
+                </div>
+              </div>
+              <div className="admin-grid">
+                <Field disabled={!canEdit} label="Name" value={project.name} onChange={(name) => updateProject({ name })} />
+                <Field disabled={!canEdit} label="Slug" value={project.slug} onChange={(slug) => updateProject({ slug })} />
+                <Field disabled={!canEdit} label="Period" value={project.period} onChange={(period) => updateProject({ period })} />
+                <Field disabled={!canEdit} label="Link" value={project.link} onChange={(link) => updateProject({ link })} />
+              </div>
+            </div>
+            <div className="admin-project-card">
+              <div className="admin-card-head">
+                <div>
+                  <span className="admin-kicker">state</span>
+                  <strong>Publishing</strong>
+                </div>
+              </div>
+              <div className="admin-grid">
+                <SelectField disabled={!canEdit} label="Status" value={project.status} options={STATUS_OPTIONS} onChange={(status) => updateProject({ status })} />
+                <CheckField disabled={!canEdit} label="Highlight on home" checked={project.highlight} onChange={(highlight) => updateProject({ highlight })} />
+                <CheckField disabled={!canEdit} label="Private project" checked={project.private} onChange={(privateProject) => updateProject({ private: privateProject })} />
+              </div>
+            </div>
             {renderCoverImageCard({
               kind: "projects",
               slug: project.slug,
@@ -1544,10 +1707,40 @@ export default function Admin() {
               onUrlChange: (coverImage) => updateProjectCoverImage(project.slug, coverImage),
               onRemove: () => removeProjectCoverImage(project.slug),
             })}
-            <TextArea disabled={!canEdit} label="Description" value={project.desc} onChange={(desc) => updateProject({ desc })} rows={4} />
-            <TextArea disabled={!canEdit} label="Metric" value={project.metric} onChange={(metric) => updateProject({ metric })} rows={2} />
-            <Field disabled={!canEdit} label="Tags" value={project.tags.join(", ")} onChange={(value) => updateProject({ tags: splitList(value) })} />
-            <Field disabled={!canEdit} label="Related notes" value={project.relatedNotes.join(", ")} onChange={(value) => updateProject({ relatedNotes: splitList(value) })} />
+            <div className="admin-project-card">
+              <div className="admin-card-head">
+                <div>
+                  <span className="admin-kicker">content</span>
+                  <strong>Summary</strong>
+                </div>
+              </div>
+              <TextArea disabled={!canEdit} label="Description" value={project.desc} onChange={(desc) => updateProject({ desc })} rows={4} />
+              <TextArea disabled={!canEdit} label="Metric" value={project.metric} onChange={(metric) => updateProject({ metric })} rows={2} />
+            </div>
+            <div className="admin-project-card">
+              <div className="admin-card-head">
+                <div>
+                  <span className="admin-kicker">graph</span>
+                  <strong>Relations</strong>
+                </div>
+              </div>
+              {renderProjectChipList({
+                label: "Tags",
+                field: "tags",
+                items: project.tags,
+                draft: projectTagDraft,
+                onDraftChange: setProjectTagDraft,
+                placeholder: "Python, RAG",
+              })}
+              {renderProjectChipList({
+                label: "Related notes",
+                field: "relatedNotes",
+                items: project.relatedNotes,
+                draft: projectRelatedNoteDraft,
+                onDraftChange: setProjectRelatedNoteDraft,
+                placeholder: "note-slug",
+              })}
+            </div>
           </div>
           <MarkdownEditor disabled={!canEdit} label="Project body" body={project.body} mode={mode} onMode={setMode} onChange={(body) => updateProject({ body })} onPreviewClick={handlePreviewClick} previewUrl={adminPreviewUrl} />
         </div>
@@ -1819,15 +2012,15 @@ export default function Admin() {
         .admin-sidebar nav { display: grid; gap: 4px; margin-top: 28px; }
         .admin-sidebar button, .admin-actions button, .admin-actions a, .admin-editor-bar button, .admin-editor-bar a, .admin-file-button,
         .admin-cover-actions button,
-        .admin-toolbar button, .admin-card-actions button, .admin-inline-list button, .admin-skill-chip button, .admin-skill-add-form button, .admin-import button, .admin-candidate button, .admin-undo-toast button, .admin-translation button, .admin-locale-tabs button {
+        .admin-toolbar button, .admin-card-actions button, .admin-inline-list button, .admin-skill-chip button, .admin-skill-add-form button, .admin-project-selector button, .admin-import button, .admin-candidate button, .admin-undo-toast button, .admin-translation button, .admin-locale-tabs button {
           border: 1px solid ${T.border}; background: ${T.surface}; color: ${T.sub};
           border-radius: 4px; padding: 8px 10px; font-family: ${FONT_MONO}; cursor: pointer; text-decoration: none;
         }
         .admin-sidebar button { text-align: left; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
-        .admin-sidebar button.active, .admin-editor-bar button.active, .admin-locale-tabs button.active { color: ${T.green}; border-color: ${T.green}; background: ${T.greenBg}; }
+        .admin-sidebar button.active, .admin-editor-bar button.active, .admin-locale-tabs button.active, .admin-project-selector button.active { color: ${T.green}; border-color: ${T.green}; background: ${T.greenBg}; }
         .admin-sidebar button.dirty { border-color: ${T.green}; }
         .admin-dirty-dot { width: 7px; height: 7px; border-radius: 999px; background: ${T.green}; box-shadow: 0 0 0 3px ${T.greenBg}; flex: 0 0 auto; }
-        .admin-actions button:disabled, .admin-actions a[aria-disabled="true"], .admin-editor-bar button:disabled, .admin-editor-bar a[aria-disabled="true"], .admin-file-button[aria-disabled="true"], .admin-cover-actions button:disabled, .admin-toolbar button:disabled, .admin-card-actions button:disabled, .admin-inline-list button:disabled, .admin-skill-chip button:disabled, .admin-skill-add-form button:disabled, .admin-import button:disabled, .admin-candidate button:disabled, .admin-translation button:disabled, .admin-locale-tabs button:disabled { opacity: .45; cursor: not-allowed; }
+        .admin-actions button:disabled, .admin-actions a[aria-disabled="true"], .admin-editor-bar button:disabled, .admin-editor-bar a[aria-disabled="true"], .admin-file-button[aria-disabled="true"], .admin-cover-actions button:disabled, .admin-toolbar button:disabled, .admin-card-actions button:disabled, .admin-inline-list button:disabled, .admin-skill-chip button:disabled, .admin-skill-add-form button:disabled, .admin-project-selector button:disabled, .admin-import button:disabled, .admin-candidate button:disabled, .admin-translation button:disabled, .admin-locale-tabs button:disabled { opacity: .45; cursor: not-allowed; }
         .admin-toolbar button.danger, .admin-card-actions button.danger, .admin-inline-list button.danger, .admin-skill-chip button.danger { color: ${T.red}; border-color: ${T.red}; background: ${T.redBg}; }
         .admin-main { border-left: 0; min-width: 0; padding: 28px; }
         .admin-header { display: flex; justify-content: space-between; gap: 20px; align-items: flex-start; margin-bottom: 22px; }
@@ -1873,6 +2066,30 @@ export default function Admin() {
         .admin-card-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
         .admin-card strong { color: ${T.text}; font-size: .95rem; }
         .admin-card-actions, .admin-toolbar { display: flex; flex-wrap: wrap; gap: 8px; }
+        .admin-project-selector { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 8px; }
+        .admin-project-selector button {
+          display: grid; gap: 5px; text-align: left; min-height: 82px; align-content: start;
+          background: ${T.surface}; color: ${T.sub};
+        }
+        .admin-project-selector button strong { color: inherit; font-size: .86rem; overflow-wrap: anywhere; }
+        .admin-project-selector button span, .admin-project-selector button small {
+          color: inherit; opacity: .78; font-family: ${FONT_MONO}; font-size: .68rem; line-height: 1.5;
+        }
+        .admin-project-layout { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+        .admin-project-card {
+          border: 1px solid ${T.border}; background: ${T.surface}; border-radius: 6px;
+          padding: 14px; display: grid; gap: 12px; align-content: start;
+        }
+        .admin-project-card strong { color: ${T.text}; font-size: .95rem; }
+        .admin-project-card .admin-card-head strong { display: block; margin-top: 4px; }
+        .admin-project-card .admin-field-block { grid-column: 1 / -1; }
+        .admin-project-layout .admin-cover-card { grid-column: 1 / -1; }
+        .admin-project-chip-panel { display: grid; gap: 8px; min-width: 0; }
+        .admin-project-chip-head { display: flex; justify-content: space-between; gap: 10px; color: ${T.sub}; font-family: ${FONT_MONO}; font-size: .76rem; }
+        .admin-project-chip-head small { color: ${T.muted}; }
+        .admin-project-chip-list { align-items: stretch; }
+        .admin-project-chip input { width: clamp(112px, 16vw, 190px); }
+        .admin-project-chip-add input { width: clamp(140px, 18vw, 230px); }
         .admin-skill-group-head { align-items: center; }
         .admin-skill-group-name {
           display: grid; gap: 6px; min-width: min(360px, 100%); flex: 1;
@@ -1908,6 +2125,7 @@ export default function Admin() {
         .admin-import { border: 1px solid ${T.border}; background: ${T.surface}; border-radius: 6px; padding: 14px; display: grid; gap: 12px; }
         .admin-import-head { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; }
         .admin-import-head strong { display: block; margin-top: 4px; color: ${T.text}; }
+        .admin-import-head-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
         .admin-import-count { color: ${T.green}; font-family: ${FONT_MONO}; font-size: .72rem; }
         .admin-import-form { display: grid; grid-template-columns: minmax(180px, 1fr) 150px auto; gap: 10px; align-items: end; }
         .admin-import-form label { display: grid; gap: 6px; color: ${T.sub}; font-size: .72rem; font-family: ${FONT_MONO}; }
@@ -2001,6 +2219,8 @@ export default function Admin() {
           .admin-actions button, .admin-actions a { flex: 1 1 160px; text-align: center; }
           .admin-undo-toast { flex-direction: column; align-items: flex-start; }
           .admin-card-head { flex-direction: column; }
+          .admin-project-layout { grid-template-columns: 1fr; }
+          .admin-project-selector { grid-template-columns: 1fr; }
           .admin-avatar-card { grid-template-columns: 1fr; align-items: start; }
           .admin-cover-card { grid-template-columns: 1fr; }
           .admin-import-form { grid-template-columns: 1fr; }
