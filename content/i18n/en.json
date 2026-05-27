@@ -7,7 +7,7 @@
   "ui": {
     "nav": {
       "about": "About",
-      "education": "Education",
+      "education": "Timeline",
       "research": "Research",
       "projects": "Projects",
       "skills": "Skills",
@@ -26,7 +26,8 @@
       "notes": "notes",
       "detail": "Detail",
       "github": "GitHub",
-      "ragCaption": "Dense + Sparse + Graph hybrid retrieval architecture"
+      "ragCaption": "Dense + Sparse + Graph hybrid retrieval architecture",
+      "fullCv": "View full CV timeline"
     }
   },
   "sourceHashes": {
@@ -161,14 +162,41 @@
     {
       "degree": "M.S. track in CS / AI",
       "school": "Preparing for graduate admission",
-      "period": "2025 — planned",
-      "note": "Research focus: LLM systems, RAG architecture, and lightweight inference"
+      "period": "2025 — expected 2027",
+      "note": "Research and development around LLM systems, RAG architecture, and lightweight inference",
+      "bullets": [
+        "Shaping a research direction around LLM systems and RAG architecture",
+        "Building reproducible experiment environments for lightweight inference"
+      ],
+      "links": [
+        {
+          "label": "CV Timeline"
+        }
+      ]
     },
     {
       "degree": "B.S. in Computer Engineering",
-      "school": "College of Engineering",
-      "period": "2014 — 2018",
-      "note": ""
+      "school": "Jeju National University",
+      "period": "2017 — 2024",
+      "note": "",
+      "bullets": [
+        "Expanded interests in software development, deployment automation, and reproducible experiment environments"
+      ]
+    },
+    {
+      "degree": "RAG systems and evaluation pipeline experiments",
+      "school": "Independent research / portfolio projects",
+      "period": "2026 — ongoing",
+      "note": "A long-running research portfolio track connecting domain document retrieval, RAG evaluation, and lightweight inference setup",
+      "bullets": [
+        "Experimenting with Dense/Sparse/Graph retrieval for aerospace documents",
+        "Accumulating notes on RAG strategy comparison and retrieval quality evaluation"
+      ],
+      "links": [
+        {
+          "label": "aerospace-rag"
+        }
+      ]
     }
   ],
   "research": {

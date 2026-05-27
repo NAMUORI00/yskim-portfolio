@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type ChangeEvent, type FormEvent, type KeyboardEvent, type MouseEvent, type ReactNode } from "react";
 import { Link } from "wouter";
-import { englishTranslations, getProfileAvatarUrl, portfolioContent, type ContentOrder, type EducationEntry, type NoteEntry, type PortfolioContent, type ProfileContact, type ProfileContent, type ProjectEntry, type PublicationStatus, type ResearchEntry, type SiteContent, type SkillGroup, type StarredRepo } from "@/content";
+import { englishTranslations, getProfileAvatarUrl, portfolioContent, type ContentOrder, type EducationEntry, type NoteEntry, type PortfolioContent, type ProfileContact, type ProfileContent, type ProjectEntry, type PublicationStatus, type ResearchEntry, type SiteContent, type SkillGroup, type StarredRepo, type TimelineEntryType, type TimelineLink } from "@/content";
 import { DARK, FONT_MONO, FONT_SANS, LIGHT } from "@/content/theme";
 import { useTheme } from "@/contexts/ThemeContext";
 import { adminAccessState, type AdminSessionInfo } from "@/lib/adminAccess";
@@ -83,11 +83,13 @@ const SECTIONS: Array<{ key: SectionKey; label: string }> = [
 ];
 
 const STATUS_OPTIONS: PublicationStatus[] = ["draft", "published", "archived"];
+const TIMELINE_TYPE_OPTIONS: TimelineEntryType[] = ["education", "research", "publication", "project", "award", "talk", "work", "milestone"];
 const CONTACT_TYPE_OPTIONS: ProfileContact["type"][] = ["email", "github", "website", "external"];
 const INITIAL_GITHUB_IMPORT_SOURCE =
   portfolioContent.profile.contacts.find((contact) => contact.type === "github")?.href ?? `https://github.com/${portfolioContent.profile.handle}`;
 
 type ProjectListField = "tags" | "relatedNotes";
+type TimelineStringListField = "bullets" | "relatedProjects" | "relatedSkills";
 
 function coverUploadKey(kind: ContentCoverKind, slug: string): string {
   return `${kind}:${slug}`;
@@ -906,6 +908,75 @@ export default function Admin() {
     markSectionDirty("education");
   }
 
+  function updateTimelineStringItem(index: number, field: TimelineStringListField, itemIndex: number, value: string) {
+    setEducation((items) =>
+      items.map((entry, entryIndex) =>
+        entryIndex === index ? { ...entry, [field]: entry[field].map((item, currentIndex) => (currentIndex === itemIndex ? value : item)) } : entry,
+      ),
+    );
+    markSectionDirty("education");
+  }
+
+  function addTimelineStringItem(index: number, field: TimelineStringListField) {
+    const fallback = field === "bullets" ? "새 항목" : "";
+    setEducation((items) => items.map((entry, entryIndex) => (entryIndex === index ? { ...entry, [field]: [...entry[field], fallback] } : entry)));
+    markSectionDirty("education");
+  }
+
+  function moveTimelineStringItem(index: number, field: TimelineStringListField, itemIndex: number, direction: MoveDirection) {
+    setEducation((items) =>
+      items.map((entry, entryIndex) =>
+        entryIndex === index ? { ...entry, [field]: moveItem(entry[field], itemIndex, direction).items } : entry,
+      ),
+    );
+    markSectionDirty("education");
+  }
+
+  function removeTimelineStringItem(index: number, field: TimelineStringListField, itemIndex: number) {
+    setEducation((items) =>
+      items.map((entry, entryIndex) =>
+        entryIndex === index ? { ...entry, [field]: removeItem(entry[field], itemIndex).items } : entry,
+      ),
+    );
+    markSectionDirty("education");
+  }
+
+  function updateTimelineLink(index: number, linkIndex: number, next: Partial<TimelineLink>) {
+    setEducation((items) =>
+      items.map((entry, entryIndex) =>
+        entryIndex === index
+          ? { ...entry, links: entry.links.map((link, currentIndex) => (currentIndex === linkIndex ? { ...link, ...next } : link)) }
+          : entry,
+      ),
+    );
+    markSectionDirty("education");
+  }
+
+  function addTimelineLink(index: number) {
+    setEducation((items) =>
+      items.map((entry, entryIndex) => (entryIndex === index ? { ...entry, links: [...entry.links, { label: "링크", href: "" }] } : entry)),
+    );
+    markSectionDirty("education");
+  }
+
+  function moveTimelineLink(index: number, linkIndex: number, direction: MoveDirection) {
+    setEducation((items) =>
+      items.map((entry, entryIndex) =>
+        entryIndex === index ? { ...entry, links: moveItem(entry.links, linkIndex, direction).items } : entry,
+      ),
+    );
+    markSectionDirty("education");
+  }
+
+  function removeTimelineLink(index: number, linkIndex: number) {
+    setEducation((items) =>
+      items.map((entry, entryIndex) =>
+        entryIndex === index ? { ...entry, links: removeItem(entry.links, linkIndex).items } : entry,
+      ),
+    );
+    markSectionDirty("education");
+  }
+
   function addEducationEntry() {
     setEducation((items) => appendItem(items, createEducationEntry()).items);
     markSectionDirty("education");
@@ -938,6 +1009,16 @@ export default function Admin() {
     setActive("projects");
     markSectionDirty("projects");
     setStatus("새 프로젝트 초안을 추가했습니다. 저장하면 새 MDX 파일과 목록 순서가 함께 저장됩니다.");
+  }
+
+  function archiveEducationEntry(index: number) {
+    const previous = education;
+    setEducation(updateItem(previous, index, { status: "archived" }));
+    markSectionDirty("education");
+    queueUndo("타임라인 항목을 archived 상태로 바꿨습니다. 저장 전에는 되돌릴 수 있습니다.", () => {
+      setEducation(previous);
+      markSectionDirty("education");
+    });
   }
 
   function duplicateSelectedProject() {
@@ -1232,6 +1313,59 @@ export default function Admin() {
             <button type="submit" disabled={!canEdit}>Add</button>
           </form>
         </div>
+      </div>
+    );
+  }
+
+  function renderTimelineStringList({
+    index,
+    label,
+    field,
+    items,
+    placeholder,
+  }: {
+    index: number;
+    label: string;
+    field: TimelineStringListField;
+    items: string[];
+    placeholder: string;
+  }) {
+    return (
+      <div className="admin-inline-list admin-timeline-list">
+        <div className="admin-list-head">
+          <span>{label}</span>
+          <ControlButton disabled={!canEdit} onClick={() => addTimelineStringItem(index, field)}>Add</ControlButton>
+        </div>
+        {items.length === 0 && <div className="admin-empty compact">아직 항목이 없습니다.</div>}
+        {items.map((item, itemIndex) => (
+          <div className="admin-inline-row admin-timeline-row" key={editableListKey(`timeline-${field}`, index, itemIndex)}>
+            <input disabled={!canEdit} aria-label={`${label} ${itemIndex + 1}`} value={item} placeholder={placeholder} onChange={(event) => updateTimelineStringItem(index, field, itemIndex, event.target.value)} />
+            <button type="button" disabled={!canEdit || itemIndex === 0} onClick={() => moveTimelineStringItem(index, field, itemIndex, "up")}>Up</button>
+            <button type="button" disabled={!canEdit || itemIndex === items.length - 1} onClick={() => moveTimelineStringItem(index, field, itemIndex, "down")}>Down</button>
+            <button type="button" className="danger" disabled={!canEdit} onClick={() => removeTimelineStringItem(index, field, itemIndex)}>Remove</button>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  function renderTimelineLinks(index: number, links: TimelineLink[]) {
+    return (
+      <div className="admin-inline-list admin-timeline-list">
+        <div className="admin-list-head">
+          <span>Links</span>
+          <ControlButton disabled={!canEdit} onClick={() => addTimelineLink(index)}>Add link</ControlButton>
+        </div>
+        {links.length === 0 && <div className="admin-empty compact">아직 링크가 없습니다.</div>}
+        {links.map((link, linkIndex) => (
+          <div className="admin-inline-row admin-timeline-link-row" key={editableListKey("timeline-link", index, linkIndex)}>
+            <input disabled={!canEdit} aria-label={`Link label ${linkIndex + 1}`} value={link.label} placeholder="논문 / GitHub / 발표 자료" onChange={(event) => updateTimelineLink(index, linkIndex, { label: event.target.value })} />
+            <input disabled={!canEdit} aria-label={`Link href ${linkIndex + 1}`} value={link.href} placeholder="https://..." onChange={(event) => updateTimelineLink(index, linkIndex, { href: event.target.value })} />
+            <button type="button" disabled={!canEdit || linkIndex === 0} onClick={() => moveTimelineLink(index, linkIndex, "up")}>Up</button>
+            <button type="button" disabled={!canEdit || linkIndex === links.length - 1} onClick={() => moveTimelineLink(index, linkIndex, "down")}>Down</button>
+            <button type="button" className="danger" disabled={!canEdit} onClick={() => removeTimelineLink(index, linkIndex)}>Remove</button>
+          </div>
+        ))}
       </div>
     );
   }
@@ -1613,19 +1747,32 @@ export default function Admin() {
           {education.map((item, index) => (
             <div className="admin-card" key={editableListKey("education", index)}>
               <div className="admin-card-head">
-                <strong>{item.degree || "Timeline item"}</strong>
+                <div>
+                  <span className="admin-kicker">{item.type}</span>
+                  <strong>{item.degree || "Timeline item"}</strong>
+                </div>
                 <div className="admin-card-actions">
                   <ControlButton disabled={!canEdit || index === 0} onClick={() => moveEducationEntry(index, "up")}>Up</ControlButton>
                   <ControlButton disabled={!canEdit || index === education.length - 1} onClick={() => moveEducationEntry(index, "down")}>Down</ControlButton>
+                  <ControlButton danger disabled={!canEdit || item.status === "archived"} onClick={() => archiveEducationEntry(index)}>Archive</ControlButton>
                   <ControlButton danger disabled={!canEdit} onClick={() => removeEducationEntry(index)}>Remove</ControlButton>
                 </div>
               </div>
               <div className="admin-grid">
-                <Field disabled={!canEdit} label="Degree" value={item.degree} onChange={(degree) => updateEducationEntry(index, { degree })} />
-                <Field disabled={!canEdit} label="School" value={item.school} onChange={(school) => updateEducationEntry(index, { school })} />
+                <SelectField disabled={!canEdit} label="Type" value={item.type} options={TIMELINE_TYPE_OPTIONS} onChange={(type) => updateEducationEntry(index, { type })} />
+                <SelectField disabled={!canEdit} label="Status" value={item.status} options={STATUS_OPTIONS} onChange={(status) => updateEducationEntry(index, { status })} />
+                <Field disabled={!canEdit} label="Title / degree" value={item.degree} onChange={(degree) => updateEducationEntry(index, { degree })} />
+                <Field disabled={!canEdit} label="Organization" value={item.school} onChange={(school) => updateEducationEntry(index, { school })} />
                 <Field disabled={!canEdit} label="Period" value={item.period} onChange={(period) => updateEducationEntry(index, { period })} />
+                <Field disabled={!canEdit} label="Start date" value={item.startDate ?? ""} onChange={(startDate) => updateEducationEntry(index, { startDate })} />
+                <Field disabled={!canEdit} label="End date" value={item.endDate ?? ""} onChange={(endDate) => updateEducationEntry(index, { endDate })} />
                 <CheckField disabled={!canEdit} label="Currently active" checked={item.current} onChange={(current) => updateEducationEntry(index, { current })} />
-                <TextArea disabled={!canEdit} label="Note" value={item.note} onChange={(note) => updateEducationEntry(index, { note })} rows={3} />
+                <CheckField disabled={!canEdit} label="Highlight on home" checked={item.highlight} onChange={(highlight) => updateEducationEntry(index, { highlight })} />
+                <TextArea disabled={!canEdit} label="Summary note" value={item.note} onChange={(note) => updateEducationEntry(index, { note })} rows={3} />
+                {renderTimelineStringList({ index, label: "Bullets", field: "bullets", items: item.bullets, placeholder: "세부 성과 또는 연구 내용" })}
+                {renderTimelineLinks(index, item.links)}
+                {renderTimelineStringList({ index, label: "Related projects", field: "relatedProjects", items: item.relatedProjects, placeholder: "project-slug" })}
+                {renderTimelineStringList({ index, label: "Related skills", field: "relatedSkills", items: item.relatedSkills, placeholder: "Python / RAG / CUDA" })}
               </div>
             </div>
           ))}
@@ -2198,6 +2345,10 @@ export default function Admin() {
         .admin-check-field input { width: 16px; height: 16px; accent-color: ${T.green}; }
         .admin-inline-list { display: grid; gap: 8px; color: ${T.sub}; font-size: .78rem; font-family: ${FONT_MONO}; }
         .admin-inline-row { display: grid; grid-template-columns: minmax(120px, 1fr) auto auto auto; gap: 8px; align-items: center; }
+        .admin-list-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+        .admin-timeline-list { grid-column: 1 / -1; border: 1px solid ${T.border}; background: ${T.bg}; border-radius: 6px; padding: 12px; }
+        .admin-timeline-row { grid-template-columns: minmax(180px, 1fr) auto auto auto; }
+        .admin-timeline-link-row { grid-template-columns: minmax(120px, .7fr) minmax(180px, 1fr) auto auto auto; }
         .admin-nav-row { grid-template-columns: minmax(120px, .8fr) minmax(160px, 1.2fr) minmax(100px, .7fr); align-items: end; }
         .admin-contact-card { grid-column: 1 / -1; }
         .admin-contact-row {
@@ -2206,6 +2357,7 @@ export default function Admin() {
           gap: 10px; align-items: end;
         }
         .admin-empty { border: 1px dashed ${T.border}; border-radius: 6px; padding: 18px; color: ${T.sub}; }
+        .admin-empty.compact { padding: 10px 12px; font-size: .74rem; }
         .admin-editor { display: grid; gap: 10px; }
         .admin-editor-bar { display: flex; justify-content: space-between; align-items: center; color: ${T.sub}; font-family: ${FONT_MONO}; font-size: .78rem; }
         .admin-editor-bar div { display: flex; gap: 6px; }
@@ -2226,6 +2378,7 @@ export default function Admin() {
           .admin-import-form { grid-template-columns: 1fr; }
           .admin-candidate { grid-template-columns: 1fr; }
           .admin-inline-row { grid-template-columns: 1fr; }
+          .admin-timeline-link-row { grid-template-columns: 1fr; }
           .admin-nav-row, .admin-contact-row { grid-template-columns: 1fr; }
           .admin-translation-head { flex-direction: column; }
           .admin-translation-actions { justify-content: flex-start; }

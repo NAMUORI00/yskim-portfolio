@@ -87,6 +87,88 @@ function MarkdownBody({ markdown }: { markdown: string }) {
   );
 }
 
+function timelineTypeLabel(type: string, locale: string): string {
+  const ko: Record<string, string> = {
+    education: "학력",
+    research: "연구",
+    publication: "논문",
+    project: "프로젝트",
+    award: "수상",
+    talk: "발표",
+    work: "경력",
+    milestone: "이정표",
+  };
+  const en: Record<string, string> = {
+    education: "Education",
+    research: "Research",
+    publication: "Publication",
+    project: "Project",
+    award: "Award",
+    talk: "Talk",
+    work: "Work",
+    milestone: "Milestone",
+  };
+  return (locale === "en" ? en : ko)[type] ?? type;
+}
+
+export function CV() {
+  const { T, content, locale, previewHref } = usePalette();
+  const timeline = content.education.filter((item) => item.status === "published");
+
+  return (
+    <PageFrame title={locale === "en" ? "CV Timeline" : "CV 타임라인"}>
+      <div style={{ display: "grid", gap: "14px" }}>
+        {timeline.map((item) => {
+          const relatedProjects = content.projects.filter((project) => item.relatedProjects.includes(project.slug));
+          return (
+            <article key={`${item.type}:${item.degree}:${item.period}`} style={{ border: `1px solid ${T.border}`, background: T.surface, borderRadius: "6px", padding: "18px 20px" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", gap: "12px", alignItems: "flex-start", flexWrap: "wrap" }}>
+                <div>
+                  <div style={{ fontFamily: FONT_MONO, fontSize: "0.72rem", color: T.green, marginBottom: "7px" }}>
+                    {timelineTypeLabel(item.type, locale)} · {item.period}
+                  </div>
+                  <h2 style={{ margin: "0 0 6px", fontSize: "1.08rem", lineHeight: 1.45 }}>{item.degree}</h2>
+                  <div style={{ color: T.sub, fontSize: "0.9rem" }}>{item.school}</div>
+                </div>
+                {item.current && (
+                  <span style={{ color: T.green, background: T.greenBg, border: `1px solid ${T.green}40`, borderRadius: "999px", padding: "4px 9px", fontFamily: FONT_MONO, fontSize: "0.68rem" }}>
+                    {locale === "en" ? "Current" : "진행 중"}
+                  </span>
+                )}
+              </div>
+              {item.note && <p style={{ color: T.sub, lineHeight: 1.7, margin: "12px 0 0" }}>{item.note}</p>}
+              {item.bullets.length > 0 && (
+                <ul style={{ color: T.sub, lineHeight: 1.7, margin: "12px 0 0", paddingLeft: "1.1rem" }}>
+                  {item.bullets.map((bullet) => <li key={bullet}>{bullet}</li>)}
+                </ul>
+              )}
+              {(item.links.length > 0 || relatedProjects.length > 0 || item.relatedSkills.length > 0) && (
+                <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginTop: "14px" }}>
+                  {item.links.map((link) => (
+                    <a key={`${link.label}:${link.href}`} href={link.href} target="_blank" rel="noopener noreferrer" style={{ color: T.green, border: `1px solid ${T.green}40`, background: T.greenBg, borderRadius: "999px", padding: "5px 9px", fontFamily: FONT_MONO, fontSize: "0.7rem", textDecoration: "none" }}>
+                      {link.label}
+                    </a>
+                  ))}
+                  {relatedProjects.map((project) => (
+                    <Link key={project.slug} href={previewHref(`/projects/${project.slug}`)} style={{ color: T.green, border: `1px solid ${T.border}`, borderRadius: "999px", padding: "5px 9px", fontFamily: FONT_MONO, fontSize: "0.7rem", textDecoration: "none" }}>
+                      {project.name}
+                    </Link>
+                  ))}
+                  {item.relatedSkills.map((skill) => (
+                    <span key={skill} style={{ color: T.sub, border: `1px solid ${T.border}`, borderRadius: "999px", padding: "5px 9px", fontFamily: FONT_MONO, fontSize: "0.7rem" }}>
+                      {skill}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </article>
+          );
+        })}
+      </div>
+    </PageFrame>
+  );
+}
+
 export function Notes() {
   const { T, content, previewHref } = usePalette();
   const notes = content.notes.filter((note) => note.status === "published");

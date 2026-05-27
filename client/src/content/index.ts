@@ -123,4 +123,6 @@ export type {
   SkillGroup,
   SiteContent,
   StarredRepo,
+  TimelineEntryType,
+  TimelineLink,
 } from "./types";

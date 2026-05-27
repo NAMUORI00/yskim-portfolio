@@ -9,6 +9,7 @@ import type {
   SkillGroup,
   SiteContent,
   StarredRepo,
+  TimelineLink,
 } from "@/content";
 
 export type Locale = "ko" | "en";
@@ -18,6 +19,9 @@ type EnglishProfileTranslations = Partial<Pick<ProfileContent, "name" | "status"
 };
 
 type EnglishSiteTranslations = Partial<Pick<SiteContent, "title" | "description">>;
+type EnglishTimelineTranslations = Partial<Pick<EducationEntry, "degree" | "school" | "period" | "note" | "bullets">> & {
+  links?: Array<Partial<Pick<TimelineLink, "label">>>;
+};
 
 export interface EnglishTranslations {
   locale: "en";
@@ -28,7 +32,7 @@ export interface EnglishTranslations {
     labels?: Record<string, string>;
   };
   profile?: EnglishProfileTranslations;
-  education?: Array<Partial<Pick<EducationEntry, "degree" | "school" | "period" | "note">>>;
+  education?: EnglishTimelineTranslations[];
   research?: Record<string, Partial<Pick<ResearchEntry, "title" | "desc" | "body">>>;
   projects?: Record<string, Partial<Pick<ProjectEntry, "name" | "period" | "desc" | "metric" | "tags" | "body">>>;
   skills?: Record<string, Partial<Pick<SkillGroup, "label" | "items">>>;
@@ -71,7 +75,17 @@ export function localizePortfolioContent(content: PortfolioContent, translations
       summary: mergeArray(content.profile.summary, translatedSummary),
       contacts: content.profile.contacts.map((contact) => ({ ...contact, ...(translatedContacts?.[contact.id] ?? {}) })),
     },
-    education: content.education.map((item, index) => ({ ...item, ...(translations.education?.[index] ?? {}) })),
+    education: content.education.map((item, index) => {
+      const translated = translations.education?.[index];
+      if (!translated) return item;
+      const { bullets, links, ...textFields } = translated;
+      return {
+        ...item,
+        ...textFields,
+        bullets: mergeArray(item.bullets, bullets),
+        links: item.links.map((link, linkIndex) => ({ ...link, ...(links?.[linkIndex] ?? {}) })),
+      };
+    }),
     research: content.research.map((item) => ({ ...item, ...(translations.research?.[item.slug] ?? {}) })),
     projects: content.projects.map((item) => ({ ...item, ...(translations.projects?.[item.slug] ?? {}) })),
     skills: content.skills.map((item) => {

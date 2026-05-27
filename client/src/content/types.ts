@@ -1,4 +1,5 @@
 export type PublicationStatus = "draft" | "published" | "archived";
+export type TimelineEntryType = "education" | "research" | "publication" | "project" | "award" | "talk" | "work" | "milestone";
 
 export interface NavItem {
   id: string;
@@ -37,12 +38,26 @@ export interface ProfileContent {
   contacts: ProfileContact[];
 }
 
+export interface TimelineLink {
+  label: string;
+  href: string;
+}
+
 export interface EducationEntry {
+  type: TimelineEntryType;
   degree: string;
   school: string;
   period: string;
+  startDate?: string;
+  endDate?: string;
   note: string;
   current: boolean;
+  status: PublicationStatus;
+  highlight: boolean;
+  bullets: string[];
+  links: TimelineLink[];
+  relatedProjects: string[];
+  relatedSkills: string[];
 }
 
 export interface ResearchEntry {

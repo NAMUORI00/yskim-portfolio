@@ -27,11 +27,20 @@ describe("validatePortfolioContent", () => {
       },
       education: [
         {
+          type: "education",
           degree: "CS / AI 석사 과정",
           school: "진학 준비 중",
           period: "2025 — 예정",
+          startDate: "2025-03",
+          endDate: "2027-02",
           note: "LLM 시스템 연구 지향",
           current: true,
+          status: "published",
+          highlight: true,
+          bullets: ["RAG 아키텍처 연구", "경량 추론 실험"],
+          links: [{ label: "CV", href: "https://namuori.net/cv" }],
+          relatedProjects: ["aerospace-rag"],
+          relatedSkills: ["Python", "RAG"],
         },
       ],
       research: [
@@ -85,6 +94,47 @@ describe("validatePortfolioContent", () => {
     expect(result.research[0].coverImage).toBe("/uploads/research/rag.webp");
     expect(result.notes[0].relatedProjects).toEqual(["aerospace-rag"]);
     expect(result.profile.avatarUrl).toBeUndefined();
+    expect(result.education[0].type).toBe("education");
+    expect(result.education[0].bullets).toEqual(["RAG 아키텍처 연구", "경량 추론 실험"]);
+    expect(result.education[0].links[0]).toEqual({ label: "CV", href: "https://namuori.net/cv" });
+  });
+
+  it("normalizes older education entries into timeline entries", () => {
+    const result = validatePortfolioContent({
+      site: {
+        title: "x",
+        description: "x",
+        url: "https://example.com",
+        navigation: [],
+        images: { heroTree: "x", ragDiagram: "x", dotPattern: "x" },
+      },
+      profile: {
+        name: "x",
+        romanizedName: "x",
+        handle: "x",
+        status: "x",
+        headline: "x",
+        summaryLead: "x",
+        summary: [],
+        contacts: [],
+      },
+      education: [{ degree: "학사", school: "학교", period: "2017 — 2024", note: "", current: false }],
+      research: [],
+      projects: [],
+      skills: [],
+      starred: [],
+      notes: [],
+    });
+
+    expect(result.education[0]).toMatchObject({
+      type: "education",
+      status: "published",
+      highlight: true,
+      bullets: [],
+      links: [],
+      relatedProjects: [],
+      relatedSkills: [],
+    });
   });
 
   it("accepts an editable profile avatar URL", () => {

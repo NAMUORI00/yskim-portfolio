@@ -73,6 +73,8 @@ export function buildTranslationEntries(source: TranslationSource): TranslationE
       ...entry(`education.${index}.school`, `Timeline ${index + 1} school`, item.school),
       ...entry(`education.${index}.period`, `Timeline ${index + 1} period`, item.period),
       ...entry(`education.${index}.note`, `Timeline ${index + 1} note`, item.note),
+      ...item.bullets.flatMap((bullet, bulletIndex) => entry(`education.${index}.bullets.${bulletIndex}`, `Timeline ${index + 1} bullet ${bulletIndex + 1}`, bullet)),
+      ...item.links.flatMap((link, linkIndex) => entry(`education.${index}.links.${linkIndex}.label`, `Timeline ${index + 1} link ${linkIndex + 1}`, link.label)),
     ]);
   }
 
@@ -136,7 +138,7 @@ function cloneTranslations(translations: EnglishTranslations): EnglishTranslatio
           contacts: Object.fromEntries(Object.entries(translations.profile.contacts ?? {}).map(([key, value]) => [key, { ...value }])),
         }
       : undefined,
-    education: translations.education?.map((item) => ({ ...item })),
+    education: translations.education?.map((item) => ({ ...item, bullets: item.bullets ? [...item.bullets] : undefined, links: item.links?.map((link) => ({ ...link })) })),
     research: Object.fromEntries(Object.entries(translations.research ?? {}).map(([key, value]) => [key, { ...value }])),
     projects: Object.fromEntries(Object.entries(translations.projects ?? {}).map(([key, value]) => [key, { ...value, tags: value.tags ? [...value.tags] : undefined }])),
     skills: Object.fromEntries(Object.entries(translations.skills ?? {}).map(([key, value]) => [key, { ...value, items: value.items ? [...value.items] : undefined }])),
@@ -159,7 +161,9 @@ export function getTranslationValue(translations: EnglishTranslations, key: stri
   if (parts[0] === "profile" && parts[1] === "contacts") return translations.profile?.contacts?.[decodeKeySegment(parts[2])]?.label ?? "";
   if (parts[0] === "profile" && parts[1] === "summary") return translations.profile?.summary?.[Number(parts[2])] ?? "";
   if (parts[0] === "profile") return String(translations.profile?.[parts[1] as keyof NonNullable<EnglishTranslations["profile"]>] ?? "");
-  if (parts[0] === "education") return String(translations.education?.[Number(parts[1])]?.[parts[2] as keyof NonNullable<EnglishTranslations["education"]>[number]] ?? "");
+  if (parts[0] === "education" && parts[2] === "bullets") return translations.education?.[Number(parts[1])]?.bullets?.[Number(parts[3])] ?? "";
+  if (parts[0] === "education" && parts[2] === "links") return translations.education?.[Number(parts[1])]?.links?.[Number(parts[3])]?.label ?? "";
+  if (parts[0] === "education") return String(translations.education?.[Number(parts[1])]?.[parts[2] as "degree" | "school" | "period" | "note"] ?? "");
   if (parts[0] === "projects" && parts[2] === "tags") return translations.projects?.[parts[1]]?.tags?.[Number(parts[3])] ?? "";
   if (parts[0] === "projects") return String(translations.projects?.[parts[1]]?.[parts[2] as keyof NonNullable<EnglishTranslations["projects"]>[string]] ?? "");
   if (parts[0] === "research") return String(translations.research?.[parts[1]]?.[parts[2] as keyof NonNullable<EnglishTranslations["research"]>[string]] ?? "");
@@ -199,7 +203,16 @@ function setTranslationValue(translations: EnglishTranslations, key: string, val
   }
   if (parts[0] === "education") {
     translations.education = ensureArrayItem(translations.education, Number(parts[1]), () => ({}));
-    translations.education[Number(parts[1])][parts[2] as "degree" | "school" | "period" | "note"] = value;
+    const timeline = translations.education[Number(parts[1])];
+    if (parts[2] === "bullets") {
+      timeline.bullets = ensureArrayItem(timeline.bullets, Number(parts[3]), () => "");
+      timeline.bullets[Number(parts[3])] = value;
+    } else if (parts[2] === "links") {
+      timeline.links = ensureArrayItem(timeline.links, Number(parts[3]), () => ({}));
+      timeline.links[Number(parts[3])].label = value;
+    } else {
+      timeline[parts[2] as "degree" | "school" | "period" | "note"] = value;
+    }
   }
   if (parts[0] === "projects") {
     translations.projects = translations.projects ?? {};

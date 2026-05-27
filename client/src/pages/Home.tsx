@@ -344,6 +344,30 @@ function ExternalLink({ href, children, T }: { href: string; children: React.Rea
   );
 }
 
+function timelineTypeLabel(type: string, locale: "ko" | "en"): string {
+  const ko: Record<string, string> = {
+    education: "학력",
+    research: "연구",
+    publication: "논문",
+    project: "프로젝트",
+    award: "수상",
+    talk: "발표",
+    work: "경력",
+    milestone: "이정표",
+  };
+  const en: Record<string, string> = {
+    education: "Education",
+    research: "Research",
+    publication: "Publication",
+    project: "Project",
+    award: "Award",
+    talk: "Talk",
+    work: "Work",
+    milestone: "Milestone",
+  };
+  return (locale === "en" ? en : ko)[type] ?? type;
+}
+
 function ThemeModeIcon({ theme }: { theme: "light" | "dark" }) {
   if (theme === "dark") {
     return (
@@ -438,7 +462,7 @@ export default function Home() {
   const IMG = content.site.images;
   const NAV_ITEMS = content.site.navigation;
   const NAV_IDS = useMemo(() => NAV_ITEMS.map((item) => item.id), [NAV_ITEMS]);
-  const EDUCATION = content.education;
+  const EDUCATION = content.education.filter((item) => item.status === "published" && item.highlight);
   const RESEARCH_INTERESTS = content.research.filter((item) => item.status === "published");
   const PROJECTS = content.projects.filter((item) => item.status === "published");
   const SKILL_GROUPS = content.skills;
@@ -877,10 +901,10 @@ export default function Home() {
 
           {/* ── 학력 ── */}
           <FadeSection>
-            <SectionTitle id="education" icon="graduation" T={T}>Education</SectionTitle>
+            <SectionTitle id="education" icon="graduation" T={T}>Timeline</SectionTitle>
             <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
               {EDUCATION.map((edu) => (
-                <div key={edu.degree} style={{ display: "flex", gap: "1.25rem", alignItems: "flex-start" }}>
+                <div key={`${edu.type}:${edu.degree}:${edu.period}`} style={{ display: "flex", gap: "1.25rem", alignItems: "flex-start" }}>
                   {/* 타임라인 점 */}
                   <div style={{ display: "flex", flexDirection: "column", alignItems: "center", paddingTop: "4px", flexShrink: 0 }}>
                     <div style={{
@@ -897,12 +921,18 @@ export default function Home() {
                   </div>
                   <div style={{ flex: 1 }}>
                     <div style={{
+                      display: "flex",
+                      gap: "8px",
+                      flexWrap: "wrap",
+                      alignItems: "center",
                       fontFamily: FONT_MONO,
                       fontSize: "0.65rem",
                       color: T.muted,
                       marginBottom: "4px",
                     }}>
-                      {edu.period}
+                      <span>{timelineTypeLabel(edu.type, locale)}</span>
+                      <span>·</span>
+                      <span>{edu.period}</span>
                     </div>
                     <div style={{
                       fontFamily: FONT_SANS,
@@ -934,13 +964,35 @@ export default function Home() {
                       {edu.school}
                     </div>
                     {edu.note && (
-                      <div style={{ fontFamily: FONT_SANS, fontSize: "0.78rem", color: T.muted, wordBreak: "keep-all" }}>
+                      <div style={{ fontFamily: FONT_SANS, fontSize: "0.78rem", color: T.muted, wordBreak: "keep-all", lineHeight: 1.7 }}>
                         {edu.note}
+                      </div>
+                    )}
+                    {edu.bullets.length > 0 && (
+                      <ul style={{ margin: "8px 0 0", paddingLeft: "1rem", color: T.muted, fontFamily: FONT_SANS, fontSize: "0.76rem", lineHeight: 1.7 }}>
+                        {edu.bullets.slice(0, 3).map((bullet) => <li key={bullet}>{bullet}</li>)}
+                      </ul>
+                    )}
+                    {(edu.links.length > 0 || edu.relatedSkills.length > 0) && (
+                      <div style={{ display: "flex", gap: "6px", flexWrap: "wrap", marginTop: "10px" }}>
+                        {edu.links.map((link) => (
+                          <a key={`${link.label}:${link.href}`} href={link.href} target="_blank" rel="noopener noreferrer" style={{ color: T.green, background: T.greenBg, border: `1px solid ${T.green}40`, borderRadius: "999px", padding: "3px 7px", fontFamily: FONT_MONO, fontSize: "0.65rem", textDecoration: "none" }}>
+                            {link.label}
+                          </a>
+                        ))}
+                        {edu.relatedSkills.slice(0, 5).map((skill) => (
+                          <span key={skill} style={{ color: T.sub, border: `1px solid ${T.border}`, borderRadius: "999px", padding: "3px 7px", fontFamily: FONT_MONO, fontSize: "0.65rem" }}>
+                            {skill}
+                          </span>
+                        ))}
                       </div>
                     )}
                   </div>
                 </div>
               ))}
+              <a href={previewHref("/cv")} style={{ alignSelf: "flex-start", color: T.green, fontFamily: FONT_MONO, fontSize: "0.72rem", textDecoration: "none", borderBottom: `1px solid ${T.green}` }}>
+                {label("fullCv", "전체 CV 타임라인 보기")}
+              </a>
             </div>
           </FadeSection>
 

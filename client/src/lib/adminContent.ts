@@ -147,7 +147,7 @@ export function buildSavePayload(target: SaveTarget): SavePayload {
   if (target.kind === "education") {
     return {
       branch: "draft/education",
-      message: "Update education",
+      message: "Update timeline",
       files: [jsonFile("content/education.json", target.value)],
     };
   }

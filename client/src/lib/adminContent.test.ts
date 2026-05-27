@@ -9,7 +9,7 @@ import {
   serializeProject,
   serializeResearch,
 } from "./adminContent";
-import type { ContentOrder, NoteEntry, ProfileContent, ProjectEntry, ResearchEntry, SiteContent } from "@/content";
+import type { ContentOrder, EducationEntry, NoteEntry, ProfileContent, ProjectEntry, ResearchEntry, SiteContent } from "@/content";
 
 const project: ProjectEntry = {
   slug: "aerospace-rag",
@@ -70,6 +70,25 @@ const site: SiteContent = {
   images: { heroTree: "tree", ragDiagram: "rag", dotPattern: "dot" },
 };
 
+const timeline: EducationEntry[] = [
+  {
+    type: "publication",
+    degree: "RAG 평가 논문 준비",
+    school: "Independent research",
+    period: "2026",
+    startDate: "2026-03",
+    endDate: "",
+    note: "검색 품질 평가 프로토콜 정리",
+    current: true,
+    status: "draft",
+    highlight: false,
+    bullets: ["Recall@k 기준 정리", "Ablation 설계"],
+    links: [{ label: "Draft", href: "https://namuori.net/notes/rag-evaluation" }],
+    relatedProjects: ["aerospace-rag"],
+    relatedSkills: ["RAG", "Evaluation"],
+  },
+];
+
 const order: ContentOrder = {
   research: ["rag"],
   projects: ["aerospace-rag"],
@@ -109,6 +128,17 @@ describe("admin content helpers", () => {
         content: `${JSON.stringify(order, null, 2)}\n`,
       },
     ]);
+  });
+
+  it("builds a save payload for extended timeline entries", () => {
+    const payload = buildSavePayload({ kind: "education", value: timeline });
+
+    expect(payload.branch).toBe("draft/education");
+    expect(payload.message).toBe("Update timeline");
+    expect(payload.files[0]).toEqual({
+      path: "content/education.json",
+      content: `${JSON.stringify(timeline, null, 2)}\n`,
+    });
   });
 
   it("includes profile status and avatar URL in profile saves", () => {

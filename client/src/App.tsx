@@ -6,7 +6,7 @@ import ErrorBoundary from "./components/ErrorBoundary";
 import { LanguageProvider } from "./contexts/LanguageContext";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import Admin from "./pages/Admin";
-import { NoteDetail, Notes, ProjectDetail, ResearchDetail } from "./pages/ContentPages";
+import { CV, NoteDetail, Notes, ProjectDetail, ResearchDetail } from "./pages/ContentPages";
 import Home from "./pages/Home";
 
 function Router() {
@@ -14,6 +14,7 @@ function Router() {
     <Switch>
       <Route path={"/"} component={Home} />
       <Route path={"/notes"} component={Notes} />
+      <Route path={"/cv"} component={CV} />
       <Route path={"/notes/:slug"} component={NoteDetail} />
       <Route path={"/projects/:slug"} component={ProjectDetail} />
       <Route path={"/research/:slug"} component={ResearchDetail} />

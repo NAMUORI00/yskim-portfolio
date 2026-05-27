@@ -129,11 +129,20 @@ export function duplicateNote(note: NoteEntry, usedSlugs: string[]): NoteEntry {
 
 export function createEducationEntry(): EducationEntry {
   return {
+    type: "milestone",
     degree: "새 타임라인 항목",
     school: "기관명",
     period: "기간 입력",
+    startDate: "",
+    endDate: "",
     note: "",
     current: false,
+    status: "draft",
+    highlight: true,
+    bullets: [],
+    links: [],
+    relatedProjects: [],
+    relatedSkills: [],
   };
 }
 

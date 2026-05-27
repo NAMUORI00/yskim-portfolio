@@ -2,6 +2,7 @@ import { z } from "zod";
 import type { PortfolioContent } from "./types";
 
 const statusSchema = z.enum(["draft", "published", "archived"]);
+const timelineEntryTypeSchema = z.enum(["education", "research", "publication", "project", "award", "talk", "work", "milestone"]);
 
 export const siteSchema = z.object({
   title: z.string().min(1),
@@ -35,11 +36,20 @@ export const profileSchema = z.object({
 });
 
 export const educationSchema = z.object({
+  type: timelineEntryTypeSchema.default("education"),
   degree: z.string().min(1),
   school: z.string().min(1),
   period: z.string().min(1),
-  note: z.string(),
-  current: z.boolean(),
+  startDate: z.string().optional(),
+  endDate: z.string().optional(),
+  note: z.string().default(""),
+  current: z.boolean().default(false),
+  status: statusSchema.default("published"),
+  highlight: z.boolean().default(true),
+  bullets: z.array(z.string()).default([]),
+  links: z.array(z.object({ label: z.string().min(1), href: z.string().min(1) })).default([]),
+  relatedProjects: z.array(z.string()).default([]),
+  relatedSkills: z.array(z.string()).default([]),
 });
 
 export const researchSchema = z.object({

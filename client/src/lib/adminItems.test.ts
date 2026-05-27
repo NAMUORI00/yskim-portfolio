@@ -51,7 +51,16 @@ describe("admin item helpers", () => {
     expect(createProjectDraft(["new-project"]).slug).toBe("new-project-2");
     expect(createResearchDraft(["new-research"]).status).toBe("draft");
     expect(createNoteDraft(["new-note"], "2026-05-18").date).toBe("2026-05-18");
-    expect(createEducationEntry().current).toBe(false);
+    expect(createEducationEntry()).toMatchObject({
+      type: "milestone",
+      status: "draft",
+      highlight: true,
+      current: false,
+      bullets: [],
+      links: [],
+      relatedProjects: [],
+      relatedSkills: [],
+    });
     expect(createSkillGroup()).toEqual({ label: "새 그룹", items: [] });
     expect(createStarredRepo().stars).toBe("0");
   });

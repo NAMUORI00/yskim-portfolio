@@ -70,7 +70,22 @@ const note: NoteEntry = {
 };
 
 const education: EducationEntry[] = [
-  { degree: "석사 과정", school: "한국대학", period: "2025 - 현재", note: "AI 연구실", current: true },
+  {
+    type: "education",
+    degree: "석사 과정",
+    school: "한국대학",
+    period: "2025 - 현재",
+    startDate: "2025-03",
+    endDate: "",
+    note: "AI 연구실",
+    current: true,
+    status: "published",
+    highlight: true,
+    bullets: ["RAG 아키텍처 연구"],
+    links: [{ label: "CV", href: "https://namuori.net/cv" }],
+    relatedProjects: ["aerospace-rag"],
+    relatedSkills: ["RAG"],
+  },
 ];
 
 const skills: SkillGroup[] = [
@@ -107,6 +122,8 @@ describe("admin translation helpers", () => {
       "education.0.school",
       "education.0.period",
       "education.0.note",
+      "education.0.bullets.0",
+      "education.0.links.0.label",
     ]);
     expect(buildTranslationEntries({ kind: "skills", value: skills }).map((entry) => entry.key)).toEqual([
       "skills.%ED%95%B5%EC%8B%AC%20%EC%96%B8%EC%96%B4.label",
@@ -152,12 +169,16 @@ describe("admin translation helpers", () => {
     ];
     const translated = applyTranslationValues(createEnglishTranslations(), entries, {
       "education.0.degree": "M.S. candidate",
+      "education.0.bullets.0": "RAG architecture research",
+      "education.0.links.0.label": "CV",
       "skills.%ED%95%B5%EC%8B%AC%20%EC%96%B8%EC%96%B4.label": "Core languages",
       "skills.%ED%95%B5%EC%8B%AC%20%EC%96%B8%EC%96%B4.items.0": "Python",
       "starred.ggerganov%2Fllama%2Ecpp.desc": "LLM inference in C/C++",
     });
 
     expect(getTranslationValue(translated, "education.0.degree")).toBe("M.S. candidate");
+    expect(getTranslationValue(translated, "education.0.bullets.0")).toBe("RAG architecture research");
+    expect(getTranslationValue(translated, "education.0.links.0.label")).toBe("CV");
     expect(getTranslationValue(translated, "skills.%ED%95%B5%EC%8B%AC%20%EC%96%B8%EC%96%B4.label")).toBe("Core languages");
     expect(getTranslationValue(translated, "skills.%ED%95%B5%EC%8B%AC%20%EC%96%B8%EC%96%B4.items.0")).toBe("Python");
     expect(getTranslationValue(translated, "starred.ggerganov%2Fllama%2Ecpp.desc")).toBe("LLM inference in C/C++");
