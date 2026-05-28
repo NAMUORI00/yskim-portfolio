@@ -30,22 +30,18 @@ import { applyDocumentMetadata } from "@/lib/documentMetadata";
 import { localizePortfolioContent, uiText } from "@/lib/i18nContent";
 import { buildKnowledgeGraph } from "@/lib/knowledgeGraph";
 import {
-  PROJECT_FILTER_GROUPS,
-  clearProjectFilters,
+  PROJECT_FILTERS,
   createProjectFilterSelection,
   filterProjectsBySelection,
-  hasActiveProjectFilters,
   hasProjectOverflow,
-  isProjectFilterActive,
+  isProjectFilterSelected,
   projectCategoryLabel,
   projectEvaluationRows,
   projectEvidenceMetrics,
-  projectFilterGroupLabel,
-  projectFilterOptionLabel,
+  projectFilterLabel,
   projectFocusLabel,
   projectProofLevelLabel,
-  projectYearBuckets,
-  toggleProjectFilter,
+  toggleProjectFilterChip,
   type ProjectFilterSelection,
 } from "@/lib/projectEvidence";
 import { activeSectionForAnchor, scrollEndPaddingForCenteredSection, scrollTopForElementCenter } from "@/lib/scroll";
@@ -56,7 +52,7 @@ const ACTIVE_SCROLL_END_TOLERANCE = 4;
 const MIN_SCROLL_END_PADDING = 48;
 const SCROLL_END_PADDING_GAP = 16;
 const TIMELINE_BATCH_SIZE = 4;
-const PROJECT_INITIAL_VISIBLE_COUNT = 3;
+const PROJECT_VISIBLE_COUNT = 7;
 
 /* ── SVG 아이콘 컴포넌트 ── */
 function NavIcon({ type, color, size = 13 }: { type: string; color: string; size?: number }) {
@@ -640,8 +636,7 @@ export default function Home() {
   const themeToggleLabel = theme === "dark" ? label("lightMode", "라이트 모드") : label("darkMode", "다크 모드");
   const languageToggleLabel = locale === "en" ? label("languageToKorean", "한국어") : label("languageToEnglish", "English");
   const visibleProjects = useMemo(() => filterProjectsBySelection(PROJECTS, projectFilters), [PROJECTS, projectFilters]);
-  const projectBuckets = useMemo(() => projectYearBuckets(visibleProjects, locale), [visibleProjects, locale]);
-  const projectHasOverflow = hasProjectOverflow(visibleProjects, PROJECT_INITIAL_VISIBLE_COUNT);
+  const projectHasOverflow = hasProjectOverflow(visibleProjects, PROJECT_VISIBLE_COUNT);
   const selectedProject = PROJECTS.find((project) => project.slug === selectedProjectSlug) ?? null;
   const activeProjectGraphNodeId = focusedGraphNodeId ?? (selectedProject ? `project:${selectedProject.slug}` : null);
 
@@ -1225,46 +1220,20 @@ export default function Home() {
           <FadeSection>
             <SectionTitle id="projects" icon="code" T={T}>Projects</SectionTitle>
             <div className="project-filter-rail" role="group" aria-label={locale === "en" ? "Project filters" : "프로젝트 필터"}>
-              {PROJECT_FILTER_GROUPS.map((group) => (
-                <div className="project-filter-group" key={group.axis}>
-                  <span className="project-filter-group-label">{projectFilterGroupLabel(group, locale)}</span>
-                  <div className="project-filter-options">
-                    {group.options.map((option) => {
-                      const activeFilter = isProjectFilterActive(projectFilters, group.axis, option);
-                      return (
-                        <button
-                          key={`${group.axis}-${option}`}
-                          type="button"
-                          className={activeFilter ? "active" : ""}
-                          aria-pressed={activeFilter}
-                          onClick={() => setProjectFilters(toggleProjectFilter(projectFilters, group.axis, option))}
-                        >
-                          {projectFilterOptionLabel(group.axis, option, locale)}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
+              {PROJECT_FILTERS.map((filter) => (
+                <button
+                  key={filter}
+                  type="button"
+                  className={isProjectFilterSelected(projectFilters, filter) ? "active" : ""}
+                  aria-pressed={isProjectFilterSelected(projectFilters, filter)}
+                  onClick={() => setProjectFilters(toggleProjectFilterChip(projectFilters, filter))}
+                >
+                  {projectFilterLabel(filter, locale)}
+                </button>
               ))}
-              <div className="project-filter-summary">
-                <span>{visibleProjects.length} / {PROJECTS.length}</span>
-                {hasActiveProjectFilters(projectFilters) && (
-                  <button type="button" className="project-filter-clear" onClick={() => setProjectFilters(clearProjectFilters())}>
-                    {locale === "en" ? "Clear" : "초기화"}
-                  </button>
-                )}
-              </div>
+              <span className="project-filter-count">{visibleProjects.length} / {PROJECTS.length}</span>
             </div>
-            <div className="project-bucket-layout">
-              <aside className="project-year-rail" aria-label={locale === "en" ? "Project years" : "프로젝트 연도"}>
-                {projectBuckets.map((bucket) => (
-                  <span key={bucket.year}>
-                    {bucket.year}
-                    <small>{bucket.count}</small>
-                  </span>
-                ))}
-              </aside>
-              <div className={projectHasOverflow ? "project-scroll-panel has-overflow" : "project-scroll-panel"}>
+            <div className={projectHasOverflow ? "project-scroll-panel has-overflow" : "project-scroll-panel"}>
                 {visibleProjects.length === 0 && (
                   <div className="project-empty-state">
                     {locale === "en" ? "No projects match the selected filters." : "선택한 필터와 일치하는 프로젝트가 없습니다."}
@@ -1462,11 +1431,10 @@ export default function Home() {
                 );
                 })}
                 {projectHasOverflow && <div className="project-scroll-fade" aria-hidden="true" />}
-              </div>
             </div>
             {projectHasOverflow && (
               <p className="project-scroll-hint">
-                {locale === "en" ? "Scroll for older projects" : "이전 연도 프로젝트는 스크롤"}
+                {locale === "en" ? "Scroll for more projects" : "더 많은 프로젝트는 스크롤"}
               </p>
             )}
           </FadeSection>
@@ -1945,42 +1913,21 @@ export default function Home() {
           min-width: 0;
         }
         .project-filter-rail {
-          display: grid;
-          grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
-          align-items: stretch;
-          gap: 0.55rem;
-          margin: -0.25rem 0 0.85rem;
-        }
-        .project-filter-group {
-          display: grid;
-          gap: 0.35rem;
-          min-width: 0;
-          padding: 0.52rem 0.58rem;
-          border: 1px solid ${T.border};
-          border-radius: 4px;
-          background: ${T.surface};
-        }
-        .project-filter-group-label {
-          color: ${T.muted};
-          font-family: ${FONT_MONO};
-          font-size: 0.57rem;
-          line-height: 1.2;
-          text-transform: uppercase;
-        }
-        .project-filter-options {
           display: flex;
           flex-wrap: wrap;
-          gap: 0.35rem;
+          align-items: center;
+          gap: 0.4rem;
+          margin: -0.25rem 0 0.85rem;
         }
         .project-filter-rail button {
           appearance: none;
           border: 1px solid ${T.border};
           border-radius: 999px;
-          background: ${T.bg};
+          background: ${T.surface};
           color: ${T.muted};
-          padding: 4px 8px;
+          padding: 4px 9px;
           font-family: ${FONT_MONO};
-          font-size: 0.61rem;
+          font-size: 0.63rem;
           line-height: 1.35;
           cursor: pointer;
           white-space: nowrap;
@@ -1993,50 +1940,12 @@ export default function Home() {
           color: ${T.green};
           outline: none;
         }
-        .project-filter-summary {
-          display: flex;
-          flex-direction: column;
-          justify-content: space-between;
-          align-items: flex-end;
-          gap: 0.4rem;
-          min-width: 72px;
-          padding: 0.52rem 0;
+        .project-filter-count {
+          margin-left: auto;
           color: ${T.muted};
           font-family: ${FONT_MONO};
           font-size: 0.62rem;
           line-height: 1.35;
-        }
-        .project-filter-clear {
-          padding-inline: 9px !important;
-        }
-        .project-bucket-layout {
-          display: grid;
-          grid-template-columns: 64px minmax(0, 1fr);
-          gap: 0.8rem;
-          align-items: start;
-        }
-        .project-year-rail {
-          position: sticky;
-          top: 1rem;
-          display: grid;
-          gap: 0.45rem;
-          color: ${T.muted};
-          font-family: ${FONT_MONO};
-          font-size: 0.62rem;
-          line-height: 1.2;
-        }
-        .project-year-rail span {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          gap: 0.35rem;
-          min-height: 26px;
-          border-left: 2px solid ${T.border};
-          padding-left: 0.55rem;
-        }
-        .project-year-rail small {
-          color: ${T.green};
-          font-size: 0.55rem;
         }
         .project-scroll-panel {
           position: relative;
@@ -2046,7 +1955,7 @@ export default function Home() {
           background: ${T.surface};
         }
         .project-scroll-panel.has-overflow {
-          max-height: clamp(540px, 72vh, 760px);
+          max-height: 1120px;
           overflow-y: auto;
           overscroll-behavior: contain;
           scrollbar-color: ${T.green} ${T.bg};
@@ -2074,7 +1983,7 @@ export default function Home() {
           pointer-events: none;
         }
         .project-scroll-hint {
-          margin: 0.55rem 0 0 64px;
+          margin: 0.55rem 0 0;
           color: ${T.muted};
           font-family: ${FONT_MONO};
           font-size: 0.62rem;
@@ -2375,40 +2284,14 @@ export default function Home() {
              flex-shrink: 1;
            }
            .project-filter-rail {
-             grid-template-columns: 1fr;
-             gap: 0.45rem;
-           }
-           .project-filter-group {
-             padding: 0.48rem 0.52rem;
+             gap: 0.35rem;
            }
            .project-filter-rail button {
              font-size: 0.6rem;
              padding: 4px 7px;
            }
-           .project-filter-summary {
-             flex-direction: row;
-             align-items: center;
-             padding: 0 0 0.15rem;
-           }
-           .project-bucket-layout {
-             grid-template-columns: 1fr;
-             gap: 0.55rem;
-           }
-           .project-year-rail {
-             position: static;
-             display: flex;
-             flex-wrap: wrap;
-             gap: 0.35rem;
-           }
-           .project-year-rail span {
-             min-height: 22px;
-             border-left: 0;
-             border: 1px solid ${T.border};
-             border-radius: 999px;
-             padding: 2px 7px;
-           }
            .project-scroll-panel.has-overflow {
-             max-height: min(70vh, 640px);
+             max-height: min(80vh, 860px);
            }
            .project-scroll-hint {
              margin-left: 0;

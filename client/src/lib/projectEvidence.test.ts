@@ -1,17 +1,21 @@
 import { describe, expect, it } from "vitest";
 import type { ProjectEntry } from "@/content";
 import {
+  PROJECT_FILTERS,
   createProjectFilterSelection,
   filterProjects,
   filterProjectsBySelection,
   hasProjectOverflow,
+  isProjectFilterSelected,
   projectCategoryLabel,
   projectEvidenceMetrics,
+  projectFilterLabel,
   projectFocusLabel,
   projectProofLevelLabel,
   projectYearBuckets,
   projectYearLabel,
   toggleProjectFilter,
+  toggleProjectFilterChip,
 } from "./projectEvidence";
 
 const baseProject: ProjectEntry = {
@@ -46,28 +50,43 @@ describe("project evidence helpers", () => {
     expect(filterProjects(projects, "career").map((project) => project.slug)).toEqual(["aerospace-rag"]);
     expect(filterProjects(projects, "toy").map((project) => project.slug)).toEqual(["tool", "experiment"]);
     expect(filterProjects(projects, "tool").map((project) => project.slug)).toEqual(["tool"]);
+    expect(filterProjects(projects, "experiment").map((project) => project.slug)).toEqual(["experiment"]);
   });
 
-  it("supports B-style multi-select filters with OR within an axis and AND across axes", () => {
+  it("exposes only seven compact project filter chips including show all", () => {
+    expect(PROJECT_FILTERS).toEqual(["all", "career", "toy", "research", "product", "tool", "experiment"]);
+    expect(PROJECT_FILTERS).toHaveLength(7);
+    expect(projectFilterLabel("all", "ko")).toBe("전체 표시");
+    expect(projectFilterLabel("all", "en")).toBe("Show all");
+  });
+
+  it("supports compact multi-select filters with show all reset", () => {
     const projects: ProjectEntry[] = [
       baseProject,
       { ...baseProject, slug: "career-tool", category: "career", focus: "tool", proofLevel: "supporting" },
       { ...baseProject, slug: "toy-tool", category: "toy", focus: "tool", proofLevel: "supporting" },
       { ...baseProject, slug: "toy-product", category: "toy", focus: "product", proofLevel: "exploration" },
     ];
-    const selection = toggleProjectFilter(
-      toggleProjectFilter(
-        toggleProjectFilter(createProjectFilterSelection(), "category", "career"),
-        "focus",
+    const selection = toggleProjectFilterChip(
+      toggleProjectFilterChip(
+        toggleProjectFilterChip(createProjectFilterSelection(), "career"),
         "research",
       ),
-      "focus",
       "tool",
     );
 
+    expect(isProjectFilterSelected(selection, "all")).toBe(false);
+    expect(isProjectFilterSelected(selection, "career")).toBe(true);
+    expect(isProjectFilterSelected(selection, "tool")).toBe(true);
     expect(filterProjectsBySelection(projects, selection).map((project) => project.slug)).toEqual(["aerospace-rag", "career-tool"]);
     expect(filterProjectsBySelection(projects, toggleProjectFilter(selection, "focus", "research")).map((project) => project.slug)).toEqual([
       "career-tool",
+    ]);
+    expect(filterProjectsBySelection(projects, toggleProjectFilterChip(selection, "all")).map((project) => project.slug)).toEqual([
+      "aerospace-rag",
+      "career-tool",
+      "toy-tool",
+      "toy-product",
     ]);
   });
 
@@ -88,8 +107,8 @@ describe("project evidence helpers", () => {
       { year: "2025", count: 1 },
       { year: "2023", count: 1 },
     ]);
-    expect(hasProjectOverflow(projects, 3)).toBe(true);
-    expect(hasProjectOverflow(projects.slice(0, 3), 3)).toBe(false);
+    expect(hasProjectOverflow([...projects, ...projects], 7)).toBe(true);
+    expect(hasProjectOverflow([...projects, ...projects].slice(0, 7), 7)).toBe(false);
   });
 
   it("localizes project labels", () => {

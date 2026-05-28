@@ -52,15 +52,16 @@ describe("Home projects section", () => {
     expect(block).not.toContain("setSelectedProjectSlug(proj.slug);");
   });
 
-  it("adds conservative C-3-lite filtering and evidence panels without project navigation", () => {
+  it("uses seven compact project filter chips including show all", () => {
     const block = projectsBlock();
 
     expect(source).toContain("const [projectFilters, setProjectFilters] = useState<ProjectFilterSelection>(() => createProjectFilterSelection())");
-    expect(source).toContain("PROJECT_FILTER_GROUPS.map((group)");
+    expect(source).toContain("PROJECT_FILTERS.map((filter)");
     expect(source).toContain("filterProjectsBySelection(PROJECTS, projectFilters)");
     expect(block).toContain('className="project-filter-rail"');
-    expect(block).toContain('className="project-filter-group"');
-    expect(block).toContain("toggleProjectFilter(projectFilters, group.axis, option)");
+    expect(block).not.toContain('className="project-filter-group"');
+    expect(block).toContain("toggleProjectFilterChip(projectFilters, filter)");
+    expect(block).toContain("isProjectFilterSelected(projectFilters, filter)");
     expect(block).toContain("projectCategoryLabel(proj.category, locale)");
     expect(block).toContain("projectFocusLabel(proj.focus, locale)");
     expect(block).toContain('className="project-evidence-grid"');
@@ -68,17 +69,15 @@ describe("Home projects section", () => {
     expect(block).toContain("projectEvidenceMetrics(selectedProject)");
   });
 
-  it("uses B-style year buckets and a capped scroll panel when many projects match", () => {
+  it("shows seven projects before using the side scroll panel", () => {
     const block = projectsBlock();
 
-    expect(source).toContain("const PROJECT_INITIAL_VISIBLE_COUNT = 3");
-    expect(source).toContain("const projectBuckets = useMemo(() => projectYearBuckets(visibleProjects, locale), [visibleProjects, locale])");
-    expect(source).toContain("const projectHasOverflow = hasProjectOverflow(visibleProjects, PROJECT_INITIAL_VISIBLE_COUNT)");
-    expect(block).toContain('className="project-bucket-layout"');
-    expect(block).toContain('className="project-year-rail"');
-    expect(block).toContain("projectBuckets.map((bucket)");
+    expect(source).toContain("const PROJECT_VISIBLE_COUNT = 7");
+    expect(source).toContain("const projectHasOverflow = hasProjectOverflow(visibleProjects, PROJECT_VISIBLE_COUNT)");
+    expect(block).not.toContain('className="project-bucket-layout"');
+    expect(block).not.toContain('className="project-year-rail"');
     expect(block).toContain('className={projectHasOverflow ? "project-scroll-panel has-overflow" : "project-scroll-panel"}');
     expect(block).toContain('className="project-scroll-fade"');
-    expect(block).toContain("locale === \"en\" ? \"Scroll for older projects\" : \"이전 연도 프로젝트는 스크롤\"");
+    expect(block).toContain("locale === \"en\" ? \"Scroll for more projects\" : \"더 많은 프로젝트는 스크롤\"");
   });
 });

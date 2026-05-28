@@ -1,20 +1,13 @@
 import type { ProjectCategory, ProjectEntry, ProjectFocus, ProjectMetric, ProjectProofLevel } from "@/content";
 import type { Locale } from "./i18nContent";
 
-export type ProjectFilter = "all" | ProjectCategory | "research" | "tool";
-export type ProjectFilterAxis = "category" | "focus" | "proof";
-export type ProjectFilterValue = ProjectCategory | ProjectFocus | ProjectProofLevel;
+export type ProjectFilter = "all" | ProjectCategory | ProjectFocus;
+export type ProjectFilterAxis = "category" | "focus";
+export type ProjectFilterValue = ProjectCategory | ProjectFocus;
 
 export interface ProjectFilterSelection {
   category: ProjectCategory[];
   focus: ProjectFocus[];
-  proof: ProjectProofLevel[];
-}
-
-export interface ProjectFilterGroup {
-  axis: ProjectFilterAxis;
-  label: Record<Locale, string>;
-  options: readonly ProjectFilterValue[];
 }
 
 export interface ProjectYearBucket {
@@ -22,12 +15,7 @@ export interface ProjectYearBucket {
   count: number;
 }
 
-export const PROJECT_FILTERS: ProjectFilter[] = ["all", "career", "toy", "research", "tool"];
-export const PROJECT_FILTER_GROUPS: readonly ProjectFilterGroup[] = [
-  { axis: "category", label: { ko: "분류", en: "Category" }, options: ["career", "toy"] },
-  { axis: "focus", label: { ko: "방향", en: "Focus" }, options: ["research", "product", "tool", "experiment"] },
-  { axis: "proof", label: { ko: "근거", en: "Proof" }, options: ["core", "supporting", "exploration"] },
-];
+export const PROJECT_FILTERS: ProjectFilter[] = ["all", "career", "toy", "research", "product", "tool", "experiment"];
 
 export function filterProjects(projects: ProjectEntry[], filter: ProjectFilter): ProjectEntry[] {
   if (filter === "all") return projects;
@@ -36,7 +24,7 @@ export function filterProjects(projects: ProjectEntry[], filter: ProjectFilter):
 }
 
 export function createProjectFilterSelection(): ProjectFilterSelection {
-  return { category: [], focus: [], proof: [] };
+  return { category: [], focus: [] };
 }
 
 export function clearProjectFilters(): ProjectFilterSelection {
@@ -44,7 +32,7 @@ export function clearProjectFilters(): ProjectFilterSelection {
 }
 
 export function hasActiveProjectFilters(filters: ProjectFilterSelection): boolean {
-  return filters.category.length > 0 || filters.focus.length > 0 || filters.proof.length > 0;
+  return filters.category.length > 0 || filters.focus.length > 0;
 }
 
 export function isProjectFilterActive(filters: ProjectFilterSelection, axis: ProjectFilterAxis, value: ProjectFilterValue): boolean {
@@ -60,18 +48,39 @@ export function toggleProjectFilter(filters: ProjectFilterSelection, axis: Proje
 export function filterProjectsBySelection(projects: ProjectEntry[], filters: ProjectFilterSelection): ProjectEntry[] {
   return projects.filter((project) => (
     (filters.category.length === 0 || filters.category.includes(project.category)) &&
-    (filters.focus.length === 0 || filters.focus.includes(project.focus)) &&
-    (filters.proof.length === 0 || filters.proof.includes(project.proofLevel))
+    (filters.focus.length === 0 || filters.focus.includes(project.focus))
   ));
+}
+
+function projectFilterAxis(filter: ProjectFilter): ProjectFilterAxis | null {
+  if (filter === "all") return null;
+  if (filter === "career" || filter === "toy") return "category";
+  return "focus";
+}
+
+export function isProjectFilterSelected(filters: ProjectFilterSelection, filter: ProjectFilter): boolean {
+  const axis = projectFilterAxis(filter);
+  if (!axis) return !hasActiveProjectFilters(filters);
+  const value = filter as ProjectFilterValue;
+  return isProjectFilterActive(filters, axis, value);
+}
+
+export function toggleProjectFilterChip(filters: ProjectFilterSelection, filter: ProjectFilter): ProjectFilterSelection {
+  const axis = projectFilterAxis(filter);
+  if (!axis) return clearProjectFilters();
+  const value = filter as ProjectFilterValue;
+  return toggleProjectFilter(filters, axis, value);
 }
 
 export function projectFilterLabel(filter: ProjectFilter, locale: Locale): string {
   const labels: Record<ProjectFilter, Record<Locale, string>> = {
-    all: { ko: "전체", en: "All" },
+    all: { ko: "전체 표시", en: "Show all" },
     career: { ko: "커리어", en: "Career" },
     toy: { ko: "토이", en: "Toy" },
     research: { ko: "연구/실험", en: "Research" },
+    product: { ko: "제품/서비스", en: "Product" },
     tool: { ko: "도구", en: "Tool" },
+    experiment: { ko: "실험", en: "Experiment" },
   };
   return labels[filter][locale];
 }
@@ -101,16 +110,6 @@ export function projectProofLevelLabel(proofLevel: ProjectProofLevel, locale: Lo
     exploration: { ko: "탐색", en: "Exploration" },
   };
   return labels[proofLevel][locale];
-}
-
-export function projectFilterGroupLabel(group: ProjectFilterGroup, locale: Locale): string {
-  return group.label[locale];
-}
-
-export function projectFilterOptionLabel(axis: ProjectFilterAxis, option: ProjectFilterValue, locale: Locale): string {
-  if (axis === "category") return projectCategoryLabel(option as ProjectCategory, locale);
-  if (axis === "focus") return projectFocusLabel(option as ProjectFocus, locale);
-  return projectProofLevelLabel(option as ProjectProofLevel, locale);
 }
 
 export function projectYearLabel(project: Pick<ProjectEntry, "period">, locale: Locale): string {
