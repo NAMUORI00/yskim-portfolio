@@ -52,9 +52,14 @@ describe("github import function helpers", () => {
       metric: "★ 1.3k · forks 17 · Python 중심 저장소",
       tags: ["rag", "qdrant", "ollama", "Python", "TypeScript"],
       link: "https://github.com/NAMUORI00/aerospace-rag",
+      category: "toy",
+      focus: "research",
+      proofLevel: "exploration",
       status: "draft",
       private: false,
     });
+    expect(project.metrics).toEqual([]);
+    expect(project.evaluation).toEqual({});
     expect(project.body).toContain("GitHub URL");
     expect(project.body).toContain("A retrieval system for aerospace docs.");
   });

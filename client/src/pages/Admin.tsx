@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type ChangeEvent, type FormEvent, type KeyboardEvent, type MouseEvent, type ReactNode } from "react";
 import { Link } from "wouter";
-import { englishTranslations, getProfileAvatarUrl, portfolioContent, type ContentOrder, type EducationEntry, type NoteEntry, type PortfolioContent, type ProfileContact, type ProfileContent, type ProjectEntry, type PublicationStatus, type ResearchEntry, type SiteContent, type SkillGroup, type StarredRepo, type TimelineEntryType, type TimelineLink } from "@/content";
+import { englishTranslations, getProfileAvatarUrl, portfolioContent, type ContentOrder, type EducationEntry, type NoteEntry, type PortfolioContent, type ProfileContact, type ProfileContent, type ProjectCategory, type ProjectEntry, type ProjectFocus, type ProjectMetric, type ProjectProofLevel, type PublicationStatus, type ResearchEntry, type SiteContent, type SkillGroup, type StarredRepo, type TimelineEntryType, type TimelineLink } from "@/content";
 import { DARK, FONT_MONO, FONT_SANS, LIGHT } from "@/content/theme";
 import { useTheme } from "@/contexts/ThemeContext";
 import { adminAccessState, type AdminSessionInfo } from "@/lib/adminAccess";
@@ -85,6 +85,9 @@ const SECTIONS: Array<{ key: SectionKey; label: string }> = [
 const STATUS_OPTIONS: PublicationStatus[] = ["draft", "published", "archived"];
 const TIMELINE_TYPE_OPTIONS: TimelineEntryType[] = ["education", "research", "publication", "project", "award", "talk", "work", "milestone"];
 const CONTACT_TYPE_OPTIONS: ProfileContact["type"][] = ["email", "github", "website", "external"];
+const PROJECT_CATEGORY_OPTIONS: ProjectCategory[] = ["career", "toy"];
+const PROJECT_FOCUS_OPTIONS: ProjectFocus[] = ["research", "product", "tool", "experiment"];
+const PROJECT_PROOF_LEVEL_OPTIONS: ProjectProofLevel[] = ["core", "supporting", "exploration"];
 const INITIAL_GITHUB_IMPORT_SOURCE =
   portfolioContent.profile.contacts.find((contact) => contact.type === "github")?.href ?? `https://github.com/${portfolioContent.profile.handle}`;
 
@@ -893,6 +896,26 @@ export default function Admin() {
     updateProjectListField(field, removeItem(items, itemIndex).items);
   }
 
+  function updateProjectMetric(metricIndex: number, patch: Partial<ProjectMetric>) {
+    const metrics = projects[projectIndex]?.metrics ?? [];
+    updateProject({ metrics: metrics.map((metric, index) => (index === metricIndex ? { ...metric, ...patch } : metric)) });
+  }
+
+  function addProjectMetric() {
+    const metrics = projects[projectIndex]?.metrics ?? [];
+    updateProject({ metrics: [...metrics, { label: "Metric", value: "Value" }] });
+  }
+
+  function moveProjectMetric(metricIndex: number, direction: MoveDirection) {
+    const metrics = projects[projectIndex]?.metrics ?? [];
+    updateProject({ metrics: moveItem(metrics, metricIndex, direction).items });
+  }
+
+  function removeProjectMetric(metricIndex: number) {
+    const metrics = projects[projectIndex]?.metrics ?? [];
+    updateProject({ metrics: removeItem(metrics, metricIndex).items });
+  }
+
   function updateResearch(next: Partial<ResearchEntry>) {
     setResearch((items) => items.map((item, index) => (index === researchIndex ? { ...item, ...next } : item)));
     markSectionDirty("research");
@@ -1312,6 +1335,36 @@ export default function Admin() {
             <input disabled={!canEdit} value={draft} onChange={(event) => onDraftChange(event.target.value)} placeholder={placeholder} />
             <button type="submit" disabled={!canEdit}>Add</button>
           </form>
+        </div>
+      </div>
+    );
+  }
+
+  function renderProjectMetricsEditor(project: ProjectEntry) {
+    return (
+      <div className="admin-project-metric-panel">
+        <div className="admin-project-chip-head">
+          <span>Evidence metrics</span>
+          <small>{project.metrics.length} metric{project.metrics.length === 1 ? "" : "s"}</small>
+        </div>
+        {project.metrics.length === 0 && <div className="admin-empty compact">구조화된 지표가 없으면 기존 Metric 문구를 사용합니다.</div>}
+        <div className="admin-project-metric-list">
+          {project.metrics.map((metric, metricIndex) => (
+            <div className="admin-project-metric-row" key={editableListKey("project-metric", projectIndex, metricIndex)}>
+              <Field disabled={!canEdit} label="Label" value={metric.label} onChange={(label) => updateProjectMetric(metricIndex, { label })} />
+              <Field disabled={!canEdit} label="Value" value={metric.value} onChange={(value) => updateProjectMetric(metricIndex, { value })} />
+              <Field disabled={!canEdit} label="Baseline" value={metric.baseline ?? ""} onChange={(baseline) => updateProjectMetric(metricIndex, { baseline })} />
+              <Field disabled={!canEdit} label="Note" value={metric.note ?? ""} onChange={(note) => updateProjectMetric(metricIndex, { note })} />
+              <div className="admin-project-metric-actions">
+                <ControlButton disabled={!canEdit || metricIndex === 0} onClick={() => moveProjectMetric(metricIndex, "up")}>Up</ControlButton>
+                <ControlButton disabled={!canEdit || metricIndex === project.metrics.length - 1} onClick={() => moveProjectMetric(metricIndex, "down")}>Down</ControlButton>
+                <ControlButton danger disabled={!canEdit} onClick={() => removeProjectMetric(metricIndex)}>Remove</ControlButton>
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="admin-card-actions">
+          <ControlButton disabled={!canEdit} onClick={addProjectMetric}>Add metric</ControlButton>
         </div>
       </div>
     );
@@ -1847,6 +1900,9 @@ export default function Admin() {
               </div>
               <div className="admin-grid">
                 <SelectField disabled={!canEdit} label="Status" value={project.status} options={STATUS_OPTIONS} onChange={(status) => updateProject({ status })} />
+                <SelectField disabled={!canEdit} label="Category" value={project.category} options={PROJECT_CATEGORY_OPTIONS} onChange={(category) => updateProject({ category })} />
+                <SelectField disabled={!canEdit} label="Focus" value={project.focus} options={PROJECT_FOCUS_OPTIONS} onChange={(focus) => updateProject({ focus })} />
+                <SelectField disabled={!canEdit} label="Proof level" value={project.proofLevel} options={PROJECT_PROOF_LEVEL_OPTIONS} onChange={(proofLevel) => updateProject({ proofLevel })} />
                 <CheckField disabled={!canEdit} label="Highlight on home" checked={project.highlight} onChange={(highlight) => updateProject({ highlight })} />
                 <CheckField disabled={!canEdit} label="Private project" checked={project.private} onChange={(privateProject) => updateProject({ private: privateProject })} />
               </div>
@@ -1868,6 +1924,36 @@ export default function Admin() {
               </div>
               <TextArea disabled={!canEdit} label="Description" value={project.desc} onChange={(desc) => updateProject({ desc })} rows={4} />
               <TextArea disabled={!canEdit} label="Metric" value={project.metric} onChange={(metric) => updateProject({ metric })} rows={2} />
+              {renderProjectMetricsEditor(project)}
+            </div>
+            <div className="admin-project-card">
+              <div className="admin-card-head">
+                <div>
+                  <span className="admin-kicker">evidence</span>
+                  <strong>Evaluation</strong>
+                </div>
+              </div>
+              <div className="admin-grid">
+                <Field
+                  disabled={!canEdit}
+                  label="Evaluation baseline"
+                  value={project.evaluation.baseline ?? ""}
+                  onChange={(baseline) => updateProject({ evaluation: { ...project.evaluation, baseline } })}
+                />
+                <Field
+                  disabled={!canEdit}
+                  label="Evaluation dataset"
+                  value={project.evaluation.dataset ?? ""}
+                  onChange={(dataset) => updateProject({ evaluation: { ...project.evaluation, dataset } })}
+                />
+                <TextArea
+                  disabled={!canEdit}
+                  label="Evaluation method"
+                  value={project.evaluation.method ?? ""}
+                  onChange={(method) => updateProject({ evaluation: { ...project.evaluation, method } })}
+                  rows={3}
+                />
+              </div>
             </div>
             <div className="admin-project-card">
               <div className="admin-card-head">
@@ -2243,6 +2329,13 @@ export default function Admin() {
         .admin-project-chip-list { align-items: stretch; }
         .admin-project-chip input { width: clamp(112px, 16vw, 190px); }
         .admin-project-chip-add input { width: clamp(140px, 18vw, 230px); }
+        .admin-project-metric-panel { display: grid; gap: 10px; }
+        .admin-project-metric-list { display: grid; gap: 10px; }
+        .admin-project-metric-row {
+          border: 1px solid ${T.border}; background: ${T.bg}; border-radius: 6px; padding: 10px;
+          display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px;
+        }
+        .admin-project-metric-actions { grid-column: 1 / -1; display: flex; gap: 6px; flex-wrap: wrap; }
         .admin-skill-group-head { align-items: center; }
         .admin-skill-group-name {
           display: grid; gap: 6px; min-width: min(360px, 100%); flex: 1;

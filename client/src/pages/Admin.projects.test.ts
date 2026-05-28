@@ -42,4 +42,17 @@ describe("Admin projects editor source", () => {
     expect(importBlock).toContain("Show import");
     expect(importBlock).toContain("Hide import");
   });
+
+  it("edits C-3-lite project classification, metric cards, and evaluation conditions", () => {
+    expect(projectsBlock).toContain('label="Category"');
+    expect(projectsBlock).toContain("PROJECT_CATEGORY_OPTIONS");
+    expect(projectsBlock).toContain('label="Focus"');
+    expect(projectsBlock).toContain("PROJECT_FOCUS_OPTIONS");
+    expect(projectsBlock).toContain('label="Proof level"');
+    expect(projectsBlock).toContain("PROJECT_PROOF_LEVEL_OPTIONS");
+    expect(projectsBlock).toContain("renderProjectMetricsEditor");
+    expect(projectsBlock).toContain('label="Evaluation baseline"');
+    expect(projectsBlock).toContain('label="Evaluation dataset"');
+    expect(projectsBlock).toContain('label="Evaluation method"');
+  });
 });

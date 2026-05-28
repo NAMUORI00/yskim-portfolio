@@ -38,6 +38,11 @@ const project: ProjectEntry = {
   period: "2026",
   desc: "설명",
   metric: "성과",
+  category: "career",
+  focus: "tool",
+  proofLevel: "core",
+  metrics: [{ label: "MRR", value: "+31%", baseline: "Dense-only", note: "80개 질의" }],
+  evaluation: { baseline: "Dense-only", dataset: "도메인 질의 80개", method: "same corpus" },
   tags: ["React", "Cloudflare"],
   link: "",
   highlight: true,
@@ -119,7 +124,16 @@ describe("admin translation helpers", () => {
       "site.navigation.projects.label",
     ]);
 
-    expect(buildTranslationEntries({ kind: "project", value: project }).map((entry) => entry.key)).toContain("projects.portfolio.body");
+    expect(buildTranslationEntries({ kind: "project", value: project }).map((entry) => entry.key)).toEqual(expect.arrayContaining([
+      "projects.portfolio.body",
+      "projects.portfolio.metrics.0.label",
+      "projects.portfolio.metrics.0.value",
+      "projects.portfolio.metrics.0.baseline",
+      "projects.portfolio.metrics.0.note",
+      "projects.portfolio.evaluation.baseline",
+      "projects.portfolio.evaluation.dataset",
+      "projects.portfolio.evaluation.method",
+    ]));
     expect(buildTranslationEntries({ kind: "research", value: research }).map((entry) => entry.key)).toContain("research.rag.title");
     expect(buildTranslationEntries({ kind: "note", value: note }).map((entry) => entry.key)).toContain("notes.note.date");
     expect(buildTranslationEntries({ kind: "education", value: education }).map((entry) => entry.key)).toEqual([
@@ -145,11 +159,15 @@ describe("admin translation helpers", () => {
     const translated = applyTranslationValues(createEnglishTranslations(), entries, {
       "projects.portfolio.name": "Portfolio",
       "projects.portfolio.tags.1": "Cloudflare",
+      "projects.portfolio.metrics.0.baseline": "Dense-only",
+      "projects.portfolio.evaluation.dataset": "80 domain queries",
       "projects.portfolio.body": "Body",
     });
 
     expect(getTranslationValue(translated, "projects.portfolio.name")).toBe("Portfolio");
     expect(getTranslationValue(translated, "projects.portfolio.tags.1")).toBe("Cloudflare");
+    expect(getTranslationValue(translated, "projects.portfolio.metrics.0.baseline")).toBe("Dense-only");
+    expect(getTranslationValue(translated, "projects.portfolio.evaluation.dataset")).toBe("80 domain queries");
     expect(translated.sourceHashes?.["projects.portfolio.body"]).toBe(sourceHash("본문"));
   });
 

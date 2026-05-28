@@ -62,6 +62,11 @@ describe("validatePortfolioContent", () => {
           period: "2026.05",
           desc: "항공우주 업무 문서를 대상으로 한 RAG 시스템",
           metric: "MRR +31%",
+          category: "career",
+          focus: "research",
+          proofLevel: "core",
+          metrics: [{ label: "MRR", value: "+31%", baseline: "Dense-only", note: "80개 질의" }],
+          evaluation: { baseline: "Dense-only retrieval", dataset: "항공우주 질의 80개", method: "same corpus / top-k" },
           tags: ["Python", "RAG"],
           link: "https://github.com/NAMUORI00/aerospace-rag",
           highlight: true,
@@ -97,6 +102,11 @@ describe("validatePortfolioContent", () => {
     });
 
     expect(result.projects[0].slug).toBe("aerospace-rag");
+    expect(result.projects[0].category).toBe("career");
+    expect(result.projects[0].focus).toBe("research");
+    expect(result.projects[0].proofLevel).toBe("core");
+    expect(result.projects[0].metrics[0]).toMatchObject({ label: "MRR", value: "+31%" });
+    expect(result.projects[0].evaluation.dataset).toBe("항공우주 질의 80개");
     expect(result.projects[0].coverImage).toBe("/uploads/projects/aerospace-rag.webp");
     expect(result.research[0].coverImage).toBe("/uploads/research/rag.webp");
     expect(result.notes[0].relatedProjects).toEqual(["aerospace-rag"]);
@@ -142,6 +152,57 @@ describe("validatePortfolioContent", () => {
       links: [],
       relatedProjects: [],
       relatedSkills: [],
+    });
+  });
+
+  it("normalizes older project entries into C-3-lite project evidence fields", () => {
+    const result = validatePortfolioContent({
+      site: {
+        title: "x",
+        description: "x",
+        url: "https://example.com",
+        navigation: [],
+        images: { heroTree: "x", ragDiagram: "x", dotPattern: "x" },
+      },
+      profile: {
+        name: "x",
+        romanizedName: "x",
+        handle: "x",
+        status: "x",
+        headline: "x",
+        summaryLead: "x",
+        summary: [],
+        contacts: [],
+      },
+      education: [],
+      research: [],
+      projects: [
+        {
+          slug: "legacy-rag",
+          name: "legacy-rag",
+          period: "2026",
+          desc: "RAG",
+          metric: "MRR +31%",
+          tags: ["RAG"],
+          link: "",
+          highlight: true,
+          private: false,
+          status: "published",
+          body: "",
+          relatedNotes: [],
+        },
+      ],
+      skills: [],
+      starred: [],
+      notes: [],
+    });
+
+    expect(result.projects[0]).toMatchObject({
+      category: "career",
+      focus: "research",
+      proofLevel: "core",
+      metrics: [],
+      evaluation: {},
     });
   });
 

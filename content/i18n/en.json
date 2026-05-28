@@ -59,6 +59,13 @@
     "projects.aerospace-rag.tags.3": "15us9xd",
     "projects.aerospace-rag.tags.4": "1f3yed4",
     "projects.aerospace-rag.body": "ks6cob",
+    "projects.aerospace-rag.metrics.0.label": "swublw",
+    "projects.aerospace-rag.metrics.0.value": "l848m9",
+    "projects.aerospace-rag.metrics.0.baseline": "bpyev8",
+    "projects.aerospace-rag.metrics.0.note": "17yohz2",
+    "projects.aerospace-rag.evaluation.baseline": "bpyev8",
+    "projects.aerospace-rag.evaluation.dataset": "7pmeqs",
+    "projects.aerospace-rag.evaluation.method": "1cyxsht",
     "projects.cross-review-bridge.name": "bmumu8",
     "projects.cross-review-bridge.period": "372puo",
     "projects.cross-review-bridge.desc": "1xczm2i",
@@ -67,6 +74,13 @@
     "projects.cross-review-bridge.tags.1": "9xx36n",
     "projects.cross-review-bridge.tags.2": "1ywxxdu",
     "projects.cross-review-bridge.body": "19lanvr",
+    "projects.cross-review-bridge.metrics.0.label": "11urn23",
+    "projects.cross-review-bridge.metrics.0.value": "1hkq6vl",
+    "projects.cross-review-bridge.metrics.0.baseline": "1h8ujtg",
+    "projects.cross-review-bridge.metrics.0.note": "1ybinuz",
+    "projects.cross-review-bridge.evaluation.baseline": "1ol4ue",
+    "projects.cross-review-bridge.evaluation.dataset": "x93ecy",
+    "projects.cross-review-bridge.evaluation.method": "1e6b44n",
     "projects.introduce-cv-page.name": "sw8843",
     "projects.introduce-cv-page.period": "eki5vy",
     "projects.introduce-cv-page.desc": "1bxnnhv",
@@ -76,6 +90,13 @@
     "projects.introduce-cv-page.tags.2": "1yochrw",
     "projects.introduce-cv-page.tags.3": "1khb4jm",
     "projects.introduce-cv-page.body": "cdly95",
+    "projects.introduce-cv-page.metrics.0.label": "qs256w",
+    "projects.introduce-cv-page.metrics.0.value": "13lti0o",
+    "projects.introduce-cv-page.metrics.0.baseline": "1l35ifu",
+    "projects.introduce-cv-page.metrics.0.note": "1w290sf",
+    "projects.introduce-cv-page.evaluation.baseline": "33wwxo",
+    "projects.introduce-cv-page.evaluation.dataset": "1o6inso",
+    "projects.introduce-cv-page.evaluation.method": "12nhjks",
     "projects.llm-rag-research.name": "1ojjv6h",
     "projects.llm-rag-research.period": "1xt0n5t",
     "projects.llm-rag-research.desc": "y03h3u",
@@ -85,6 +106,13 @@
     "projects.llm-rag-research.tags.2": "178cdf1",
     "projects.llm-rag-research.tags.3": "1to1prz",
     "projects.llm-rag-research.body": "1dqrwts",
+    "projects.llm-rag-research.metrics.0.label": "1d1iy5b",
+    "projects.llm-rag-research.metrics.0.value": "kjaufl",
+    "projects.llm-rag-research.metrics.0.baseline": "1np5h11",
+    "projects.llm-rag-research.metrics.0.note": "2mwbn1",
+    "projects.llm-rag-research.evaluation.baseline": "1juiexa",
+    "projects.llm-rag-research.evaluation.dataset": "vmef2o",
+    "projects.llm-rag-research.evaluation.method": "w1z27",
     "projects.mediamtx-installer.name": "1scvayb",
     "projects.mediamtx-installer.period": "4b14mk",
     "projects.mediamtx-installer.desc": "1frz081",
@@ -93,6 +121,13 @@
     "projects.mediamtx-installer.tags.1": "1hwpnaq",
     "projects.mediamtx-installer.tags.2": "xrfrsu",
     "projects.mediamtx-installer.body": "o1668p",
+    "projects.mediamtx-installer.metrics.0.label": "1dol9sz",
+    "projects.mediamtx-installer.metrics.0.value": "1zaelu",
+    "projects.mediamtx-installer.metrics.0.baseline": "ulpf8y",
+    "projects.mediamtx-installer.metrics.0.note": "19twa0a",
+    "projects.mediamtx-installer.evaluation.baseline": "kbhawx",
+    "projects.mediamtx-installer.evaluation.dataset": "1im036d",
+    "projects.mediamtx-installer.evaluation.method": "1wf8zmp",
     "projects.music-source-separation.name": "8074ah",
     "projects.music-source-separation.period": "1dsybvo",
     "projects.music-source-separation.desc": "2e7sfi",
@@ -102,6 +137,13 @@
     "projects.music-source-separation.tags.2": "1jw7wza",
     "projects.music-source-separation.tags.3": "10bfayz",
     "projects.music-source-separation.body": "b52u4i",
+    "projects.music-source-separation.metrics.0.label": "1dwcow",
+    "projects.music-source-separation.metrics.0.value": "1eba7k7",
+    "projects.music-source-separation.metrics.0.baseline": "zo9zhq",
+    "projects.music-source-separation.metrics.0.note": "12vh6xx",
+    "projects.music-source-separation.evaluation.baseline": "4g89va",
+    "projects.music-source-separation.evaluation.dataset": "1hjbdgx",
+    "projects.music-source-separation.evaluation.method": "jyob92",
     "projects.spring-community-board.name": "1rvfit3",
     "projects.spring-community-board.period": "g3iegf",
     "projects.spring-community-board.desc": "10ftuhq",
@@ -110,6 +152,13 @@
     "projects.spring-community-board.tags.1": "1nkh8hw",
     "projects.spring-community-board.tags.2": "s5snuq",
     "projects.spring-community-board.body": "xoytf5",
+    "projects.spring-community-board.metrics.0.label": "p27aaz",
+    "projects.spring-community-board.metrics.0.value": "5rv86o",
+    "projects.spring-community-board.metrics.0.baseline": "1at38zs",
+    "projects.spring-community-board.metrics.0.note": "1j3wy6c",
+    "projects.spring-community-board.evaluation.baseline": "34ag0h",
+    "projects.spring-community-board.evaluation.dataset": "14ewoo3",
+    "projects.spring-community-board.evaluation.method": "qkze7i",
     "research.agentic-workflow.title": "1futqy9",
     "research.agentic-workflow.desc": "1ywfvtz",
     "research.agentic-workflow.body": "146leof",
@@ -234,6 +283,19 @@
         "RAG",
         "LLM"
       ],
+      "metrics": [
+        {
+          "label": "MRR",
+          "value": "+31%",
+          "baseline": "Single retrieval channel",
+          "note": "Dense/Sparse/Graph hybrid"
+        }
+      ],
+      "evaluation": {
+        "baseline": "Single retrieval channel",
+        "dataset": "Aerospace work-document query set",
+        "method": "Compared Dense, Sparse, Graph retrieval and Weighted RRF on the same corpus"
+      },
       "body": "## Overview\n\nA RAG system that combines Dense, Sparse, and Graph retrieval channels for aerospace work documents."
     },
     "cross-review-bridge": {
@@ -246,6 +308,19 @@
         "AI",
         "Automation"
       ],
+      "metrics": [
+        {
+          "label": "Review cycle",
+          "value": "About 70% shorter",
+          "baseline": "Manual review loop",
+          "note": "Automated external reviewer calls and approval flow"
+        }
+      ],
+      "evaluation": {
+        "baseline": "Manual prompt copy/paste review",
+        "dataset": "Repeated code-review workflow",
+        "method": "Compared the same review steps against the skill-based automated flow"
+      },
       "body": "## Overview\n\nAn automation system that connects external AI reviewers and Codex through a human-approved review loop."
     },
     "introduce-cv-page": {
@@ -259,6 +334,19 @@
         "React",
         "GitHub API"
       ],
+      "metrics": [
+        {
+          "label": "Publishing flow",
+          "value": "Fully automated",
+          "baseline": "Manual PR creation",
+          "note": "GitHub PR publication after editor writing"
+        }
+      ],
+      "evaluation": {
+        "baseline": "Manual Markdown writing and PR creation",
+        "dataset": "Blog/CV article publishing flow",
+        "method": "Integrated writing, saving, and PR creation into one UI flow"
+      },
       "body": "## Overview\n\nA blog and CV system that experiments with a GitHub PR-based publishing workflow."
     },
     "llm-rag-research": {
@@ -272,6 +360,19 @@
         "HuggingFace",
         "Research"
       ],
+      "metrics": [
+        {
+          "label": "Recall@5",
+          "value": "23%p gap",
+          "baseline": "Five RAG strategies",
+          "note": "Retrieval quality comparison by strategy"
+        }
+      ],
+      "evaluation": {
+        "baseline": "Single-strategy RAG pipeline",
+        "dataset": "Domain document retrieval query set",
+        "method": "Compared Recall@5 across chunking/retrieval combinations on the same document set"
+      },
       "body": "## Overview\n\nA private research system for comparing and evaluating different RAG strategies."
     },
     "mediamtx-installer": {
@@ -284,6 +385,19 @@
         "Ubuntu",
         "Streaming"
       ],
+      "metrics": [
+        {
+          "label": "Setup time",
+          "value": "15 min → 30 sec",
+          "baseline": "Manual setup",
+          "note": "One-line Ubuntu 24.04 install"
+        }
+      ],
+      "evaluation": {
+        "baseline": "Manual package installation and configuration",
+        "dataset": "Ubuntu 24.04 MediaMTX setup procedure",
+        "method": "Compared setup steps and elapsed time in the same environment"
+      },
       "body": "## Overview\n\nAn operations automation script that simplifies the MediaMTX installation process."
     },
     "music-source-separation": {
@@ -297,6 +411,19 @@
         "CUDA",
         "Hydra"
       ],
+      "metrics": [
+        {
+          "label": "SDR",
+          "value": "8.2 dB",
+          "baseline": "Demucs4HT-based experiment",
+          "note": "Vocal separation quality"
+        }
+      ],
+      "evaluation": {
+        "baseline": "Default source-separation model setup",
+        "dataset": "Source-separation validation tracks",
+        "method": "Fixed experiment settings with Hydra config and compared by SDR"
+      },
       "body": "## Overview\n\nA project for training music source separation models and managing experiment configuration."
     },
     "spring-community-board": {
@@ -309,6 +436,19 @@
         "Spring Boot",
         "JPA"
       ],
+      "metrics": [
+        {
+          "label": "List latency",
+          "value": "40% improved",
+          "baseline": "N+1 list query",
+          "note": "Optimized post-list query"
+        }
+      ],
+      "evaluation": {
+        "baseline": "List query with JPA N+1 issue",
+        "dataset": "Community board post/comment listing",
+        "method": "Compared response time before and after fetch join and query optimization"
+      },
       "body": "## Overview\n\nA Spring Boot-based CRUD board with member, post, and comment features."
     }
   },

@@ -34,7 +34,7 @@ export interface EnglishTranslations {
   profile?: EnglishProfileTranslations;
   education?: EnglishTimelineTranslations[];
   research?: Record<string, Partial<Pick<ResearchEntry, "title" | "desc" | "body">>>;
-  projects?: Record<string, Partial<Pick<ProjectEntry, "name" | "period" | "desc" | "metric" | "tags" | "body">>>;
+  projects?: Record<string, Partial<Pick<ProjectEntry, "name" | "period" | "desc" | "metric" | "tags" | "metrics" | "evaluation" | "body">>>;
   skills?: Record<string, Partial<Pick<SkillGroup, "label" | "items">>>;
   starred?: Record<string, Partial<Pick<StarredRepo, "desc">>>;
   notes?: Record<string, Partial<Pick<NoteEntry, "title" | "date" | "summary" | "tags" | "body">>>;
@@ -87,7 +87,18 @@ export function localizePortfolioContent(content: PortfolioContent, translations
       };
     }),
     research: content.research.map((item) => ({ ...item, ...(translations.research?.[item.slug] ?? {}) })),
-    projects: content.projects.map((item) => ({ ...item, ...(translations.projects?.[item.slug] ?? {}) })),
+    projects: content.projects.map((item) => {
+      const translated = translations.projects?.[item.slug];
+      if (!translated) return item;
+      const { tags, metrics, evaluation, ...textFields } = translated;
+      return {
+        ...item,
+        ...textFields,
+        tags: mergeArray(item.tags, tags),
+        metrics: mergeArray(item.metrics, metrics),
+        evaluation: evaluation ? { ...item.evaluation, ...evaluation } : item.evaluation,
+      };
+    }),
     skills: content.skills.map((item) => {
       const translated = translations.skills?.[item.label];
       return translated ? { ...item, ...translated, items: mergeArray(item.items, translated.items) } : item;

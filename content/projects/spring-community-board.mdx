@@ -5,6 +5,11 @@ period: 2023.07
 status: published
 desc: Spring Boot + JPA 기반 CRUD 커뮤니티 게시판. 회원 관리, 게시글, 댓글 기능.
 metric: JPA N+1 문제 해결로 목록 조회 응답 시간 40% 개선
+category: toy
+focus: product
+proofLevel: supporting
+metrics: [{"label":"List latency","value":"40% 개선","baseline":"N+1 발생 조회","note":"게시글 목록 조회 최적화"}]
+evaluation: {"baseline":"JPA N+1이 발생하는 목록 조회","dataset":"커뮤니티 게시판 목록/댓글 조회","method":"fetch join과 쿼리 최적화 전후 응답 시간 비교"}
 tags:
   - Java
   - Spring Boot

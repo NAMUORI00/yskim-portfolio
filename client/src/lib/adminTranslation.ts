@@ -86,6 +86,15 @@ export function buildTranslationEntries(source: TranslationSource): TranslationE
       ...entry(`projects.${slug}.desc`, "Project description", source.value.desc),
       ...entry(`projects.${slug}.metric`, "Project metric", source.value.metric),
       ...source.value.tags.flatMap((tag, index) => entry(`projects.${slug}.tags.${index}`, `Project tag ${index + 1}`, tag)),
+      ...source.value.metrics.flatMap((metric, index) => [
+        ...entry(`projects.${slug}.metrics.${index}.label`, `Project metric ${index + 1} label`, metric.label),
+        ...entry(`projects.${slug}.metrics.${index}.value`, `Project metric ${index + 1} value`, metric.value),
+        ...entry(`projects.${slug}.metrics.${index}.baseline`, `Project metric ${index + 1} baseline`, metric.baseline ?? ""),
+        ...entry(`projects.${slug}.metrics.${index}.note`, `Project metric ${index + 1} note`, metric.note ?? ""),
+      ]),
+      ...entry(`projects.${slug}.evaluation.baseline`, "Project evaluation baseline", source.value.evaluation.baseline ?? ""),
+      ...entry(`projects.${slug}.evaluation.dataset`, "Project evaluation dataset", source.value.evaluation.dataset ?? ""),
+      ...entry(`projects.${slug}.evaluation.method`, "Project evaluation method", source.value.evaluation.method ?? ""),
       ...entry(`projects.${slug}.body`, "Project body", source.value.body),
     ];
   }
@@ -140,7 +149,17 @@ function cloneTranslations(translations: EnglishTranslations): EnglishTranslatio
       : undefined,
     education: translations.education?.map((item) => ({ ...item, bullets: item.bullets ? [...item.bullets] : undefined, links: item.links?.map((link) => ({ ...link })) })),
     research: Object.fromEntries(Object.entries(translations.research ?? {}).map(([key, value]) => [key, { ...value }])),
-    projects: Object.fromEntries(Object.entries(translations.projects ?? {}).map(([key, value]) => [key, { ...value, tags: value.tags ? [...value.tags] : undefined }])),
+    projects: Object.fromEntries(
+      Object.entries(translations.projects ?? {}).map(([key, value]) => [
+        key,
+        {
+          ...value,
+          tags: value.tags ? [...value.tags] : undefined,
+          metrics: value.metrics?.map((metric) => ({ ...metric })),
+          evaluation: value.evaluation ? { ...value.evaluation } : undefined,
+        },
+      ]),
+    ),
     skills: Object.fromEntries(Object.entries(translations.skills ?? {}).map(([key, value]) => [key, { ...value, items: value.items ? [...value.items] : undefined }])),
     starred: Object.fromEntries(Object.entries(translations.starred ?? {}).map(([key, value]) => [key, { ...value }])),
     notes: Object.fromEntries(Object.entries(translations.notes ?? {}).map(([key, value]) => [key, { ...value, tags: value.tags ? [...value.tags] : undefined }])),
@@ -165,6 +184,12 @@ export function getTranslationValue(translations: EnglishTranslations, key: stri
   if (parts[0] === "education" && parts[2] === "links") return translations.education?.[Number(parts[1])]?.links?.[Number(parts[3])]?.label ?? "";
   if (parts[0] === "education") return String(translations.education?.[Number(parts[1])]?.[parts[2] as "degree" | "school" | "period" | "note"] ?? "");
   if (parts[0] === "projects" && parts[2] === "tags") return translations.projects?.[parts[1]]?.tags?.[Number(parts[3])] ?? "";
+  if (parts[0] === "projects" && parts[2] === "metrics") {
+    return String(translations.projects?.[parts[1]]?.metrics?.[Number(parts[3])]?.[parts[4] as "label" | "value" | "baseline" | "note"] ?? "");
+  }
+  if (parts[0] === "projects" && parts[2] === "evaluation") {
+    return String(translations.projects?.[parts[1]]?.evaluation?.[parts[3] as "baseline" | "dataset" | "method"] ?? "");
+  }
   if (parts[0] === "projects") return String(translations.projects?.[parts[1]]?.[parts[2] as keyof NonNullable<EnglishTranslations["projects"]>[string]] ?? "");
   if (parts[0] === "research") return String(translations.research?.[parts[1]]?.[parts[2] as keyof NonNullable<EnglishTranslations["research"]>[string]] ?? "");
   if (parts[0] === "skills" && parts[2] === "items") return translations.skills?.[decodeKeySegment(parts[1])]?.items?.[Number(parts[3])] ?? "";
@@ -220,6 +245,12 @@ function setTranslationValue(translations: EnglishTranslations, key: string, val
     if (parts[2] === "tags") {
       project.tags = ensureArrayItem(project.tags, Number(parts[3]), () => "");
       project.tags[Number(parts[3])] = value;
+    } else if (parts[2] === "metrics") {
+      project.metrics = ensureArrayItem(project.metrics, Number(parts[3]), () => ({ label: "", value: "" }));
+      project.metrics[Number(parts[3])][parts[4] as "label" | "value" | "baseline" | "note"] = value;
+    } else if (parts[2] === "evaluation") {
+      project.evaluation = project.evaluation ?? {};
+      project.evaluation[parts[3] as "baseline" | "dataset" | "method"] = value;
     } else {
       project[parts[2] as "name" | "period" | "desc" | "metric" | "body"] = value;
     }

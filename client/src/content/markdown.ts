@@ -1,4 +1,5 @@
-export type FrontmatterValue = string | boolean | number | string[];
+export type FrontmatterPrimitive = string | boolean | number;
+export type FrontmatterValue = FrontmatterPrimitive | FrontmatterValue[] | object | null;
 export type FrontmatterData = Record<string, FrontmatterValue>;
 
 export interface ParsedFrontmatter {
@@ -11,6 +12,13 @@ function parseScalar(value: string): FrontmatterValue {
   if (trimmed === "true") return true;
   if (trimmed === "false") return false;
   if (/^-?\d+(\.\d+)?$/.test(trimmed)) return Number(trimmed);
+  if ((trimmed.startsWith("[") && trimmed.endsWith("]")) || (trimmed.startsWith("{") && trimmed.endsWith("}"))) {
+    try {
+      return JSON.parse(trimmed) as FrontmatterValue;
+    } catch {
+      return trimmed;
+    }
+  }
   if ((trimmed.startsWith('"') && trimmed.endsWith('"')) || (trimmed.startsWith("'") && trimmed.endsWith("'"))) {
     return trimmed.slice(1, -1);
   }
@@ -118,7 +126,13 @@ export function toMarkdownHtml(markdown: string): string {
 
 function serializeValue(key: string, value: FrontmatterValue): string[] {
   if (Array.isArray(value)) {
-    return [key + ":", ...value.map((item) => `  - ${item}`)];
+    if (value.every((item) => typeof item === "string" || typeof item === "number" || typeof item === "boolean")) {
+      return [key + ":", ...value.map((item) => `  - ${item}`)];
+    }
+    return [`${key}: ${JSON.stringify(value)}`];
+  }
+  if (typeof value === "object" && value !== null) {
+    return [`${key}: ${JSON.stringify(value)}`];
   }
   return [`${key}: ${String(value)}`];
 }

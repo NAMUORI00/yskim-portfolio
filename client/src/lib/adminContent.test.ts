@@ -17,6 +17,11 @@ const project: ProjectEntry = {
   period: "2026.05",
   desc: "RAG system",
   metric: "MRR +31%",
+  category: "career",
+  focus: "research",
+  proofLevel: "core",
+  metrics: [{ label: "MRR", value: "+31%", baseline: "Dense-only", note: "80개 질의" }],
+  evaluation: { baseline: "Dense-only retrieval", dataset: "항공우주 질의 80개", method: "same corpus / top-k" },
   tags: ["Python", "RAG"],
   link: "https://github.com/NAMUORI00/aerospace-rag",
   highlight: true,
@@ -104,6 +109,11 @@ describe("admin content helpers", () => {
 
   it("serializes project/research/note MDX", () => {
     expect(serializeProject(project).path).toBe("content/projects/aerospace-rag.mdx");
+    expect(serializeProject(project).content).toContain("category: career");
+    expect(serializeProject(project).content).toContain("focus: research");
+    expect(serializeProject(project).content).toContain("proofLevel: core");
+    expect(serializeProject(project).content).toContain('metrics: [{"label":"MRR","value":"+31%","baseline":"Dense-only","note":"80개 질의"}]');
+    expect(serializeProject(project).content).toContain('evaluation: {"baseline":"Dense-only retrieval","dataset":"항공우주 질의 80개","method":"same corpus / top-k"}');
     expect(serializeProject(project).content).toContain("highlight: true");
     expect(serializeProject(project).content).toContain("coverImage: /uploads/projects/aerospace-rag.webp");
     expect(serializeResearch(research).path).toBe("content/research/rag.mdx");

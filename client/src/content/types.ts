@@ -1,5 +1,21 @@
 export type PublicationStatus = "draft" | "published" | "archived";
 export type TimelineEntryType = "education" | "research" | "publication" | "project" | "award" | "talk" | "work" | "milestone";
+export type ProjectCategory = "career" | "toy";
+export type ProjectFocus = "research" | "product" | "tool" | "experiment";
+export type ProjectProofLevel = "core" | "supporting" | "exploration";
+
+export interface ProjectMetric {
+  label: string;
+  value: string;
+  baseline?: string;
+  note?: string;
+}
+
+export interface ProjectEvaluation {
+  baseline?: string;
+  dataset?: string;
+  method?: string;
+}
 
 export interface NavItem {
   id: string;
@@ -77,6 +93,11 @@ export interface ProjectEntry {
   period: string;
   desc: string;
   metric: string;
+  category: ProjectCategory;
+  focus: ProjectFocus;
+  proofLevel: ProjectProofLevel;
+  metrics: ProjectMetric[];
+  evaluation: ProjectEvaluation;
   tags: string[];
   link: string;
   highlight: boolean;

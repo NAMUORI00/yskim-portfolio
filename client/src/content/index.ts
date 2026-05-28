@@ -8,7 +8,7 @@ import englishTranslationsData from "@content/i18n/en.json";
 import { parseFrontmatter } from "./markdown";
 import { validatePortfolioContent } from "./schema";
 import type { EnglishTranslations } from "@/lib/i18nContent";
-import type { NoteEntry, ProjectEntry, ResearchEntry } from "./types";
+import type { NoteEntry, ProjectCategory, ProjectEntry, ProjectEvaluation, ProjectFocus, ProjectMetric, ProjectProofLevel, ResearchEntry } from "./types";
 
 const researchModules = import.meta.glob<string>("@content/research/*.mdx", { eager: true, import: "default", query: "?raw" });
 const projectModules = import.meta.glob<string>("@content/projects/*.mdx", { eager: true, import: "default", query: "?raw" });
@@ -31,6 +31,65 @@ function optionalString(value: unknown): string | undefined {
   return text || undefined;
 }
 
+function projectCategory(value: unknown): ProjectCategory | undefined {
+  return value === "career" || value === "toy" ? value : undefined;
+}
+
+function projectFocus(value: unknown): ProjectFocus | undefined {
+  return value === "research" || value === "product" || value === "tool" || value === "experiment" ? value : undefined;
+}
+
+function projectProofLevel(value: unknown): ProjectProofLevel | undefined {
+  return value === "core" || value === "supporting" || value === "exploration" ? value : undefined;
+}
+
+function projectMetrics(value: unknown): ProjectMetric[] | undefined {
+  if (!Array.isArray(value)) return undefined;
+  return value
+    .map((item) => {
+      if (!item || typeof item !== "object") return null;
+      const metric = item as Record<string, unknown>;
+      const label = String(metric.label ?? "").trim();
+      const valueText = String(metric.value ?? "").trim();
+      if (!label || !valueText) return null;
+      return {
+        label,
+        value: valueText,
+        ...(optionalString(metric.baseline) ? { baseline: optionalString(metric.baseline) } : {}),
+        ...(optionalString(metric.note) ? { note: optionalString(metric.note) } : {}),
+      };
+    })
+    .filter((item): item is ProjectMetric => Boolean(item));
+}
+
+function projectEvaluation(value: unknown): ProjectEvaluation | undefined {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return undefined;
+  const evaluation = value as Record<string, unknown>;
+  return {
+    ...(optionalString(evaluation.baseline) ? { baseline: optionalString(evaluation.baseline) } : {}),
+    ...(optionalString(evaluation.dataset) ? { dataset: optionalString(evaluation.dataset) } : {}),
+    ...(optionalString(evaluation.method) ? { method: optionalString(evaluation.method) } : {}),
+  };
+}
+
+function includesAny(text: string, terms: string[]): boolean {
+  return terms.some((term) => text.includes(term));
+}
+
+function inferProjectFocusFromText(values: string[]): ProjectFocus {
+  const text = values.join(" ").toLowerCase();
+  if (includesAny(text, ["rag", "llm", "ai", "qdrant", "ollama", "pytorch", "cuda", "huggingface", "research", "retrieval", "실험", "연구"])) {
+    return "research";
+  }
+  if (includesAny(text, ["github api", "cloudflare", "automation", "cli", "shell", "ubuntu", "worker", "installer", "배포", "자동화"])) {
+    return "tool";
+  }
+  if (includesAny(text, ["spring", "jpa", "react", "next", "board", "blog", "ui", "product", "서비스"])) {
+    return "product";
+  }
+  return "experiment";
+}
+
 function parseResearch(source: string): ResearchEntry {
   const { data, body } = parseFrontmatter(source);
   return {
@@ -47,16 +106,27 @@ function parseResearch(source: string): ResearchEntry {
 
 function parseProject(source: string): ProjectEntry {
   const { data, body } = parseFrontmatter(source);
+  const highlight = bool(data.highlight);
+  const tags = stringArray(data.tags);
+  const desc = String(data.desc ?? "");
+  const metric = String(data.metric ?? "");
+  const name = String(data.name ?? "");
+  const slug = String(data.slug ?? "");
   return {
-    slug: String(data.slug ?? ""),
-    name: String(data.name ?? ""),
+    slug,
+    name,
     period: String(data.period ?? ""),
     status: status(data.status),
-    desc: String(data.desc ?? ""),
-    metric: String(data.metric ?? ""),
-    tags: stringArray(data.tags),
+    desc,
+    metric,
+    category: projectCategory(data.category) ?? (highlight ? "career" : "toy"),
+    focus: projectFocus(data.focus) ?? inferProjectFocusFromText([slug, name, desc, metric, tags.join(" "), body]),
+    proofLevel: projectProofLevel(data.proofLevel) ?? (highlight ? "core" : "exploration"),
+    metrics: projectMetrics(data.metrics) ?? [],
+    evaluation: projectEvaluation(data.evaluation) ?? {},
+    tags,
     link: String(data.link ?? ""),
-    highlight: bool(data.highlight),
+    highlight,
     private: bool(data.private),
     relatedNotes: stringArray(data.relatedNotes),
     coverImage: optionalString(data.coverImage),
@@ -118,6 +188,11 @@ export type {
   ProfileContact,
   ProfileContent,
   ProjectEntry,
+  ProjectCategory,
+  ProjectEvaluation,
+  ProjectFocus,
+  ProjectMetric,
+  ProjectProofLevel,
   PublicationStatus,
   ResearchEntry,
   SkillGroup,

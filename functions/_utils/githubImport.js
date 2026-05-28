@@ -83,12 +83,31 @@ function uniqueList(items, limit = 6) {
   return next;
 }
 
+function textIncludes(text, terms) {
+  return terms.some((term) => text.includes(term));
+}
+
+function inferProjectFocus(tags, desc, readme, language) {
+  const text = [...tags, desc, readme, language].join(" ").toLowerCase();
+  if (textIncludes(text, ["rag", "llm", "ai", "qdrant", "ollama", "pytorch", "cuda", "huggingface", "research", "retrieval", "실험", "연구"])) {
+    return "research";
+  }
+  if (textIncludes(text, ["github api", "cloudflare", "automation", "cli", "shell", "ubuntu", "worker", "installer", "배포", "자동화"])) {
+    return "tool";
+  }
+  if (textIncludes(text, ["spring", "jpa", "react", "next", "board", "blog", "ui", "product", "서비스"])) {
+    return "product";
+  }
+  return "experiment";
+}
+
 export function repositoryToProjectCandidate(repo, details = {}) {
   const languages = Object.keys(details.languages || {});
   const tags = uniqueList([...(repo.topics || []), repo.language, ...languages]);
   const language = repo.language || languages[0] || "GitHub";
   const desc = repo.description || "GitHub에서 가져온 프로젝트 후보입니다. 포트폴리오 문체에 맞게 설명을 다듬으세요.";
   const readme = cleanReadme(details.readme);
+  const focus = inferProjectFocus(tags, desc, readme, language);
   const bodyParts = [
     "## GitHub Import",
     "",
@@ -106,6 +125,11 @@ export function repositoryToProjectCandidate(repo, details = {}) {
     period: formatPeriod(repo),
     desc,
     metric: `★ ${compactStars(repo.stargazers_count)} · forks ${Number(repo.forks_count || 0)} · ${language} 중심 저장소`,
+    category: "toy",
+    focus,
+    proofLevel: "exploration",
+    metrics: [],
+    evaluation: {},
     tags,
     link: repo.html_url || "",
     highlight: false,

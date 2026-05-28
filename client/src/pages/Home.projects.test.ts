@@ -51,4 +51,18 @@ describe("Home projects section", () => {
     expect(block).toContain('locale === "en" ? "Details" : "자세히 보기"');
     expect(block).not.toContain("setSelectedProjectSlug(proj.slug);");
   });
+
+  it("adds conservative C-3-lite filtering and evidence panels without project navigation", () => {
+    const block = projectsBlock();
+
+    expect(source).toContain("const [projectFilter, setProjectFilter] = useState<ProjectFilter>(\"all\")");
+    expect(source).toContain("PROJECT_FILTERS.map((filter)");
+    expect(source).toContain("filterProjects(PROJECTS, projectFilter)");
+    expect(block).toContain('className="project-filter-rail"');
+    expect(block).toContain("projectCategoryLabel(proj.category, locale)");
+    expect(block).toContain("projectFocusLabel(proj.focus, locale)");
+    expect(block).toContain('className="project-evidence-grid"');
+    expect(block).toContain('className="project-evaluation-panel"');
+    expect(block).toContain("projectEvidenceMetrics(selectedProject)");
+  });
 });

@@ -50,6 +50,24 @@ featured: true
 본문`);
   });
 
+  it("round-trips structured JSON frontmatter values", () => {
+    const serialized = serializeFrontmatter(
+      {
+        slug: "aerospace-rag",
+        metrics: [{ label: "MRR", value: "+31%", baseline: "Dense-only" }],
+        evaluation: { baseline: "Dense-only", dataset: "80개 질의", method: "same corpus" },
+      },
+      "본문",
+    );
+
+    expect(serialized).toContain('metrics: [{"label":"MRR","value":"+31%","baseline":"Dense-only"}]');
+    expect(serialized).toContain('evaluation: {"baseline":"Dense-only","dataset":"80개 질의","method":"same corpus"}');
+    expect(parseFrontmatter(serialized).data).toMatchObject({
+      metrics: [{ label: "MRR", value: "+31%", baseline: "Dense-only" }],
+      evaluation: { baseline: "Dense-only", dataset: "80개 질의", method: "same corpus" },
+    });
+  });
+
   it("renders basic markdown to safe HTML", () => {
     const html = toMarkdownHtml("## 제목\n\n본문 **강조**와 [링크](https://example.com)");
 

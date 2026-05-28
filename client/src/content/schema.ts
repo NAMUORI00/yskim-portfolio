@@ -1,8 +1,22 @@
 import { z } from "zod";
-import type { PortfolioContent } from "./types";
+import type { PortfolioContent, ProjectCategory, ProjectEntry, ProjectFocus, ProjectProofLevel } from "./types";
 
 const statusSchema = z.enum(["draft", "published", "archived"]);
 const timelineEntryTypeSchema = z.enum(["education", "research", "publication", "project", "award", "talk", "work", "milestone"]);
+const projectCategorySchema = z.enum(["career", "toy"]);
+const projectFocusSchema = z.enum(["research", "product", "tool", "experiment"]);
+const projectProofLevelSchema = z.enum(["core", "supporting", "exploration"]);
+const projectMetricSchema = z.object({
+  label: z.string().min(1),
+  value: z.string().min(1),
+  baseline: z.string().optional(),
+  note: z.string().optional(),
+});
+const projectEvaluationSchema = z.object({
+  baseline: z.string().optional(),
+  dataset: z.string().optional(),
+  method: z.string().optional(),
+});
 
 export const siteSchema = z.object({
   title: z.string().min(1),
@@ -69,6 +83,11 @@ export const projectSchema = z.object({
   period: z.string().min(1),
   desc: z.string().min(1),
   metric: z.string().min(1),
+  category: projectCategorySchema.optional(),
+  focus: projectFocusSchema.optional(),
+  proofLevel: projectProofLevelSchema.optional(),
+  metrics: z.array(projectMetricSchema).optional(),
+  evaluation: projectEvaluationSchema.optional(),
   tags: z.array(z.string()),
   link: z.string(),
   highlight: z.boolean(),
@@ -124,10 +143,46 @@ function assertUnique(items: Array<{ slug: string }>, label: string) {
   }
 }
 
+function textIncludes(text: string, terms: string[]): boolean {
+  return terms.some((term) => text.includes(term));
+}
+
+function inferProjectFocus(project: z.infer<typeof projectSchema>): ProjectFocus {
+  const text = [project.slug, project.name, project.desc, project.metric, project.tags.join(" "), project.body].join(" ").toLowerCase();
+  if (textIncludes(text, ["rag", "llm", "ai", "qdrant", "ollama", "pytorch", "cuda", "huggingface", "research", "retrieval", "실험", "연구"])) {
+    return "research";
+  }
+  if (textIncludes(text, ["github api", "cloudflare", "automation", "cli", "shell", "ubuntu", "worker", "installer", "배포", "자동화"])) {
+    return "tool";
+  }
+  if (textIncludes(text, ["spring", "jpa", "react", "next", "board", "blog", "ui", "product", "서비스"])) {
+    return "product";
+  }
+  return "experiment";
+}
+
+function normalizeProjectEvidence(project: z.infer<typeof projectSchema>): ProjectEntry {
+  const category: ProjectCategory = project.category ?? (project.highlight ? "career" : "toy");
+  const focus: ProjectFocus = project.focus ?? inferProjectFocus(project);
+  const proofLevel: ProjectProofLevel = project.proofLevel ?? (project.highlight ? "core" : "exploration");
+  return {
+    ...project,
+    category,
+    focus,
+    proofLevel,
+    metrics: project.metrics ?? [],
+    evaluation: project.evaluation ?? {},
+  };
+}
+
 export function validatePortfolioContent(value: unknown): PortfolioContent {
   const parsed = portfolioContentSchema.parse(value);
-  assertUnique(parsed.projects, "project");
-  assertUnique(parsed.research, "research");
-  assertUnique(parsed.notes, "note");
-  return parsed;
+  const normalized: PortfolioContent = {
+    ...parsed,
+    projects: parsed.projects.map(normalizeProjectEvidence),
+  };
+  assertUnique(normalized.projects, "project");
+  assertUnique(normalized.research, "research");
+  assertUnique(normalized.notes, "note");
+  return normalized;
 }

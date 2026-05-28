@@ -49,6 +49,13 @@ describe("admin item helpers", () => {
 
   it("creates draft templates for editable collections", () => {
     expect(createProjectDraft(["new-project"]).slug).toBe("new-project-2");
+    expect(createProjectDraft(["new-project"])).toMatchObject({
+      category: "toy",
+      focus: "experiment",
+      proofLevel: "exploration",
+      metrics: [],
+      evaluation: {},
+    });
     expect(createResearchDraft(["new-research"]).status).toBe("draft");
     expect(createNoteDraft(["new-note"], "2026-05-18").date).toBe("2026-05-18");
     expect(createEducationEntry()).toMatchObject({

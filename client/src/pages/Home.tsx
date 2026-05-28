@@ -29,6 +29,17 @@ import { buildCoverPreview, buildResearchDiagramPreview, type CoverPreviewPayloa
 import { applyDocumentMetadata } from "@/lib/documentMetadata";
 import { localizePortfolioContent, uiText } from "@/lib/i18nContent";
 import { buildKnowledgeGraph } from "@/lib/knowledgeGraph";
+import {
+  PROJECT_FILTERS,
+  filterProjects,
+  projectCategoryLabel,
+  projectEvaluationRows,
+  projectEvidenceMetrics,
+  projectFilterLabel,
+  projectFocusLabel,
+  projectProofLevelLabel,
+  type ProjectFilter,
+} from "@/lib/projectEvidence";
 import { activeSectionForAnchor, scrollEndPaddingForCenteredSection, scrollTopForElementCenter } from "@/lib/scroll";
 import { toMarkdownHtml } from "@/content/markdown";
 
@@ -613,23 +624,25 @@ export default function Home() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [focusedGraphNodeId, setFocusedGraphNodeId] = useState<string | null>(null);
   const [coverPreview, setCoverPreview] = useState<CoverPreviewPayload | null>(null);
+  const [projectFilter, setProjectFilter] = useState<ProjectFilter>("all");
   const [selectedProjectSlug, setSelectedProjectSlug] = useState<string | null>(null);
   const previewHref = useCallback((path: string) => withAdminPreviewUrl(path, previewId), [previewId]);
   const label = (key: string, fallback: string) => (locale === "en" ? uiText(sourceTranslations, key, fallback) : fallback);
   const themeToggleLabel = theme === "dark" ? label("lightMode", "라이트 모드") : label("darkMode", "다크 모드");
   const languageToggleLabel = locale === "en" ? label("languageToKorean", "한국어") : label("languageToEnglish", "English");
+  const visibleProjects = useMemo(() => filterProjects(PROJECTS, projectFilter), [PROJECTS, projectFilter]);
   const selectedProject = PROJECTS.find((project) => project.slug === selectedProjectSlug) ?? null;
   const activeProjectGraphNodeId = focusedGraphNodeId ?? (selectedProject ? `project:${selectedProject.slug}` : null);
 
   useEffect(() => {
-    if (PROJECTS.length === 0) {
+    if (visibleProjects.length === 0) {
       if (selectedProjectSlug !== null) setSelectedProjectSlug(null);
       return;
     }
-    if (selectedProjectSlug && !PROJECTS.some((project) => project.slug === selectedProjectSlug)) {
+    if (selectedProjectSlug && !visibleProjects.some((project) => project.slug === selectedProjectSlug)) {
       setSelectedProjectSlug(null);
     }
-  }, [PROJECTS, selectedProjectSlug]);
+  }, [visibleProjects, selectedProjectSlug]);
 
   useEffect(() => {
     if (!coverPreview) return;
@@ -1200,13 +1213,26 @@ export default function Home() {
           {/* ── 프로젝트 ── */}
           <FadeSection>
             <SectionTitle id="projects" icon="code" T={T}>Projects</SectionTitle>
+            <div className="project-filter-rail" role="group" aria-label={locale === "en" ? "Project filters" : "프로젝트 필터"}>
+              {PROJECT_FILTERS.map((filter) => (
+                <button
+                  key={filter}
+                  type="button"
+                  className={projectFilter === filter ? "active" : ""}
+                  aria-pressed={projectFilter === filter}
+                  onClick={() => setProjectFilter(filter)}
+                >
+                  {projectFilterLabel(filter, locale)}
+                </button>
+              ))}
+            </div>
             <div style={{
               border: `1px solid ${T.border}`,
               borderRadius: "4px",
               overflow: "hidden",
               background: T.surface,
             }}>
-              {PROJECTS.map((proj, idx) => {
+              {visibleProjects.map((proj, idx) => {
                 const graphNodeId = `project:${proj.slug}`;
                 const projectDetailPanelId = `project-detail-panel-${proj.slug}`;
                 const isProjectExpanded = selectedProjectSlug === proj.slug;
@@ -1220,7 +1246,7 @@ export default function Home() {
                       display: "flex",
                       flexDirection: "column",
                       gap: "0.4rem",
-                      borderBottom: idx < PROJECTS.length - 1 ? `1px solid ${T.border}` : "none",
+                      borderBottom: idx < visibleProjects.length - 1 ? `1px solid ${T.border}` : "none",
                       background: activeProjectGraphNodeId === graphNodeId ? T.bg : T.surface,
                       transition: "background 0.15s",
                     }}
@@ -1257,6 +1283,8 @@ export default function Home() {
                                 {label("featured", "핵심")}
                               </span>
                             )}
+                            <span className="project-axis-badge">{projectCategoryLabel(proj.category, locale)}</span>
+                            <span className="project-axis-badge muted">{projectFocusLabel(proj.focus, locale)}</span>
                             {proj.private && (
                               <span style={{
                                 fontFamily: FONT_MONO,
@@ -1346,15 +1374,11 @@ export default function Home() {
                             <span className="project-detail-kicker">{locale === "en" ? "Selected project" : "선택한 프로젝트"}</span>
                             <strong>{selectedProject.name}</strong>
                           </div>
-                          <span className="project-detail-period">{selectedProject.period}</span>
+                          <span className="project-detail-period">
+                            {selectedProject.period} · {projectProofLevelLabel(selectedProject.proofLevel, locale)}
+                          </span>
                         </div>
                         <div className="project-detail-meta">
-                          {selectedProject.metric && (
-                            <span className="project-detail-metric">
-                              <TrendIcon color={T.green} />
-                              {selectedProject.metric}
-                            </span>
-                          )}
                           {selectedProject.relatedNotes.length > 0 && (
                             <span>
                               {locale === "en" ? "Related notes" : "관련 노트"} ·{" "}
@@ -1364,6 +1388,31 @@ export default function Home() {
                             </span>
                           )}
                         </div>
+                        {projectEvidenceMetrics(selectedProject).length > 0 && (
+                          <div className="project-evidence-grid">
+                            {projectEvidenceMetrics(selectedProject).map((metric, metricIndex) => (
+                              <div className="project-evidence-card" key={`${selectedProject.slug}-${metric.label}-${metricIndex}`}>
+                                <span>{metric.label}</span>
+                                <strong>{metric.value}</strong>
+                                {(metric.baseline || metric.note) && (
+                                  <small>
+                                    {[metric.baseline, metric.note].filter(Boolean).join(" · ")}
+                                  </small>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                        {projectEvaluationRows(selectedProject, locale).length > 0 && (
+                          <div className="project-evaluation-panel">
+                            {projectEvaluationRows(selectedProject, locale).map((row) => (
+                              <div key={row.label}>
+                                <span>{row.label}</span>
+                                <strong>{row.value}</strong>
+                              </div>
+                            ))}
+                          </div>
+                        )}
                         <article
                           className="project-detail-body markdown-body"
                           style={{ color: T.sub }}
@@ -1850,6 +1899,50 @@ export default function Home() {
           gap: 0.4rem;
           min-width: 0;
         }
+        .project-filter-rail {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 0.45rem;
+          margin: -0.25rem 0 0.75rem;
+        }
+        .project-filter-rail button {
+          appearance: none;
+          border: 1px solid ${T.border};
+          border-radius: 999px;
+          background: ${T.surface};
+          color: ${T.muted};
+          padding: 4px 9px;
+          font-family: ${FONT_MONO};
+          font-size: 0.64rem;
+          line-height: 1.35;
+          cursor: pointer;
+        }
+        .project-filter-rail button:hover,
+        .project-filter-rail button:focus-visible,
+        .project-filter-rail button.active {
+          border-color: ${T.green};
+          background: ${T.greenBg};
+          color: ${T.green};
+          outline: none;
+        }
+        .project-axis-badge {
+          display: inline-flex;
+          align-items: center;
+          min-height: 17px;
+          border: 1px solid ${T.green}42;
+          border-radius: 999px;
+          background: ${T.greenBg};
+          color: ${T.green};
+          padding: 1px 6px;
+          font-family: ${FONT_MONO};
+          font-size: 0.56rem;
+          line-height: 1.2;
+        }
+        .project-axis-badge.muted {
+          border-color: ${T.border};
+          background: ${T.bg};
+          color: ${T.muted};
+        }
         .project-detail-button {
           appearance: none;
           display: inline-flex;
@@ -1918,6 +2011,54 @@ export default function Home() {
           align-items: center;
           gap: 0.3rem;
           color: ${T.green};
+        }
+        .project-evidence-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(142px, 1fr));
+          gap: 0.55rem;
+          margin: 0.25rem 0 0.75rem;
+        }
+        .project-evidence-card {
+          border: 1px solid ${T.border};
+          background: ${T.bg};
+          border-radius: 4px;
+          padding: 0.65rem 0.7rem;
+          display: grid;
+          gap: 0.22rem;
+        }
+        .project-evidence-card span,
+        .project-evaluation-panel span {
+          color: ${T.muted};
+          font-family: ${FONT_MONO};
+          font-size: 0.61rem;
+          line-height: 1.4;
+        }
+        .project-evidence-card strong,
+        .project-evaluation-panel strong {
+          color: ${T.text};
+          font-family: ${FONT_SANS};
+          font-size: 0.83rem;
+          line-height: 1.5;
+          word-break: keep-all;
+        }
+        .project-evidence-card small {
+          color: ${T.sub};
+          font-family: ${FONT_MONO};
+          font-size: 0.59rem;
+          line-height: 1.5;
+        }
+        .project-evaluation-panel {
+          border: 1px dashed ${T.border};
+          background: ${T.bg};
+          border-radius: 4px;
+          padding: 0.65rem 0.7rem;
+          margin: 0.25rem 0 0.75rem;
+          display: grid;
+          gap: 0.45rem;
+        }
+        .project-evaluation-panel div {
+          display: grid;
+          gap: 0.12rem;
         }
         .project-detail-body {
           max-width: min(74ch, 100%);
@@ -2070,6 +2211,16 @@ export default function Home() {
            }
            .project-detail-period {
              flex-shrink: 1;
+           }
+           .project-filter-rail {
+             gap: 0.35rem;
+           }
+           .project-filter-rail button {
+             font-size: 0.6rem;
+             padding: 4px 7px;
+           }
+           .project-evidence-grid {
+             grid-template-columns: 1fr;
            }
            .content-cover-button {
              justify-self: start;
