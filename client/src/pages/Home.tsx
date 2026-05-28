@@ -1340,12 +1340,15 @@ export default function Home() {
                           {proj.desc}
                         </p>
                         {/* 정량 성과 */}
-                        <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                        <div style={{ display: "flex", alignItems: "flex-start", gap: "7px", marginTop: "0.05rem" }}>
                           <TrendIcon color={T.green} />
                           <span style={{
-                            fontFamily: FONT_MONO,
-                            fontSize: "0.68rem",
+                            fontFamily: FONT_SANS,
+                            fontSize: "0.76rem",
+                            fontWeight: 500,
                             color: T.green,
+                            lineHeight: 1.6,
+                            wordBreak: "keep-all",
                           }}>
                             {proj.metric}
                           </span>

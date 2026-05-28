@@ -89,7 +89,7 @@ describe("Home projects section", () => {
     expect(block).toContain("locale === \"en\" ? \"Scroll for more projects\" : \"더 많은 프로젝트는 스크롤\"");
   });
 
-  it("uses sans for project reading controls while preserving mono for technical values", () => {
+  it("uses sans for project reading controls and emphasized metrics while preserving mono for compact tokens", () => {
     const block = projectsBlock();
     const projectNameBlock = sourceBetween(block, "{proj.private ? <LockIcon color={T.muted} />", "{proj.highlight &&");
     const filterButtonCss = sourceBetween(source, ".project-filter-rail button {", ".project-filter-rail button:hover");
@@ -102,7 +102,10 @@ describe("Home projects section", () => {
     expect(filterButtonCss).toContain("font-family: ${FONT_SANS};");
     expect(axisBadgeCss).toContain("font-family: ${FONT_SANS};");
     expect(detailButtonCss).toContain("font-family: ${FONT_SANS};");
-    expect(metricBlock).toContain("fontFamily: FONT_MONO");
+    expect(metricBlock).toContain("fontFamily: FONT_SANS");
+    expect(metricBlock).toContain('fontSize: "0.76rem"');
+    expect(metricBlock).toContain("fontWeight: 500");
     expect(block).toContain("<span style={{ fontFamily: FONT_MONO, fontSize: \"0.62rem\", color: T.muted }}>");
+    expect(block).toContain("{proj.tags.map((tag) => <Tag key={tag} T={T}>{tag}</Tag>)}");
   });
 });
