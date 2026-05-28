@@ -1271,7 +1271,7 @@ export default function Home() {
                           <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
                             {proj.private ? <LockIcon color={T.muted} /> : <RepoIcon color={T.muted} />}
                             <span style={{
-                              fontFamily: FONT_MONO,
+                              fontFamily: FONT_SANS,
                               fontSize: "0.82rem",
                               fontWeight: 600,
                               color: proj.highlight ? T.green : T.text,
@@ -1280,7 +1280,7 @@ export default function Home() {
                             </span>
                             {proj.highlight && (
                               <span style={{
-                                fontFamily: FONT_MONO,
+                                fontFamily: FONT_SANS,
                                 fontSize: "0.58rem",
                                 color: T.green,
                                 border: `1px solid ${T.green}50`,
@@ -1294,7 +1294,7 @@ export default function Home() {
                             <span className="project-axis-badge muted">{projectFocusLabel(proj.focus, locale)}</span>
                             {proj.private && (
                               <span style={{
-                                fontFamily: FONT_MONO,
+                                fontFamily: FONT_SANS,
                                 fontSize: "0.58rem",
                                 color: T.muted,
                                 border: `1px solid ${T.border}`,
@@ -1926,7 +1926,7 @@ export default function Home() {
           background: ${T.surface};
           color: ${T.muted};
           padding: 4px 9px;
-          font-family: ${FONT_MONO};
+          font-family: ${FONT_SANS};
           font-size: 0.63rem;
           line-height: 1.35;
           cursor: pointer;
@@ -2005,7 +2005,7 @@ export default function Home() {
           background: ${T.greenBg};
           color: ${T.green};
           padding: 1px 6px;
-          font-family: ${FONT_MONO};
+          font-family: ${FONT_SANS};
           font-size: 0.56rem;
           line-height: 1.2;
         }
@@ -2024,7 +2024,7 @@ export default function Home() {
           background: ${T.bg};
           color: ${T.green};
           padding: 2px 8px;
-          font-family: ${FONT_MONO};
+          font-family: ${FONT_SANS};
           font-size: 0.62rem;
           line-height: 1.25;
           cursor: pointer;

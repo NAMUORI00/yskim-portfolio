@@ -1,5 +1,13 @@
 import { describe, expect, it } from "vitest";
-import { DARK, LIGHT, contrastRatio } from "./theme";
+import { DARK, FONT_SANS, LIGHT, contrastRatio } from "./theme";
+
+describe("portfolio font stack", () => {
+  it("uses Pretendard as the primary sans font", () => {
+    expect(FONT_SANS.split(",")[0]?.trim()).toBe("'Pretendard Variable'");
+    expect(FONT_SANS).toContain("'Nanum Gothic'");
+    expect(FONT_SANS).toContain("'Noto Sans KR'");
+  });
+});
 
 describe("portfolio theme contrast", () => {
   it("keeps light mode text readable", () => {

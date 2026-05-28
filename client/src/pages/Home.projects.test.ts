@@ -11,6 +11,14 @@ function projectsBlock() {
   return source.slice(start, end);
 }
 
+function sourceBetween(text: string, startNeedle: string, endNeedle: string) {
+  const start = text.indexOf(startNeedle);
+  expect(start).toBeGreaterThanOrEqual(0);
+  const end = text.indexOf(endNeedle, start + startNeedle.length);
+  expect(end).toBeGreaterThan(start);
+  return text.slice(start, end);
+}
+
 describe("Home projects section", () => {
   it("keeps project details in the Projects section instead of linking to a project route", () => {
     const block = projectsBlock();
@@ -79,5 +87,22 @@ describe("Home projects section", () => {
     expect(block).toContain('className={projectHasOverflow ? "project-scroll-panel has-overflow" : "project-scroll-panel"}');
     expect(block).toContain('className="project-scroll-fade"');
     expect(block).toContain("locale === \"en\" ? \"Scroll for more projects\" : \"더 많은 프로젝트는 스크롤\"");
+  });
+
+  it("uses sans for project reading controls while preserving mono for technical values", () => {
+    const block = projectsBlock();
+    const projectNameBlock = sourceBetween(block, "{proj.private ? <LockIcon color={T.muted} />", "{proj.highlight &&");
+    const filterButtonCss = sourceBetween(source, ".project-filter-rail button {", ".project-filter-rail button:hover");
+    const axisBadgeCss = sourceBetween(source, ".project-axis-badge {", ".project-axis-badge.muted");
+    const detailButtonCss = sourceBetween(source, ".project-detail-button {", ".project-detail-button:hover");
+    const metricBlock = sourceBetween(block, "{/* 정량 성과 */}", "{/* 태그 */}");
+
+    expect(projectNameBlock).toContain("fontFamily: FONT_SANS");
+    expect(projectNameBlock).not.toContain("fontFamily: FONT_MONO");
+    expect(filterButtonCss).toContain("font-family: ${FONT_SANS};");
+    expect(axisBadgeCss).toContain("font-family: ${FONT_SANS};");
+    expect(detailButtonCss).toContain("font-family: ${FONT_SANS};");
+    expect(metricBlock).toContain("fontFamily: FONT_MONO");
+    expect(block).toContain("<span style={{ fontFamily: FONT_MONO, fontSize: \"0.62rem\", color: T.muted }}>");
   });
 });

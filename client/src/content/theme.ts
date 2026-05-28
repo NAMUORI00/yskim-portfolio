@@ -14,7 +14,7 @@ export interface PortfolioTheme {
 }
 
 export const FONT_SANS =
-  "'Nanum Gothic', 'Pretendard Variable', Pretendard, -apple-system, 'Apple SD Gothic Neo', 'Noto Sans KR', system-ui, sans-serif";
+  "'Pretendard Variable', Pretendard, 'Nanum Gothic', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Noto Sans KR', system-ui, sans-serif";
 export const FONT_SERIF = "'Noto Serif KR', Georgia, serif";
 export const FONT_MONO = "'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace";
 

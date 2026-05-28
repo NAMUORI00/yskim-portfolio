@@ -6,7 +6,7 @@
  * 타이포그래피 시스템 (v4 — 한글·영문 괴리 최소화)
  * ──────────────────────────────────────────────────
  * --font-sans   : Pretendard Variable  (본문·UI 전체)
- *                 → 한글·영문 자간·굵기 통일, Apple SD Gothic Neo 대비 영문 자연스러움 ↑
+ *                 → 한글·영문 자간·굵기 통일, Nanum Gothic 대비 혼용 텍스트 자연스러움 ↑
  * --font-serif  : Noto Serif KR        (섹션 제목·강조 헤딩 전용)
  * --font-mono   : JetBrains Mono       (코드·수치·레이블 전용)
  *
@@ -42,7 +42,7 @@
   --color-ring: var(--ring);
 
   /* 폰트 토큰 */
-  --font-sans:  "Nanum Gothic", "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif;
+  --font-sans:  "Pretendard Variable", Pretendard, "Nanum Gothic", -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif;
   --font-serif: "Noto Serif KR", Georgia, serif;
   --font-mono:  "JetBrains Mono", "Fira Code", "Cascadia Code", monospace;
 }
