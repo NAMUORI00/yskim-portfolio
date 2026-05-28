@@ -1,11 +1,17 @@
 import { describe, expect, it } from "vitest";
 import type { ProjectEntry } from "@/content";
 import {
+  createProjectFilterSelection,
   filterProjects,
+  filterProjectsBySelection,
+  hasProjectOverflow,
   projectCategoryLabel,
   projectEvidenceMetrics,
   projectFocusLabel,
   projectProofLevelLabel,
+  projectYearBuckets,
+  projectYearLabel,
+  toggleProjectFilter,
 } from "./projectEvidence";
 
 const baseProject: ProjectEntry = {
@@ -40,6 +46,50 @@ describe("project evidence helpers", () => {
     expect(filterProjects(projects, "career").map((project) => project.slug)).toEqual(["aerospace-rag"]);
     expect(filterProjects(projects, "toy").map((project) => project.slug)).toEqual(["tool", "experiment"]);
     expect(filterProjects(projects, "tool").map((project) => project.slug)).toEqual(["tool"]);
+  });
+
+  it("supports B-style multi-select filters with OR within an axis and AND across axes", () => {
+    const projects: ProjectEntry[] = [
+      baseProject,
+      { ...baseProject, slug: "career-tool", category: "career", focus: "tool", proofLevel: "supporting" },
+      { ...baseProject, slug: "toy-tool", category: "toy", focus: "tool", proofLevel: "supporting" },
+      { ...baseProject, slug: "toy-product", category: "toy", focus: "product", proofLevel: "exploration" },
+    ];
+    const selection = toggleProjectFilter(
+      toggleProjectFilter(
+        toggleProjectFilter(createProjectFilterSelection(), "category", "career"),
+        "focus",
+        "research",
+      ),
+      "focus",
+      "tool",
+    );
+
+    expect(filterProjectsBySelection(projects, selection).map((project) => project.slug)).toEqual(["aerospace-rag", "career-tool"]);
+    expect(filterProjectsBySelection(projects, toggleProjectFilter(selection, "focus", "research")).map((project) => project.slug)).toEqual([
+      "career-tool",
+    ]);
+  });
+
+  it("derives year buckets and overflow state for the B-style scroll panel", () => {
+    const projects: ProjectEntry[] = [
+      baseProject,
+      { ...baseProject, slug: "ongoing", period: "진행 중" },
+      { ...baseProject, slug: "older", period: "2025.04" },
+      { ...baseProject, slug: "oldest", period: "2023.07" },
+    ];
+
+    expect(projectYearLabel(baseProject, "ko")).toBe("2026");
+    expect(projectYearLabel(projects[1], "ko")).toBe("진행 중");
+    expect(projectYearLabel(projects[1], "en")).toBe("Now");
+    expect(projectYearBuckets(projects, "ko")).toEqual([
+      { year: "2026", count: 1 },
+      { year: "진행 중", count: 1 },
+      { year: "2025", count: 1 },
+      { year: "2023", count: 1 },
+    ]);
+    expect(hasProjectOverflow(projects, 3)).toBe(true);
+    expect(hasProjectOverflow(projects.slice(0, 3), 3)).toBe(false);
   });
 
   it("localizes project labels", () => {

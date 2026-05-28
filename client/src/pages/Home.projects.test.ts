@@ -55,14 +55,30 @@ describe("Home projects section", () => {
   it("adds conservative C-3-lite filtering and evidence panels without project navigation", () => {
     const block = projectsBlock();
 
-    expect(source).toContain("const [projectFilter, setProjectFilter] = useState<ProjectFilter>(\"all\")");
-    expect(source).toContain("PROJECT_FILTERS.map((filter)");
-    expect(source).toContain("filterProjects(PROJECTS, projectFilter)");
+    expect(source).toContain("const [projectFilters, setProjectFilters] = useState<ProjectFilterSelection>(() => createProjectFilterSelection())");
+    expect(source).toContain("PROJECT_FILTER_GROUPS.map((group)");
+    expect(source).toContain("filterProjectsBySelection(PROJECTS, projectFilters)");
     expect(block).toContain('className="project-filter-rail"');
+    expect(block).toContain('className="project-filter-group"');
+    expect(block).toContain("toggleProjectFilter(projectFilters, group.axis, option)");
     expect(block).toContain("projectCategoryLabel(proj.category, locale)");
     expect(block).toContain("projectFocusLabel(proj.focus, locale)");
     expect(block).toContain('className="project-evidence-grid"');
     expect(block).toContain('className="project-evaluation-panel"');
     expect(block).toContain("projectEvidenceMetrics(selectedProject)");
+  });
+
+  it("uses B-style year buckets and a capped scroll panel when many projects match", () => {
+    const block = projectsBlock();
+
+    expect(source).toContain("const PROJECT_INITIAL_VISIBLE_COUNT = 3");
+    expect(source).toContain("const projectBuckets = useMemo(() => projectYearBuckets(visibleProjects, locale), [visibleProjects, locale])");
+    expect(source).toContain("const projectHasOverflow = hasProjectOverflow(visibleProjects, PROJECT_INITIAL_VISIBLE_COUNT)");
+    expect(block).toContain('className="project-bucket-layout"');
+    expect(block).toContain('className="project-year-rail"');
+    expect(block).toContain("projectBuckets.map((bucket)");
+    expect(block).toContain('className={projectHasOverflow ? "project-scroll-panel has-overflow" : "project-scroll-panel"}');
+    expect(block).toContain('className="project-scroll-fade"');
+    expect(block).toContain("locale === \"en\" ? \"Scroll for older projects\" : \"이전 연도 프로젝트는 스크롤\"");
   });
 });
