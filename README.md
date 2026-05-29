@@ -177,12 +177,3 @@ pnpm audit --prod
 ```bash
 npx wrangler pages deploy dist/public --project-name namuori-portfolio-cms --branch main
 ```
-
-## PaperBanana 다이어그램 작성 메모
-
-이 README의 원리 다이어그램은 `paperbanana` 스킬의 Planner -> Stylist -> Visualizer -> Critic 흐름을 따라 설계했습니다.
-
-- 목적: CMS, GitHub PR, Cloudflare 배포가 각각 어떤 책임을 갖는지 한눈에 구분할 수 있게 만들기
-- 시각 전략: 왼쪽에서 오른쪽으로 흐르는 6단계 파이프라인
-- 검증 기준: 화살표 방향, 관리자 인증, draft branch, PR, preview, production 배포가 실제 구현과 맞는지 확인
-- 최종 README 삽입본: GPT 이미지 생성 기반 영어 라벨 PNG를 사용

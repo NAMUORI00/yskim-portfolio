@@ -177,12 +177,3 @@ Deployment is usually handled automatically by Cloudflare Pages after merging to
 ```bash
 npx wrangler pages deploy dist/public --project-name namuori-portfolio-cms --branch main
 ```
-
-## PaperBanana Diagram Note
-
-The principle diagram in this README was designed with the `paperbanana` skill's Planner -> Stylist -> Visualizer -> Critic workflow.
-
-- Goal: make the responsibilities of the CMS, GitHub PRs, and Cloudflare deployment easy to distinguish at a glance
-- Visual strategy: six left-to-right pipeline stages
-- Review criteria: arrow direction, admin authentication, draft branch, PR, preview, and production deployment must match the implementation
-- Final README asset: uses a GPT-generated English-labeled PNG
