@@ -1,0 +1,78 @@
+name: Sync from Notion and deploy
+
+# Notion is the single source of truth. This workflow regenerates content/ from
+# Notion, builds the static site, and deploys it to Cloudflare Pages.
+# - push to main / manual dispatch: deploy code + latest Notion content
+# - schedule: pick up Notion edits even when no code was pushed
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 */6 * * *"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: portfolio-${{ github.event_name == 'pull_request' && github.event.pull_request.number || github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.4.1
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Fetch content from Notion
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          # download (default): self-host media at build time. proxy: emit
+          # /media/<id> links served by functions/media + KV at runtime.
+          NOTION_MEDIA_MODE: ${{ vars.NOTION_MEDIA_MODE }}
+          NOTION_PROFILE_DB_ID: ${{ vars.NOTION_PROFILE_DB_ID }}
+          NOTION_SITE_DB_ID: ${{ vars.NOTION_SITE_DB_ID }}
+          NOTION_CONTACTS_DB_ID: ${{ vars.NOTION_CONTACTS_DB_ID }}
+          NOTION_TIMELINE_DB_ID: ${{ vars.NOTION_TIMELINE_DB_ID }}
+          NOTION_PROJECTS_DB_ID: ${{ vars.NOTION_PROJECTS_DB_ID }}
+          NOTION_RESEARCH_DB_ID: ${{ vars.NOTION_RESEARCH_DB_ID }}
+          NOTION_NOTES_DB_ID: ${{ vars.NOTION_NOTES_DB_ID }}
+          NOTION_SKILLS_DB_ID: ${{ vars.NOTION_SKILLS_DB_ID }}
+          NOTION_STARRED_DB_ID: ${{ vars.NOTION_STARRED_DB_ID }}
+        run: pnpm fetch:notion
+
+      - name: Type check
+        run: pnpm check
+
+      - name: Test
+        run: |
+          pnpm test
+          pnpm test:notion
+
+      - name: Build
+        run: pnpm build
+
+      - name: Deploy to Cloudflare Pages
+        if: github.event_name != 'pull_request'
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy dist/public --project-name=namuori-portfolio-cms --branch=main

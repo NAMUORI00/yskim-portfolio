@@ -1,179 +1,80 @@
-# Namuori Portfolio CMS
+# yskim Portfolio
 
 [한국어 README](README.md)
 
-Namuori Portfolio CMS is a deployable portfolio system. The public website is rendered from files in `content/`, while `/admin` lets the owner edit that content and publish changes through GitHub Pull Requests.
+A portfolio that uses **Notion as the single source of truth**. Editing in Notion
+both ① turns the Notion page itself into a shareable portfolio and ② lets GitHub
+Actions pull that content and build/deploy a static site (`namuori.net`). One edit
+covers both audiences — places that expect a Notion portfolio and places that just
+want a website.
 
-The core idea is simple.
+The flow:
 
-1. Portfolio content is stored as data in `content/`, not hard-coded into React components.
-2. The owner edits content in `/admin`.
-3. Saving writes changes to a GitHub `draft/...` branch.
-4. Publishing creates or updates a Pull Request into `main`.
-5. Cloudflare Pages builds previews and production deployments automatically.
+1. Edit content in the Notion `KYS — Portfolio (CMS)` workspace.
+2. Set each item's `Status` to `Published`.
+3. `scripts/notion-content.mjs` regenerates `content/` (JSON + MDX) from Notion.
+4. Vite builds the static site from `content/`.
+5. Cloudflare Pages deploys it.
 
-## Principle Diagram
+> The previous `/admin` flow (GitHub OAuth → draft branch → PR) has been removed.
+> Editing now happens **only in Notion**.
 
-The diagram below summarizes how this repository stores content and moves it into production.
-
-![Namuori Portfolio CMS principle diagram](docs/assets/portfolio-cms-principle.png)
-
-The main flow is:
-
-`content/` data moves through the `/admin` editor, becomes a GitHub branch and PR, and is then built by Cloudflare Pages into the public `namuori.net` site.
-
-## Production URLs
-
-- Public site: `https://namuori.net`
-- Admin page: `https://namuori.net/admin`
-- GitHub repository: `https://github.com/NAMUORI00/namuori-portfolio-cms`
-- Cloudflare Pages project: `namuori-portfolio-cms`
-
-## Technology Stack
-
-- Frontend: React, Vite, TypeScript
-- Content validation: Zod
-- Styling: CSS, Tailwind-based utilities, Pretendard-first font stack
-- Admin auth: GitHub OAuth, restricted to allowed GitHub users
-- Write path: Cloudflare Pages Functions -> GitHub App -> draft branch
-- Deployment: Cloudflare Pages
-- Verification: TypeScript check, Vitest, production build
-
-## Repository Structure
+## Architecture
 
 ```text
-content/
-  site.json              # Site title, description, navigation, shared images
-  profile.json           # Name, summary, contact links, profile status
-  education.json         # Education, timeline, CV-like history
-  research/*.mdx         # Research-interest entries
-  projects/*.mdx         # Project entries
-  skills.json            # Skill groups
-  starred.json           # Starred or interesting repositories
-  notes/*.mdx            # Detail notes and supporting documents
-
-client/src/
-  pages/Home.tsx         # Public portfolio page
-  pages/Admin.tsx        # Admin editing page
-  content/schema.ts      # Content validation rules
-
-functions/api/
-  auth/*                 # GitHub login
-  github/save.js         # Save to a draft branch
-  github/publish.js      # Create or update a publishing PR
-  github/import.js       # Import GitHub candidates
-  translate/en.js        # Generate English draft text
+Notion (9 DBs)  ──fetch──▶  content/*.json + content/**/*.mdx  ──vite build──▶  dist/public  ──▶  Cloudflare Pages
+ (single source)     scripts/notion-content.mjs       (imported at build time)
 ```
 
-## Local Development
+- The frontend (`client/src/content/index.ts`) imports `content/*.json` and
+  `content/**/*.mdx` at build time.
+- `fetch:notion` regenerates those files from Notion. The committed `content/`
+  is a seed/fallback for offline builds and is overwritten by fetch.
+- See [docs/notion-cms.md](docs/notion-cms.md) for the database schema and
+  property conventions.
+
+## Stack
+
+- Frontend: React, Vite, TypeScript, Wouter
+- Content: Notion (`@notionhq/client` + `notion-to-md`)
+- Validation: Zod (`client/src/content/schema.ts`)
+- Deployment: Cloudflare Pages (static)
+- i18n: Korean source + `… (EN)` properties per DB → `content/i18n/en.json`
+
+## Local development
 
 ```bash
 corepack enable
-corepack prepare pnpm@10.4.1 --activate
 pnpm install
-pnpm dev
+
+export NOTION_TOKEN=...     # PowerShell: $env:NOTION_TOKEN="..."
+pnpm fetch:notion          # Notion -> content/
+pnpm dev                   # http://localhost:3000
 ```
 
-Local URLs:
+`pnpm dev` / `pnpm build` also work without `NOTION_TOKEN` using the committed
+`content/` seed. Database ids have defaults baked into `scripts/notion-content.mjs`;
+override them via `.env` only when targeting a different workspace.
 
-- Portfolio: `http://localhost:3000/`
-- Notes: `http://localhost:3000/notes`
-- Demo admin: `http://localhost:3000/admin?demo=1`
-
-`?demo=1` is only for local editor behavior checks. It does not write to GitHub or create Pull Requests.
-
-## Content Publishing Flow
-
-From the owner perspective:
-
-1. Open `/admin`.
-2. Log in with an allowed GitHub account.
-3. Edit profile, timeline, research interests, projects, skills, starred repositories, or notes.
-4. Use `Save draft` to write to a `draft/...` branch.
-5. Use `Publish PR` to create a Pull Request targeting `main`.
-6. Check the Cloudflare Pages preview linked from the PR.
-7. Merge the PR to deploy to production.
-
-## Korean and English Content
-
-Korean is the source language. English content is generated as a draft from the Korean source and then manually refined by the owner.
-
-- Korean source: `content/*.json`, `content/**/*.mdx`
-- English translation: `content/i18n/en.json`
-- Public page: KO/EN toggle
-- Admin page: Korean and English content management in the same publishing flow
-
-## Security Model
-
-The admin page lives on the same public domain, but write operations require several checks.
-
-- GitHub OAuth login
-- User must be listed in `ADMIN_GITHUB_USERS`
-- Signed session cookie verification
-- Same-origin admin request header
-- Only approved content paths can be saved
-- Only `draft/...` branch names are accepted
-- File count and file size limits
-- Unsafe URLs such as `javascript:` are rejected
-- Cloudflare `_headers` apply CSP, HSTS, frame blocking, and nosniff
-
-## Cloudflare Pages Setup
-
-Cloudflare Pages Git integration:
-
-```text
-Repository: NAMUORI00/namuori-portfolio-cms
-Production branch: main
-Build command: pnpm build
-Build output directory: dist/public
-Functions directory: functions
-Preview branches: draft/* and feature/*
-```
-
-Required environment variables:
-
-```text
-ADMIN_GITHUB_USERS=NAMUORI00
-GITHUB_APP_ID=<GitHub App ID>
-GITHUB_APP_CLIENT_ID=<GitHub App client ID>
-GITHUB_APP_CLIENT_SECRET=<GitHub App client secret>
-GITHUB_APP_PRIVATE_KEY=<GitHub App private key, newline escaped or multiline secret>
-GITHUB_APP_INSTALLATION_ID=<installation ID>
-GITHUB_REPO_OWNER=NAMUORI00
-GITHUB_REPO_NAME=namuori-portfolio-cms
-SESSION_SECRET=<long random secret>
-```
-
-The GitHub App callback URL must include the production domain:
-
-```text
-https://namuori.net/api/auth/callback
-```
-
-If you also use the default Pages domain, add this callback format too:
-
-```text
-https://<project>.pages.dev/api/auth/callback
-```
-
-## Verification
-
-Run these commands after regular changes:
+## Verify
 
 ```bash
-pnpm check
-pnpm test
-pnpm build
+pnpm check        # tsc
+pnpm test         # vitest (frontend)
+pnpm test:notion  # node --test (fetch transform)
+pnpm build        # dist/public
 ```
 
-For security-sensitive changes, also run:
+## Deploy
 
-```bash
-pnpm audit --prod
+The GitHub repository needs these secrets/variables (run `pnpm check:notion` to audit):
+
+```text
+secret   NOTION_TOKEN              # read-only Notion integration token
+secret   CLOUDFLARE_API_TOKEN     # Pages deploy token
+secret   CLOUDFLARE_ACCOUNT_ID    # 5f6db5658209a86a6abcb5ebb9254ab7
+variable NOTION_*_DB_ID           # 9 database ids (defaults baked into code)
 ```
 
-Deployment is usually handled automatically by Cloudflare Pages after merging to `main`. Manual deployment is also possible with Wrangler.
-
-```bash
-npx wrangler pages deploy dist/public --project-name namuori-portfolio-cms --branch main
-```
+The `Sync from Notion and deploy` workflow runs on push to `main`, manual
+dispatch, and a 6-hourly schedule (so Notion-only edits get picked up).
