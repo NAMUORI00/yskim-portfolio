@@ -1,3 +1,4 @@
+// @vitest-environment jsdom
 import { describe, expect, it } from "vitest";
 import { parseFrontmatter, serializeFrontmatter, toMarkdownHtml } from "./markdown";
 
@@ -77,12 +78,12 @@ featured: true
     expect(toMarkdownHtml("<script>alert(1)</script>")).not.toContain("<script>");
   });
 
-  it("does not render unsafe markdown link schemes or raw HTML event handlers", () => {
+  it("strips unsafe link schemes and event handlers (sanitized)", () => {
     const html = toMarkdownHtml("[bad](javascript:alert(1))\n\n<img src=x onerror=alert(1)>");
 
     expect(html).not.toContain('href="javascript:');
-    expect(html).not.toContain("<img");
-    expect(html).toContain("&lt;img");
+    expect(html).not.toContain("onerror");
+    expect(html).not.toContain("<script");
   });
 
   it("renders markdown images and passes through media figures", () => {

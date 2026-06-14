@@ -18,6 +18,10 @@ import {
   toPlayerEmbedUrl,
   hasTemporaryNotionUrl,
   videoEmbedTag,
+  slugify,
+  firstParagraph,
+  toggleLanguage,
+  splitByLanguageHeading,
 } from "../scripts/notion-content.mjs";
 
 // --- mock Notion property factories -------------------------------------------
@@ -121,6 +125,25 @@ test("media helpers", () => {
   assert.match(videoEmbedTag("https://www.youtube.com/embed/abc", "demo"), /<figure class="video-embed">/);
   assert.equal(hasTemporaryNotionUrl("https://x.amazonaws.com/y?X-Amz-Signature=z"), true);
   assert.equal(hasTemporaryNotionUrl("https://example.com/image.png"), false);
+});
+
+test("slugify + firstParagraph + toggleLanguage (bilingual helpers)", () => {
+  assert.equal(slugify("aerospace-rag"), "aerospace-rag");
+  assert.equal(slugify("LLM + RAG 연구 시스템"), "llm-rag-연구-시스템");
+  assert.equal(firstParagraph("## 개요\n\n첫 문단입니다.\n\n둘째."), "첫 문단입니다.");
+  assert.equal(firstParagraph("# Title\n> quote\n\nReal text."), "Real text.");
+  assert.equal(toggleLanguage({ type: "toggle", toggle: { rich_text: [{ plain_text: "🇰🇷 한국어" }] } }), "ko");
+  assert.equal(toggleLanguage({ type: "toggle", toggle: { rich_text: [{ plain_text: "English" }] } }), "en");
+  assert.equal(toggleLanguage({ type: "paragraph" }), null);
+});
+
+test("splitByLanguageHeading", () => {
+  const md = "# 한국어\n\n한국어 본문.\n\n# English\n\nEnglish body.";
+  assert.deepEqual(splitByLanguageHeading(md), { ko: "한국어 본문.", en: "English body." });
+  // KO content before an English heading (no explicit KO heading)
+  assert.deepEqual(splitByLanguageHeading("## 개요\n\n내용\n\n# English\n\nbody"), { ko: "## 개요\n\n내용", en: "body" });
+  // No English heading -> null (treated as Korean-only)
+  assert.equal(splitByLanguageHeading("## 개요\n\n내용만"), null);
 });
 
 test("buildSkills + buildStarred", () => {
