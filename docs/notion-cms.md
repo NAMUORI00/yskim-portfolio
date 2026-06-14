@@ -19,35 +19,37 @@
 
 추가로 `content/order.json`(컬렉션별 표시 순서)과 `content/i18n/en.json`(영어 번역)이 생성됩니다.
 
-## 자연 작성 (권장): 한 페이지에 한국어·영어 함께
+장문 콘텐츠의 영어는 **언어별 분리 DB**로 관리합니다(아래 참고).
 
-장문 콘텐츠(Projects · Research · Notes)는 **노션에서 일반 문서처럼** 작성합니다. JSON·여러 속성을 채울 필요 없이, 본문에 두 언어 구역만 두면 됩니다.
+| EN DB | 매칭 | 산출물 |
+|----|------|--------|
+| Projects (EN) | `Slug`로 Projects와 매칭 | `en.json.projects[slug]` |
+| Research (EN) | `Slug`로 Research와 매칭 | `en.json.research[slug]` |
+| Notes (EN) | `Slug`로 Notes와 매칭 | `en.json.notes[slug]` |
 
-**본문 형식** — 다음 중 하나로 두 언어를 구분합니다(둘 다 지원):
-- **제목 방식**: 본문에 `# 한국어` 와 `# English` 제목을 두고 각 구역에 자유롭게 작성.
-- **토글 방식**: `한국어` 토글과 `English` 토글을 만들고 그 안에 작성(페이지가 깔끔).
+## 작성 방법: 한국어/영어를 DB로 나눠서 관리 (권장)
+
+장문 콘텐츠(Projects · Research · Notes)는 **노션에서 일반 문서처럼** 작성합니다. JSON을 쓸 필요가 없습니다.
+
+- **한국어**: `Projects`/`Research`/`Notes` DB에 작성. 이 DB가 **원본(canonical)** 이라 slug·태그·기간·순서·카테고리·링크·상태 등 **구조/공통 필드**가 여기에 있습니다. 페이지 본문 = 한국어 본문.
+- **영어**: 짝이 되는 `Projects (EN)`/`Research (EN)`/`Notes (EN)` DB에 작성. **번역만** 두면 됩니다 — `Slug`(한국어와 동일), 제목, 한 줄 요약(`Desc`/`Summary`), (프로젝트는 `Metric`·`Tags`, 기간이 "진행 중"처럼 번역이 필요하면 `Period`), 그리고 페이지 본문 = 영어 본문. 비운 필드는 한국어 값으로 폴백됩니다.
 
 ```
-# 한국어
-(한 줄 요약)
-## 개요
-…본문(이미지·표·콜아웃·코드 자유)…
-
-# English
-(one-line summary)
-## Overview
-…body…
+[Projects] aerospace-rag (한국어)          [Projects (EN)] aerospace-rag (English)
+  Slug: aerospace-rag                        Slug: aerospace-rag   ← 동일 slug로 매칭
+  Tags / Period / Link / Category …          Name / Desc / Metric / Tags
+  본문: 한 줄 요약 + ## 개요 …               본문: one-line summary + ## Overview …
 ```
 
-- fetch가 **한국어 구역 → 사이트 KO 본문**, **English 구역 → en.json(EN 본문)** 으로 분리합니다.
-- **요약(desc/summary)** 은 각 구역의 **첫 문단에서 자동 추출** → 별도 속성 입력 불필요.
-- **slug** 는 제목에서 자동 생성(원하면 `Slug` 속성으로 수동 지정).
-- 영어 구역이 없으면 한국어만 발행되고, 기존 `… (EN)` 속성이 있으면 그걸 폴백으로 씁니다(하위호환).
-- `Metrics JSON`/`Evaluation JSON`은 더 이상 필수가 아닙니다. 핵심지표 칩이 필요하면 `Metric`(한 줄) 속성만 채우면 됩니다.
+- fetch가 **한국어 DB → 사이트 KO 본문(MDX)**, **EN DB → en.json(EN 본문)** 으로 생성하고 `Slug`로 둘을 잇습니다.
+- **요약(desc/summary)** 은 본문 **첫 문단에서 자동 추출**됩니다(원하면 `Desc`/`Summary` 속성으로 덮어쓰기).
+- **slug** 는 한국어 DB의 제목에서 자동 생성(원하면 `Slug` 속성으로 수동 지정). **EN 행에는 같은 slug를 반드시 넣어야** 짝이 맞습니다.
+- 짝이 되는 EN 행이 없으면 그 글은 영어에서 **한국어로 폴백**됩니다(한국어만 먼저 올려도 됨).
+- 구조 필드(태그·기간 등)는 **한국어 DB 한 곳만** 고치면 됩니다. EN DB는 번역 텍스트만 — 양쪽이 어긋날 일이 없습니다.
 
-**필수 속성은 `Name`(제목)과 `Status`뿐**입니다. 나머지(Tags·Link·Highlight·Period·Category/Focus)는 선택이며, 분류(Category/Focus)는 비우면 본문에서 추론됩니다.
+**필수 속성은 한국어 DB의 `Name`(제목)과 `Status`뿐**입니다. 나머지(Tags·Link·Highlight·Period·Category/Focus)는 선택이며, 분류(Category/Focus)는 비우면 본문에서 추론됩니다. EN DB는 `Slug`·제목·`Status=Published`만 있으면 발행됩니다.
 
-> 작성 흐름: New → 제목 → `# 한국어`/`# English`에 평소처럼 작성(이미지 드래그·표 등) → (원하면 태그·커버) → `Status=Published`. 노션에서도 두 언어가 한 페이지에 보이고, namuori.net은 KO/EN 토글로 갈라 보여줍니다.
+> 작성 흐름: 한국어 DB에서 New → 제목·`Status=Published` → 본문 작성(이미지 드래그·표 등) → (영어가 필요하면) EN DB에서 New → **같은 Slug** + 제목 + 영어 본문 → `Status=Published`. namuori.net은 KO/EN 토글로 갈라 보여줍니다.
 
 ## 속성 규약
 
@@ -56,11 +58,12 @@
 - **관계 필드**(`Related Notes`, `Related Projects`, `Related Research`, `Related Skills`): Notion 관계 대신 **쉼표로 구분한 slug 문자열** rich_text로 둡니다. 예: `aerospace-rag, llm-rag-research`.
 - **Bullets** (Timeline): 한 줄에 하나씩.
 - **Links** (Timeline): 한 줄에 `라벨|https://주소` 형식.
-- **Metrics JSON / Evaluation JSON** (Projects): 구조화 지표를 JSON 문자열로 저장.
-  - 예: `[{"label":"MRR","value":"+31%","baseline":"단일 검색 채널","note":"..."}]`
-  - 예: `{"baseline":"...","dataset":"...","method":"..."}`
+- **Metric** (Projects): 카드에 표시할 핵심 지표 한 줄(선택). (예전의 `Metrics JSON`/`Evaluation JSON` 구조화 속성은 제거됨 — JSON 수기 작성 불필요.)
 - **Cover / Avatar** (files): fetch가 `client/public/notion/...`로 self-host하고 경로를 치환합니다.
-- **영어(i18n)**: 번역이 필요한 필드는 동반 속성 `… (EN)`(예: `Title (EN)`, `Summary (EN)`, `Metrics JSON (EN)`)에 채웁니다. 비우면 한국어로 폴백합니다. `content/i18n/en.json`이 이 값들로 재생성됩니다.
+- **영어(i18n)**:
+  - **장문 콘텐츠**(Projects/Research/Notes): 위 "작성 방법"처럼 **EN DB**에서 관리합니다. `Slug`로 한국어 행과 매칭.
+  - **짧은 설정**(Profile/Site/Timeline/Skills/Starred/Contacts): 같은 행의 동반 속성 `… (EN)`(예: `Headline (EN)`, `Label (EN)`)에 채웁니다. 비우면 한국어로 폴백.
+  - 두 경로 모두 `content/i18n/en.json`으로 합쳐집니다.
 
 ## 데이터베이스 id
 
@@ -77,6 +80,9 @@
 | Notes | `763f7111-ec1e-4d2d-8d6c-54a22bee930b` |
 | Skills | `3dfa6886-7b83-41b2-95f5-a0665fb7dcaf` |
 | Starred | `7800c04b-8f20-4521-9427-bfd0c373bbe2` |
+| Projects (EN) | `f3b4502f-afc7-4601-b447-d7966d6b983b` |
+| Research (EN) | `405ae235-49cc-4fc5-b31a-7102584ef75a` |
+| Notes (EN) | `5a7b919e-e9e6-4076-9291-1a8cdf5a6d0e` |
 
 ## 미디어 & KV 캐시
 
@@ -114,7 +120,7 @@ pnpm dev                   # 반영 확인
 
 ## 새 항목 추가 예시
 
-1. 해당 DB(예: Projects)에서 새 페이지를 만들고 `Slug`, `Name`, `Desc`, `Tags` 등을 채웁니다.
-2. 페이지 본문에 개요/상세를 Markdown처럼 작성합니다(= MDX 본문).
-3. 표시 순서를 `Order`로, 공개 여부를 `Status=Published`로 지정합니다.
-4. `pnpm fetch:notion`(로컬) 또는 GitHub Actions 실행으로 사이트에 반영합니다.
+1. **한국어**: `Projects`에서 새 페이지 → `Name`(제목)·`Tags`·`Order` 등을 채우고 본문에 개요/상세를 작성합니다. `Status=Published`.
+2. **영어(선택)**: `Projects (EN)`에서 새 페이지 → **같은 `Slug`** + `Name`(영문)·`Metric`(영문) + 영어 본문. `Status=Published`. (생략하면 영어에서 한국어로 폴백.)
+3. `pnpm fetch:notion`(로컬) 또는 GitHub Actions 실행으로 사이트에 반영합니다.
+4. slug는 한국어 제목에서 자동 생성되므로, EN 행의 `Slug`는 한국어 행과 정확히 같아야 매칭됩니다.
