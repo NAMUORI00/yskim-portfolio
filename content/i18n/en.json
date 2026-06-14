@@ -90,22 +90,22 @@
     "rag": {
       "title": "Retrieval-Augmented Generation (RAG)",
       "desc": "Hybrid retrieval with Dense / Sparse / Graph channels, Weighted RRF integration, and domain-specific document indexing, with hands-on experience building RAG pipelines for aerospace documents.",
-      "body": "## Interest\n\nI experiment with hybrid RAG architectures that combine Dense, Sparse, and Graph retrieval and integrate them through Weighted RRF.\n\n## Current Focus\n\n- Domain-specific document chunking\n- Retrieval quality evaluation\n- Source-grounded answer generation"
+      "body": "Hybrid retrieval with Dense / Sparse / Graph channels, Weighted RRF integration, and domain-specific document indexing, with hands-on experience building RAG pipelines for aerospace documents.\n\n\n## Interest\n\n\nI experiment with hybrid RAG architectures that combine Dense, Sparse, and Graph retrieval and integrate them through Weighted RRF.\n\n\n## Current Focus\n\n- Domain-specific document chunking\n- Retrieval quality evaluation\n- Source-grounded answer generation"
     },
     "edge-llm": {
       "title": "Lightweight LLM Inference and Edge AI",
       "desc": "Building local inference environments with llama.cpp, Qwen3, and GGUF quantization while exploring practical LLM deployment on constrained hardware.",
-      "body": "## Interest\n\nI explore practical LLM inference setups that can run on constrained hardware."
+      "body": "Building local inference environments with llama.cpp, Qwen3, and GGUF quantization while exploring practical LLM deployment on constrained hardware.\n\n\n## Interest\n\n\nI explore practical LLM inference setups that can run on constrained hardware."
     },
     "audio-voice": {
       "title": "Music Source Separation and Voice Conversion",
       "desc": "Training experiments with MDX23C and Demucs4HT architectures, RVC / Applio-based voice conversion, and Hydra-configured experiment management.",
-      "body": "## Interest\n\nI work with music source separation and voice conversion models in reproducible experiment environments."
+      "body": "Training experiments with MDX23C and Demucs4HT architectures, RVC / Applio-based voice conversion, and Hydra-configured experiment management.\n\n\n## Interest\n\n\nI work with music source separation and voice conversion models in reproducible experiment environments."
     },
     "agentic-workflow": {
       "title": "Agentic Workflow & MCP",
       "desc": "Designing agent workflows based on the Model Context Protocol, including a cross-review automation system with a human approval loop.",
-      "body": "## Interest\n\nI design workflows where AI agents can use tools safely while operating with human approval loops."
+      "body": "Designing agent workflows based on the Model Context Protocol, including a cross-review automation system with a human approval loop.\n\n\n## Interest\n\n\nI design workflows where AI agents can use tools safely while operating with human approval loops."
     }
   },
   "projects": {
@@ -121,19 +121,6 @@
         "RAG",
         "LLM"
       ],
-      "metrics": [
-        {
-          "label": "MRR",
-          "value": "+31%",
-          "baseline": "Single retrieval channel",
-          "note": "Dense/Sparse/Graph hybrid"
-        }
-      ],
-      "evaluation": {
-        "baseline": "Single retrieval channel",
-        "dataset": "Aerospace work-document query set",
-        "method": "Compared Dense, Sparse, Graph retrieval and Weighted RRF on the same corpus"
-      },
       "body": "A RAG system for aerospace work documents. It combines Qdrant + BM25 + Graph three-channel retrieval, Weighted RRF fusion, and Ollama-based answer generation, optimized for a Colab T4 environment.\n\n\n## Overview\n\n\nA RAG system that combines Dense, Sparse, and Graph retrieval channels for aerospace work documents."
     },
     "llm-rag-research": {
@@ -147,20 +134,7 @@
         "HuggingFace",
         "Research"
       ],
-      "metrics": [
-        {
-          "label": "Recall@5",
-          "value": "23%p gap",
-          "baseline": "Five RAG strategies",
-          "note": "Retrieval quality comparison by strategy"
-        }
-      ],
-      "evaluation": {
-        "baseline": "Single-strategy RAG pipeline",
-        "dataset": "Domain document retrieval query set",
-        "method": "Compared Recall@5 across chunking/retrieval combinations on the same document set"
-      },
-      "body": "## Overview\n\nA private research system for comparing and evaluating different RAG strategies."
+      "body": "A private repository for comparing RAG strategies, building retrieval quality evaluation pipelines, and researching domain-adaptive chunking strategies.\n\n\n## Overview\n\n\nA private research system for comparing and evaluating different RAG strategies."
     },
     "cross-review-bridge": {
       "name": "cross-review-bridge",
@@ -172,20 +146,7 @@
         "AI",
         "Automation"
       ],
-      "metrics": [
-        {
-          "label": "Review cycle",
-          "value": "About 70% shorter",
-          "baseline": "Manual review loop",
-          "note": "Automated external reviewer calls and approval flow"
-        }
-      ],
-      "evaluation": {
-        "baseline": "Manual prompt copy/paste review",
-        "dataset": "Repeated code-review workflow",
-        "method": "Compared the same review steps against the skill-based automated flow"
-      },
-      "body": "## Overview\n\nAn automation system that connects external AI reviewers and Codex through a human-approved review loop."
+      "body": "A human-approved cross-review workflow with external AI reviewers, automated as a Codex skill.\n\n\n## Overview\n\n\nAn automation system that connects external AI reviewers and Codex through a human-approved review loop."
     },
     "music-source-separation": {
       "name": "Music-Source-Separation",
@@ -198,20 +159,7 @@
         "CUDA",
         "Hydra"
       ],
-      "metrics": [
-        {
-          "label": "SDR",
-          "value": "8.2 dB",
-          "baseline": "Demucs4HT-based experiment",
-          "note": "Vocal separation quality"
-        }
-      ],
-      "evaluation": {
-        "baseline": "Default source-separation model setup",
-        "dataset": "Source-separation validation tracks",
-        "method": "Fixed experiment settings with Hydra config and compared by SDR"
-      },
-      "body": "## Overview\n\nA project for training music source separation models and managing experiment configuration."
+      "body": "Training music source separation models based on MDX23C and Demucs4HT architectures, with Hydra configs for experiment management and CUDA-based GPU training.\n\n\n## Overview\n\n\nA project for training music source separation models and managing experiment configuration."
     },
     "mediamtx-installer": {
       "name": "mediamtx-installer",
@@ -223,20 +171,7 @@
         "Ubuntu",
         "Streaming"
       ],
-      "metrics": [
-        {
-          "label": "Setup time",
-          "value": "15 min → 30 sec",
-          "baseline": "Manual setup",
-          "note": "One-line Ubuntu 24.04 install"
-        }
-      ],
-      "evaluation": {
-        "baseline": "Manual package installation and configuration",
-        "dataset": "Ubuntu 24.04 MediaMTX setup procedure",
-        "method": "Compared setup steps and elapsed time in the same environment"
-      },
-      "body": "## Overview\n\nAn operations automation script that simplifies the MediaMTX installation process."
+      "body": "An automation script that installs a MediaMTX streaming server on Ubuntu 24.04 with a single command.\n\n\n## Overview\n\n\nAn operations automation script that simplifies the MediaMTX installation process."
     },
     "introduce-cv-page": {
       "name": "IntroduceCvPage (namu-log)",
@@ -249,20 +184,7 @@
         "React",
         "GitHub API"
       ],
-      "metrics": [
-        {
-          "label": "Publishing flow",
-          "value": "Fully automated",
-          "baseline": "Manual PR creation",
-          "note": "GitHub PR publication after editor writing"
-        }
-      ],
-      "evaluation": {
-        "baseline": "Manual Markdown writing and PR creation",
-        "dataset": "Blog/CV article publishing flow",
-        "method": "Integrated writing, saving, and PR creation into one UI flow"
-      },
-      "body": "## Overview\n\nA blog and CV system that experiments with a GitHub PR-based publishing workflow."
+      "body": "A blog + CV system where writing in a WYSIWYG Markdown editor automatically creates GitHub PRs. Built with Next.js 16 and Tiptap.\n\n\n## Overview\n\n\nA blog and CV system that experiments with a GitHub PR-based publishing workflow."
     },
     "spring-community-board": {
       "name": "SpringCommunityBoard",
@@ -274,20 +196,7 @@
         "Spring Boot",
         "JPA"
       ],
-      "metrics": [
-        {
-          "label": "List latency",
-          "value": "40% improved",
-          "baseline": "N+1 list query",
-          "note": "Optimized post-list query"
-        }
-      ],
-      "evaluation": {
-        "baseline": "List query with JPA N+1 issue",
-        "dataset": "Community board post/comment listing",
-        "method": "Compared response time before and after fetch join and query optimization"
-      },
-      "body": "## Overview\n\nA Spring Boot-based CRUD board with member, post, and comment features."
+      "body": "A CRUD community board built with Spring Boot and JPA, including member management, posts, and comments.\n\n\n## Overview\n\n\nA Spring Boot-based CRUD board with member, post, and comment features."
     }
   },
   "skills": {
@@ -367,8 +276,8 @@
         "RAG",
         "Evaluation"
       ],
-      "body": "## Why Evaluation Comes First\n\nIf you only look at answer quality in a RAG system, it is easy to miss the cause of failure. The retrieval, reranking, and generation stages need to be separated so you can see whether documents were missed, pushed down, or ignored during answer generation.\n\n## Basic Metrics\n\n- Recall@5: checks whether the supporting evidence appears in the top five retrieved documents.\n- MRR: measures how early the first useful evidence appears.\n- Groundedness: checks whether the answer is actually supported by retrieved documents."
+      "body": "A practical evaluation lens for comparing RAG systems across retrieval quality, answer grounding, and operating cost.\n\n\n## Why Evaluation Comes First\n\n\nIf you only look at answer quality in a RAG system, it is easy to miss the cause of failure. The retrieval, reranking, and generation stages need to be separated so you can see whether documents were missed, pushed down, or ignored during answer generation.\n\n\n## Basic Metrics\n\n- Recall@5: checks whether the supporting evidence appears in the top five retrieved documents.\n- MRR: measures how early the first useful evidence appears.\n- Groundedness: checks whether the answer is actually supported by retrieved documents."
     }
   },
-  "generatedAt": "2026-06-14T14:15:23.293Z"
+  "generatedAt": "2026-06-14T15:00:22.236Z"
 }
