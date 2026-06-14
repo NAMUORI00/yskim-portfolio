@@ -683,6 +683,10 @@ export default function Home() {
     <div
       style={{
         display: "flex",
+        // Keep the sidebar + content + knowledge rail clustered and centered on
+        // very wide screens (QHD+) so the gap between the content and the right
+        // rail stays constant instead of stretching open.
+        justifyContent: "center",
         height: "100dvh",
         background: T.bg,
         fontFamily: FONT_SANS,
@@ -995,13 +999,14 @@ export default function Home() {
       ════════════════════════════ */}
       <div
         id="scroll-area"
-        style={{ flex: 1, overflowY: "auto", height: "100dvh" }}
+        style={{ flex: 1, width: "100%", maxWidth: "1040px", overflowY: "auto", height: "100dvh" }}
       >
         <div
           className="scroll-inner"
           style={{
             width: "100%",
             maxWidth: "clamp(680px, 58vw, 980px)",
+            margin: "0 auto",
             padding: `clamp(2.5rem, 5vw, 5rem) clamp(2rem, 4vw, 4rem) ${scrollEndPadding}`,
           }}
         >

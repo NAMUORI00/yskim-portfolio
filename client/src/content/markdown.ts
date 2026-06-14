@@ -1,3 +1,6 @@
+import { marked } from "marked";
+import DOMPurify from "dompurify";
+
 export type FrontmatterPrimitive = string | boolean | number;
 export type FrontmatterValue = FrontmatterPrimitive | FrontmatterValue[] | object | null;
 export type FrontmatterData = Record<string, FrontmatterValue>;
@@ -63,78 +66,62 @@ export function parseFrontmatter(source: string): ParsedFrontmatter {
   return { data, body };
 }
 
-function escapeHtml(value: string): string {
-  return value
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
+marked.setOptions({ gfm: true, breaks: false });
+
+// Tags/attributes for the media embeds emitted by the Notion pipeline
+// (video/audio players, YouTube/Vimeo iframes, file attachments).
+const SANITIZE_CONFIG = {
+  ADD_TAGS: ["iframe", "video", "audio", "source", "figure", "figcaption"],
+  ADD_ATTR: [
+    "allow",
+    "allowfullscreen",
+    "frameborder",
+    "scrolling",
+    "loading",
+    "referrerpolicy",
+    "controls",
+    "preload",
+    "target",
+    "rel",
+    "download",
+  ],
+};
+
+// Only allow iframes from known video providers.
+function isSafeIframeSrc(src: string): boolean {
+  return /^https:\/\/(www\.youtube\.com\/embed\/|player\.vimeo\.com\/)/.test(src);
 }
 
-function renderInline(value: string): string {
-  const escaped = escapeHtml(value);
-  return escaped
-    .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
-    .replace(/`([^`]+)`/g, "<code>$1</code>")
-    // Images (self-hosted /notion/... or remote) — handle before links so the
-    // leading "!" form is not mistaken for a plain link.
-    .replace(/!\[([^\]]*)\]\((https?:\/\/[^)\s]+|\/[^)\s]+)\)/g, '<img src="$2" alt="$1" loading="lazy" />')
-    .replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
+let hooksInstalled = false;
+function installSanitizeHooks(): void {
+  if (hooksInstalled) return;
+  hooksInstalled = true;
+  DOMPurify.addHook("afterSanitizeAttributes", (node) => {
+    const el = node as Element;
+    if (el.tagName === "IFRAME" && !isSafeIframeSrc(el.getAttribute("src") ?? "")) {
+      el.parentNode?.removeChild(el);
+      return;
+    }
+    if (el.tagName === "IMG") {
+      el.setAttribute("loading", "lazy");
+    }
+    if (el.tagName === "A" && (el.getAttribute("href") ?? "").startsWith("http")) {
+      el.setAttribute("target", "_blank");
+      el.setAttribute("rel", "noopener noreferrer");
+    }
+  });
 }
 
-// Raw media HTML emitted by the Notion pipeline (video/audio embeds, attachments).
-// These come from the site owner's own Notion content and are passed through
-// verbatim; everything else is escaped by renderInline.
-const MEDIA_TAG = /^<\/?(figure|iframe|video|audio|source|figcaption)\b|^<a class="file-attachment"/;
-
+// Render Notion-authored Markdown (headings, lists, tables, callouts/quotes,
+// code, images, and media embeds) to sanitized HTML. Content is owner-authored,
+// but we still sanitize as defense-in-depth.
 export function toMarkdownHtml(markdown: string): string {
-  const lines = markdown.replace(/\r\n/g, "\n").split("\n");
-  const html: string[] = [];
-  let listOpen = false;
-
-  const closeList = () => {
-    if (listOpen) {
-      html.push("</ul>");
-      listOpen = false;
-    }
-  };
-
-  for (const line of lines) {
-    const trimmed = line.trim();
-    if (!trimmed) {
-      closeList();
-      continue;
-    }
-    if (MEDIA_TAG.test(trimmed)) {
-      closeList();
-      html.push(trimmed);
-      continue;
-    }
-    if (trimmed.startsWith("## ")) {
-      closeList();
-      html.push(`<h2>${renderInline(trimmed.slice(3))}</h2>`);
-      continue;
-    }
-    if (trimmed.startsWith("### ")) {
-      closeList();
-      html.push(`<h3>${renderInline(trimmed.slice(4))}</h3>`);
-      continue;
-    }
-    if (trimmed.startsWith("- ")) {
-      if (!listOpen) {
-        html.push("<ul>");
-        listOpen = true;
-      }
-      html.push(`<li>${renderInline(trimmed.slice(2))}</li>`);
-      continue;
-    }
-    closeList();
-    html.push(`<p>${renderInline(trimmed)}</p>`);
-  }
-
-  closeList();
-  return html.join("\n");
+  const raw = marked.parse(markdown ?? "", { async: false }) as string;
+  // Non-DOM environments (e.g. plain node) can't run DOMPurify; the site and the
+  // jsdom test env both have a DOM.
+  if (typeof window === "undefined") return raw;
+  installSanitizeHooks();
+  return DOMPurify.sanitize(raw, SANITIZE_CONFIG);
 }
 
 function serializeValue(key: string, value: FrontmatterValue): string[] {

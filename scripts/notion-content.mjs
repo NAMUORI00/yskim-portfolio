@@ -464,6 +464,97 @@ async function renderBody(n2m, pageId, root, group, slug, mediaMode) {
   return downloadAndRewriteAssets(markdown, root, group, slug, mediaMode);
 }
 
+export function slugify(value) {
+  return String(value ?? "")
+    .toLowerCase()
+    .replace(/[^a-z0-9가-힣]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 80);
+}
+
+function resolveSlug(page, kind) {
+  const explicit = readPlainText(page.properties.Slug);
+  if (explicit) return explicit;
+  const title = kind === "projects" ? readPlainText(page.properties.Name) : readPlainText(page.properties.Title);
+  return slugify(title) || page.id.replace(/-/g, "").slice(0, 12);
+}
+
+// First real paragraph of a Markdown body — used as an auto summary/desc when the
+// author hasn't set one explicitly. Skips headings, quotes, tables, raw HTML.
+export function firstParagraph(markdown) {
+  for (const block of String(markdown ?? "").split(/\n{2,}/)) {
+    const text = block.trim();
+    if (!text || /^[#<>|]/.test(text)) continue;
+    return text.replace(/\s+/g, " ").trim();
+  }
+  return "";
+}
+
+async function listChildBlocks(notion, blockId) {
+  const results = [];
+  let cursor;
+  do {
+    const res = await notion.blocks.children.list({ block_id: blockId, start_cursor: cursor, page_size: 100 });
+    results.push(...res.results);
+    cursor = res.has_more ? res.next_cursor : undefined;
+  } while (cursor);
+  return results;
+}
+
+export function toggleLanguage(block) {
+  if (block?.type !== "toggle") return null;
+  const text = (block.toggle?.rich_text ?? []).map((t) => t.plain_text ?? "").join("").toLowerCase();
+  if (text.includes("한국어") || text.includes("korean") || text.includes("🇰🇷")) return "ko";
+  if (text.includes("english") || text.includes("영어") || text.includes("🇺🇸")) return "en";
+  return null;
+}
+
+async function renderBlockBody(n2m, blockId, root, group, slug, mediaMode) {
+  const blocks = await n2m.pageToMarkdown(blockId);
+  const md = n2m.toMarkdownString(blocks);
+  const markdown = (typeof md === "string" ? md : md.parent ?? "").trim();
+  return downloadAndRewriteAssets(markdown, root, group, slug, mediaMode);
+}
+
+// Split a page body into Korean / English. If the page uses "한국어" / "English"
+// toggles, each toggle's content becomes that language's body. Otherwise the whole
+// page is treated as Korean (legacy pages keep working; their EN comes from the
+// "… (EN)" properties via buildEnglish).
+async function renderBilingualBody(notion, n2m, pageId, root, group, slug, mediaMode) {
+  const children = await listChildBlocks(notion, pageId);
+  let koId;
+  let enId;
+  for (const block of children) {
+    const lang = toggleLanguage(block);
+    if (lang === "ko") koId = block.id;
+    else if (lang === "en") enId = block.id;
+  }
+  if (koId || enId) {
+    const ko = koId ? await renderBlockBody(n2m, koId, root, group, slug, mediaMode) : "";
+    const en = enId ? await renderBlockBody(n2m, enId, root, group, `${slug}-en`, mediaMode) : "";
+    return { ko, en };
+  }
+  // No language toggles — try heading-based split (# 한국어 / # English), else
+  // treat the whole page as Korean (legacy).
+  const whole = await renderBody(n2m, pageId, root, group, slug, mediaMode);
+  return splitByLanguageHeading(whole) ?? { ko: whole, en: "" };
+}
+
+// Split markdown at a top-level "한국어" / "English" heading. Returns null if no
+// English heading is present.
+export function splitByLanguageHeading(markdown) {
+  const lines = String(markdown ?? "").split("\n");
+  const isHeading = (line, re) => /^#{1,3}\s+/.test(line) && re.test(line.toLowerCase());
+  const enIdx = lines.findIndex((l) => isHeading(l, /english|영어|🇺🇸/));
+  if (enIdx === -1) return null;
+  const koHeadingIdx = lines.findIndex((l, i) => i < enIdx && isHeading(l, /한국어|korean|🇰🇷/));
+  const koStart = koHeadingIdx === -1 ? 0 : koHeadingIdx + 1;
+  return {
+    ko: lines.slice(koStart, enIdx).join("\n").trim(),
+    en: lines.slice(enIdx + 1).join("\n").trim(),
+  };
+}
+
 // ---------------------------------------------------------------------------
 // Builders: Notion rows -> content objects
 // ---------------------------------------------------------------------------
@@ -521,16 +612,16 @@ export function buildStarred(rows) {
   });
 }
 
-function projectFrontmatter(page, coverImage) {
+function projectFrontmatter(page, coverImage, opts = {}) {
   const p = page.properties;
   const metrics = parseJsonValue(readPlainText(p["Metrics JSON"]), []);
   const evaluation = parseJsonValue(readPlainText(p["Evaluation JSON"]), {});
   const fields = [
-    ["slug", readPlainText(p.Slug)],
+    ["slug", opts.slug ?? readPlainText(p.Slug)],
     ["name", readPlainText(p.Name)],
     ["period", readPlainText(p.Period)],
     ["status", normalizeStatus(readSelect(p.Status))],
-    ["desc", readPlainText(p.Desc)],
+    ["desc", readPlainText(p.Desc) || opts.descFallback || ""],
     ["metric", readPlainText(p.Metric)],
     ["category", readSelect(p.Category) || undefined],
     ["focus", readSelect(p.Focus) || undefined],
@@ -551,13 +642,13 @@ function projectFrontmatter(page, coverImage) {
   return fields;
 }
 
-function researchFrontmatter(page, coverImage) {
+function researchFrontmatter(page, coverImage, opts = {}) {
   const p = page.properties;
   const fields = [
-    ["slug", readPlainText(p.Slug)],
+    ["slug", opts.slug ?? readPlainText(p.Slug)],
     ["title", readPlainText(p.Title)],
     ["status", normalizeStatus(readSelect(p.Status))],
-    ["desc", readPlainText(p.Desc)],
+    ["desc", readPlainText(p.Desc) || opts.descFallback || ""],
     ["showDiagram", readCheckbox(p["Show Diagram"])],
   ];
   if (coverImage) fields.push(["coverImage", coverImage]);
@@ -565,14 +656,14 @@ function researchFrontmatter(page, coverImage) {
   return fields;
 }
 
-function noteFrontmatter(page) {
+function noteFrontmatter(page, opts = {}) {
   const p = page.properties;
   return [
-    ["slug", readPlainText(p.Slug)],
+    ["slug", opts.slug ?? readPlainText(p.Slug)],
     ["title", readPlainText(p.Title)],
     ["status", normalizeStatus(readSelect(p.Status))],
     ["date", readDate(p.Date)],
-    ["summary", readPlainText(p.Summary)],
+    ["summary", readPlainText(p.Summary) || opts.summaryFallback || ""],
     ["tags", readMultiSelect(p.Tags)],
     ["relatedProjects", commaList(readPlainText(p["Related Projects"]))],
     ["relatedResearch", commaList(readPlainText(p["Related Research"]))],
@@ -589,7 +680,7 @@ function pushIf(target, key, value) {
   }
 }
 
-function buildEnglish({ siteRow, profileRow, profileSummaryEn, contactRows, educationRows, researchRows, projectRows, skillRows, starredRows, noteRows }) {
+function buildEnglish({ siteRow, profileRow, contactRows, educationRows, researchRows, projectRows, skillRows, starredRows, noteRows, bilingual = { projects: {}, research: {}, notes: {} } }) {
   const en = { locale: "en", ui: EN_UI };
 
   const site = {};
@@ -626,28 +717,30 @@ function buildEnglish({ siteRow, profileRow, profileSummaryEn, contactRows, educ
 
   en.research = {};
   for (const row of researchRows) {
-    const slug = readPlainText(row.properties.Slug);
+    const slug = resolveSlug(row, "research");
+    const bi = bilingual.research?.[slug] ?? {};
     const entry = {};
     pushIf(entry, "title", readPlainText(row.properties["Title (EN)"]));
-    pushIf(entry, "desc", readPlainText(row.properties["Desc (EN)"]));
-    pushIf(entry, "body", readPlainText(row.properties["Body (EN)"]));
+    pushIf(entry, "desc", bi.desc || readPlainText(row.properties["Desc (EN)"]));
+    pushIf(entry, "body", bi.body || readPlainText(row.properties["Body (EN)"]));
     if (slug && Object.keys(entry).length) en.research[slug] = entry;
   }
 
   en.projects = {};
   for (const row of projectRows) {
-    const slug = readPlainText(row.properties.Slug);
+    const slug = resolveSlug(row, "projects");
+    const bi = bilingual.projects?.[slug] ?? {};
     const p = row.properties;
     const entry = {};
     pushIf(entry, "name", readPlainText(p["Name (EN)"]));
     pushIf(entry, "period", readPlainText(p["Period (EN)"]));
-    pushIf(entry, "desc", readPlainText(p["Desc (EN)"]));
+    pushIf(entry, "desc", bi.desc || readPlainText(p["Desc (EN)"]));
     pushIf(entry, "metric", readPlainText(p["Metric (EN)"]));
     pushIf(entry, "tags", commaList(readPlainText(p["Tags (EN)"])));
     pushIf(entry, "metrics", parseJsonValue(readPlainText(p["Metrics JSON (EN)"]), []));
     const evaluation = parseJsonValue(readPlainText(p["Evaluation JSON (EN)"]), {});
     if (evaluation && typeof evaluation === "object" && Object.keys(evaluation).length) entry.evaluation = evaluation;
-    pushIf(entry, "body", readPlainText(p["Body (EN)"]));
+    pushIf(entry, "body", bi.body || readPlainText(p["Body (EN)"]));
     if (slug && Object.keys(entry).length) en.projects[slug] = entry;
   }
 
@@ -669,14 +762,15 @@ function buildEnglish({ siteRow, profileRow, profileSummaryEn, contactRows, educ
 
   en.notes = {};
   for (const row of noteRows) {
-    const slug = readPlainText(row.properties.Slug);
+    const slug = resolveSlug(row, "notes");
+    const bi = bilingual.notes?.[slug] ?? {};
     const p = row.properties;
     const entry = {};
     pushIf(entry, "title", readPlainText(p["Title (EN)"]));
     pushIf(entry, "date", readPlainText(p["Date (EN)"]));
-    pushIf(entry, "summary", readPlainText(p["Summary (EN)"]));
+    pushIf(entry, "summary", bi.desc || readPlainText(p["Summary (EN)"]));
     pushIf(entry, "tags", commaList(readPlainText(p["Tags (EN)"])));
-    pushIf(entry, "body", readPlainText(p["Body (EN)"]));
+    pushIf(entry, "body", bi.body || readPlainText(p["Body (EN)"]));
     if (slug && Object.keys(entry).length) en.notes[slug] = entry;
   }
 
@@ -776,42 +870,44 @@ export async function fetchPortfolioContent(options = {}) {
   await writeJson(root, "skills.json", buildSkills(skillRows));
   await writeJson(root, "starred.json", buildStarred(starredRows));
 
-  // Content collections -> MDX
+  // Content collections -> MDX. The page body may be bilingual (한국어 / English
+  // toggles); KO goes to the MDX body, EN is collected here for en.json.
   const order = { research: [], projects: [], notes: [] };
+  const bilingual = { projects: {}, research: {}, notes: {} };
 
   for (const page of projectRows) {
-    const slug = readPlainText(page.properties.Slug);
-    if (!slug) throw new Error(`Project page ${page.id} is missing a Slug.`);
+    const slug = resolveSlug(page, "projects");
     const coverImage = await selfHostCover(readFileUrl(page.properties.Cover), root, "projects", slug);
-    const body = await renderBody(n2m, page.id, root, "projects", slug, mediaMode);
+    const { ko, en } = await renderBilingualBody(notion, n2m, page.id, root, "projects", slug, mediaMode);
+    bilingual.projects[slug] = { body: en, desc: firstParagraph(en) };
     await writeFile(
       path.join(root, "content", "projects", `${slug}.mdx`),
-      buildDocument(projectFrontmatter(page, coverImage), body),
+      buildDocument(projectFrontmatter(page, coverImage, { slug, descFallback: firstParagraph(ko) }), ko),
       "utf8",
     );
     order.projects.push(slug);
   }
 
   for (const page of researchRows) {
-    const slug = readPlainText(page.properties.Slug);
-    if (!slug) throw new Error(`Research page ${page.id} is missing a Slug.`);
+    const slug = resolveSlug(page, "research");
     const coverImage = await selfHostCover(readFileUrl(page.properties.Cover), root, "research", slug);
-    const body = await renderBody(n2m, page.id, root, "research", slug, mediaMode);
+    const { ko, en } = await renderBilingualBody(notion, n2m, page.id, root, "research", slug, mediaMode);
+    bilingual.research[slug] = { body: en, desc: firstParagraph(en) };
     await writeFile(
       path.join(root, "content", "research", `${slug}.mdx`),
-      buildDocument(researchFrontmatter(page, coverImage), body),
+      buildDocument(researchFrontmatter(page, coverImage, { slug, descFallback: firstParagraph(ko) }), ko),
       "utf8",
     );
     order.research.push(slug);
   }
 
   for (const page of noteRows) {
-    const slug = readPlainText(page.properties.Slug);
-    if (!slug) throw new Error(`Note page ${page.id} is missing a Slug.`);
-    const body = await renderBody(n2m, page.id, root, "notes", slug, mediaMode);
+    const slug = resolveSlug(page, "notes");
+    const { ko, en } = await renderBilingualBody(notion, n2m, page.id, root, "notes", slug, mediaMode);
+    bilingual.notes[slug] = { body: en, desc: firstParagraph(en) };
     await writeFile(
       path.join(root, "content", "notes", `${slug}.mdx`),
-      buildDocument(noteFrontmatter(page), body),
+      buildDocument(noteFrontmatter(page, { slug, summaryFallback: firstParagraph(ko) }), ko),
       "utf8",
     );
     order.notes.push(slug);
@@ -830,6 +926,7 @@ export async function fetchPortfolioContent(options = {}) {
     skillRows,
     starredRows,
     noteRows,
+    bilingual,
   });
   english.generatedAt = new Date().toISOString();
   await writeJson(root, path.join("i18n", "en.json"), english);
