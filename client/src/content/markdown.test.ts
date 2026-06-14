@@ -84,4 +84,17 @@ featured: true
     expect(html).not.toContain("<img");
     expect(html).toContain("&lt;img");
   });
+
+  it("renders markdown images and passes through media figures", () => {
+    const img = toMarkdownHtml("![cover](/notion/projects/x/asset-1.png)");
+    expect(img).toContain('<img src="/notion/projects/x/asset-1.png"');
+    expect(img).toContain('alt="cover"');
+    expect(img).toContain('loading="lazy"');
+
+    const fig = toMarkdownHtml(
+      '<figure class="video-embed">\n  <iframe src="https://www.youtube.com/embed/abc"></iframe>\n</figure>',
+    );
+    expect(fig).toContain('<figure class="video-embed">');
+    expect(fig).toContain('<iframe src="https://www.youtube.com/embed/abc">');
+  });
 });

@@ -1,0 +1,80 @@
+name: Sync content from Notion
+
+# Notion is the single source of truth. Cloudflare Pages' GitHub integration
+# builds & deploys on every push to `main` (production branch), so this workflow
+# does NOT deploy directly. Instead it keeps content/ in sync with Notion:
+# on a schedule (and on manual dispatch) it regenerates content from Notion and,
+# if anything changed, commits it to main — which triggers a Cloudflare Pages
+# deploy. Plain code pushes deploy via the Pages integration on their own.
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 */6 * * *"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: notion-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.4.1
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Fetch content from Notion
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          # download (default): self-host media in client/public/notion at fetch
+          # time. proxy: emit /media/<id> links served by functions/media + KV.
+          NOTION_MEDIA_MODE: ${{ vars.NOTION_MEDIA_MODE }}
+          NOTION_PROFILE_DB_ID: ${{ vars.NOTION_PROFILE_DB_ID }}
+          NOTION_SITE_DB_ID: ${{ vars.NOTION_SITE_DB_ID }}
+          NOTION_CONTACTS_DB_ID: ${{ vars.NOTION_CONTACTS_DB_ID }}
+          NOTION_TIMELINE_DB_ID: ${{ vars.NOTION_TIMELINE_DB_ID }}
+          NOTION_PROJECTS_DB_ID: ${{ vars.NOTION_PROJECTS_DB_ID }}
+          NOTION_RESEARCH_DB_ID: ${{ vars.NOTION_RESEARCH_DB_ID }}
+          NOTION_NOTES_DB_ID: ${{ vars.NOTION_NOTES_DB_ID }}
+          NOTION_SKILLS_DB_ID: ${{ vars.NOTION_SKILLS_DB_ID }}
+          NOTION_STARRED_DB_ID: ${{ vars.NOTION_STARRED_DB_ID }}
+        run: pnpm fetch:notion
+
+      - name: Validate generated content
+        run: |
+          pnpm check
+          pnpm test
+          pnpm test:notion
+
+      - name: Commit & push content changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          mkdir -p client/public/notion
+          git add content client/public/notion
+          if git diff --staged --quiet; then
+            echo "No content changes from Notion."
+          else
+            git commit -m "chore(content): sync from Notion"
+            git push
+            echo "Pushed Notion content update — Cloudflare Pages will deploy."
+          fi
