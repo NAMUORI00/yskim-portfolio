@@ -24,7 +24,6 @@ import { englishTranslations, getProfileAvatarUrl, portfolioContent, type Projec
 import { DARK, FONT_MONO, FONT_SANS, FONT_SERIF, LIGHT, type PortfolioTheme } from "@/content/theme";
 import { KnowledgeGraphRail } from "@/components/KnowledgeGraphRail";
 import { MobileKnowledgeGraph } from "@/components/MobileKnowledgeGraph";
-import { readAdminPreviewDraftFromLocation, withAdminPreviewUrl } from "@/lib/adminPreview";
 import { buildCoverPreview, buildResearchDiagramPreview, type CoverPreviewPayload } from "@/lib/coverPreview";
 import { applyDocumentMetadata } from "@/lib/documentMetadata";
 import { localizePortfolioContent, uiText } from "@/lib/i18nContent";
@@ -595,11 +594,7 @@ export default function Home() {
   const { theme, toggleTheme } = useTheme();
   const { locale, toggleLocale } = useLanguage();
   const T = theme === "dark" ? DARK : LIGHT;
-  const previewDraft = useMemo(() => readAdminPreviewDraftFromLocation(), []);
-  const previewId = previewDraft?.id ?? null;
-  const sourceContent = previewDraft?.content ?? portfolioContent;
-  const sourceTranslations = previewDraft?.translations ?? englishTranslations;
-  const content = useMemo(() => localizePortfolioContent(sourceContent, sourceTranslations, locale), [locale, sourceContent, sourceTranslations]);
+  const content = useMemo(() => localizePortfolioContent(portfolioContent, englishTranslations, locale), [locale]);
 
   useEffect(() => {
     applyDocumentMetadata(content.site, locale);
@@ -631,8 +626,8 @@ export default function Home() {
   const [coverPreview, setCoverPreview] = useState<CoverPreviewPayload | null>(null);
   const [projectFilters, setProjectFilters] = useState<ProjectFilterSelection>(() => createProjectFilterSelection());
   const [selectedProjectSlug, setSelectedProjectSlug] = useState<string | null>(null);
-  const previewHref = useCallback((path: string) => withAdminPreviewUrl(path, previewId), [previewId]);
-  const label = (key: string, fallback: string) => (locale === "en" ? uiText(sourceTranslations, key, fallback) : fallback);
+  const previewHref = useCallback((path: string) => path, []);
+  const label = (key: string, fallback: string) => (locale === "en" ? uiText(englishTranslations, key, fallback) : fallback);
   const themeToggleLabel = theme === "dark" ? label("lightMode", "라이트 모드") : label("darkMode", "다크 모드");
   const languageToggleLabel = locale === "en" ? label("languageToKorean", "한국어") : label("languageToEnglish", "English");
   const visibleProjects = useMemo(() => filterProjectsBySelection(PROJECTS, projectFilters), [PROJECTS, projectFilters]);

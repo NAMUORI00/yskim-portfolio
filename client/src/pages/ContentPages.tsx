@@ -5,23 +5,18 @@ import { toMarkdownHtml } from "@/content/markdown";
 import { DARK, FONT_MONO, FONT_SANS, LIGHT } from "@/content/theme";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useTheme } from "@/contexts/ThemeContext";
-import { readAdminPreviewDraftFromLocation, withAdminPreviewUrl } from "@/lib/adminPreview";
 import { applyDocumentMetadata } from "@/lib/documentMetadata";
 import { localizePortfolioContent, uiText } from "@/lib/i18nContent";
 
 function usePalette() {
   const { theme, toggleTheme } = useTheme();
   const { locale, toggleLocale } = useLanguage();
-  const previewDraft = useMemo(() => readAdminPreviewDraftFromLocation(), []);
-  const previewId = previewDraft?.id ?? null;
-  const sourceContent = previewDraft?.content ?? portfolioContent;
-  const sourceTranslations = previewDraft?.translations ?? englishTranslations;
-  const content = useMemo(() => localizePortfolioContent(sourceContent, sourceTranslations, locale), [locale, sourceContent, sourceTranslations]);
+  const content = useMemo(() => localizePortfolioContent(portfolioContent, englishTranslations, locale), [locale]);
   useEffect(() => {
     applyDocumentMetadata(content.site, locale);
   }, [content.site, locale]);
-  const label = (key: string, fallback: string) => (locale === "en" ? uiText(sourceTranslations, key, fallback) : fallback);
-  const previewHref = (path: string) => withAdminPreviewUrl(path, previewId);
+  const label = (key: string, fallback: string) => (locale === "en" ? uiText(englishTranslations, key, fallback) : fallback);
+  const previewHref = (path: string) => path;
   return { T: theme === "dark" ? DARK : LIGHT, theme, toggleTheme, locale, toggleLocale, content, label, previewHref };
 }
 

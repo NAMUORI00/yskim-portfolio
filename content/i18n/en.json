@@ -1,9 +1,5 @@
 {
   "locale": "en",
-  "site": {
-    "title": "Kim Yuseok | AI Research Engineer Portfolio",
-    "description": "CS/AI master's student focused on LLM systems, RAG architecture, and lightweight inference research."
-  },
   "ui": {
     "nav": {
       "about": "About",
@@ -30,157 +26,10 @@
       "fullCv": "View full CV timeline"
     }
   },
-  "sourceHashes": {
-    "site.title": "fopv3a",
-    "site.description": "ta8bde",
-    "site.navigation.about.label": "5lojpx",
-    "site.navigation.education.label": "jjrlpf",
-    "site.navigation.research.label": "1srr2xt",
-    "site.navigation.projects.label": "1vjr8a0",
-    "site.navigation.skills.label": "mjsd1o",
-    "site.navigation.interests.label": "1khv4xc",
-    "profile.name": "1d3fd1s",
-    "profile.status": "jfm2jg",
-    "profile.headline": "791qbr",
-    "profile.summaryLead": "mqga3m",
-    "profile.summary.0": "1dld3ip",
-    "profile.summary.1": "x12mcr",
-    "profile.contacts.email.label": "x8rsua",
-    "profile.contacts.github.label": "f84ij7",
-    "profile.contacts.website.label": "wswc8z",
-    "profile.contacts.blog.label": "10scel7",
-    "projects.aerospace-rag.name": "19un6i1",
-    "projects.aerospace-rag.period": "372puo",
-    "projects.aerospace-rag.desc": "m5c61o",
-    "projects.aerospace-rag.metric": "1c18iju",
-    "projects.aerospace-rag.tags.0": "1r8306v",
-    "projects.aerospace-rag.tags.1": "1417oh3",
-    "projects.aerospace-rag.tags.2": "wwohj7",
-    "projects.aerospace-rag.tags.3": "15us9xd",
-    "projects.aerospace-rag.tags.4": "1f3yed4",
-    "projects.aerospace-rag.body": "ks6cob",
-    "projects.aerospace-rag.metrics.0.label": "swublw",
-    "projects.aerospace-rag.metrics.0.value": "l848m9",
-    "projects.aerospace-rag.metrics.0.baseline": "bpyev8",
-    "projects.aerospace-rag.metrics.0.note": "17yohz2",
-    "projects.aerospace-rag.evaluation.baseline": "bpyev8",
-    "projects.aerospace-rag.evaluation.dataset": "7pmeqs",
-    "projects.aerospace-rag.evaluation.method": "1cyxsht",
-    "projects.cross-review-bridge.name": "bmumu8",
-    "projects.cross-review-bridge.period": "372puo",
-    "projects.cross-review-bridge.desc": "1xczm2i",
-    "projects.cross-review-bridge.metric": "z9tufm",
-    "projects.cross-review-bridge.tags.0": "jv2ziw",
-    "projects.cross-review-bridge.tags.1": "9xx36n",
-    "projects.cross-review-bridge.tags.2": "1ywxxdu",
-    "projects.cross-review-bridge.body": "19lanvr",
-    "projects.cross-review-bridge.metrics.0.label": "11urn23",
-    "projects.cross-review-bridge.metrics.0.value": "1hkq6vl",
-    "projects.cross-review-bridge.metrics.0.baseline": "1h8ujtg",
-    "projects.cross-review-bridge.metrics.0.note": "1ybinuz",
-    "projects.cross-review-bridge.evaluation.baseline": "1ol4ue",
-    "projects.cross-review-bridge.evaluation.dataset": "x93ecy",
-    "projects.cross-review-bridge.evaluation.method": "1e6b44n",
-    "projects.introduce-cv-page.name": "sw8843",
-    "projects.introduce-cv-page.period": "eki5vy",
-    "projects.introduce-cv-page.desc": "1bxnnhv",
-    "projects.introduce-cv-page.metric": "1sx65bu",
-    "projects.introduce-cv-page.tags.0": "5cskiq",
-    "projects.introduce-cv-page.tags.1": "1pkc88x",
-    "projects.introduce-cv-page.tags.2": "1yochrw",
-    "projects.introduce-cv-page.tags.3": "1khb4jm",
-    "projects.introduce-cv-page.body": "cdly95",
-    "projects.introduce-cv-page.metrics.0.label": "qs256w",
-    "projects.introduce-cv-page.metrics.0.value": "13lti0o",
-    "projects.introduce-cv-page.metrics.0.baseline": "1l35ifu",
-    "projects.introduce-cv-page.metrics.0.note": "1w290sf",
-    "projects.introduce-cv-page.evaluation.baseline": "33wwxo",
-    "projects.introduce-cv-page.evaluation.dataset": "1o6inso",
-    "projects.introduce-cv-page.evaluation.method": "12nhjks",
-    "projects.llm-rag-research.name": "1ojjv6h",
-    "projects.llm-rag-research.period": "1xt0n5t",
-    "projects.llm-rag-research.desc": "y03h3u",
-    "projects.llm-rag-research.metric": "1mpxlr0",
-    "projects.llm-rag-research.tags.0": "1r8306v",
-    "projects.llm-rag-research.tags.1": "13zvh6u",
-    "projects.llm-rag-research.tags.2": "178cdf1",
-    "projects.llm-rag-research.tags.3": "1to1prz",
-    "projects.llm-rag-research.body": "1dqrwts",
-    "projects.llm-rag-research.metrics.0.label": "1d1iy5b",
-    "projects.llm-rag-research.metrics.0.value": "kjaufl",
-    "projects.llm-rag-research.metrics.0.baseline": "1np5h11",
-    "projects.llm-rag-research.metrics.0.note": "2mwbn1",
-    "projects.llm-rag-research.evaluation.baseline": "1juiexa",
-    "projects.llm-rag-research.evaluation.dataset": "vmef2o",
-    "projects.llm-rag-research.evaluation.method": "w1z27",
-    "projects.mediamtx-installer.name": "1scvayb",
-    "projects.mediamtx-installer.period": "4b14mk",
-    "projects.mediamtx-installer.desc": "1frz081",
-    "projects.mediamtx-installer.metric": "rhzkew",
-    "projects.mediamtx-installer.tags.0": "1fmw68x",
-    "projects.mediamtx-installer.tags.1": "1hwpnaq",
-    "projects.mediamtx-installer.tags.2": "xrfrsu",
-    "projects.mediamtx-installer.body": "o1668p",
-    "projects.mediamtx-installer.metrics.0.label": "1dol9sz",
-    "projects.mediamtx-installer.metrics.0.value": "1zaelu",
-    "projects.mediamtx-installer.metrics.0.baseline": "ulpf8y",
-    "projects.mediamtx-installer.metrics.0.note": "19twa0a",
-    "projects.mediamtx-installer.evaluation.baseline": "kbhawx",
-    "projects.mediamtx-installer.evaluation.dataset": "1im036d",
-    "projects.mediamtx-installer.evaluation.method": "1wf8zmp",
-    "projects.music-source-separation.name": "8074ah",
-    "projects.music-source-separation.period": "1dsybvo",
-    "projects.music-source-separation.desc": "2e7sfi",
-    "projects.music-source-separation.metric": "loui5s",
-    "projects.music-source-separation.tags.0": "1r8306v",
-    "projects.music-source-separation.tags.1": "1erevh0",
-    "projects.music-source-separation.tags.2": "1jw7wza",
-    "projects.music-source-separation.tags.3": "10bfayz",
-    "projects.music-source-separation.body": "b52u4i",
-    "projects.music-source-separation.metrics.0.label": "1dwcow",
-    "projects.music-source-separation.metrics.0.value": "1eba7k7",
-    "projects.music-source-separation.metrics.0.baseline": "zo9zhq",
-    "projects.music-source-separation.metrics.0.note": "12vh6xx",
-    "projects.music-source-separation.evaluation.baseline": "4g89va",
-    "projects.music-source-separation.evaluation.dataset": "1hjbdgx",
-    "projects.music-source-separation.evaluation.method": "jyob92",
-    "projects.spring-community-board.name": "1rvfit3",
-    "projects.spring-community-board.period": "g3iegf",
-    "projects.spring-community-board.desc": "10ftuhq",
-    "projects.spring-community-board.metric": "qtqgvt",
-    "projects.spring-community-board.tags.0": "uspy11",
-    "projects.spring-community-board.tags.1": "1nkh8hw",
-    "projects.spring-community-board.tags.2": "s5snuq",
-    "projects.spring-community-board.body": "xoytf5",
-    "projects.spring-community-board.metrics.0.label": "p27aaz",
-    "projects.spring-community-board.metrics.0.value": "5rv86o",
-    "projects.spring-community-board.metrics.0.baseline": "1at38zs",
-    "projects.spring-community-board.metrics.0.note": "1j3wy6c",
-    "projects.spring-community-board.evaluation.baseline": "34ag0h",
-    "projects.spring-community-board.evaluation.dataset": "14ewoo3",
-    "projects.spring-community-board.evaluation.method": "qkze7i",
-    "research.agentic-workflow.title": "1futqy9",
-    "research.agentic-workflow.desc": "1ywfvtz",
-    "research.agentic-workflow.body": "146leof",
-    "research.audio-voice.title": "1siv3hr",
-    "research.audio-voice.desc": "r950or",
-    "research.audio-voice.body": "17iz1a3",
-    "research.edge-llm.title": "552uus",
-    "research.edge-llm.desc": "1lo5nxd",
-    "research.edge-llm.body": "1bhd01b",
-    "research.rag.title": "9cb5aj",
-    "research.rag.desc": "p6upkk",
-    "research.rag.body": "1l7ekfh",
-    "notes.rag-evaluation.title": "oq5na6",
-    "notes.rag-evaluation.date": "1k8xxdy",
-    "notes.rag-evaluation.summary": "eskc0l",
-    "notes.rag-evaluation.tags.0": "15us9xd",
-    "notes.rag-evaluation.tags.1": "1p47csf",
-    "notes.rag-evaluation.body": "xfhy9l",
-    "profile.summary.2": "1fekuai",
-    "profile.summary.3": "1ripbca"
+  "site": {
+    "title": "Kim Yuseok | AI Research Engineer Portfolio",
+    "description": "CS/AI master's student focused on LLM systems, RAG architecture, and lightweight inference research."
   },
-  "generatedAt": "2026-05-26T23:03:57.440Z",
   "profile": {
     "name": "Kim Yuseok",
     "status": "Study focus and finding future job.",
@@ -216,18 +65,12 @@
       "bullets": [
         "Shaping a research direction around LLM systems and RAG architecture",
         "Building reproducible experiment environments for lightweight inference"
-      ],
-      "links": [
-        {
-          "label": "CV Timeline"
-        }
       ]
     },
     {
       "degree": "B.S. in Computer Engineering",
       "school": "Jeju National University",
       "period": "2017 — 2024",
-      "note": "",
       "bullets": [
         "Expanded interests in software development, deployment automation, and reproducible experiment environments"
       ]
@@ -240,34 +83,29 @@
       "bullets": [
         "Experimenting with Dense/Sparse/Graph retrieval for aerospace documents",
         "Accumulating notes on RAG strategy comparison and retrieval quality evaluation"
-      ],
-      "links": [
-        {
-          "label": "aerospace-rag"
-        }
       ]
     }
   ],
   "research": {
-    "agentic-workflow": {
-      "title": "Agentic Workflow & MCP",
-      "desc": "Designing agent workflows based on the Model Context Protocol, including a cross-review automation system with a human approval loop.",
-      "body": "## Interest\n\nI design workflows where AI agents can use tools safely while operating with human approval loops."
-    },
-    "audio-voice": {
-      "title": "Music Source Separation and Voice Conversion",
-      "desc": "Training experiments with MDX23C and Demucs4HT architectures, RVC / Applio-based voice conversion, and Hydra-configured experiment management.",
-      "body": "## Interest\n\nI work with music source separation and voice conversion models in reproducible experiment environments."
+    "rag": {
+      "title": "Retrieval-Augmented Generation (RAG)",
+      "desc": "Hybrid retrieval with Dense / Sparse / Graph channels, Weighted RRF integration, and domain-specific document indexing, with hands-on experience building RAG pipelines for aerospace documents.",
+      "body": "## Interest\n\nI experiment with hybrid RAG architectures that combine Dense, Sparse, and Graph retrieval and integrate them through Weighted RRF.\n\n## Current Focus\n\n- Domain-specific document chunking\n- Retrieval quality evaluation\n- Source-grounded answer generation"
     },
     "edge-llm": {
       "title": "Lightweight LLM Inference and Edge AI",
       "desc": "Building local inference environments with llama.cpp, Qwen3, and GGUF quantization while exploring practical LLM deployment on constrained hardware.",
       "body": "## Interest\n\nI explore practical LLM inference setups that can run on constrained hardware."
     },
-    "rag": {
-      "title": "Retrieval-Augmented Generation (RAG)",
-      "desc": "Hybrid retrieval with Dense / Sparse / Graph channels, Weighted RRF integration, and domain-specific document indexing, with hands-on experience building RAG pipelines for aerospace documents.",
-      "body": "## Interest\n\nI experiment with hybrid RAG architectures that combine Dense, Sparse, and Graph retrieval and integrate them through Weighted RRF.\n\n## Current Focus\n\n- Domain-specific document chunking\n- Retrieval quality evaluation\n- Source-grounded answer generation"
+    "audio-voice": {
+      "title": "Music Source Separation and Voice Conversion",
+      "desc": "Training experiments with MDX23C and Demucs4HT architectures, RVC / Applio-based voice conversion, and Hydra-configured experiment management.",
+      "body": "## Interest\n\nI work with music source separation and voice conversion models in reproducible experiment environments."
+    },
+    "agentic-workflow": {
+      "title": "Agentic Workflow & MCP",
+      "desc": "Designing agent workflows based on the Model Context Protocol, including a cross-review automation system with a human approval loop.",
+      "body": "## Interest\n\nI design workflows where AI agents can use tools safely while operating with human approval loops."
     }
   },
   "projects": {
@@ -298,57 +136,6 @@
       },
       "body": "## Overview\n\nA RAG system that combines Dense, Sparse, and Graph retrieval channels for aerospace work documents."
     },
-    "cross-review-bridge": {
-      "name": "cross-review-bridge",
-      "period": "2026.05",
-      "desc": "A human-approved cross-review workflow with external AI reviewers, automated as a Codex skill.",
-      "metric": "Reduced the code review cycle by about 70% compared with manual review",
-      "tags": [
-        "PowerShell",
-        "AI",
-        "Automation"
-      ],
-      "metrics": [
-        {
-          "label": "Review cycle",
-          "value": "About 70% shorter",
-          "baseline": "Manual review loop",
-          "note": "Automated external reviewer calls and approval flow"
-        }
-      ],
-      "evaluation": {
-        "baseline": "Manual prompt copy/paste review",
-        "dataset": "Repeated code-review workflow",
-        "method": "Compared the same review steps against the skill-based automated flow"
-      },
-      "body": "## Overview\n\nAn automation system that connects external AI reviewers and Codex through a human-approved review loop."
-    },
-    "introduce-cv-page": {
-      "name": "IntroduceCvPage (namu-log)",
-      "period": "2025.11",
-      "desc": "A blog + CV system where writing in a WYSIWYG Markdown editor automatically creates GitHub PRs. Built with Next.js 16 and Tiptap.",
-      "metric": "Fully automated the flow from article publishing to PR creation",
-      "tags": [
-        "TypeScript",
-        "Next.js",
-        "React",
-        "GitHub API"
-      ],
-      "metrics": [
-        {
-          "label": "Publishing flow",
-          "value": "Fully automated",
-          "baseline": "Manual PR creation",
-          "note": "GitHub PR publication after editor writing"
-        }
-      ],
-      "evaluation": {
-        "baseline": "Manual Markdown writing and PR creation",
-        "dataset": "Blog/CV article publishing flow",
-        "method": "Integrated writing, saving, and PR creation into one UI flow"
-      },
-      "body": "## Overview\n\nA blog and CV system that experiments with a GitHub PR-based publishing workflow."
-    },
     "llm-rag-research": {
       "name": "LLM + RAG Research System",
       "period": "Ongoing",
@@ -375,30 +162,30 @@
       },
       "body": "## Overview\n\nA private research system for comparing and evaluating different RAG strategies."
     },
-    "mediamtx-installer": {
-      "name": "mediamtx-installer",
-      "period": "2026.01",
-      "desc": "An automation script that installs a MediaMTX streaming server on Ubuntu 24.04 with a single command.",
-      "metric": "Reduced setup time from 15 minutes manually to about 30 seconds",
+    "cross-review-bridge": {
+      "name": "cross-review-bridge",
+      "period": "2026.05",
+      "desc": "A human-approved cross-review workflow with external AI reviewers, automated as a Codex skill.",
+      "metric": "Reduced the code review cycle by about 70% compared with manual review",
       "tags": [
-        "Shell",
-        "Ubuntu",
-        "Streaming"
+        "PowerShell",
+        "AI",
+        "Automation"
       ],
       "metrics": [
         {
-          "label": "Setup time",
-          "value": "15 min → 30 sec",
-          "baseline": "Manual setup",
-          "note": "One-line Ubuntu 24.04 install"
+          "label": "Review cycle",
+          "value": "About 70% shorter",
+          "baseline": "Manual review loop",
+          "note": "Automated external reviewer calls and approval flow"
         }
       ],
       "evaluation": {
-        "baseline": "Manual package installation and configuration",
-        "dataset": "Ubuntu 24.04 MediaMTX setup procedure",
-        "method": "Compared setup steps and elapsed time in the same environment"
+        "baseline": "Manual prompt copy/paste review",
+        "dataset": "Repeated code-review workflow",
+        "method": "Compared the same review steps against the skill-based automated flow"
       },
-      "body": "## Overview\n\nAn operations automation script that simplifies the MediaMTX installation process."
+      "body": "## Overview\n\nAn automation system that connects external AI reviewers and Codex through a human-approved review loop."
     },
     "music-source-separation": {
       "name": "Music-Source-Separation",
@@ -425,6 +212,57 @@
         "method": "Fixed experiment settings with Hydra config and compared by SDR"
       },
       "body": "## Overview\n\nA project for training music source separation models and managing experiment configuration."
+    },
+    "mediamtx-installer": {
+      "name": "mediamtx-installer",
+      "period": "2026.01",
+      "desc": "An automation script that installs a MediaMTX streaming server on Ubuntu 24.04 with a single command.",
+      "metric": "Reduced setup time from 15 minutes manually to about 30 seconds",
+      "tags": [
+        "Shell",
+        "Ubuntu",
+        "Streaming"
+      ],
+      "metrics": [
+        {
+          "label": "Setup time",
+          "value": "15 min → 30 sec",
+          "baseline": "Manual setup",
+          "note": "One-line Ubuntu 24.04 install"
+        }
+      ],
+      "evaluation": {
+        "baseline": "Manual package installation and configuration",
+        "dataset": "Ubuntu 24.04 MediaMTX setup procedure",
+        "method": "Compared setup steps and elapsed time in the same environment"
+      },
+      "body": "## Overview\n\nAn operations automation script that simplifies the MediaMTX installation process."
+    },
+    "introduce-cv-page": {
+      "name": "IntroduceCvPage (namu-log)",
+      "period": "2025.11",
+      "desc": "A blog + CV system where writing in a WYSIWYG Markdown editor automatically creates GitHub PRs. Built with Next.js 16 and Tiptap.",
+      "metric": "Fully automated the flow from article publishing to PR creation",
+      "tags": [
+        "TypeScript",
+        "Next.js",
+        "React",
+        "GitHub API"
+      ],
+      "metrics": [
+        {
+          "label": "Publishing flow",
+          "value": "Fully automated",
+          "baseline": "Manual PR creation",
+          "note": "GitHub PR publication after editor writing"
+        }
+      ],
+      "evaluation": {
+        "baseline": "Manual Markdown writing and PR creation",
+        "dataset": "Blog/CV article publishing flow",
+        "method": "Integrated writing, saving, and PR creation into one UI flow"
+      },
+      "body": "## Overview\n\nA blog and CV system that experiments with a GitHub PR-based publishing workflow."
     },
     "spring-community-board": {
       "name": "SpringCommunityBoard",
@@ -531,5 +369,6 @@
       ],
       "body": "## Why Evaluation Comes First\n\nIf you only look at answer quality in a RAG system, it is easy to miss the cause of failure. The retrieval, reranking, and generation stages need to be separated so you can see whether documents were missed, pushed down, or ignored during answer generation.\n\n## Basic Metrics\n\n- Recall@5: checks whether the supporting evidence appears in the top five retrieved documents.\n- MRR: measures how early the first useful evidence appears.\n- Groundedness: checks whether the answer is actually supported by retrieved documents."
     }
-  }
+  },
+  "generatedAt": "2026-06-14T10:01:54.449Z"
 }
