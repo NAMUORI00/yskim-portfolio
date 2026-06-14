@@ -20,7 +20,6 @@ import {
   videoEmbedTag,
   slugify,
   firstParagraph,
-  toggleLanguage,
   splitByLanguageHeading,
 } from "../scripts/notion-content.mjs";
 
@@ -127,16 +126,15 @@ test("media helpers", () => {
   assert.equal(hasTemporaryNotionUrl("https://example.com/image.png"), false);
 });
 
-test("slugify + firstParagraph + toggleLanguage (bilingual helpers)", () => {
+test("slugify + firstParagraph", () => {
   assert.equal(slugify("aerospace-rag"), "aerospace-rag");
   assert.equal(slugify("LLM + RAG 연구 시스템"), "llm-rag-연구-시스템");
   assert.equal(firstParagraph("## 개요\n\n첫 문단입니다.\n\n둘째."), "첫 문단입니다.");
   assert.equal(firstParagraph("# Title\n> quote\n\nReal text."), "Real text.");
-  assert.equal(toggleLanguage({ type: "toggle", toggle: { rich_text: [{ plain_text: "🇰🇷 한국어" }] } }), "ko");
-  assert.equal(toggleLanguage({ type: "toggle", toggle: { rich_text: [{ plain_text: "English" }] } }), "en");
-  assert.equal(toggleLanguage({ type: "paragraph" }), null);
 });
 
+// splitByLanguageHeading remains as a safety net: Korean DBs are mono-lingual now,
+// but a legacy page that still has a "# English" section is stripped down to KO.
 test("splitByLanguageHeading", () => {
   const md = "# 한국어\n\n한국어 본문.\n\n# English\n\nEnglish body.";
   assert.deepEqual(splitByLanguageHeading(md), { ko: "한국어 본문.", en: "English body." });
