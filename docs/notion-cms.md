@@ -19,6 +19,36 @@
 
 추가로 `content/order.json`(컬렉션별 표시 순서)과 `content/i18n/en.json`(영어 번역)이 생성됩니다.
 
+## 자연 작성 (권장): 한 페이지에 한국어·영어 함께
+
+장문 콘텐츠(Projects · Research · Notes)는 **노션에서 일반 문서처럼** 작성합니다. JSON·여러 속성을 채울 필요 없이, 본문에 두 언어 구역만 두면 됩니다.
+
+**본문 형식** — 다음 중 하나로 두 언어를 구분합니다(둘 다 지원):
+- **제목 방식**: 본문에 `# 한국어` 와 `# English` 제목을 두고 각 구역에 자유롭게 작성.
+- **토글 방식**: `한국어` 토글과 `English` 토글을 만들고 그 안에 작성(페이지가 깔끔).
+
+```
+# 한국어
+(한 줄 요약)
+## 개요
+…본문(이미지·표·콜아웃·코드 자유)…
+
+# English
+(one-line summary)
+## Overview
+…body…
+```
+
+- fetch가 **한국어 구역 → 사이트 KO 본문**, **English 구역 → en.json(EN 본문)** 으로 분리합니다.
+- **요약(desc/summary)** 은 각 구역의 **첫 문단에서 자동 추출** → 별도 속성 입력 불필요.
+- **slug** 는 제목에서 자동 생성(원하면 `Slug` 속성으로 수동 지정).
+- 영어 구역이 없으면 한국어만 발행되고, 기존 `… (EN)` 속성이 있으면 그걸 폴백으로 씁니다(하위호환).
+- `Metrics JSON`/`Evaluation JSON`은 더 이상 필수가 아닙니다. 핵심지표 칩이 필요하면 `Metric`(한 줄) 속성만 채우면 됩니다.
+
+**필수 속성은 `Name`(제목)과 `Status`뿐**입니다. 나머지(Tags·Link·Highlight·Period·Category/Focus)는 선택이며, 분류(Category/Focus)는 비우면 본문에서 추론됩니다.
+
+> 작성 흐름: New → 제목 → `# 한국어`/`# English`에 평소처럼 작성(이미지 드래그·표 등) → (원하면 태그·커버) → `Status=Published`. 노션에서도 두 언어가 한 페이지에 보이고, namuori.net은 KO/EN 토글로 갈라 보여줍니다.
+
 ## 속성 규약
 
 - **Status**: `Published` / `Draft` / `Archived`. 콘텐츠 DB(Projects/Research/Notes/Timeline)는 `Published`만 발행됩니다.
