@@ -60,13 +60,19 @@
 - `proxy` 모드를 켜려면: 저장소 variable `NOTION_MEDIA_MODE=proxy` + Cloudflare Pages에 런타임 secret `NOTION_TOKEN` 추가(미디어 함수가 사용) + `wrangler.toml`의 `MEDIA_CACHE` KV 바인딩(이미 구성됨). 함수 배포는 `wrangler pages deploy`가 `functions/`를 자동 번들합니다.
 - `toMarkdownHtml`은 신뢰된 소유자 콘텐츠 기준으로 `<figure>/<iframe>/<video>/<audio>/<figcaption>/<a class="file-attachment">`만 통과시키고 나머지 HTML은 이스케이프합니다.
 
+## 배포 구조
+
+- **Cloudflare Pages GitHub 연동**이 배포를 담당합니다. `namuori-portfolio-cms` 프로젝트가 이 저장소에 연결돼 있고(프로덕션 `main`, 자동 배포) `main` push마다 `pnpm build`(출력 `dist/public`)로 빌드·배포합니다. **Cloudflare API 토큰 불필요.**
+- `Sync content from Notion` GitHub Actions(스케줄 6h + 수동)가 `pnpm fetch:notion`으로 `content/`(+ `client/public/notion/` 미디어)를 재생성하고 변경 시 `main`에 커밋·push → CF가 자동 배포.
+- 그래서 `content/`와 `client/public/notion/`은 **커밋**됩니다(CF 빌드가 fetch 없이 `pnpm build`만 돌리므로 산출물이 저장소에 있어야 함).
+
 ## 셋업 (최초 1회, 사용자 작업)
 
 1. Notion **내부 통합(integration)** 토큰을 준비합니다(블로그와 공유하는 `BLOG` 통합을 그대로 써도 됩니다).
 2. 부모 페이지 `KYS — Portfolio (CMS)`(`37fdcd44-779f-8161-827b-d4cc6615a7ab`)를 그 통합과 **공유(•••→Connections→통합 추가)**합니다. 하위 9개 DB에 상속됩니다. **이 연결이 없으면 fetch가 404로 실패합니다.**
 3. 통합 토큰을 로컬 `.env`의 `NOTION_TOKEN`과 GitHub 저장소 secret으로 설정합니다.
-4. Cloudflare 배포용으로 `CLOUDFLARE_API_TOKEN`(Pages 편집 권한), `CLOUDFLARE_ACCOUNT_ID` secret을 추가합니다.
-5. `pnpm check:notion`으로 누락된 secret/variable과 설정 명령을 확인합니다.
+4. `pnpm check:notion`으로 누락된 secret/variable과 설정 명령을 확인합니다.
+5. (선택) 프록시 미디어 모드: GitHub variable `NOTION_MEDIA_MODE=proxy` + Cloudflare Pages 런타임 secret `NOTION_TOKEN` 추가.
 
 ## 로컬에서 동기화
 

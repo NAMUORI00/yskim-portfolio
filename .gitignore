@@ -114,5 +114,5 @@ temp/
 # Manus version file (auto-generated, not part of source)
 client/public/__manus__/version.json
 
-# Assets self-hosted from Notion at fetch time (covers, avatar, inline images)
-client/public/notion/
+# Note: client/public/notion (media self-hosted from Notion at fetch time) is
+# intentionally committed so Cloudflare Pages' `pnpm build` includes the assets.

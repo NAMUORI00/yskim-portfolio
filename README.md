@@ -96,17 +96,24 @@ pnpm build        # dist/public
 
 ## 배포 / 설정
 
-GitHub 저장소에 아래 secret/variable이 필요합니다 (`pnpm check:notion`으로 점검 가능).
+**배포는 Cloudflare Pages의 GitHub 연동이 담당합니다.** `namuori-portfolio-cms` Pages 프로젝트가
+이 저장소에 연결돼 있고(프로덕션 분기 `main`, 자동 배포), `main`에 push될 때마다
+`pnpm build`(빌드 출력 `dist/public`)로 빌드·배포합니다. 별도의 Cloudflare API 토큰이 필요 없습니다.
+
+콘텐츠 동기화는 GitHub Actions가 맡습니다.
+
+- 흐름: `Sync content from Notion` 워크플로(스케줄 6h + 수동 실행)가 `pnpm fetch:notion`으로
+  Notion → `content/`(+ 미디어 `client/public/notion/`)를 재생성하고, 변경이 있으면 `main`에 커밋·push →
+  Cloudflare Pages가 그 push를 빌드·배포.
+- 코드 변경(일반 push/PR 머지)은 Cloudflare Pages 연동이 직접 빌드·배포.
+- `content/`와 `client/public/notion/`은 **커밋**됩니다(CF 빌드가 `pnpm build`만 돌리므로 산출물이 저장소에 있어야 함).
+
+필요한 GitHub secret/variable (`pnpm check:notion`으로 점검):
 
 ```text
-secret   NOTION_TOKEN              # read-only Notion 통합 토큰
-secret   CLOUDFLARE_API_TOKEN     # Pages 배포 권한 토큰
-secret   CLOUDFLARE_ACCOUNT_ID    # 5f6db5658209a86a6abcb5ebb9254ab7
-variable NOTION_*_DB_ID           # 9개 DB id (기본값은 코드에 내장)
+secret   NOTION_TOKEN     # read-only Notion 통합 토큰 (Action의 fetch에 사용)
+variable NOTION_*_DB_ID   # 9개 DB id (기본값은 코드에 내장)
 ```
 
-Cloudflare Pages Git integration을 직접 쓸 경우 빌드 커맨드를 `pnpm fetch:notion && pnpm build`,
-출력 디렉터리를 `dist/public`으로 두고 위 Notion 환경 변수를 Pages에도 추가하세요.
-단, Notion 편집은 git push를 일으키지 않으므로 본 저장소는 **GitHub Actions의 스케줄/수동 실행**을 기본 배포 경로로 사용합니다.
-
-사용자 수동 작업: Notion 통합 토큰 발급 및 각 DB 공유, Cloudflare/GitHub에 secret 입력.
+사용자 수동 작업: Notion 통합을 `KYS — Portfolio (CMS)` 페이지에 연결(공유), GitHub에 `NOTION_TOKEN` secret 입력.
+(프록시 미디어 모드를 쓸 경우에만 Cloudflare Pages 런타임 secret `NOTION_TOKEN` + `NOTION_MEDIA_MODE=proxy` 추가.)
