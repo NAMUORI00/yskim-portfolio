@@ -21,6 +21,12 @@ export const DATABASE_DEFAULTS = {
   notes: "763f7111-ec1e-4d2d-8d6c-54a22bee930b",
   skills: "3dfa6886-7b83-41b2-95f5-a0665fb7dcaf",
   starred: "7800c04b-8f20-4521-9427-bfd0c373bbe2",
+  // English content lives in parallel DBs, joined to the Korean rows by Slug.
+  // The Korean DBs stay canonical for structure (tags/period/order/etc.); these
+  // carry only the translated title, summary, metric, tags and the English body.
+  projectsEn: "f3b4502f-afc7-4601-b447-d7966d6b983b",
+  researchEn: "405ae235-49cc-4fc5-b31a-7102584ef75a",
+  notesEn: "5a7b919e-e9e6-4076-9291-1a8cdf5a6d0e",
 };
 
 const ENV_KEYS = {
@@ -33,6 +39,9 @@ const ENV_KEYS = {
   notes: "NOTION_NOTES_DB_ID",
   skills: "NOTION_SKILLS_DB_ID",
   starred: "NOTION_STARRED_DB_ID",
+  projectsEn: "NOTION_PROJECTS_EN_DB_ID",
+  researchEn: "NOTION_RESEARCH_EN_DB_ID",
+  notesEn: "NOTION_NOTES_EN_DB_ID",
 };
 
 // site.navigation and site.images are structural (icons, hero artwork) rather
@@ -490,54 +499,12 @@ export function firstParagraph(markdown) {
   return "";
 }
 
-async function listChildBlocks(notion, blockId) {
-  const results = [];
-  let cursor;
-  do {
-    const res = await notion.blocks.children.list({ block_id: blockId, start_cursor: cursor, page_size: 100 });
-    results.push(...res.results);
-    cursor = res.has_more ? res.next_cursor : undefined;
-  } while (cursor);
-  return results;
-}
-
-export function toggleLanguage(block) {
-  if (block?.type !== "toggle") return null;
-  const text = (block.toggle?.rich_text ?? []).map((t) => t.plain_text ?? "").join("").toLowerCase();
-  if (text.includes("한국어") || text.includes("korean") || text.includes("🇰🇷")) return "ko";
-  if (text.includes("english") || text.includes("영어") || text.includes("🇺🇸")) return "en";
-  return null;
-}
-
-async function renderBlockBody(n2m, blockId, root, group, slug, mediaMode) {
-  const blocks = await n2m.pageToMarkdown(blockId);
-  const md = n2m.toMarkdownString(blocks);
-  const markdown = (typeof md === "string" ? md : md.parent ?? "").trim();
-  return downloadAndRewriteAssets(markdown, root, group, slug, mediaMode);
-}
-
-// Split a page body into Korean / English. If the page uses "한국어" / "English"
-// toggles, each toggle's content becomes that language's body. Otherwise the whole
-// page is treated as Korean (legacy pages keep working; their EN comes from the
-// "… (EN)" properties via buildEnglish).
-async function renderBilingualBody(notion, n2m, pageId, root, group, slug, mediaMode) {
-  const children = await listChildBlocks(notion, pageId);
-  let koId;
-  let enId;
-  for (const block of children) {
-    const lang = toggleLanguage(block);
-    if (lang === "ko") koId = block.id;
-    else if (lang === "en") enId = block.id;
-  }
-  if (koId || enId) {
-    const ko = koId ? await renderBlockBody(n2m, koId, root, group, slug, mediaMode) : "";
-    const en = enId ? await renderBlockBody(n2m, enId, root, group, `${slug}-en`, mediaMode) : "";
-    return { ko, en };
-  }
-  // No language toggles — try heading-based split (# 한국어 / # English), else
-  // treat the whole page as Korean (legacy).
+// Render a content page's Korean body. Korean DBs are mono-lingual now (English
+// lives in the parallel "… (EN)" DBs), but as a safety net we still strip an
+// English section if a legacy page kept a "# 한국어 / # English" split.
+async function renderKoreanBody(n2m, pageId, root, group, slug, mediaMode) {
   const whole = await renderBody(n2m, pageId, root, group, slug, mediaMode);
-  return splitByLanguageHeading(whole) ?? { ko: whole, en: "" };
+  return splitByLanguageHeading(whole)?.ko ?? whole;
 }
 
 // Split markdown at a top-level "한국어" / "English" heading. Returns null if no
@@ -680,7 +647,10 @@ function pushIf(target, key, value) {
   }
 }
 
-function buildEnglish({ siteRow, profileRow, contactRows, educationRows, researchRows, projectRows, skillRows, starredRows, noteRows, bilingual = { projects: {}, research: {}, notes: {} } }) {
+// enContent maps slug -> { row, body } for each English content DB (Projects/
+// Research/Notes EN). Config tables (profile/site/timeline/skills/starred) keep
+// their "… (EN)" companion properties since they are short and stay inline.
+function buildEnglish({ siteRow, profileRow, contactRows, educationRows, skillRows, starredRows, enContent = { projects: {}, research: {}, notes: {} } }) {
   const en = { locale: "en", ui: EN_UI };
 
   const site = {};
@@ -716,32 +686,25 @@ function buildEnglish({ siteRow, profileRow, contactRows, educationRows, researc
   });
 
   en.research = {};
-  for (const row of researchRows) {
-    const slug = resolveSlug(row, "research");
-    const bi = bilingual.research?.[slug] ?? {};
+  for (const [slug, { row, body }] of Object.entries(enContent.research)) {
     const entry = {};
-    pushIf(entry, "title", readPlainText(row.properties["Title (EN)"]));
-    pushIf(entry, "desc", bi.desc || readPlainText(row.properties["Desc (EN)"]));
-    pushIf(entry, "body", bi.body || readPlainText(row.properties["Body (EN)"]));
-    if (slug && Object.keys(entry).length) en.research[slug] = entry;
+    pushIf(entry, "title", readPlainText(row.properties.Title));
+    pushIf(entry, "desc", readPlainText(row.properties.Desc) || firstParagraph(body));
+    pushIf(entry, "body", body);
+    if (Object.keys(entry).length) en.research[slug] = entry;
   }
 
   en.projects = {};
-  for (const row of projectRows) {
-    const slug = resolveSlug(row, "projects");
-    const bi = bilingual.projects?.[slug] ?? {};
+  for (const [slug, { row, body }] of Object.entries(enContent.projects)) {
     const p = row.properties;
     const entry = {};
-    pushIf(entry, "name", readPlainText(p["Name (EN)"]));
-    pushIf(entry, "period", readPlainText(p["Period (EN)"]));
-    pushIf(entry, "desc", bi.desc || readPlainText(p["Desc (EN)"]));
-    pushIf(entry, "metric", readPlainText(p["Metric (EN)"]));
-    pushIf(entry, "tags", commaList(readPlainText(p["Tags (EN)"])));
-    pushIf(entry, "metrics", parseJsonValue(readPlainText(p["Metrics JSON (EN)"]), []));
-    const evaluation = parseJsonValue(readPlainText(p["Evaluation JSON (EN)"]), {});
-    if (evaluation && typeof evaluation === "object" && Object.keys(evaluation).length) entry.evaluation = evaluation;
-    pushIf(entry, "body", bi.body || readPlainText(p["Body (EN)"]));
-    if (slug && Object.keys(entry).length) en.projects[slug] = entry;
+    pushIf(entry, "name", readPlainText(p.Name));
+    pushIf(entry, "period", readPlainText(p.Period));
+    pushIf(entry, "desc", readPlainText(p.Desc) || firstParagraph(body));
+    pushIf(entry, "metric", readPlainText(p.Metric));
+    pushIf(entry, "tags", commaList(readPlainText(p.Tags)));
+    pushIf(entry, "body", body);
+    if (Object.keys(entry).length) en.projects[slug] = entry;
   }
 
   en.skills = {};
@@ -761,17 +724,15 @@ function buildEnglish({ siteRow, profileRow, contactRows, educationRows, researc
   }
 
   en.notes = {};
-  for (const row of noteRows) {
-    const slug = resolveSlug(row, "notes");
-    const bi = bilingual.notes?.[slug] ?? {};
+  for (const [slug, { row, body }] of Object.entries(enContent.notes)) {
     const p = row.properties;
     const entry = {};
-    pushIf(entry, "title", readPlainText(p["Title (EN)"]));
-    pushIf(entry, "date", readPlainText(p["Date (EN)"]));
-    pushIf(entry, "summary", bi.desc || readPlainText(p["Summary (EN)"]));
-    pushIf(entry, "tags", commaList(readPlainText(p["Tags (EN)"])));
-    pushIf(entry, "body", bi.body || readPlainText(p["Body (EN)"]));
-    if (slug && Object.keys(entry).length) en.notes[slug] = entry;
+    pushIf(entry, "title", readPlainText(p.Title));
+    pushIf(entry, "date", readPlainText(p.Date));
+    pushIf(entry, "summary", readPlainText(p.Summary) || firstParagraph(body));
+    pushIf(entry, "tags", commaList(readPlainText(p.Tags)));
+    pushIf(entry, "body", body);
+    if (Object.keys(entry).length) en.notes[slug] = entry;
   }
 
   return en;
@@ -787,6 +748,34 @@ function resolveDatabaseIds(options = {}) {
     ids[key] = options[key] ?? process.env[ENV_KEYS[key]] ?? DATABASE_DEFAULTS[key];
   }
   return ids;
+}
+
+// Build slug -> { row, body } maps for the English content DBs, joined to the
+// Korean rows by Slug. Tolerant: if an English DB is missing or unshared, that
+// collection simply has no English and the site falls back to Korean.
+async function loadEnglishContent(notion, n2m, ids, root, mediaMode) {
+  const kinds = [
+    ["projects", ids.projectsEn],
+    ["research", ids.researchEn],
+    ["notes", ids.notesEn],
+  ];
+  const out = { projects: {}, research: {}, notes: {} };
+  for (const [kind, dataId] of kinds) {
+    if (!dataId) continue;
+    let rows;
+    try {
+      rows = await queryAll(notion, dataId, { filter: publishedFilter });
+    } catch (error) {
+      console.warn(`English ${kind} DB unavailable (${error.message}); falling back to Korean.`);
+      continue;
+    }
+    for (const row of rows) {
+      const slug = resolveSlug(row, kind);
+      if (!slug) continue;
+      out[kind][slug] = { row, body: await renderBody(n2m, row.id, root, kind, `${slug}-en`, mediaMode) };
+    }
+  }
+  return out;
 }
 
 async function writeJson(root, relative, value) {
@@ -870,16 +859,15 @@ export async function fetchPortfolioContent(options = {}) {
   await writeJson(root, "skills.json", buildSkills(skillRows));
   await writeJson(root, "starred.json", buildStarred(starredRows));
 
-  // Content collections -> MDX. The page body may be bilingual (한국어 / English
-  // toggles); KO goes to the MDX body, EN is collected here for en.json.
+  // Content collections -> MDX (Korean is canonical). English bodies/fields come
+  // from the parallel "… (EN)" DBs, matched by Slug, and feed en.json.
   const order = { research: [], projects: [], notes: [] };
-  const bilingual = { projects: {}, research: {}, notes: {} };
+  const enContent = await loadEnglishContent(notion, n2m, ids, root, mediaMode);
 
   for (const page of projectRows) {
     const slug = resolveSlug(page, "projects");
     const coverImage = await selfHostCover(readFileUrl(page.properties.Cover), root, "projects", slug);
-    const { ko, en } = await renderBilingualBody(notion, n2m, page.id, root, "projects", slug, mediaMode);
-    bilingual.projects[slug] = { body: en, desc: firstParagraph(en) };
+    const ko = await renderKoreanBody(n2m, page.id, root, "projects", slug, mediaMode);
     await writeFile(
       path.join(root, "content", "projects", `${slug}.mdx`),
       buildDocument(projectFrontmatter(page, coverImage, { slug, descFallback: firstParagraph(ko) }), ko),
@@ -891,8 +879,7 @@ export async function fetchPortfolioContent(options = {}) {
   for (const page of researchRows) {
     const slug = resolveSlug(page, "research");
     const coverImage = await selfHostCover(readFileUrl(page.properties.Cover), root, "research", slug);
-    const { ko, en } = await renderBilingualBody(notion, n2m, page.id, root, "research", slug, mediaMode);
-    bilingual.research[slug] = { body: en, desc: firstParagraph(en) };
+    const ko = await renderKoreanBody(n2m, page.id, root, "research", slug, mediaMode);
     await writeFile(
       path.join(root, "content", "research", `${slug}.mdx`),
       buildDocument(researchFrontmatter(page, coverImage, { slug, descFallback: firstParagraph(ko) }), ko),
@@ -903,8 +890,7 @@ export async function fetchPortfolioContent(options = {}) {
 
   for (const page of noteRows) {
     const slug = resolveSlug(page, "notes");
-    const { ko, en } = await renderBilingualBody(notion, n2m, page.id, root, "notes", slug, mediaMode);
-    bilingual.notes[slug] = { body: en, desc: firstParagraph(en) };
+    const ko = await renderKoreanBody(n2m, page.id, root, "notes", slug, mediaMode);
     await writeFile(
       path.join(root, "content", "notes", `${slug}.mdx`),
       buildDocument(noteFrontmatter(page, { slug, summaryFallback: firstParagraph(ko) }), ko),
@@ -921,12 +907,9 @@ export async function fetchPortfolioContent(options = {}) {
     profileRow,
     contactRows,
     educationRows: timelineRows,
-    researchRows,
-    projectRows,
     skillRows,
     starredRows,
-    noteRows,
-    bilingual,
+    enContent,
   });
   english.generatedAt = new Date().toISOString();
   await writeJson(root, path.join("i18n", "en.json"), english);

@@ -55,6 +55,9 @@ jobs:
           NOTION_NOTES_DB_ID: ${{ vars.NOTION_NOTES_DB_ID }}
           NOTION_SKILLS_DB_ID: ${{ vars.NOTION_SKILLS_DB_ID }}
           NOTION_STARRED_DB_ID: ${{ vars.NOTION_STARRED_DB_ID }}
+          NOTION_PROJECTS_EN_DB_ID: ${{ vars.NOTION_PROJECTS_EN_DB_ID }}
+          NOTION_RESEARCH_EN_DB_ID: ${{ vars.NOTION_RESEARCH_EN_DB_ID }}
+          NOTION_NOTES_EN_DB_ID: ${{ vars.NOTION_NOTES_EN_DB_ID }}
         run: pnpm fetch:notion
 
       - name: Validate generated content
