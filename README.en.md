@@ -67,14 +67,20 @@ pnpm build        # dist/public
 
 ## Deploy
 
-The GitHub repository needs these secrets/variables (run `pnpm check:notion` to audit):
+**Cloudflare Pages' GitHub integration handles deploys.** The `namuori-portfolio-cms`
+Pages project is connected to this repo (production branch `main`, auto-deploy) and
+builds with `pnpm build` (output `dist/public`) on every push to `main`. No Cloudflare
+API token is required.
+
+Content sync is handled by GitHub Actions: the `Sync content from Notion` workflow
+(6-hourly schedule + manual dispatch) runs `pnpm fetch:notion` to regenerate
+`content/` (and media under `client/public/notion/`), and commits any changes to
+`main` — which triggers a Pages deploy. `content/` and `client/public/notion/` are
+committed so the Pages `pnpm build` includes them.
+
+Required GitHub secret/variable (run `pnpm check:notion` to audit):
 
 ```text
-secret   NOTION_TOKEN              # read-only Notion integration token
-secret   CLOUDFLARE_API_TOKEN     # Pages deploy token
-secret   CLOUDFLARE_ACCOUNT_ID    # 5f6db5658209a86a6abcb5ebb9254ab7
-variable NOTION_*_DB_ID           # 9 database ids (defaults baked into code)
+secret   NOTION_TOKEN     # read-only Notion integration token (used by the Action's fetch)
+variable NOTION_*_DB_ID   # 9 database ids (defaults baked into code)
 ```
-
-The `Sync from Notion and deploy` workflow runs on push to `main`, manual
-dispatch, and a 6-hourly schedule (so Notion-only edits get picked up).
