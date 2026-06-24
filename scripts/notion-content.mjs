@@ -21,9 +21,16 @@ export const DATABASE_DEFAULTS = {
   notes: "763f7111-ec1e-4d2d-8d6c-54a22bee930b",
   skills: "3dfa6886-7b83-41b2-95f5-a0665fb7dcaf",
   starred: "7800c04b-8f20-4521-9427-bfd0c373bbe2",
-  // English content lives in parallel DBs, joined to the Korean rows by Slug.
+  // English content lives in parallel DBs. Long-form content joins by Slug;
+  // short/config sections join by Key.
   // The Korean DBs stay canonical for structure (tags/period/order/etc.); these
-  // carry only the translated title, summary, metric, tags and the English body.
+  // carry only translated display fields and English bodies.
+  profileEn: "bf146819-6058-449a-a228-ff095d650efa",
+  siteEn: "269ac4da-d038-4a91-a247-0370c641cdba",
+  contactsEn: "dc570f0b-b20c-47fc-ba44-2be0d4fee913",
+  timelineEn: "65181b91-fcc8-4794-8160-cd60e95fdb62",
+  skillsEn: "d574da0e-ad8b-4da5-9339-c3dd68c70d6c",
+  starredEn: "e17abf1b-f603-4ba0-a6ae-a23a4958dafc",
   projectsEn: "f3b4502f-afc7-4601-b447-d7966d6b983b",
   researchEn: "405ae235-49cc-4fc5-b31a-7102584ef75a",
   notesEn: "5a7b919e-e9e6-4076-9291-1a8cdf5a6d0e",
@@ -39,6 +46,12 @@ const ENV_KEYS = {
   notes: "NOTION_NOTES_DB_ID",
   skills: "NOTION_SKILLS_DB_ID",
   starred: "NOTION_STARRED_DB_ID",
+  profileEn: "NOTION_PROFILE_EN_DB_ID",
+  siteEn: "NOTION_SITE_EN_DB_ID",
+  contactsEn: "NOTION_CONTACTS_EN_DB_ID",
+  timelineEn: "NOTION_TIMELINE_EN_DB_ID",
+  skillsEn: "NOTION_SKILLS_EN_DB_ID",
+  starredEn: "NOTION_STARRED_EN_DB_ID",
   projectsEn: "NOTION_PROJECTS_EN_DB_ID",
   researchEn: "NOTION_RESEARCH_EN_DB_ID",
   notesEn: "NOTION_NOTES_EN_DB_ID",
@@ -647,28 +660,64 @@ function pushIf(target, key, value) {
   }
 }
 
+export function rowKey(row, fallback = "") {
+  return readPlainText(row?.properties?.Key) || fallback;
+}
+
+export function indexRowsByKey(rows = []) {
+  const byKey = new Map();
+  for (const row of rows) {
+    const key = rowKey(row);
+    if (key && !byKey.has(key)) byKey.set(key, row);
+  }
+  return byKey;
+}
+
+function firstRow(rows = []) {
+  return rows[0] ?? null;
+}
+
+function keyedRow(section, key) {
+  return section?.byKey?.get(key) ?? null;
+}
+
+function englishText(enRow, enProp, koProperties, inlineProp) {
+  return readPlainText(enRow?.properties?.[enProp]) || readPlainText(koProperties?.[inlineProp]);
+}
+
 // enContent maps slug -> { row, body } for each English content DB (Projects/
-// Research/Notes EN). Config tables (profile/site/timeline/skills/starred) keep
-// their "… (EN)" companion properties since they are short and stay inline.
-function buildEnglish({ siteRow, profileRow, contactRows, educationRows, skillRows, starredRows, enContent = { projects: {}, research: {}, notes: {} } }) {
+// Research/Notes EN). shortEn maps section -> rows/index for config DBs.
+export function buildEnglish({
+  siteRow,
+  profileRow,
+  contactRows,
+  educationRows,
+  skillRows,
+  starredRows,
+  enContent = { projects: {}, research: {}, notes: {} },
+  shortEn = {},
+}) {
   const en = { locale: "en", ui: EN_UI };
 
+  const siteEn = keyedRow(shortEn.site, "site") ?? firstRow(shortEn.site?.rows);
   const site = {};
-  pushIf(site, "title", readPlainText(siteRow.properties["Title (EN)"]));
-  pushIf(site, "description", readPlainText(siteRow.properties["Description (EN)"]));
+  pushIf(site, "title", englishText(siteEn, "Title", siteRow.properties, "Title (EN)"));
+  pushIf(site, "description", englishText(siteEn, "Description", siteRow.properties, "Description (EN)"));
   if (Object.keys(site).length) en.site = site;
 
+  const profileEn = keyedRow(shortEn.profile, "profile") ?? firstRow(shortEn.profile?.rows);
   const profile = {};
   const pp = profileRow.properties;
-  pushIf(profile, "name", readPlainText(pp["Name (EN)"]));
-  pushIf(profile, "status", readPlainText(pp["Availability (EN)"]));
-  pushIf(profile, "headline", readPlainText(pp["Headline (EN)"]));
-  pushIf(profile, "summaryLead", readPlainText(pp["Summary Lead (EN)"]));
-  pushIf(profile, "summary", markdownToParagraphs(readPlainText(pp["Summary (EN)"])));
+  pushIf(profile, "name", englishText(profileEn, "Name", pp, "Name (EN)"));
+  pushIf(profile, "status", englishText(profileEn, "Availability", pp, "Availability (EN)"));
+  pushIf(profile, "headline", englishText(profileEn, "Headline", pp, "Headline (EN)"));
+  pushIf(profile, "summaryLead", englishText(profileEn, "Summary Lead", pp, "Summary Lead (EN)"));
+  pushIf(profile, "summary", markdownToParagraphs(englishText(profileEn, "Summary", pp, "Summary (EN)")));
   const contacts = {};
   for (const row of contactRows) {
     const id = readPlainText(row.properties.Key) || readSelect(row.properties.Type);
-    const label = readPlainText(row.properties["Label (EN)"]);
+    const contactEn = keyedRow(shortEn.contacts, id);
+    const label = englishText(contactEn, "Label", row.properties, "Label (EN)");
     if (id && label) contacts[id] = { label };
   }
   if (Object.keys(contacts).length) profile.contacts = contacts;
@@ -676,12 +725,14 @@ function buildEnglish({ siteRow, profileRow, contactRows, educationRows, skillRo
 
   en.education = educationRows.map((row) => {
     const p = row.properties;
+    const key = rowKey(row, `timeline-${slugify(readPlainText(p.Degree))}`);
+    const timelineEn = keyedRow(shortEn.timeline, key);
     const entry = {};
-    pushIf(entry, "degree", readPlainText(p["Degree (EN)"]));
-    pushIf(entry, "school", readPlainText(p["School (EN)"]));
-    pushIf(entry, "period", readPlainText(p["Period (EN)"]));
-    pushIf(entry, "note", readPlainText(p["Note (EN)"]));
-    pushIf(entry, "bullets", lineList(readPlainText(p["Bullets (EN)"])));
+    pushIf(entry, "degree", englishText(timelineEn, "Degree", p, "Degree (EN)"));
+    pushIf(entry, "school", englishText(timelineEn, "School", p, "School (EN)"));
+    pushIf(entry, "period", englishText(timelineEn, "Period", p, "Period (EN)"));
+    pushIf(entry, "note", englishText(timelineEn, "Note", p, "Note (EN)"));
+    pushIf(entry, "bullets", lineList(englishText(timelineEn, "Bullets", p, "Bullets (EN)")));
     return entry;
   });
 
@@ -710,16 +761,20 @@ function buildEnglish({ siteRow, profileRow, contactRows, educationRows, skillRo
   en.skills = {};
   for (const row of skillRows) {
     const label = readPlainText(row.properties.Label);
+    const key = rowKey(row, `skill-${slugify(label)}`);
+    const skillEn = keyedRow(shortEn.skills, key);
     const entry = {};
-    pushIf(entry, "label", readPlainText(row.properties["Label (EN)"]));
-    pushIf(entry, "items", commaList(readPlainText(row.properties["Items (EN)"])));
+    pushIf(entry, "label", englishText(skillEn, "Label", row.properties, "Label (EN)"));
+    pushIf(entry, "items", commaList(englishText(skillEn, "Items", row.properties, "Items (EN)")));
     if (label && Object.keys(entry).length) en.skills[label] = entry;
   }
 
   en.starred = {};
   for (const row of starredRows) {
     const name = readPlainText(row.properties.Name);
-    const desc = readPlainText(row.properties["Desc (EN)"]);
+    const key = rowKey(row, `starred-${slugify(name)}`);
+    const starredEn = keyedRow(shortEn.starred, key);
+    const desc = englishText(starredEn, "Desc", row.properties, "Desc (EN)");
     if (name && desc) en.starred[name] = { desc };
   }
 
@@ -773,6 +828,32 @@ async function loadEnglishContent(notion, n2m, ids, root, mediaMode) {
       const slug = resolveSlug(row, kind);
       if (!slug) continue;
       out[kind][slug] = { row, body: await renderBody(n2m, row.id, root, kind, `${slug}-en`, mediaMode) };
+    }
+  }
+  return out;
+}
+
+async function loadShortEnglishRows(notion, ids) {
+  const specs = [
+    ["profile", ids.profileEn, undefined],
+    ["site", ids.siteEn, undefined],
+    ["contacts", ids.contactsEn, orderSort],
+    ["timeline", ids.timelineEn, orderSort],
+    ["skills", ids.skillsEn, orderSort],
+    ["starred", ids.starredEn, orderSort],
+  ];
+  const out = {};
+  for (const [section, dataId, sorts] of specs) {
+    if (!dataId) {
+      out[section] = { rows: [], byKey: new Map() };
+      continue;
+    }
+    try {
+      const rows = await queryAll(notion, dataId, sorts ? { sorts } : {});
+      out[section] = { rows, byKey: indexRowsByKey(rows) };
+    } catch (error) {
+      console.warn(`English ${section} DB unavailable (${error.message}); falling back to inline fields.`);
+      out[section] = { rows: [], byKey: new Map() };
     }
   }
   return out;
@@ -862,7 +943,10 @@ export async function fetchPortfolioContent(options = {}) {
   // Content collections -> MDX (Korean is canonical). English bodies/fields come
   // from the parallel "… (EN)" DBs, matched by Slug, and feed en.json.
   const order = { research: [], projects: [], notes: [] };
-  const enContent = await loadEnglishContent(notion, n2m, ids, root, mediaMode);
+  const [enContent, shortEn] = await Promise.all([
+    loadEnglishContent(notion, n2m, ids, root, mediaMode),
+    loadShortEnglishRows(notion, ids),
+  ]);
 
   for (const page of projectRows) {
     const slug = resolveSlug(page, "projects");
@@ -910,6 +994,7 @@ export async function fetchPortfolioContent(options = {}) {
     skillRows,
     starredRows,
     enContent,
+    shortEn,
   });
   english.generatedAt = new Date().toISOString();
   await writeJson(root, path.join("i18n", "en.json"), english);
