@@ -83,5 +83,4 @@ Required GitHub secret/variable (run `pnpm check:notion` to audit):
 ```text
 secret   NOTION_TOKEN     # read-only Notion integration token (used by the Action's fetch)
 variable NOTION_ENTRIES_DB_ID # unified Portfolio Entries database id
-variable NOTION_*_DB_ID       # legacy fallback database ids (defaults baked into code)
 ```

@@ -13,50 +13,10 @@ import { pathToFileURL } from "node:url";
 // pipeline elsewhere without code changes.
 export const DATABASE_DEFAULTS = {
   entries: "a15aff41-47f3-4a92-8dc8-a1367ae00a46",
-  profile: "b5e3e644-61eb-4d9d-ae2d-61a2f3f44fd1",
-  site: "b657b70e-6dbd-40b3-9b2d-4d4e5e02ba3d",
-  contacts: "d67538d1-3374-4190-9c63-291dea15e5b7",
-  timeline: "19648412-cd85-4edf-a688-b1830f8d4aa8",
-  projects: "b2bdcda8-4d69-47dd-a334-e519de027888",
-  research: "c8fadc0e-3148-4e1e-9593-0ee144cb4498",
-  notes: "763f7111-ec1e-4d2d-8d6c-54a22bee930b",
-  skills: "3dfa6886-7b83-41b2-95f5-a0665fb7dcaf",
-  starred: "7800c04b-8f20-4521-9427-bfd0c373bbe2",
-  // English content lives in parallel DBs. Long-form content joins by Slug;
-  // short/config sections join by Key.
-  // The Korean DBs stay canonical for structure (tags/period/order/etc.); these
-  // carry only translated display fields and English bodies.
-  profileEn: "bf146819-6058-449a-a228-ff095d650efa",
-  siteEn: "269ac4da-d038-4a91-a247-0370c641cdba",
-  contactsEn: "dc570f0b-b20c-47fc-ba44-2be0d4fee913",
-  timelineEn: "65181b91-fcc8-4794-8160-cd60e95fdb62",
-  skillsEn: "d574da0e-ad8b-4da5-9339-c3dd68c70d6c",
-  starredEn: "e17abf1b-f603-4ba0-a6ae-a23a4958dafc",
-  projectsEn: "f3b4502f-afc7-4601-b447-d7966d6b983b",
-  researchEn: "405ae235-49cc-4fc5-b31a-7102584ef75a",
-  notesEn: "5a7b919e-e9e6-4076-9291-1a8cdf5a6d0e",
 };
 
 const ENV_KEYS = {
   entries: "NOTION_ENTRIES_DB_ID",
-  profile: "NOTION_PROFILE_DB_ID",
-  site: "NOTION_SITE_DB_ID",
-  contacts: "NOTION_CONTACTS_DB_ID",
-  timeline: "NOTION_TIMELINE_DB_ID",
-  projects: "NOTION_PROJECTS_DB_ID",
-  research: "NOTION_RESEARCH_DB_ID",
-  notes: "NOTION_NOTES_DB_ID",
-  skills: "NOTION_SKILLS_DB_ID",
-  starred: "NOTION_STARRED_DB_ID",
-  profileEn: "NOTION_PROFILE_EN_DB_ID",
-  siteEn: "NOTION_SITE_EN_DB_ID",
-  contactsEn: "NOTION_CONTACTS_EN_DB_ID",
-  timelineEn: "NOTION_TIMELINE_EN_DB_ID",
-  skillsEn: "NOTION_SKILLS_EN_DB_ID",
-  starredEn: "NOTION_STARRED_EN_DB_ID",
-  projectsEn: "NOTION_PROJECTS_EN_DB_ID",
-  researchEn: "NOTION_RESEARCH_EN_DB_ID",
-  notesEn: "NOTION_NOTES_EN_DB_ID",
 };
 
 // site.navigation and site.images are structural (icons, hero artwork) rather
@@ -1248,7 +1208,7 @@ export async function fetchPortfolioContent(options = {}) {
   const root = path.resolve(options.root ?? process.cwd());
   const token = options.token ?? process.env.NOTION_TOKEN;
   if (!token) {
-    throw new Error("Missing NOTION_TOKEN. Create a read-only Notion integration and share each portfolio database with it.");
+    throw new Error("Missing NOTION_TOKEN. Create a read-only Notion integration and share the Portfolio Entries database with it.");
   }
   const ids = resolveDatabaseIds(options);
 
@@ -1261,146 +1221,10 @@ export async function fetchPortfolioContent(options = {}) {
   const mediaMode = (options.mediaMode ?? process.env.NOTION_MEDIA_MODE) === "proxy" ? "proxy" : "download";
   installCustomTransformers(n2m, mediaMode);
 
-  if (ids.entries) {
-    try {
-      const entryRows = await queryAll(notion, ids.entries, { filter: publishedFilter, sorts: orderSort });
-      if (entryRows.length > 0) {
-        return fetchPortfolioEntriesContent({ root, notion, n2m, entryRows, mediaMode });
-      }
-      console.warn("Portfolio Entries DB is empty; falling back to legacy section DBs.");
-    } catch (error) {
-      console.warn(`Portfolio Entries DB unavailable (${error.message}); falling back to legacy section DBs.`);
-    }
-  }
-
-  // Query every database. Config tables read all rows by Order; content tables
-  // read only Published rows by Order.
-  const [profileRows, siteRows, contactRows, timelineRows, projectRows, researchRows, noteRows, skillRows, starredRows] =
-    await Promise.all([
-      queryAll(notion, ids.profile),
-      queryAll(notion, ids.site),
-      queryAll(notion, ids.contacts, { sorts: orderSort }),
-      queryAll(notion, ids.timeline, { filter: publishedFilter, sorts: orderSort }),
-      queryAll(notion, ids.projects, { filter: publishedFilter, sorts: orderSort }),
-      queryAll(notion, ids.research, { filter: publishedFilter, sorts: orderSort }),
-      queryAll(notion, ids.notes, { filter: publishedFilter, sorts: orderSort }),
-      queryAll(notion, ids.skills, { sorts: orderSort }),
-      queryAll(notion, ids.starred, { sorts: orderSort }),
-    ]);
-
-  if (profileRows.length === 0) throw new Error("Profile database has no rows.");
-  if (siteRows.length === 0) throw new Error("Site database has no rows.");
-  const profileRow = profileRows[0];
-  const siteRow = siteRows[0];
-
-  // Reset generated content and assets.
-  await rm(path.join(root, GENERATED_ASSETS_DIR), { recursive: true, force: true });
-  for (const dir of ["projects", "research", "notes"]) {
-    await rm(path.join(root, "content", dir), { recursive: true, force: true });
-    await mkdir(path.join(root, "content", dir), { recursive: true });
-  }
-
-  // Profile (summary = page body paragraphs)
-  const profileSummaryMd = await renderBody(n2m, profileRow.id, root, "profile", "summary", mediaMode);
-  const avatarUrl = await selfHostCover(readFileUrl(profileRow.properties.Avatar), root, "profile", "avatar");
-  const profile = {
-    name: readPlainText(profileRow.properties.Name),
-    romanizedName: readPlainText(profileRow.properties.Romanized),
-    handle: readPlainText(profileRow.properties.Handle),
-    status: readPlainText(profileRow.properties.Availability),
-    avatarUrl: avatarUrl ?? "",
-    headline: readPlainText(profileRow.properties.Headline),
-    summaryLead: readPlainText(profileRow.properties["Summary Lead"]),
-    summary: markdownToParagraphs(profileSummaryMd),
-    contacts: buildContacts(contactRows),
-  };
-  await writeJson(root, "profile.json", profile);
-
-  // Site
-  const site = {
-    title: readPlainText(siteRow.properties.Title),
-    description: readPlainText(siteRow.properties.Description),
-    url: readUrl(prop(siteRow.properties, "URL")),
-    navigation: SITE_DEFAULTS.navigation,
-    images: SITE_DEFAULTS.images,
-  };
-  await writeJson(root, "site.json", site);
-
-  // Config tables
-  await writeJson(root, "education.json", buildEducation(timelineRows));
-  await writeJson(root, "skills.json", buildSkills(skillRows));
-  await writeJson(root, "starred.json", buildStarred(starredRows));
-
-  // Content collections -> MDX (Korean is canonical). English bodies/fields come
-  // from the parallel "… (EN)" DBs, matched by Slug, and feed en.json.
-  const order = { research: [], projects: [], notes: [] };
-  const [enContent, shortEn] = await Promise.all([
-    loadEnglishContent(notion, n2m, ids, root, mediaMode),
-    loadShortEnglishRows(notion, ids),
-  ]);
-
-  for (const page of projectRows) {
-    const slug = resolveSlug(page, "projects");
-    const coverImage = await selfHostCover(readFileUrl(page.properties.Cover), root, "projects", slug);
-    const ko = await renderKoreanBody(n2m, page.id, root, "projects", slug, mediaMode);
-    await writeFile(
-      path.join(root, "content", "projects", `${slug}.mdx`),
-      buildDocument(projectFrontmatter(page, coverImage, { slug, descFallback: firstParagraph(ko) }), ko),
-      "utf8",
-    );
-    order.projects.push(slug);
-  }
-
-  for (const page of researchRows) {
-    const slug = resolveSlug(page, "research");
-    const coverImage = await selfHostCover(readFileUrl(page.properties.Cover), root, "research", slug);
-    const ko = await renderKoreanBody(n2m, page.id, root, "research", slug, mediaMode);
-    await writeFile(
-      path.join(root, "content", "research", `${slug}.mdx`),
-      buildDocument(researchFrontmatter(page, coverImage, { slug, descFallback: firstParagraph(ko) }), ko),
-      "utf8",
-    );
-    order.research.push(slug);
-  }
-
-  for (const page of noteRows) {
-    const slug = resolveSlug(page, "notes");
-    const ko = await renderKoreanBody(n2m, page.id, root, "notes", slug, mediaMode);
-    await writeFile(
-      path.join(root, "content", "notes", `${slug}.mdx`),
-      buildDocument(noteFrontmatter(page, { slug, summaryFallback: firstParagraph(ko) }), ko),
-      "utf8",
-    );
-    order.notes.push(slug);
-  }
-
-  await writeJson(root, "order.json", order);
-
-  // English translations
-  const english = buildEnglish({
-    siteRow,
-    profileRow,
-    contactRows,
-    educationRows: timelineRows,
-    skillRows,
-    starredRows,
-    enContent,
-    shortEn,
-  });
-  english.generatedAt = new Date().toISOString();
-  await writeJson(root, path.join("i18n", "en.json"), english);
-
-  return {
-    counts: {
-      projects: projectRows.length,
-      research: researchRows.length,
-      notes: noteRows.length,
-      timeline: timelineRows.length,
-      skills: skillRows.length,
-      starred: starredRows.length,
-      contacts: contactRows.length,
-    },
-  };
+  if (!ids.entries) throw new Error("Missing NOTION_ENTRIES_DB_ID.");
+  const entryRows = await queryAll(notion, ids.entries, { filter: publishedFilter, sorts: orderSort });
+  if (entryRows.length === 0) throw new Error("Portfolio Entries database has no Published rows.");
+  return fetchPortfolioEntriesContent({ root, notion, n2m, entryRows, mediaMode });
 }
 
 async function runCli() {
