@@ -22,7 +22,7 @@ The flow:
 ## Architecture
 
 ```text
-Notion (9 DBs)  ──fetch──▶  content/*.json + content/**/*.mdx  ──vite build──▶  dist/public  ──▶  Cloudflare Pages
+Notion (9 KO DBs + 9 EN DBs) ──fetch──▶  content/*.json + content/**/*.mdx  ──vite build──▶  dist/public  ──▶  Cloudflare Pages
  (single source)     scripts/notion-content.mjs       (imported at build time)
 ```
 
@@ -39,7 +39,7 @@ Notion (9 DBs)  ──fetch──▶  content/*.json + content/**/*.mdx  ──v
 - Content: Notion (`@notionhq/client` + `notion-to-md`)
 - Validation: Zod (`client/src/content/schema.ts`)
 - Deployment: Cloudflare Pages (static)
-- i18n: Korean source + `… (EN)` properties per DB → `content/i18n/en.json`
+- i18n: Korean source DBs + parallel EN DBs (`Slug`/`Key` joins) → `content/i18n/en.json`
 
 ## Local development
 
@@ -82,5 +82,5 @@ Required GitHub secret/variable (run `pnpm check:notion` to audit):
 
 ```text
 secret   NOTION_TOKEN     # read-only Notion integration token (used by the Action's fetch)
-variable NOTION_*_DB_ID   # 9 database ids (defaults baked into code)
+variable NOTION_*_DB_ID   # KO/EN database ids (defaults baked into code)
 ```

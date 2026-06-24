@@ -19,10 +19,16 @@
 
 추가로 `content/order.json`(컬렉션별 표시 순서)과 `content/i18n/en.json`(영어 번역)이 생성됩니다.
 
-장문 콘텐츠의 영어는 **언어별 분리 DB**로 관리합니다(아래 참고).
+영어는 **언어별 분리 DB**로 관리합니다. 장문 콘텐츠는 `Slug`, 짧은 설정 섹션은 `Key`로 한국어 원본과 매칭합니다.
 
 | EN DB | 매칭 | 산출물 |
 |----|------|--------|
+| Profile (EN) | `Key=profile` | `en.json.profile` |
+| Site (EN) | `Key=site` | `en.json.site` |
+| Contacts (EN) | `Key`로 Contacts와 매칭 | `en.json.profile.contacts` |
+| Timeline (EN) | `Key`로 Timeline과 매칭 | `en.json.education[]` |
+| Skills (EN) | `Key`로 Skills와 매칭 | `en.json.skills[...]` |
+| Starred (EN) | `Key`로 Starred와 매칭 | `en.json.starred[...]` |
 | Projects (EN) | `Slug`로 Projects와 매칭 | `en.json.projects[slug]` |
 | Research (EN) | `Slug`로 Research와 매칭 | `en.json.research[slug]` |
 | Notes (EN) | `Slug`로 Notes와 매칭 | `en.json.notes[slug]` |
@@ -47,7 +53,7 @@
 - 짝이 되는 EN 행이 없으면 그 글은 영어에서 **한국어로 폴백**됩니다(한국어만 먼저 올려도 됨).
 - 구조 필드(태그·기간 등)는 **한국어 DB 한 곳만** 고치면 됩니다. EN DB는 번역 텍스트만 — 양쪽이 어긋날 일이 없습니다.
 
-**필수 속성은 한국어 DB의 `Name`(제목)과 `Status`뿐**입니다. 나머지(Tags·Link·Highlight·Period·Category/Focus)는 선택이며, 분류(Category/Focus)는 비우면 본문에서 추론됩니다. EN DB는 `Slug`·제목·`Status=Published`만 있으면 발행됩니다.
+**필수 속성은 한국어 DB의 `Name`(제목)과 `Status`뿐**입니다. 나머지(Tags·Link·Highlight·Period·Category/Focus)는 선택이며, 분류(Category/Focus)는 비우면 본문에서 추론됩니다. 장문 EN DB는 `Slug`·제목·`Status=Published`만 있으면 발행됩니다. 짧은 설정 EN DB는 `Key`와 번역 필드만 있으면 됩니다.
 
 > 작성 흐름: 한국어 DB에서 New → 제목·`Status=Published` → 본문 작성(이미지 드래그·표 등) → (영어가 필요하면) EN DB에서 New → **같은 Slug** + 제목 + 영어 본문 → `Status=Published`. namuori.net은 KO/EN 토글로 갈라 보여줍니다.
 
@@ -62,7 +68,7 @@
 - **Cover / Avatar** (files): fetch가 `client/public/notion/...`로 self-host하고 경로를 치환합니다.
 - **영어(i18n)**:
   - **장문 콘텐츠**(Projects/Research/Notes): 위 "작성 방법"처럼 **EN DB**에서 관리합니다. `Slug`로 한국어 행과 매칭.
-  - **짧은 설정**(Profile/Site/Timeline/Skills/Starred/Contacts): 같은 행의 동반 속성 `… (EN)`(예: `Headline (EN)`, `Label (EN)`)에 채웁니다. 비우면 한국어로 폴백.
+  - **짧은 설정**(Profile/Site/Timeline/Skills/Starred/Contacts): 짝이 되는 **EN DB**에서 관리합니다. `Key`로 한국어 행과 매칭. 기존 `… (EN)` 속성은 누락 시 fallback으로만 사용합니다.
   - 두 경로 모두 `content/i18n/en.json`으로 합쳐집니다.
 
 ## 데이터베이스 id
@@ -80,6 +86,12 @@
 | Notes | `763f7111-ec1e-4d2d-8d6c-54a22bee930b` |
 | Skills | `3dfa6886-7b83-41b2-95f5-a0665fb7dcaf` |
 | Starred | `7800c04b-8f20-4521-9427-bfd0c373bbe2` |
+| Profile (EN) | `bf146819-6058-449a-a228-ff095d650efa` |
+| Site (EN) | `269ac4da-d038-4a91-a247-0370c641cdba` |
+| Contacts (EN) | `dc570f0b-b20c-47fc-ba44-2be0d4fee913` |
+| Timeline (EN) | `65181b91-fcc8-4794-8160-cd60e95fdb62` |
+| Skills (EN) | `d574da0e-ad8b-4da5-9339-c3dd68c70d6c` |
+| Starred (EN) | `e17abf1b-f603-4ba0-a6ae-a23a4958dafc` |
 | Projects (EN) | `f3b4502f-afc7-4601-b447-d7966d6b983b` |
 | Research (EN) | `405ae235-49cc-4fc5-b31a-7102584ef75a` |
 | Notes (EN) | `5a7b919e-e9e6-4076-9291-1a8cdf5a6d0e` |
@@ -105,7 +117,7 @@
 ## 셋업 (최초 1회, 사용자 작업)
 
 1. Notion **내부 통합(integration)** 토큰을 준비합니다(블로그와 공유하는 `BLOG` 통합을 그대로 써도 됩니다).
-2. 부모 페이지 `KYS — Portfolio (CMS)`(`37fdcd44-779f-8161-827b-d4cc6615a7ab`)를 그 통합과 **공유(•••→Connections→통합 추가)**합니다. 하위 9개 DB에 상속됩니다. **이 연결이 없으면 fetch가 404로 실패합니다.**
+2. 부모 페이지 `KYS — Portfolio (CMS)`(`37fdcd44-779f-8161-827b-d4cc6615a7ab`)를 그 통합과 **공유(•••→Connections→통합 추가)**합니다. 하위 KO/EN DB에 상속됩니다. **이 연결이 없으면 fetch가 404로 실패합니다.**
 3. 통합 토큰을 로컬 `.env`의 `NOTION_TOKEN`과 GitHub 저장소 secret으로 설정합니다.
 4. `pnpm check:notion`으로 누락된 secret/variable과 설정 명령을 확인합니다.
 5. (선택) 프록시 미디어 모드: GitHub variable `NOTION_MEDIA_MODE=proxy` + Cloudflare Pages 런타임 secret `NOTION_TOKEN` 추가.
