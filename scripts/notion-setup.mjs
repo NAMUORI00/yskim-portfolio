@@ -13,6 +13,7 @@ const execFileAsync = promisify(execFile);
 const DEFAULT_REPO = "NAMUORI00/yskim-portfolio";
 
 const DB_VARIABLES = {
+  NOTION_ENTRIES_DB_ID: DATABASE_DEFAULTS.entries,
   NOTION_PROFILE_DB_ID: DATABASE_DEFAULTS.profile,
   NOTION_SITE_DB_ID: DATABASE_DEFAULTS.site,
   NOTION_CONTACTS_DB_ID: DATABASE_DEFAULTS.contacts,

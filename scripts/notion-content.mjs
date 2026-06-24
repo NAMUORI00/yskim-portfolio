@@ -12,6 +12,7 @@ import { pathToFileURL } from "node:url";
 // overridden by an environment variable so CI / other workspaces can point the
 // pipeline elsewhere without code changes.
 export const DATABASE_DEFAULTS = {
+  entries: "a15aff41-47f3-4a92-8dc8-a1367ae00a46",
   profile: "b5e3e644-61eb-4d9d-ae2d-61a2f3f44fd1",
   site: "b657b70e-6dbd-40b3-9b2d-4d4e5e02ba3d",
   contacts: "d67538d1-3374-4190-9c63-291dea15e5b7",
@@ -37,6 +38,7 @@ export const DATABASE_DEFAULTS = {
 };
 
 const ENV_KEYS = {
+  entries: "NOTION_ENTRIES_DB_ID",
   profile: "NOTION_PROFILE_DB_ID",
   site: "NOTION_SITE_DB_ID",
   contacts: "NOTION_CONTACTS_DB_ID",
@@ -501,6 +503,10 @@ function resolveSlug(page, kind) {
   return slugify(title) || page.id.replace(/-/g, "").slice(0, 12);
 }
 
+function resolveEntrySlug(page) {
+  return readPlainText(page.properties.Slug) || readPlainText(page.properties.Key) || slugify(entryTitle(page)) || page.id.replace(/-/g, "").slice(0, 12);
+}
+
 // First real paragraph of a Markdown body — used as an auto summary/desc when the
 // author hasn't set one explicitly. Skips headings, quotes, tables, raw HTML.
 export function firstParagraph(markdown) {
@@ -592,6 +598,71 @@ export function buildStarred(rows) {
   });
 }
 
+function readTextOrSelect(property) {
+  return readPlainText(property) || readSelect(property);
+}
+
+function entryTitle(page) {
+  return readPlainText(page.properties.Title);
+}
+
+function entryStatus(page) {
+  return normalizeStatus(readTextOrSelect(page.properties.Status));
+}
+
+export function buildEntryContacts(rows) {
+  return rows.map((page) => {
+    const p = page.properties;
+    return {
+      id: readPlainText(p.Key) || readTextOrSelect(p.Type),
+      type: readTextOrSelect(p.Type) || "external",
+      label: entryTitle(page),
+      href: readUrl(p.Href),
+    };
+  });
+}
+
+export function buildEntryEducation(rows) {
+  return rows.map((page) => {
+    const p = page.properties;
+    return {
+      type: readTextOrSelect(p.Type) || "education",
+      degree: entryTitle(page),
+      school: readPlainText(p.School),
+      period: readPlainText(p.Period),
+      startDate: readPlainText(p["Start Date"]) || undefined,
+      endDate: readPlainText(p["End Date"]) || undefined,
+      note: readPlainText(p.Summary),
+      current: readCheckbox(p.Current),
+      status: entryStatus(page),
+      highlight: readCheckbox(p.Highlight, true),
+      bullets: lineList(readPlainText(p.Bullets)),
+      links: parseLinks(readPlainText(p.Links)),
+      relatedProjects: commaList(readPlainText(p["Related Projects"])),
+      relatedSkills: commaList(readPlainText(p["Related Skills"])),
+    };
+  });
+}
+
+export function buildEntrySkills(rows) {
+  return rows.map((page) => ({
+    label: entryTitle(page),
+    items: commaList(readPlainText(page.properties.Items)),
+  }));
+}
+
+export function buildEntryStarred(rows) {
+  return rows.map((page) => {
+    const p = page.properties;
+    return {
+      name: entryTitle(page),
+      href: readUrl(p.Href),
+      stars: readPlainText(p.Stars),
+      desc: readPlainText(p.Summary),
+    };
+  });
+}
+
 function projectFrontmatter(page, coverImage, opts = {}) {
   const p = page.properties;
   const metrics = parseJsonValue(readPlainText(p["Metrics JSON"]), []);
@@ -645,6 +716,56 @@ function noteFrontmatter(page, opts = {}) {
     ["date", readDate(p.Date)],
     ["summary", readPlainText(p.Summary) || opts.summaryFallback || ""],
     ["tags", readMultiSelect(p.Tags)],
+    ["relatedProjects", commaList(readPlainText(p["Related Projects"]))],
+    ["relatedResearch", commaList(readPlainText(p["Related Research"]))],
+  ];
+}
+
+function entryProjectFrontmatter(page, coverImage, opts = {}) {
+  const p = page.properties;
+  const fields = [
+    ["slug", opts.slug ?? resolveEntrySlug(page)],
+    ["name", entryTitle(page)],
+    ["period", readPlainText(p.Period)],
+    ["status", entryStatus(page)],
+    ["desc", readPlainText(p.Summary) || opts.descFallback || ""],
+    ["metric", readPlainText(p.Metric)],
+    ["category", readPlainText(p.Category) || undefined],
+    ["focus", readPlainText(p.Focus) || undefined],
+    ["proofLevel", readPlainText(p["Proof Level"]) || undefined],
+    ["tags", commaList(readPlainText(p.Tags))],
+    ["link", readUrl(p.Link) || ""],
+    ["highlight", readCheckbox(p.Highlight)],
+    ["private", readCheckbox(p.Private)],
+  ];
+  if (coverImage) fields.push(["coverImage", coverImage]);
+  fields.push(["relatedNotes", commaList(readPlainText(p["Related Notes"]))]);
+  return fields;
+}
+
+function entryResearchFrontmatter(page, coverImage, opts = {}) {
+  const p = page.properties;
+  const fields = [
+    ["slug", opts.slug ?? resolveEntrySlug(page)],
+    ["title", entryTitle(page)],
+    ["status", entryStatus(page)],
+    ["desc", readPlainText(p.Summary) || opts.descFallback || ""],
+    ["showDiagram", readCheckbox(p["Show Diagram"])],
+  ];
+  if (coverImage) fields.push(["coverImage", coverImage]);
+  fields.push(["relatedNotes", commaList(readPlainText(p["Related Notes"]))]);
+  return fields;
+}
+
+function entryNoteFrontmatter(page, opts = {}) {
+  const p = page.properties;
+  return [
+    ["slug", opts.slug ?? resolveEntrySlug(page)],
+    ["title", entryTitle(page)],
+    ["status", entryStatus(page)],
+    ["date", readDate(p.Date)],
+    ["summary", readPlainText(p.Summary) || opts.summaryFallback || ""],
+    ["tags", commaList(readPlainText(p.Tags))],
     ["relatedProjects", commaList(readPlainText(p["Related Projects"]))],
     ["relatedResearch", commaList(readPlainText(p["Related Research"]))],
   ];
@@ -859,10 +980,268 @@ async function loadShortEnglishRows(notion, ids) {
   return out;
 }
 
+function entrySection(page) {
+  return readTextOrSelect(page.properties.Section);
+}
+
+function entryLocale(page) {
+  return readTextOrSelect(page.properties.Locale) || "ko";
+}
+
+function entryKey(page) {
+  return readPlainText(page.properties.Key) || resolveEntrySlug(page);
+}
+
+function entryOrder(page) {
+  return readNumber(page.properties.Order) ?? Number.MAX_SAFE_INTEGER;
+}
+
+function sortEntries(rows) {
+  return [...rows].sort((a, b) => entryOrder(a) - entryOrder(b) || entryTitle(a).localeCompare(entryTitle(b)));
+}
+
+function groupEntryRows(rows) {
+  const grouped = new Map();
+  for (const row of rows) {
+    const key = `${entrySection(row)}:${entryLocale(row)}`;
+    if (!grouped.has(key)) grouped.set(key, []);
+    grouped.get(key).push(row);
+  }
+  for (const [key, value] of grouped) grouped.set(key, sortEntries(value));
+  return grouped;
+}
+
+function entriesFor(grouped, section, locale = "ko") {
+  return grouped.get(`${section}:${locale}`) ?? [];
+}
+
+function firstEntry(grouped, section, locale = "ko") {
+  return entriesFor(grouped, section, locale)[0] ?? null;
+}
+
+function indexEntriesByKey(rows) {
+  return new Map(rows.map((row) => [entryKey(row), row]).filter(([key]) => key));
+}
+
+async function buildEnglishFromEntries({ grouped, n2m, root, mediaMode, koRows }) {
+  const en = { locale: "en", ui: EN_UI };
+  const siteEn = firstEntry(grouped, "site", "en");
+  if (siteEn) {
+    const site = {};
+    pushIf(site, "title", entryTitle(siteEn));
+    pushIf(site, "description", readPlainText(siteEn.properties.Summary) || readPlainText(siteEn.properties.Description));
+    if (Object.keys(site).length) en.site = site;
+  }
+
+  const profileEn = firstEntry(grouped, "profile", "en");
+  if (profileEn) {
+    const pp = profileEn.properties;
+    const body = await renderBody(n2m, profileEn.id, root, "profile", "summary-en", mediaMode);
+    const profile = {};
+    pushIf(profile, "name", entryTitle(profileEn));
+    pushIf(profile, "status", readPlainText(pp.Availability));
+    pushIf(profile, "headline", readPlainText(pp.Headline));
+    pushIf(profile, "summaryLead", readPlainText(pp["Summary Lead"]));
+    pushIf(profile, "summary", markdownToParagraphs(body || readPlainText(pp.Summary)));
+    const contacts = {};
+    for (const row of entriesFor(grouped, "contacts", "en")) {
+      const id = entryKey(row);
+      const label = entryTitle(row);
+      if (id && label) contacts[id] = { label };
+    }
+    if (Object.keys(contacts).length) profile.contacts = contacts;
+    if (Object.keys(profile).length) en.profile = profile;
+  }
+
+  const timelineEn = indexEntriesByKey(entriesFor(grouped, "timeline", "en"));
+  en.education = koRows.timeline.map((row) => {
+    const match = timelineEn.get(entryKey(row));
+    const p = match?.properties ?? {};
+    const entry = {};
+    pushIf(entry, "degree", match ? entryTitle(match) : "");
+    pushIf(entry, "school", readPlainText(p.School));
+    pushIf(entry, "period", readPlainText(p.Period));
+    pushIf(entry, "note", readPlainText(p.Summary));
+    pushIf(entry, "bullets", lineList(readPlainText(p.Bullets)));
+    return entry;
+  });
+
+  en.research = {};
+  for (const row of entriesFor(grouped, "research", "en")) {
+    const slug = resolveEntrySlug(row);
+    const body = await renderBody(n2m, row.id, root, "research", `${slug}-en`, mediaMode);
+    const entry = {};
+    pushIf(entry, "title", entryTitle(row));
+    pushIf(entry, "desc", readPlainText(row.properties.Summary) || firstParagraph(body));
+    pushIf(entry, "body", body);
+    if (Object.keys(entry).length) en.research[slug] = entry;
+  }
+
+  en.projects = {};
+  for (const row of entriesFor(grouped, "projects", "en")) {
+    const slug = resolveEntrySlug(row);
+    const p = row.properties;
+    const body = await renderBody(n2m, row.id, root, "projects", `${slug}-en`, mediaMode);
+    const entry = {};
+    pushIf(entry, "name", entryTitle(row));
+    pushIf(entry, "period", readPlainText(p.Period));
+    pushIf(entry, "desc", readPlainText(p.Summary) || firstParagraph(body));
+    pushIf(entry, "metric", readPlainText(p.Metric));
+    pushIf(entry, "tags", commaList(readPlainText(p.Tags)));
+    pushIf(entry, "body", body);
+    if (Object.keys(entry).length) en.projects[slug] = entry;
+  }
+
+  const skillsEn = indexEntriesByKey(entriesFor(grouped, "skills", "en"));
+  en.skills = {};
+  for (const row of koRows.skills) {
+    const match = skillsEn.get(entryKey(row));
+    const entry = {};
+    pushIf(entry, "label", match ? entryTitle(match) : "");
+    pushIf(entry, "items", commaList(readPlainText(match?.properties?.Items)));
+    if (entryTitle(row) && Object.keys(entry).length) en.skills[entryTitle(row)] = entry;
+  }
+
+  const starredEn = indexEntriesByKey(entriesFor(grouped, "starred", "en"));
+  en.starred = {};
+  for (const row of koRows.starred) {
+    const match = starredEn.get(entryKey(row));
+    const desc = readPlainText(match?.properties?.Summary);
+    if (entryTitle(row) && desc) en.starred[entryTitle(row)] = { desc };
+  }
+
+  en.notes = {};
+  for (const row of entriesFor(grouped, "notes", "en")) {
+    const slug = resolveEntrySlug(row);
+    const p = row.properties;
+    const body = await renderBody(n2m, row.id, root, "notes", `${slug}-en`, mediaMode);
+    const entry = {};
+    pushIf(entry, "title", entryTitle(row));
+    pushIf(entry, "date", readDate(p.Date));
+    pushIf(entry, "summary", readPlainText(p.Summary) || firstParagraph(body));
+    pushIf(entry, "tags", commaList(readPlainText(p.Tags)));
+    pushIf(entry, "body", body);
+    if (Object.keys(entry).length) en.notes[slug] = entry;
+  }
+
+  return en;
+}
+
 async function writeJson(root, relative, value) {
   const destination = path.join(root, "content", relative);
   await mkdir(path.dirname(destination), { recursive: true });
   await writeFile(destination, `${JSON.stringify(value, null, 2)}\n`, "utf8");
+}
+
+async function fetchPortfolioEntriesContent({ root, notion, n2m, entryRows, mediaMode }) {
+  const grouped = groupEntryRows(entryRows);
+  const profileRow = firstEntry(grouped, "profile", "ko");
+  const siteRow = firstEntry(grouped, "site", "ko");
+  if (!profileRow) throw new Error("Portfolio Entries has no ko/profile row.");
+  if (!siteRow) throw new Error("Portfolio Entries has no ko/site row.");
+
+  const contactRows = entriesFor(grouped, "contacts", "ko");
+  const timelineRows = entriesFor(grouped, "timeline", "ko");
+  const projectRows = entriesFor(grouped, "projects", "ko");
+  const researchRows = entriesFor(grouped, "research", "ko");
+  const noteRows = entriesFor(grouped, "notes", "ko");
+  const skillRows = entriesFor(grouped, "skills", "ko");
+  const starredRows = entriesFor(grouped, "starred", "ko");
+
+  await rm(path.join(root, GENERATED_ASSETS_DIR), { recursive: true, force: true });
+  for (const dir of ["projects", "research", "notes"]) {
+    await rm(path.join(root, "content", dir), { recursive: true, force: true });
+    await mkdir(path.join(root, "content", dir), { recursive: true });
+  }
+
+  const profileSummaryMd = await renderBody(n2m, profileRow.id, root, "profile", "summary", mediaMode);
+  const avatarUrl = await selfHostCover(readUrl(profileRow.properties["Avatar URL"]), root, "profile", "avatar");
+  const profile = {
+    name: entryTitle(profileRow),
+    romanizedName: readPlainText(profileRow.properties.Romanized),
+    handle: readPlainText(profileRow.properties.Handle),
+    status: readPlainText(profileRow.properties.Availability),
+    avatarUrl: avatarUrl ?? "",
+    headline: readPlainText(profileRow.properties.Headline),
+    summaryLead: readPlainText(profileRow.properties["Summary Lead"]),
+    summary: markdownToParagraphs(profileSummaryMd || readPlainText(profileRow.properties.Summary)),
+    contacts: buildEntryContacts(contactRows),
+  };
+  await writeJson(root, "profile.json", profile);
+
+  const site = {
+    title: entryTitle(siteRow),
+    description: readPlainText(siteRow.properties.Summary) || readPlainText(siteRow.properties.Description),
+    url: readUrl(prop(siteRow.properties, "URL")),
+    navigation: SITE_DEFAULTS.navigation,
+    images: SITE_DEFAULTS.images,
+  };
+  await writeJson(root, "site.json", site);
+
+  await writeJson(root, "education.json", buildEntryEducation(timelineRows));
+  await writeJson(root, "skills.json", buildEntrySkills(skillRows));
+  await writeJson(root, "starred.json", buildEntryStarred(starredRows));
+
+  const order = { research: [], projects: [], notes: [] };
+
+  for (const page of projectRows) {
+    const slug = resolveEntrySlug(page);
+    const coverImage = await selfHostCover(readUrl(page.properties["Cover URL"]), root, "projects", slug);
+    const ko = await renderKoreanBody(n2m, page.id, root, "projects", slug, mediaMode);
+    await writeFile(
+      path.join(root, "content", "projects", `${slug}.mdx`),
+      buildDocument(entryProjectFrontmatter(page, coverImage, { slug, descFallback: firstParagraph(ko) }), ko),
+      "utf8",
+    );
+    order.projects.push(slug);
+  }
+
+  for (const page of researchRows) {
+    const slug = resolveEntrySlug(page);
+    const coverImage = await selfHostCover(readUrl(page.properties["Cover URL"]), root, "research", slug);
+    const ko = await renderKoreanBody(n2m, page.id, root, "research", slug, mediaMode);
+    await writeFile(
+      path.join(root, "content", "research", `${slug}.mdx`),
+      buildDocument(entryResearchFrontmatter(page, coverImage, { slug, descFallback: firstParagraph(ko) }), ko),
+      "utf8",
+    );
+    order.research.push(slug);
+  }
+
+  for (const page of noteRows) {
+    const slug = resolveEntrySlug(page);
+    const ko = await renderKoreanBody(n2m, page.id, root, "notes", slug, mediaMode);
+    await writeFile(
+      path.join(root, "content", "notes", `${slug}.mdx`),
+      buildDocument(entryNoteFrontmatter(page, { slug, summaryFallback: firstParagraph(ko) }), ko),
+      "utf8",
+    );
+    order.notes.push(slug);
+  }
+
+  await writeJson(root, "order.json", order);
+
+  const english = await buildEnglishFromEntries({
+    grouped,
+    n2m,
+    root,
+    mediaMode,
+    koRows: { timeline: timelineRows, skills: skillRows, starred: starredRows },
+  });
+  english.generatedAt = new Date().toISOString();
+  await writeJson(root, path.join("i18n", "en.json"), english);
+
+  return {
+    counts: {
+      projects: projectRows.length,
+      research: researchRows.length,
+      notes: noteRows.length,
+      timeline: timelineRows.length,
+      skills: skillRows.length,
+      starred: starredRows.length,
+      contacts: contactRows.length,
+    },
+  };
 }
 
 export async function fetchPortfolioContent(options = {}) {
@@ -881,6 +1260,18 @@ export async function fetchPortfolioContent(options = {}) {
   const n2m = new NotionToMarkdown({ notionClient: notion });
   const mediaMode = (options.mediaMode ?? process.env.NOTION_MEDIA_MODE) === "proxy" ? "proxy" : "download";
   installCustomTransformers(n2m, mediaMode);
+
+  if (ids.entries) {
+    try {
+      const entryRows = await queryAll(notion, ids.entries, { filter: publishedFilter, sorts: orderSort });
+      if (entryRows.length > 0) {
+        return fetchPortfolioEntriesContent({ root, notion, n2m, entryRows, mediaMode });
+      }
+      console.warn("Portfolio Entries DB is empty; falling back to legacy section DBs.");
+    } catch (error) {
+      console.warn(`Portfolio Entries DB unavailable (${error.message}); falling back to legacy section DBs.`);
+    }
+  }
 
   // Query every database. Config tables read all rows by Order; content tables
   // read only Published rows by Order.
