@@ -1,7 +1,7 @@
 # Notion CMS 구조
 
 이 포트폴리오는 Notion 워크스페이스 **`KYS — Portfolio (CMS)`**의 **`Portfolio Entries` 단일 데이터베이스**를 운영 원본으로 사용합니다.
-`scripts/notion-content.mjs`는 이 DB를 먼저 읽어 `content/` 산출물을 재생성합니다. 예전 섹션별 DB는 migration backup이며, 단일 DB가 비어 있거나 접근 불가일 때만 fallback으로 사용됩니다.
+`scripts/notion-content.mjs`는 이 DB만 읽어 `content/` 산출물을 재생성합니다. 예전 섹션별 DB fallback은 제거됐습니다.
 
 ## 관리 원칙
 
@@ -55,12 +55,10 @@ Portfolio Entries
 |----|-------------|
 | Portfolio Entries | `a15aff41-47f3-4a92-8dc8-a1367ae00a46` |
 
-Legacy fallback DB id는 `.env.example`와 `scripts/notion-content.mjs`에 남겨둡니다.
-
 ## 배포 구조
 
 - GitHub Actions `Sync content from Notion`이 `pnpm fetch:notion`을 실행합니다.
-- fetch는 `Portfolio Entries`를 먼저 읽고, `content/`와 `content/i18n/en.json`을 재생성합니다.
+- fetch는 `Portfolio Entries`를 읽고, `content/`와 `content/i18n/en.json`을 재생성합니다.
 - 변경이 있으면 Actions가 `main`에 `chore(content): sync from Notion` 커밋을 푸시합니다.
 - Cloudflare Pages GitHub 연동이 `main` push를 빌드/배포합니다.
 

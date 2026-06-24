@@ -14,18 +14,6 @@ const DEFAULT_REPO = "NAMUORI00/yskim-portfolio";
 
 const DB_VARIABLES = {
   NOTION_ENTRIES_DB_ID: DATABASE_DEFAULTS.entries,
-  NOTION_PROFILE_DB_ID: DATABASE_DEFAULTS.profile,
-  NOTION_SITE_DB_ID: DATABASE_DEFAULTS.site,
-  NOTION_CONTACTS_DB_ID: DATABASE_DEFAULTS.contacts,
-  NOTION_TIMELINE_DB_ID: DATABASE_DEFAULTS.timeline,
-  NOTION_PROJECTS_DB_ID: DATABASE_DEFAULTS.projects,
-  NOTION_RESEARCH_DB_ID: DATABASE_DEFAULTS.research,
-  NOTION_NOTES_DB_ID: DATABASE_DEFAULTS.notes,
-  NOTION_SKILLS_DB_ID: DATABASE_DEFAULTS.skills,
-  NOTION_STARRED_DB_ID: DATABASE_DEFAULTS.starred,
-  NOTION_PROJECTS_EN_DB_ID: DATABASE_DEFAULTS.projectsEn,
-  NOTION_RESEARCH_EN_DB_ID: DATABASE_DEFAULTS.researchEn,
-  NOTION_NOTES_EN_DB_ID: DATABASE_DEFAULTS.notesEn,
 };
 
 export function parseGhList(output) {
@@ -46,7 +34,7 @@ export function summarizeSetup({ repo = DEFAULT_REPO, secrets, variables }) {
   if (!secrets.has("NOTION_TOKEN")) {
     missing.push("NOTION_TOKEN (secret)");
     nextSteps.push(`gh secret set NOTION_TOKEN --repo ${repo}`);
-    nextSteps.push("In Notion, share each portfolio database with your read-only integration.");
+    nextSteps.push("In Notion, share the Portfolio Entries database with your read-only integration.");
   }
 
   for (const [name, value] of Object.entries(DB_VARIABLES)) {

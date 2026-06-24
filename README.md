@@ -113,8 +113,7 @@ pnpm build        # dist/public
 ```text
 secret   NOTION_TOKEN     # read-only Notion 통합 토큰 (Action의 fetch에 사용)
 variable NOTION_ENTRIES_DB_ID # 단일 Portfolio Entries DB id
-variable NOTION_*_DB_ID       # legacy fallback DB id (기본값은 코드에 내장)
 ```
 
-사용자 수동 작업: Notion 통합을 `KYS — Portfolio (CMS)` 페이지에 연결(공유), GitHub에 `NOTION_TOKEN` secret 입력.
+사용자 수동 작업: Notion 통합을 `Portfolio Entries` 데이터베이스에 연결(공유), GitHub에 `NOTION_TOKEN` secret 입력.
 (프록시 미디어 모드를 쓸 경우에만 Cloudflare Pages 런타임 secret `NOTION_TOKEN` + `NOTION_MEDIA_MODE=proxy` 추가.)
