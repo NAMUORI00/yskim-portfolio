@@ -92,71 +92,23 @@
       "desc": "Hybrid retrieval with Dense / Sparse / Graph channels, Weighted RRF integration, and domain-specific document indexing, with hands-on experience building RAG pipelines for aerospace documents.",
       "body": "Hybrid retrieval with Dense / Sparse / Graph channels, Weighted RRF integration, and domain-specific document indexing, with hands-on experience building RAG pipelines for aerospace documents.\n\n\n## Interest\n\n\nI experiment with hybrid RAG architectures that combine Dense, Sparse, and Graph retrieval and integrate them through Weighted RRF.\n\n\n## Current Focus\n\n- Domain-specific document chunking\n- Retrieval quality evaluation\n- Source-grounded answer generation"
     },
-    "agentic-workflow": {
-      "title": "Agentic Workflow & MCP",
-      "desc": "Designing agent workflows based on the Model Context Protocol, including a cross-review automation system with a human approval loop.",
-      "body": "Designing agent workflows based on the Model Context Protocol, including a cross-review automation system with a human approval loop.\n\n\n## Interest\n\n\nI design workflows where AI agents can use tools safely while operating with human approval loops."
+    "edge-llm": {
+      "title": "Lightweight LLM Inference and Edge AI",
+      "desc": "Building local inference environments with llama.cpp, Qwen3, and GGUF quantization while exploring practical LLM deployment on constrained hardware.",
+      "body": "Building local inference environments with llama.cpp, Qwen3, and GGUF quantization while exploring practical LLM deployment on constrained hardware.\n\n\n## Interest\n\n\nI explore practical LLM inference setups that can run on constrained hardware."
     },
     "audio-voice": {
       "title": "Music Source Separation and Voice Conversion",
       "desc": "Training experiments with MDX23C and Demucs4HT architectures, RVC / Applio-based voice conversion, and Hydra-configured experiment management.",
       "body": "Training experiments with MDX23C and Demucs4HT architectures, RVC / Applio-based voice conversion, and Hydra-configured experiment management.\n\n\n## Interest\n\n\nI work with music source separation and voice conversion models in reproducible experiment environments."
     },
-    "edge-llm": {
-      "title": "Lightweight LLM Inference and Edge AI",
-      "desc": "Building local inference environments with llama.cpp, Qwen3, and GGUF quantization while exploring practical LLM deployment on constrained hardware.",
-      "body": "Building local inference environments with llama.cpp, Qwen3, and GGUF quantization while exploring practical LLM deployment on constrained hardware.\n\n\n## Interest\n\n\nI explore practical LLM inference setups that can run on constrained hardware."
+    "agentic-workflow": {
+      "title": "Agentic Workflow & MCP",
+      "desc": "Designing agent workflows based on the Model Context Protocol, including a cross-review automation system with a human approval loop.",
+      "body": "Designing agent workflows based on the Model Context Protocol, including a cross-review automation system with a human approval loop.\n\n\n## Interest\n\n\nI design workflows where AI agents can use tools safely while operating with human approval loops."
     }
   },
   "projects": {
-    "llm-rag-research": {
-      "name": "LLM + RAG Research System",
-      "period": "Ongoing",
-      "desc": "A private repository for comparing RAG strategies, building retrieval quality evaluation pipelines, and researching domain-adaptive chunking strategies.",
-      "metric": "Compared five RAG strategies and observed a 23% gap in Recall@5",
-      "tags": [
-        "Python",
-        "LangChain",
-        "HuggingFace",
-        "Research"
-      ],
-      "body": "A private repository for comparing RAG strategies, building retrieval quality evaluation pipelines, and researching domain-adaptive chunking strategies.\n\n\n## Overview\n\n\nA private research system for comparing and evaluating different RAG strategies."
-    },
-    "music-source-separation": {
-      "name": "Music-Source-Separation",
-      "desc": "Training music source separation models based on MDX23C and Demucs4HT architectures, with Hydra configs for experiment management and CUDA-based GPU training.",
-      "metric": "Reached 8.2 dB vocal separation SDR with a Demucs4HT-based setup",
-      "tags": [
-        "Python",
-        "PyTorch",
-        "CUDA",
-        "Hydra"
-      ],
-      "body": "Training music source separation models based on MDX23C and Demucs4HT architectures, with Hydra configs for experiment management and CUDA-based GPU training.\n\n\n## Overview\n\n\nA project for training music source separation models and managing experiment configuration."
-    },
-    "spring-community-board": {
-      "name": "SpringCommunityBoard",
-      "desc": "A CRUD community board built with Spring Boot and JPA, including member management, posts, and comments.",
-      "metric": "Improved list query response time by 40% by resolving a JPA N+1 issue",
-      "tags": [
-        "Java",
-        "Spring Boot",
-        "JPA"
-      ],
-      "body": "A CRUD community board built with Spring Boot and JPA, including member management, posts, and comments.\n\n\n## Overview\n\n\nA Spring Boot-based CRUD board with member, post, and comment features."
-    },
-    "introduce-cv-page": {
-      "name": "IntroduceCvPage (namu-log)",
-      "desc": "A blog + CV system where writing in a WYSIWYG Markdown editor automatically creates GitHub PRs. Built with Next.js 16 and Tiptap.",
-      "metric": "Fully automated the flow from article publishing to PR creation",
-      "tags": [
-        "TypeScript",
-        "Next.js",
-        "React",
-        "GitHub API"
-      ],
-      "body": "A blog + CV system where writing in a WYSIWYG Markdown editor automatically creates GitHub PRs. Built with Next.js 16 and Tiptap.\n\n\n## Overview\n\n\nA blog and CV system that experiments with a GitHub PR-based publishing workflow."
-    },
     "aerospace-rag": {
       "name": "aerospace-rag",
       "desc": "A RAG system for aerospace work documents. It combines Qdrant + BM25 + Graph three-channel retrieval, Weighted RRF fusion, and Ollama-based answer generation, optimized for a Colab T4 environment.",
@@ -170,6 +122,19 @@
       ],
       "body": "A RAG system for aerospace work documents. It combines Qdrant + BM25 + Graph three-channel retrieval, Weighted RRF fusion, and Ollama-based answer generation, optimized for a Colab T4 environment.\n\n\n## Overview\n\n\nA RAG system that combines Dense, Sparse, and Graph retrieval channels for aerospace work documents."
     },
+    "llm-rag-research": {
+      "name": "LLM + RAG Research System",
+      "period": "Ongoing",
+      "desc": "A private repository for comparing RAG strategies, building retrieval quality evaluation pipelines, and researching domain-adaptive chunking strategies.",
+      "metric": "Compared five RAG strategies and observed a 23% gap in Recall@5",
+      "tags": [
+        "Python",
+        "LangChain",
+        "HuggingFace",
+        "Research"
+      ],
+      "body": "A private repository for comparing RAG strategies, building retrieval quality evaluation pipelines, and researching domain-adaptive chunking strategies.\n\n\n## Overview\n\n\nA private research system for comparing and evaluating different RAG strategies."
+    },
     "cross-review-bridge": {
       "name": "cross-review-bridge",
       "desc": "A human-approved cross-review workflow with external AI reviewers, automated as a Codex skill.",
@@ -181,6 +146,18 @@
       ],
       "body": "A human-approved cross-review workflow with external AI reviewers, automated as a Codex skill.\n\n\n## Overview\n\n\nAn automation system that connects external AI reviewers and Codex through a human-approved review loop."
     },
+    "music-source-separation": {
+      "name": "Music-Source-Separation",
+      "desc": "Training music source separation models based on MDX23C and Demucs4HT architectures, with Hydra configs for experiment management and CUDA-based GPU training.",
+      "metric": "Reached 8.2 dB vocal separation SDR with a Demucs4HT-based setup",
+      "tags": [
+        "Python",
+        "PyTorch",
+        "CUDA",
+        "Hydra"
+      ],
+      "body": "Training music source separation models based on MDX23C and Demucs4HT architectures, with Hydra configs for experiment management and CUDA-based GPU training.\n\n\n## Overview\n\n\nA project for training music source separation models and managing experiment configuration."
+    },
     "mediamtx-installer": {
       "name": "mediamtx-installer",
       "desc": "An automation script that installs a MediaMTX streaming server on Ubuntu 24.04 with a single command.",
@@ -191,6 +168,29 @@
         "Streaming"
       ],
       "body": "An automation script that installs a MediaMTX streaming server on Ubuntu 24.04 with a single command.\n\n\n## Overview\n\n\nAn operations automation script that simplifies the MediaMTX installation process."
+    },
+    "introduce-cv-page": {
+      "name": "IntroduceCvPage (namu-log)",
+      "desc": "A blog + CV system where writing in a WYSIWYG Markdown editor automatically creates GitHub PRs. Built with Next.js 16 and Tiptap.",
+      "metric": "Fully automated the flow from article publishing to PR creation",
+      "tags": [
+        "TypeScript",
+        "Next.js",
+        "React",
+        "GitHub API"
+      ],
+      "body": "A blog + CV system where writing in a WYSIWYG Markdown editor automatically creates GitHub PRs. Built with Next.js 16 and Tiptap.\n\n\n## Overview\n\n\nA blog and CV system that experiments with a GitHub PR-based publishing workflow."
+    },
+    "spring-community-board": {
+      "name": "SpringCommunityBoard",
+      "desc": "A CRUD community board built with Spring Boot and JPA, including member management, posts, and comments.",
+      "metric": "Improved list query response time by 40% by resolving a JPA N+1 issue",
+      "tags": [
+        "Java",
+        "Spring Boot",
+        "JPA"
+      ],
+      "body": "A CRUD community board built with Spring Boot and JPA, including member management, posts, and comments.\n\n\n## Overview\n\n\nA Spring Boot-based CRUD board with member, post, and comment features."
     }
   },
   "skills": {
@@ -264,7 +264,6 @@
   "notes": {
     "rag-evaluation": {
       "title": "RAG Evaluation Notes",
-      "date": "May 20, 2026",
       "summary": "A practical evaluation lens for comparing RAG systems across retrieval quality, answer grounding, and operating cost.",
       "tags": [
         "RAG",
@@ -273,5 +272,5 @@
       "body": "A practical evaluation lens for comparing RAG systems across retrieval quality, answer grounding, and operating cost.\n\n\n## Why Evaluation Comes First\n\n\nIf you only look at answer quality in a RAG system, it is easy to miss the cause of failure. The retrieval, reranking, and generation stages need to be separated so you can see whether documents were missed, pushed down, or ignored during answer generation.\n\n\n## Basic Metrics\n\n- Recall@5: checks whether the supporting evidence appears in the top five retrieved documents.\n- MRR: measures how early the first useful evidence appears.\n- Groundedness: checks whether the answer is actually supported by retrieved documents."
     }
   },
-  "generatedAt": "2026-06-24T08:04:52.912Z"
+  "generatedAt": "2026-06-24T08:49:37.472Z"
 }
