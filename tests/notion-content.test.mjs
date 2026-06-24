@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 
 import {
+  buildEnglish,
   buildContacts,
   buildEducation,
   buildSkills,
@@ -21,6 +22,7 @@ import {
   slugify,
   firstParagraph,
   splitByLanguageHeading,
+  indexRowsByKey,
 } from "../scripts/notion-content.mjs";
 
 // --- mock Notion property factories -------------------------------------------
@@ -152,4 +154,56 @@ test("buildSkills + buildStarred", () => {
     buildStarred([{ properties: { Name: title("a/b"), Href: url("https://x.test"), Stars: rich("1k"), Desc: rich("d") } }]),
     [{ name: "a/b", href: "https://x.test", stars: "1k", desc: "d" }],
   );
+});
+
+test("buildEnglish prefers short EN databases and falls back to inline fields", () => {
+  const siteRow = { properties: { "Title (EN)": rich("Inline site"), "Description (EN)": rich("Inline description") } };
+  const profileRow = {
+    properties: {
+      "Name (EN)": rich("Inline name"),
+      "Availability (EN)": rich("Inline status"),
+      "Headline (EN)": rich("Inline headline"),
+      "Summary Lead (EN)": rich("Inline lead"),
+      "Summary (EN)": rich("Inline paragraph"),
+    },
+  };
+  const contactRows = [
+    { properties: { Key: rich("email"), Type: sel("email"), "Label (EN)": rich("inline@example.test") } },
+    { properties: { Key: rich("github"), Type: sel("github"), "Label (EN)": rich("GitHub inline") } },
+  ];
+  const educationRows = [{ properties: { Key: rich("timeline-ms"), Degree: title("석사"), "Degree (EN)": rich("Inline degree") } }];
+  const skillRows = [{ properties: { Key: rich("skill-core"), Label: title("핵심 언어"), "Label (EN)": rich("Inline label"), "Items (EN)": rich("Python") } }];
+  const starredRows = [{ properties: { Key: rich("starred-x"), Name: title("owner/repo"), "Desc (EN)": rich("Inline desc") } }];
+  const shortEn = {
+    site: { rows: [], byKey: indexRowsByKey([{ properties: { Key: title("site"), Title: rich("DB site"), Description: rich("DB description") } }]) },
+    profile: {
+      rows: [],
+      byKey: indexRowsByKey([
+        {
+          properties: {
+            Key: title("profile"),
+            Name: rich("DB name"),
+            Availability: rich("DB status"),
+            Headline: rich("DB headline"),
+            "Summary Lead": rich("DB lead"),
+            Summary: rich("DB paragraph"),
+          },
+        },
+      ]),
+    },
+    contacts: { rows: [], byKey: indexRowsByKey([{ properties: { Key: title("email"), Label: rich("db@example.test") } }]) },
+    timeline: { rows: [], byKey: indexRowsByKey([{ properties: { Key: title("timeline-ms"), Degree: rich("DB degree") } }]) },
+    skills: { rows: [], byKey: indexRowsByKey([{ properties: { Key: title("skill-core"), Label: rich("DB label"), Items: rich("Python, CUDA") } }]) },
+    starred: { rows: [], byKey: indexRowsByKey([{ properties: { Key: title("starred-x"), Desc: rich("DB desc") } }]) },
+  };
+
+  const en = buildEnglish({ siteRow, profileRow, contactRows, educationRows, skillRows, starredRows, shortEn });
+
+  assert.equal(en.site.title, "DB site");
+  assert.equal(en.profile.name, "DB name");
+  assert.equal(en.profile.contacts.email.label, "db@example.test");
+  assert.equal(en.profile.contacts.github.label, "GitHub inline");
+  assert.equal(en.education[0].degree, "DB degree");
+  assert.deepEqual(en.skills["핵심 언어"], { label: "DB label", items: ["Python", "CUDA"] });
+  assert.deepEqual(en.starred["owner/repo"], { desc: "DB desc" });
 });
