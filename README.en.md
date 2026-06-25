@@ -87,3 +87,7 @@ secret   NOTION_TOKEN     # Notion integration token for reading Portfolio Entri
 variable NOTION_ENTRIES_DB_ID # unified Portfolio Entries database id
 variable NOTION_PUBLIC_PAGE_ID # public Notion rendering page id
 ```
+
+The Notion integration must be shared with both `Portfolio Entries` and the
+public rendering page, and it needs content read/insert/update permissions for
+the public page sync step.
