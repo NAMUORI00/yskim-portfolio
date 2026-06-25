@@ -14,6 +14,7 @@ const DEFAULT_REPO = "NAMUORI00/yskim-portfolio";
 
 const DB_VARIABLES = {
   NOTION_ENTRIES_DB_ID: DATABASE_DEFAULTS.entries,
+  NOTION_PUBLIC_PAGE_ID: "380dcd44-779f-81bc-b4ee-e4076ffa598e",
 };
 
 export function parseGhList(output) {
@@ -34,7 +35,7 @@ export function summarizeSetup({ repo = DEFAULT_REPO, secrets, variables }) {
   if (!secrets.has("NOTION_TOKEN")) {
     missing.push("NOTION_TOKEN (secret)");
     nextSteps.push(`gh secret set NOTION_TOKEN --repo ${repo}`);
-    nextSteps.push("In Notion, share the Portfolio Entries database with your read-only integration.");
+    nextSteps.push("In Notion, share the Portfolio Entries database and public rendering page with your integration.");
   }
 
   for (const [name, value] of Object.entries(DB_VARIABLES)) {

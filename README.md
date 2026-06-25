@@ -103,7 +103,8 @@ pnpm build        # dist/public
 콘텐츠 동기화는 GitHub Actions가 맡습니다.
 
 - 흐름: `Sync content from Notion` 워크플로(스케줄 6h + 수동 실행)가 `pnpm fetch:notion`으로
-  Notion → `content/`(+ 미디어 `client/public/notion/`)를 재생성하고, 변경이 있으면 `main`에 커밋·push →
+  Notion → `content/`(+ 미디어 `client/public/notion/`)를 재생성하고, `pnpm sync:notion-public`으로
+  Notion 공개 렌더링 페이지도 같은 DB에서 다시 구성합니다. 변경이 있으면 `main`에 커밋·push →
   Cloudflare Pages가 그 push를 빌드·배포.
 - 코드 변경(일반 push/PR 머지)은 Cloudflare Pages 연동이 직접 빌드·배포.
 - `content/`와 `client/public/notion/`은 **커밋**됩니다(CF 빌드가 `pnpm build`만 돌리므로 산출물이 저장소에 있어야 함).
@@ -111,9 +112,10 @@ pnpm build        # dist/public
 필요한 GitHub secret/variable (`pnpm check:notion`으로 점검):
 
 ```text
-secret   NOTION_TOKEN     # read-only Notion 통합 토큰 (Action의 fetch에 사용)
+secret   NOTION_TOKEN     # Notion 통합 토큰. Portfolio Entries 읽기 + 공개 페이지 쓰기에 사용
 variable NOTION_ENTRIES_DB_ID # 단일 Portfolio Entries DB id
+variable NOTION_PUBLIC_PAGE_ID # DB 기반 공개 Notion 렌더링 페이지 id
 ```
 
-사용자 수동 작업: Notion 통합을 `Portfolio Entries` 데이터베이스에 연결(공유), GitHub에 `NOTION_TOKEN` secret 입력.
+사용자 수동 작업: Notion 통합을 `Portfolio Entries` 데이터베이스와 공개 렌더링 페이지에 연결(공유), GitHub에 `NOTION_TOKEN` secret 입력.
 (프록시 미디어 모드를 쓸 경우에만 Cloudflare Pages 런타임 secret `NOTION_TOKEN` + `NOTION_MEDIA_MODE=proxy` 추가.)

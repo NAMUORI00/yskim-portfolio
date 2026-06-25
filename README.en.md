@@ -74,13 +74,16 @@ API token is required.
 
 Content sync is handled by GitHub Actions: the `Sync content from Notion` workflow
 (6-hourly schedule + manual dispatch) runs `pnpm fetch:notion` to regenerate
-`content/` (and media under `client/public/notion/`), and commits any changes to
-`main` — which triggers a Pages deploy. `content/` and `client/public/notion/` are
-committed so the Pages `pnpm build` includes them.
+`content/` (and media under `client/public/notion/`), then runs
+`pnpm sync:notion-public` to regenerate the public Notion rendering page from the
+same database. Any repository content changes are committed to `main`, which
+triggers a Pages deploy. `content/` and `client/public/notion/` are committed so
+the Pages `pnpm build` includes them.
 
 Required GitHub secret/variable (run `pnpm check:notion` to audit):
 
 ```text
-secret   NOTION_TOKEN     # read-only Notion integration token (used by the Action's fetch)
+secret   NOTION_TOKEN     # Notion integration token for reading Portfolio Entries and writing the public page
 variable NOTION_ENTRIES_DB_ID # unified Portfolio Entries database id
+variable NOTION_PUBLIC_PAGE_ID # public Notion rendering page id
 ```
