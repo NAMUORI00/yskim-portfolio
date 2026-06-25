@@ -13,6 +13,7 @@
     "test:notion": "node --test tests/notion-content.test.mjs",
     "format": "prettier --write .",
     "fetch:notion": "node scripts/notion-content.mjs --root .",
+    "sync:notion-public": "node scripts/notion-public-page.mjs",
     "check:notion": "node scripts/notion-setup.mjs"
   },
   "dependencies": {

@@ -55,6 +55,13 @@ jobs:
           pnpm test
           pnpm test:notion
 
+      - name: Sync public Notion rendering page
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          NOTION_ENTRIES_DB_ID: ${{ vars.NOTION_ENTRIES_DB_ID }}
+          NOTION_PUBLIC_PAGE_ID: ${{ vars.NOTION_PUBLIC_PAGE_ID }}
+        run: pnpm sync:notion-public
+
       - name: Commit & push content changes
         run: |
           git config user.name "github-actions[bot]"

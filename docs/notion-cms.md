@@ -48,6 +48,7 @@ Portfolio Entries
 3. 긴 콘텐츠는 row 페이지 안에 본문을 작성합니다.
 4. 영어가 필요하면 같은 `Key`로 `Locale=en` row를 하나 더 만듭니다.
 5. GitHub Actions `Sync content from Notion`을 실행하거나 6시간 스케줄을 기다립니다.
+6. 같은 워크플로가 공개 Notion 렌더링 페이지도 `Portfolio Entries`에서 다시 구성합니다.
 
 ## 데이터베이스 ID
 
@@ -59,6 +60,7 @@ Portfolio Entries
 
 - GitHub Actions `Sync content from Notion`이 `pnpm fetch:notion`을 실행합니다.
 - fetch는 `Portfolio Entries`를 읽고, `content/`와 `content/i18n/en.json`을 재생성합니다.
+- 이어서 `pnpm sync:notion-public`이 같은 DB를 읽어 공개 Notion 렌더링 페이지의 본문 블록을 재생성합니다.
 - 변경이 있으면 Actions가 `main`에 `chore(content): sync from Notion` 커밋을 푸시합니다.
 - Cloudflare Pages GitHub 연동이 `main` push를 빌드/배포합니다.
 
@@ -67,6 +69,7 @@ Portfolio Entries
 ```bash
 export NOTION_TOKEN=...     # PowerShell: $env:NOTION_TOKEN="..."
 pnpm fetch:notion
+pnpm sync:notion-public
 pnpm dev
 ```
 
