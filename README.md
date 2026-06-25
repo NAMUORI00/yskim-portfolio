@@ -117,5 +117,5 @@ variable NOTION_ENTRIES_DB_ID # 단일 Portfolio Entries DB id
 variable NOTION_PUBLIC_PAGE_ID # DB 기반 공개 Notion 렌더링 페이지 id
 ```
 
-사용자 수동 작업: Notion 통합을 `Portfolio Entries` 데이터베이스와 공개 렌더링 페이지에 연결(공유), GitHub에 `NOTION_TOKEN` secret 입력.
+사용자 수동 작업: Notion 통합을 `Portfolio Entries` 데이터베이스와 공개 렌더링 페이지에 연결(공유), 통합 권한에서 콘텐츠 읽기/삽입/업데이트를 허용, GitHub에 `NOTION_TOKEN` secret 입력.
 (프록시 미디어 모드를 쓸 경우에만 Cloudflare Pages 런타임 secret `NOTION_TOKEN` + `NOTION_MEDIA_MODE=proxy` 추가.)

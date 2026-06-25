@@ -320,10 +320,19 @@ export async function syncPublicPage(options = {}) {
 }
 
 async function runCli() {
-  const result = await syncPublicPage();
-  console.log(
-    `Synced public Notion page ${result.pageId}: ${result.rows} published rows -> ${result.blocks} blocks from ${result.entriesDatabaseId}.`,
-  );
+  try {
+    const result = await syncPublicPage();
+    console.log(
+      `Synced public Notion page ${result.pageId}: ${result.rows} published rows -> ${result.blocks} blocks from ${result.entriesDatabaseId}.`,
+    );
+  } catch (error) {
+    if (error?.code === "restricted_resource") {
+      console.error(
+        "Notion public page sync needs a token with content update/insert permissions and access to the public rendering page.",
+      );
+    }
+    throw error;
+  }
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {

@@ -56,11 +56,16 @@ jobs:
           pnpm test:notion
 
       - name: Sync public Notion rendering page
+        continue-on-error: true
         env:
           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
           NOTION_ENTRIES_DB_ID: ${{ vars.NOTION_ENTRIES_DB_ID }}
           NOTION_PUBLIC_PAGE_ID: ${{ vars.NOTION_PUBLIC_PAGE_ID }}
-        run: pnpm sync:notion-public
+        run: |
+          pnpm sync:notion-public || {
+            echo "::warning::Public Notion page sync skipped. Grant the NOTION_TOKEN integration content update/insert permissions and share the public rendering page with it."
+            exit 1
+          }
 
       - name: Commit & push content changes
         run: |

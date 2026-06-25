@@ -61,6 +61,7 @@ Portfolio Entries
 - GitHub Actions `Sync content from Notion`이 `pnpm fetch:notion`을 실행합니다.
 - fetch는 `Portfolio Entries`를 읽고, `content/`와 `content/i18n/en.json`을 재생성합니다.
 - 이어서 `pnpm sync:notion-public`이 같은 DB를 읽어 공개 Notion 렌더링 페이지의 본문 블록을 재생성합니다.
+- 공개 페이지 자동 갱신에는 Notion 통합의 콘텐츠 읽기/삽입/업데이트 권한과 공개 렌더링 페이지 공유가 필요합니다.
 - 변경이 있으면 Actions가 `main`에 `chore(content): sync from Notion` 커밋을 푸시합니다.
 - Cloudflare Pages GitHub 연동이 `main` push를 빌드/배포합니다.
 
