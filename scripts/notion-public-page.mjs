@@ -121,6 +121,24 @@ function paragraph(text, options = {}) {
   return block("paragraph", "rich_text", text, options);
 }
 
+function richTextSpan(text, options = {}) {
+  const item = {
+    type: "text",
+    text: options.href ? { content: text, link: { url: options.href } } : { content: text },
+  };
+  if (options.bold || options.code || options.color) {
+    item.annotations = {
+      bold: Boolean(options.bold),
+      italic: false,
+      strikethrough: false,
+      underline: false,
+      code: Boolean(options.code),
+      color: options.color ?? "default",
+    };
+  }
+  return item;
+}
+
 function quote(text) {
   return block("quote", "rich_text", text);
 }
@@ -146,17 +164,23 @@ function bullet(text, children = []) {
 
 function linkedTextBlock(type, label, href, suffix = "") {
   const rich_text = [
-    {
-      type: "text",
-      text: href ? { content: label, link: { url: href } } : { content: label },
-      annotations: { bold: true, italic: false, strikethrough: false, underline: false, code: false, color: "default" },
-    },
+    richTextSpan(label, { href, bold: true }),
   ];
-  if (suffix) rich_text.push({ type: "text", text: { content: suffix } });
+  if (suffix) rich_text.push(richTextSpan(suffix));
   return {
     object: "block",
     type,
     [type]: { rich_text },
+  };
+}
+
+function paragraphWithRichText(spans) {
+  return {
+    object: "block",
+    type: "paragraph",
+    paragraph: {
+      rich_text: spans,
+    },
   };
 }
 
@@ -185,15 +209,18 @@ function buildPublicPageBlocks(rows) {
   const systemRows = projects.filter((row) => !selectedKeys.has(row.key)).slice(0, 4);
   const blocks = [];
 
-  blocks.push(heading(1, "Kim Yuseok — AI Research Engineer"));
   blocks.push(quote("Portfolio Entries 기반 공개 렌더링 · Published 항목만 표시 · Private 항목 제외"));
   if (profile.headline) addParagraphs(blocks, profile.headline, { bold: true });
   addParagraphs(blocks, profile.summaryLead);
   addParagraphs(blocks, site.summary);
 
   if (contacts.length) {
-    const contactSummary = contacts.map((row) => row.title).join(" · ");
-    blocks.push(paragraph(`Contact · ${contactSummary}`));
+    const spans = [richTextSpan("Contact", { bold: true })];
+    for (const [index, row] of contacts.entries()) {
+      spans.push(richTextSpan(index === 0 ? " · " : " · "));
+      spans.push(richTextSpan(row.title, { href: contactUrl(row) || undefined }));
+    }
+    blocks.push(paragraphWithRichText(spans));
   }
 
   blocks.push(divider());
