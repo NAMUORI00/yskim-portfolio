@@ -272,5 +272,5 @@
       "body": "A practical evaluation lens for comparing RAG systems across retrieval quality, answer grounding, and operating cost.\n\n\n## Why Evaluation Comes First\n\n\nIf you only look at answer quality in a RAG system, it is easy to miss the cause of failure. The retrieval, reranking, and generation stages need to be separated so you can see whether documents were missed, pushed down, or ignored during answer generation.\n\n\n## Basic Metrics\n\n- Recall@5: checks whether the supporting evidence appears in the top five retrieved documents.\n- MRR: measures how early the first useful evidence appears.\n- Groundedness: checks whether the answer is actually supported by retrieved documents."
     }
   },
-  "generatedAt": "2026-06-28T01:24:39.008Z"
+  "generatedAt": "2026-06-28T07:39:12.850Z"
 }
