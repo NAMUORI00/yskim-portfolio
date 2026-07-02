@@ -14,21 +14,9 @@
       "LLM 시스템과 RAG 아키텍처 중심으로 연구 방향 정리",
       "경량 추론 및 재현 가능한 실험 환경 구성"
     ],
-    "links": [
-      {
-        "label": "CV Timeline",
-        "href": "https://namuori.net/cv"
-      }
-    ],
-    "relatedProjects": [
-      "llm-rag-research",
-      "aerospace-rag"
-    ],
-    "relatedSkills": [
-      "Python",
-      "RAG",
-      "LLM"
-    ]
+    "links": [],
+    "relatedProjects": [],
+    "relatedSkills": []
   },
   {
     "type": "education",
@@ -45,14 +33,8 @@
       "소프트웨어 개발, 배포 자동화, 실험 환경 재현성에 관심을 확장"
     ],
     "links": [],
-    "relatedProjects": [
-      "spring-community-board",
-      "introduce-cv-page"
-    ],
-    "relatedSkills": [
-      "Java",
-      "TypeScript"
-    ]
+    "relatedProjects": [],
+    "relatedSkills": []
   },
   {
     "type": "project",
@@ -68,21 +50,8 @@
       "항공우주 문서 대상 Dense/Sparse/Graph 검색 실험",
       "RAG 전략 비교와 검색 품질 평가 노트 축적"
     ],
-    "links": [
-      {
-        "label": "aerospace-rag",
-        "href": "https://github.com/NAMUORI00/aerospace-rag"
-      }
-    ],
-    "relatedProjects": [
-      "aerospace-rag",
-      "llm-rag-research"
-    ],
-    "relatedSkills": [
-      "Python",
-      "Qdrant",
-      "Ollama",
-      "RAG"
-    ]
+    "links": [],
+    "relatedProjects": [],
+    "relatedSkills": []
   }
 ]
