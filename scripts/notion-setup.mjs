@@ -13,7 +13,6 @@ const execFileAsync = promisify(execFile);
 const DEFAULT_REPO = "NAMUORI00/yskim-portfolio";
 
 const DB_VARIABLES = {
-  NOTION_ENTRIES_DB_ID: DATABASE_DEFAULTS.entries,
   NOTION_PROFILE_DB_ID: DATABASE_DEFAULTS.profile,
   NOTION_INTRO_DB_ID: DATABASE_DEFAULTS.intro,
   NOTION_CONTACTS_DB_ID: DATABASE_DEFAULTS.contacts,
@@ -45,7 +44,7 @@ export function summarizeSetup({ repo = DEFAULT_REPO, secrets, variables }) {
   if (!secrets.has("NOTION_TOKEN")) {
     missing.push("NOTION_TOKEN (secret)");
     nextSteps.push(`gh secret set NOTION_TOKEN --repo ${repo}`);
-    nextSteps.push("In Notion, share the Portfolio management page, category databases, legacy Portfolio Entries database, and public rendering page with your integration.");
+    nextSteps.push("In Notion, share the Portfolio management page, category databases, and public rendering page with your integration.");
   }
 
   for (const [name, value] of Object.entries(DB_VARIABLES)) {

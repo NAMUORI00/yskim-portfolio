@@ -1,8 +1,8 @@
 // Fetches the portfolio content from Notion and regenerates the files that the
 // Vite frontend imports at build time (content/*.json, content/**/*.mdx,
 // content/order.json, content/i18n/en.json). Notion is the single source of
-// truth; the committed content/ files are a seed/fallback that this script
-// overwrites. Mirrors the approach used by the sister project yskim-blog.
+// truth; the committed content/ files are a build seed that this script
+// overwrites.
 
 import { mkdir, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
@@ -12,7 +12,6 @@ import { pathToFileURL } from "node:url";
 // overridden by an environment variable so CI / other workspaces can point the
 // pipeline elsewhere without code changes.
 export const DATABASE_DEFAULTS = {
-  entries: "a15aff41-47f3-4a92-8dc8-a1367ae00a46",
   profile: "9b24921c-efa4-4143-9ede-abe607300b32",
   intro: "fa9e9444-6254-4088-9bde-69c556ad3d58",
   contacts: "2744eeb0-e4fa-46d7-a46b-4ba700de003f",
@@ -26,7 +25,6 @@ export const DATABASE_DEFAULTS = {
 };
 
 const ENV_KEYS = {
-  entries: "NOTION_ENTRIES_DB_ID",
   profile: "NOTION_PROFILE_DB_ID",
   intro: "NOTION_INTRO_DB_ID",
   contacts: "NOTION_CONTACTS_DB_ID",
@@ -281,6 +279,12 @@ async function queryAll(notion, databaseId, { filter, sorts } = {}) {
 }
 
 const publishedFilter = { property: "Status", select: { equals: "Published" } };
+const publicFilter = {
+  and: [
+    publishedFilter,
+    { property: "Private", checkbox: { does_not_equal: true } },
+  ],
+};
 const orderSort = [{ property: "Order", direction: "ascending" }];
 
 async function pageToMarkdown(n2m, pageId) {
@@ -1020,14 +1024,18 @@ function withEntrySection(page, section) {
   return { ...page, __section: section };
 }
 
-function hasConfiguredCategoryDatabases(ids) {
-  return CATEGORY_DATABASE_SECTIONS.every((section) => Boolean(ids[section]));
+function assertConfiguredCategoryDatabases(ids) {
+  const missing = CATEGORY_DATABASE_SECTIONS.filter((section) => !ids[section]);
+  if (missing.length) {
+    const envNames = missing.map((section) => ENV_KEYS[section]).join(", ");
+    throw new Error(`Missing Notion category database ids: ${envNames}.`);
+  }
 }
 
 async function queryCategoryRows(notion, ids) {
   const rows = [];
   for (const section of CATEGORY_DATABASE_SECTIONS) {
-    const sectionRows = await queryAll(notion, ids[section], { filter: publishedFilter, sorts: orderSort });
+    const sectionRows = await queryAll(notion, ids[section], { filter: publicFilter, sorts: orderSort });
     rows.push(...sectionRows.map((row) => withEntrySection(row, section)));
   }
   return rows;
@@ -1150,8 +1158,8 @@ async function fetchPortfolioEntriesContent({ root, notion, n2m, entryRows, medi
   const profileRow = firstEntry(grouped, "profile", "ko");
   const introRow = firstEntry(grouped, "intro", "ko");
   const siteRow = firstEntry(grouped, "site", "ko");
-  if (!profileRow) throw new Error("Portfolio Entries has no ko/profile row.");
-  if (!siteRow) throw new Error("Portfolio Entries has no ko/site row.");
+  if (!profileRow) throw new Error("Portfolio category databases have no ko/profile row.");
+  if (!siteRow) throw new Error("Portfolio category databases have no ko/site row.");
 
   const introRows = entriesFor(grouped, "intro", "ko");
   const contactRows = entriesFor(grouped, "contacts", "ko");
@@ -1264,7 +1272,7 @@ export async function fetchPortfolioContent(options = {}) {
   const root = path.resolve(options.root ?? process.cwd());
   const token = options.token ?? process.env.NOTION_TOKEN;
   if (!token) {
-    throw new Error("Missing NOTION_TOKEN. Create a read-only Notion integration and share the Portfolio Entries database with it.");
+    throw new Error("Missing NOTION_TOKEN. Create a read-only Notion integration and share the portfolio category databases with it.");
   }
   const ids = resolveDatabaseIds(options);
 
@@ -1277,21 +1285,9 @@ export async function fetchPortfolioContent(options = {}) {
   const mediaMode = (options.mediaMode ?? process.env.NOTION_MEDIA_MODE) === "proxy" ? "proxy" : "download";
   installCustomTransformers(n2m, mediaMode);
 
-  if (hasConfiguredCategoryDatabases(ids)) {
-    try {
-      const categoryRows = await queryCategoryRows(notion, ids);
-      if (categoryRows.length > 0) {
-        return fetchPortfolioEntriesContent({ root, notion, n2m, entryRows: categoryRows, mediaMode });
-      }
-      console.warn("Portfolio category databases returned no Published rows; falling back to Portfolio Entries.");
-    } catch (error) {
-      console.warn(`Portfolio category DB fetch failed (${error.message}); falling back to Portfolio Entries.`);
-    }
-  }
-
-  if (!ids.entries) throw new Error("Missing NOTION_ENTRIES_DB_ID.");
-  const entryRows = await queryAll(notion, ids.entries, { filter: publishedFilter, sorts: orderSort });
-  if (entryRows.length === 0) throw new Error("Portfolio Entries database has no Published rows.");
+  assertConfiguredCategoryDatabases(ids);
+  const entryRows = await queryCategoryRows(notion, ids);
+  if (entryRows.length === 0) throw new Error("Portfolio category databases have no public Published rows.");
   return fetchPortfolioEntriesContent({ root, notion, n2m, entryRows, mediaMode });
 }
 
