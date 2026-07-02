@@ -192,7 +192,7 @@ function contactUrl(row) {
   return row.href || row.url || row.link || "";
 }
 
-function buildPublicPageBlocks(rows) {
+export function buildPublicPageBlocks(rows) {
   const publicRows = rows.filter((row) => row.status === "Published" && !row.private);
   const profile = firstRow(publicRows, "profile");
   const site = firstRow(publicRows, "site");
@@ -211,6 +211,7 @@ function buildPublicPageBlocks(rows) {
 
   blocks.push(quote("Portfolio Entries 기반 공개 렌더링 · Published 항목만 표시 · Private 항목 제외"));
   if (profile.headline) addParagraphs(blocks, profile.headline, { bold: true });
+  blocks.push(paragraph("Selected · Research · Systems · Timeline · Links"));
   addParagraphs(blocks, profile.summaryLead);
   addParagraphs(blocks, site.summary);
 
@@ -224,8 +225,7 @@ function buildPublicPageBlocks(rows) {
   }
 
   blocks.push(divider());
-  blocks.push(heading(2, "Selected Work"));
-  blocks.push(paragraph("대표 작업은 Portfolio Entries의 projects 섹션에서 가져오며, Highlight=true와 표시 순서를 우선합니다."));
+  blocks.push(heading(2, "Selected"));
   for (const row of selected) {
     blocks.push(linkedTextBlock("heading_3", row.title, row.link));
     addParagraphs(blocks, row.summary);
@@ -237,10 +237,10 @@ function buildPublicPageBlocks(rows) {
     if (meta.length) blocks.push(paragraph(meta.join(" · "), { code: true }));
   }
 
-  blocks.push(heading(2, "Research Themes"));
+  blocks.push(heading(2, "Research"));
   for (const row of research) blocks.push(bullet(`${row.title} - ${clean(row.summary)}`));
 
-  blocks.push(heading(2, "Systems & Implementation"));
+  blocks.push(heading(2, "Systems"));
   for (const row of systemRows) {
     const suffix = `${row.summary ? ` - ${clean(row.summary)}` : ""}${row.tags ? ` · ${row.tags}` : ""}`;
     blocks.push(linkedTextBlock("bulleted_list_item", row.title, row.link, suffix));
@@ -256,14 +256,14 @@ function buildPublicPageBlocks(rows) {
   blocks.push(heading(2, "Skills"));
   for (const row of skills) blocks.push(bullet(`${row.title}${row.items ? ` - ${clean(row.items)}` : ""}`));
 
-  blocks.push(heading(2, "Notes & Links"));
+  blocks.push(heading(2, "Links"));
   for (const row of notes) blocks.push(bullet(`${row.title} - ${clean(row.summary)}`));
   for (const row of starred) {
     const suffix = ` - ${clean(row.summary)}${row.stars ? ` · ${row.stars}` : ""}`;
     blocks.push(linkedTextBlock("bulleted_list_item", row.title, row.href, suffix));
   }
 
-  blocks.push(heading(2, "English Snapshot"));
+  blocks.push(heading(2, "English"));
   addParagraphs(blocks, siteEn.summary);
   const englishSelected = rowsFor(publicRows, "projects", "en").filter((row) => selectedKeys.has(row.key));
   for (const row of englishSelected) blocks.push(bullet(`${row.title} - ${clean(row.summary)}`));

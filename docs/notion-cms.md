@@ -19,6 +19,13 @@
 
 영어는 별도 DB가 아니라 같은 DB에서 `Locale=en` row로 관리합니다.
 
+관리 홈 페이지(`포트폴리오`)는 **편집 허브**입니다. 콘텐츠 원본은 여전히 `Portfolio Entries` 하나뿐이고, 관리 홈은 다음을 빠르게 여는 용도로만 씁니다.
+
+- 메인 DB
+- 공개 Notion 렌더링 페이지
+- `namuori.net`
+- GitHub Actions 동기화 워크플로
+
 ```text
 Portfolio Entries
   Key: aerospace-rag, Locale: ko, Section: projects, Title: 항공우주 RAG ...
@@ -41,14 +48,52 @@ Portfolio Entries
 
 `Tags`, `Items`, `Bullets`, `Related Notes`, `Related Projects`, `Related Research`, `Related Skills`는 쉼표 또는 줄바꿈 기반 텍스트로 관리합니다. JSON을 직접 쓰지 않습니다.
 
+## 권장 뷰
+
+운영은 같은 DB를 여러 방식으로 **보는 것**으로 해결합니다. DB를 언어별/섹션별로 다시 쪼개지 않습니다.
+
+- `All entries`: 전체 행 확인
+- `KO Editing`: `Locale=ko`
+- `EN Editing`: `Locale=en`
+- `Drafts`: `Status=Draft`
+- `Highlights`: `Section=projects AND Highlight=true AND Status=Published`
+- `Public QA`: `Status=Published AND Private=false`
+
+`Public QA`는 "공개될 수 있는 상태인가?"를 보는 최종 점검 뷰입니다. 여기에서 제목, 요약, 순서, 비공개 여부를 빠르게 확인합니다.
+
+## 템플릿 규약
+
+실제 Notion 데이터베이스 템플릿 기능에 과하게 의존하기보다, **섹션별 본문 형식**을 통일해서 운영합니다.
+
+- `projects`
+  - `## What`
+  - `## Stack`
+  - `## Evidence`
+  - `## Links`
+- `research`
+  - `## Focus`
+  - `## Methods`
+  - `## Evidence`
+  - `## Related Projects`
+- `timeline`
+  - `## Context`
+  - `## What changed`
+- `notes`
+  - `## Summary`
+  - `## Why it matters`
+
+긴 본문이 없는 `contacts`, `skills`, `starred`는 속성 위주로만 관리합니다.
+
 ## 작성 흐름
 
 1. `Portfolio Entries`에서 새 row를 만듭니다.
 2. `Section`, `Locale=ko`, `Key`, `Status=Published`, `Order`를 채웁니다.
 3. 긴 콘텐츠는 row 페이지 안에 본문을 작성합니다.
 4. 영어가 필요하면 같은 `Key`로 `Locale=en` row를 하나 더 만듭니다.
-5. GitHub Actions `Sync content from Notion`을 실행하거나 6시간 스케줄을 기다립니다.
-6. 같은 워크플로가 공개 Notion 렌더링 페이지도 `Portfolio Entries`에서 다시 구성합니다.
+5. 초안이면 `Status=Draft`로 두고 `Drafts` 뷰에서 작업합니다.
+6. 공개 전에는 `Public QA` 뷰에서 `Private=false`, 제목, 요약, 순서를 확인합니다.
+7. GitHub Actions `Sync content from Notion`을 실행하거나 6시간 스케줄을 기다립니다.
+8. 같은 워크플로가 공개 Notion 렌더링 페이지도 `Portfolio Entries`에서 다시 구성합니다.
 
 ## 데이터베이스 ID
 
