@@ -122,19 +122,6 @@
       ],
       "body": "A RAG system for aerospace work documents. It combines Qdrant + BM25 + Graph three-channel retrieval, Weighted RRF fusion, and Ollama-based answer generation, optimized for a Colab T4 environment.\n\n\n## Overview\n\n\nA RAG system that combines Dense, Sparse, and Graph retrieval channels for aerospace work documents."
     },
-    "llm-rag-research": {
-      "name": "LLM + RAG Research System",
-      "period": "Ongoing",
-      "desc": "A private repository for comparing RAG strategies, building retrieval quality evaluation pipelines, and researching domain-adaptive chunking strategies.",
-      "metric": "Compared five RAG strategies and observed a 23% gap in Recall@5",
-      "tags": [
-        "Python",
-        "LangChain",
-        "HuggingFace",
-        "Research"
-      ],
-      "body": "A private repository for comparing RAG strategies, building retrieval quality evaluation pipelines, and researching domain-adaptive chunking strategies.\n\n\n## Overview\n\n\nA private research system for comparing and evaluating different RAG strategies."
-    },
     "cross-review-bridge": {
       "name": "cross-review-bridge",
       "desc": "A human-approved cross-review workflow with external AI reviewers, automated as a Codex skill.",
@@ -272,5 +259,5 @@
       "body": "A practical evaluation lens for comparing RAG systems across retrieval quality, answer grounding, and operating cost.\n\n\n## Why Evaluation Comes First\n\n\nIf you only look at answer quality in a RAG system, it is easy to miss the cause of failure. The retrieval, reranking, and generation stages need to be separated so you can see whether documents were missed, pushed down, or ignored during answer generation.\n\n\n## Basic Metrics\n\n- Recall@5: checks whether the supporting evidence appears in the top five retrieved documents.\n- MRR: measures how early the first useful evidence appears.\n- Groundedness: checks whether the answer is actually supported by retrieved documents."
     }
   },
-  "generatedAt": "2026-07-02T08:16:43.807Z"
+  "generatedAt": "2026-07-02T08:19:43.123Z"
 }
