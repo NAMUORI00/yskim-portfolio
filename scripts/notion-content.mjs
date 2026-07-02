@@ -13,11 +13,44 @@ import { pathToFileURL } from "node:url";
 // pipeline elsewhere without code changes.
 export const DATABASE_DEFAULTS = {
   entries: "a15aff41-47f3-4a92-8dc8-a1367ae00a46",
+  profile: "9b24921c-efa4-4143-9ede-abe607300b32",
+  intro: "fa9e9444-6254-4088-9bde-69c556ad3d58",
+  contacts: "2744eeb0-e4fa-46d7-a46b-4ba700de003f",
+  timeline: "535722e0-d69e-4da8-abfe-1eb9c82835e3",
+  research: "9cf575d4-e968-4b0b-8cd0-5f30482b5a61",
+  projects: "654afefe-1d7e-452a-b1b4-614228fc5a11",
+  skills: "e2fdb49b-cf97-4840-a55c-6cd46613c167",
+  starred: "ea21f9e0-8981-4a95-9939-dcc48e89c2fc",
+  notes: "8a0a6041-63b4-49c6-85e3-af7e769c7356",
+  site: "723e7188-9b2f-4e6d-8ce7-122d5a9a2d53",
 };
 
 const ENV_KEYS = {
   entries: "NOTION_ENTRIES_DB_ID",
+  profile: "NOTION_PROFILE_DB_ID",
+  intro: "NOTION_INTRO_DB_ID",
+  contacts: "NOTION_CONTACTS_DB_ID",
+  timeline: "NOTION_TIMELINE_DB_ID",
+  research: "NOTION_RESEARCH_DB_ID",
+  projects: "NOTION_PROJECTS_DB_ID",
+  skills: "NOTION_SKILLS_DB_ID",
+  starred: "NOTION_STARRED_DB_ID",
+  notes: "NOTION_NOTES_DB_ID",
+  site: "NOTION_SITE_DB_ID",
 };
+
+const CATEGORY_DATABASE_SECTIONS = [
+  "profile",
+  "intro",
+  "contacts",
+  "timeline",
+  "research",
+  "projects",
+  "skills",
+  "starred",
+  "notes",
+  "site",
+];
 
 // site.navigation and site.images are structural (icons, hero artwork) rather
 // than editorial, so they stay here instead of in Notion. Only title /
@@ -941,7 +974,7 @@ async function loadShortEnglishRows(notion, ids) {
 }
 
 function entrySection(page) {
-  return readTextOrSelect(page.properties.Section);
+  return page.__section ?? readTextOrSelect(page.properties.Section);
 }
 
 function entryLocale(page) {
@@ -983,6 +1016,23 @@ function indexEntriesByKey(rows) {
   return new Map(rows.map((row) => [entryKey(row), row]).filter(([key]) => key));
 }
 
+function withEntrySection(page, section) {
+  return { ...page, __section: section };
+}
+
+function hasConfiguredCategoryDatabases(ids) {
+  return CATEGORY_DATABASE_SECTIONS.every((section) => Boolean(ids[section]));
+}
+
+async function queryCategoryRows(notion, ids) {
+  const rows = [];
+  for (const section of CATEGORY_DATABASE_SECTIONS) {
+    const sectionRows = await queryAll(notion, ids[section], { filter: publishedFilter, sorts: orderSort });
+    rows.push(...sectionRows.map((row) => withEntrySection(row, section)));
+  }
+  return rows;
+}
+
 async function buildEnglishFromEntries({ grouped, n2m, root, mediaMode, koRows }) {
   const en = { locale: "en", ui: EN_UI };
   const siteEn = firstEntry(grouped, "site", "en");
@@ -996,7 +1046,9 @@ async function buildEnglishFromEntries({ grouped, n2m, root, mediaMode, koRows }
   const profileEn = firstEntry(grouped, "profile", "en");
   if (profileEn) {
     const pp = profileEn.properties;
-    const body = await renderBody(n2m, profileEn.id, root, "profile", "summary-en", mediaMode);
+    const introEn = firstEntry(grouped, "intro", "en");
+    const bodySource = introEn ?? profileEn;
+    const body = await renderBody(n2m, bodySource.id, root, "profile", "summary-en", mediaMode);
     const profile = {};
     pushIf(profile, "name", entryTitle(profileEn));
     pushIf(profile, "status", readPlainText(pp.Availability));
@@ -1096,10 +1148,12 @@ async function writeJson(root, relative, value) {
 async function fetchPortfolioEntriesContent({ root, notion, n2m, entryRows, mediaMode }) {
   const grouped = groupEntryRows(entryRows);
   const profileRow = firstEntry(grouped, "profile", "ko");
+  const introRow = firstEntry(grouped, "intro", "ko");
   const siteRow = firstEntry(grouped, "site", "ko");
   if (!profileRow) throw new Error("Portfolio Entries has no ko/profile row.");
   if (!siteRow) throw new Error("Portfolio Entries has no ko/site row.");
 
+  const introRows = entriesFor(grouped, "intro", "ko");
   const contactRows = entriesFor(grouped, "contacts", "ko");
   const timelineRows = entriesFor(grouped, "timeline", "ko");
   const projectRows = entriesFor(grouped, "projects", "ko");
@@ -1114,7 +1168,8 @@ async function fetchPortfolioEntriesContent({ root, notion, n2m, entryRows, medi
     await mkdir(path.join(root, "content", dir), { recursive: true });
   }
 
-  const profileSummaryMd = await renderBody(n2m, profileRow.id, root, "profile", "summary", mediaMode);
+  const profileSummaryRow = introRow ?? profileRow;
+  const profileSummaryMd = await renderBody(n2m, profileSummaryRow.id, root, "profile", "summary", mediaMode);
   const avatarUrl = await selfHostCover(readUrl(profileRow.properties["Avatar URL"]), root, "profile", "avatar");
   const profile = {
     name: entryTitle(profileRow),
@@ -1196,6 +1251,7 @@ async function fetchPortfolioEntriesContent({ root, notion, n2m, entryRows, medi
       projects: projectRows.length,
       research: researchRows.length,
       notes: noteRows.length,
+      intro: introRows.length,
       timeline: timelineRows.length,
       skills: skillRows.length,
       starred: starredRows.length,
@@ -1221,6 +1277,18 @@ export async function fetchPortfolioContent(options = {}) {
   const mediaMode = (options.mediaMode ?? process.env.NOTION_MEDIA_MODE) === "proxy" ? "proxy" : "download";
   installCustomTransformers(n2m, mediaMode);
 
+  if (hasConfiguredCategoryDatabases(ids)) {
+    try {
+      const categoryRows = await queryCategoryRows(notion, ids);
+      if (categoryRows.length > 0) {
+        return fetchPortfolioEntriesContent({ root, notion, n2m, entryRows: categoryRows, mediaMode });
+      }
+      console.warn("Portfolio category databases returned no Published rows; falling back to Portfolio Entries.");
+    } catch (error) {
+      console.warn(`Portfolio category DB fetch failed (${error.message}); falling back to Portfolio Entries.`);
+    }
+  }
+
   if (!ids.entries) throw new Error("Missing NOTION_ENTRIES_DB_ID.");
   const entryRows = await queryAll(notion, ids.entries, { filter: publishedFilter, sorts: orderSort });
   if (entryRows.length === 0) throw new Error("Portfolio Entries database has no Published rows.");
@@ -1234,7 +1302,7 @@ async function runCli() {
   const result = await fetchPortfolioContent({ root });
   const { counts } = result;
   console.log(
-    `Fetched from Notion: ${counts.projects} projects, ${counts.research} research, ${counts.notes} notes, ` +
+    `Fetched from Notion: ${counts.projects} projects, ${counts.research} research, ${counts.notes} notes, ${counts.intro} intro, ` +
       `${counts.timeline} timeline, ${counts.skills} skill groups, ${counts.starred} starred, ${counts.contacts} contacts.`,
   );
 }

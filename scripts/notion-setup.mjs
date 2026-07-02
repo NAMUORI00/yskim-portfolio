@@ -14,6 +14,16 @@ const DEFAULT_REPO = "NAMUORI00/yskim-portfolio";
 
 const DB_VARIABLES = {
   NOTION_ENTRIES_DB_ID: DATABASE_DEFAULTS.entries,
+  NOTION_PROFILE_DB_ID: DATABASE_DEFAULTS.profile,
+  NOTION_INTRO_DB_ID: DATABASE_DEFAULTS.intro,
+  NOTION_CONTACTS_DB_ID: DATABASE_DEFAULTS.contacts,
+  NOTION_TIMELINE_DB_ID: DATABASE_DEFAULTS.timeline,
+  NOTION_RESEARCH_DB_ID: DATABASE_DEFAULTS.research,
+  NOTION_PROJECTS_DB_ID: DATABASE_DEFAULTS.projects,
+  NOTION_SKILLS_DB_ID: DATABASE_DEFAULTS.skills,
+  NOTION_STARRED_DB_ID: DATABASE_DEFAULTS.starred,
+  NOTION_NOTES_DB_ID: DATABASE_DEFAULTS.notes,
+  NOTION_SITE_DB_ID: DATABASE_DEFAULTS.site,
   NOTION_PUBLIC_PAGE_ID: "380dcd44-779f-81bc-b4ee-e4076ffa598e",
 };
 
@@ -35,7 +45,7 @@ export function summarizeSetup({ repo = DEFAULT_REPO, secrets, variables }) {
   if (!secrets.has("NOTION_TOKEN")) {
     missing.push("NOTION_TOKEN (secret)");
     nextSteps.push(`gh secret set NOTION_TOKEN --repo ${repo}`);
-    nextSteps.push("In Notion, share the Portfolio Entries database and public rendering page with your integration.");
+    nextSteps.push("In Notion, share the Portfolio management page, category databases, legacy Portfolio Entries database, and public rendering page with your integration.");
   }
 
   for (const [name, value] of Object.entries(DB_VARIABLES)) {
