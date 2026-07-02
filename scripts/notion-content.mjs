@@ -1098,6 +1098,7 @@ async function buildEnglishFromEntries({ grouped, n2m, root, mediaMode, koRows }
   en.research = {};
   for (const row of entriesFor(grouped, "research", "en")) {
     const slug = resolveEntrySlug(row);
+    if (koRows.researchSlugs && !koRows.researchSlugs.has(slug)) continue;
     const body = await renderBody(n2m, row.id, root, "research", `${slug}-en`, mediaMode);
     const entry = {};
     pushIf(entry, "title", entryTitle(row));
@@ -1109,6 +1110,7 @@ async function buildEnglishFromEntries({ grouped, n2m, root, mediaMode, koRows }
   en.projects = {};
   for (const row of entriesFor(grouped, "projects", "en")) {
     const slug = resolveEntrySlug(row);
+    if (koRows.projectSlugs && !koRows.projectSlugs.has(slug)) continue;
     const p = row.properties;
     const body = await renderBody(n2m, row.id, root, "projects", `${slug}-en`, mediaMode);
     const entry = {};
@@ -1142,6 +1144,7 @@ async function buildEnglishFromEntries({ grouped, n2m, root, mediaMode, koRows }
   en.notes = {};
   for (const row of entriesFor(grouped, "notes", "en")) {
     const slug = resolveEntrySlug(row);
+    if (koRows.noteSlugs && !koRows.noteSlugs.has(slug)) continue;
     const p = row.properties;
     const body = await renderBody(n2m, row.id, root, "notes", `${slug}-en`, mediaMode);
     const entry = {};
@@ -1217,6 +1220,7 @@ async function fetchPortfolioEntriesContent({ root, notion, n2m, entryRows, medi
   const order = { research: [], projects: [], notes: [] };
   const publicProjectSlugs = new Set(projectRows.map((page) => resolveEntrySlug(page)).filter(Boolean));
   const publicResearchSlugs = new Set(researchRows.map((page) => resolveEntrySlug(page)).filter(Boolean));
+  const publicNoteSlugs = new Set(noteRows.map((page) => resolveEntrySlug(page)).filter(Boolean));
 
   for (const page of projectRows) {
     const slug = resolveEntrySlug(page);
@@ -1268,7 +1272,14 @@ async function fetchPortfolioEntriesContent({ root, notion, n2m, entryRows, medi
     n2m,
     root,
     mediaMode,
-    koRows: { timeline: timelineRows, skills: skillRows, starred: starredRows },
+    koRows: {
+      timeline: timelineRows,
+      skills: skillRows,
+      starred: starredRows,
+      projectSlugs: publicProjectSlugs,
+      researchSlugs: publicResearchSlugs,
+      noteSlugs: publicNoteSlugs,
+    },
   });
   english.generatedAt = new Date().toISOString();
   await writeJson(root, path.join("i18n", "en.json"), english);
