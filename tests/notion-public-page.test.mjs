@@ -54,14 +54,14 @@ test("buildPublicPageBlocks emits the editorial snapshot layout", () => {
       locale: "ko",
       title: "김유석 | AI 연구 엔지니어 포트폴리오",
       key: "site",
-      summary: "이 페이지는 Portfolio Entries 단일 DB를 기준으로 자동 렌더링되는 공개 포트폴리오입니다.",
+      summary: "이 페이지는 섹션별 포트폴리오 DB를 기준으로 자동 렌더링되는 공개 포트폴리오입니다.",
     }),
     row({
       section: "site",
       locale: "en",
       title: "Kim Yuseok | AI Research Engineer Portfolio",
       key: "site",
-      summary: "Public portfolio rendered from the unified Portfolio Entries database.",
+      summary: "Public portfolio rendered from portfolio category databases.",
     }),
     row({ section: "contacts", locale: "ko", title: "namuori00@namuori.net", key: "email", href: "mailto:namuori00@namuori.net", order: 1 }),
     row({ section: "contacts", locale: "ko", title: "github.com/NAMUORI00", key: "github", href: "https://github.com/NAMUORI00", order: 2 }),
@@ -100,6 +100,17 @@ test("buildPublicPageBlocks emits the editorial snapshot layout", () => {
       tags: "TypeScript, Next.js",
       link: "https://github.com/NAMUORI00/IntroduceCvPage",
       order: 10,
+    }),
+    row({
+      section: "projects",
+      locale: "ko",
+      title: "private-project",
+      key: "private-project",
+      summary: "비공개 프로젝트.",
+      link: "https://github.com/NAMUORI00/private-project",
+      order: 3,
+      highlight: true,
+      private: true,
     }),
     row({
       section: "projects",
@@ -180,7 +191,7 @@ test("buildPublicPageBlocks emits the editorial snapshot layout", () => {
     "expected first hero paragraph",
   );
   assert.ok(
-    introParagraphs.includes("이 페이지는 Portfolio Entries 단일 DB를 기준으로 자동 렌더링되는 공개 포트폴리오입니다."),
+    introParagraphs.includes("이 페이지는 섹션별 포트폴리오 DB를 기준으로 자동 렌더링되는 공개 포트폴리오입니다."),
     "expected second hero paragraph",
   );
 
@@ -188,6 +199,7 @@ test("buildPublicPageBlocks emits the editorial snapshot layout", () => {
   assert.notEqual(selectedHeadingIndex, -1);
   const firstSelectedProject = blocks.slice(selectedHeadingIndex + 1).find((block) => block.type === "heading_3");
   assert.equal(blockText(firstSelectedProject), "aerospace-rag");
+  assert.equal(blocks.map(blockText).includes("private-project"), false, "expected Private rows to be excluded");
 
   const linksHeadingIndex = blocks.findIndex((block) => block.type === "heading_2" && blockText(block) === "Links");
   const linksTexts = blocks.slice(linksHeadingIndex + 1).filter((block) => block.type === "bulleted_list_item").map(blockText);

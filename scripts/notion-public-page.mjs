@@ -1,12 +1,11 @@
-// Regenerates the public Notion portfolio rendering page from the unified
-// Portfolio Entries database. This keeps the Notion page itself in sync with
-// the same DB that drives namuori.net.
+// Regenerates the public Notion portfolio rendering page from the portfolio
+// category databases. This keeps the Notion page itself in sync with the same
+// DBs that drive namuori.net.
 
 import { pathToFileURL } from "node:url";
 
 import { Client } from "@notionhq/client";
 
-const DEFAULT_ENTRIES_DB_ID = "a15aff41-47f3-4a92-8dc8-a1367ae00a46";
 const DEFAULT_PUBLIC_PAGE_ID = "380dcd44-779f-81bc-b4ee-e4076ffa598e";
 const DEFAULT_MANAGEMENT_PAGE_URL = "https://app.notion.com/p/37fdcd44779f8161827bd4cc6615a7ab";
 const CATEGORY_DATABASE_DEFAULTS = {
@@ -36,6 +35,13 @@ const CATEGORY_ENV_KEYS = {
 const CATEGORY_DATABASE_SECTIONS = Object.keys(CATEGORY_DATABASE_DEFAULTS);
 const MAX_RICH_TEXT = 1900;
 const MAX_APPEND_CHILDREN = 100;
+const publicFilter = {
+  and: [
+    { property: "Status", select: { equals: "Published" } },
+    { property: "Private", checkbox: { does_not_equal: true } },
+  ],
+};
+const orderSort = [{ property: "Order", direction: "ascending" }];
 
 function richTextToPlain(items) {
   return (items ?? []).map((item) => item.plain_text ?? "").join("").trim();
@@ -236,7 +242,7 @@ export function buildPublicPageBlocks(rows, source = {}) {
   const systemRows = projects.filter((row) => !selectedKeys.has(row.key)).slice(0, 4);
   const blocks = [];
 
-  blocks.push(quote(`${source.shortLabel ?? "Portfolio Entries"} 기반 공개 렌더링 · Published 항목만 표시 · Private 항목 제외`));
+  blocks.push(quote(`${source.shortLabel ?? "Portfolio category DBs"} 기반 공개 렌더링 · Published 항목만 표시 · Private 항목 제외`));
   if (profile.headline) addParagraphs(blocks, profile.headline, { bold: true });
   blocks.push(paragraph("Selected · Research · Systems · Timeline · Links"));
   addParagraphs(blocks, intro.summaryLead || profile.summaryLead);
@@ -299,8 +305,8 @@ export function buildPublicPageBlocks(rows, source = {}) {
   blocks.push(
     linkedTextBlock(
       "paragraph",
-      source.label ?? "Source: Portfolio Entries",
-      source.href ?? "https://app.notion.com/p/a15aff4147f34a928dc8a1367ae00a46",
+      source.label ?? "Source: Portfolio category DBs",
+      source.href ?? DEFAULT_MANAGEMENT_PAGE_URL,
       ". This page is regenerated automatically from the database.",
     ),
   );
@@ -327,8 +333,8 @@ async function queryAll(notion, databaseId) {
     const response = await notion.dataSources.query({
       data_source_id: dataSourceId,
       start_cursor,
-      filter: { property: "Status", select: { equals: "Published" } },
-      sorts: [{ property: "Order", direction: "ascending" }],
+      filter: publicFilter,
+      sorts: orderSort,
     });
     results.push(...response.results);
     start_cursor = response.has_more ? response.next_cursor : undefined;
@@ -344,8 +350,12 @@ function resolveCategoryDatabaseIds(options = {}) {
   return ids;
 }
 
-function hasConfiguredCategoryDatabases(ids) {
-  return CATEGORY_DATABASE_SECTIONS.every((section) => Boolean(ids[section]));
+function assertConfiguredCategoryDatabases(ids) {
+  const missing = CATEGORY_DATABASE_SECTIONS.filter((section) => !ids[section]);
+  if (missing.length) {
+    const envNames = missing.map((section) => CATEGORY_ENV_KEYS[section]).join(", ");
+    throw new Error(`Missing Notion category database ids: ${envNames}.`);
+  }
 }
 
 async function queryCategoryRows(notion, ids) {
@@ -384,42 +394,21 @@ async function replacePageChildren(notion, pageId, children) {
 export async function syncPublicPage(options = {}) {
   const token = options.token ?? process.env.NOTION_TOKEN;
   if (!token) throw new Error("Missing NOTION_TOKEN.");
-  const entriesDatabaseId = options.entriesDatabaseId ?? process.env.NOTION_ENTRIES_DB_ID ?? DEFAULT_ENTRIES_DB_ID;
   const categoryDatabaseIds = resolveCategoryDatabaseIds(options);
   const pageId = options.pageId ?? process.env.NOTION_PUBLIC_PAGE_ID ?? DEFAULT_PUBLIC_PAGE_ID;
   const notion = new Client({ auth: token });
-  let rows = [];
-  let source = {
-    shortLabel: "Portfolio Entries",
-    label: "Source: Portfolio Entries",
-    href: "https://app.notion.com/p/a15aff4147f34a928dc8a1367ae00a46",
+  assertConfiguredCategoryDatabases(categoryDatabaseIds);
+  const rows = await queryCategoryRows(notion, categoryDatabaseIds);
+  if (rows.length === 0) throw new Error("Portfolio category databases have no public Published rows.");
+
+  const source = {
+    shortLabel: "Portfolio category DBs",
+    label: "Source: Portfolio category DBs",
+    href: DEFAULT_MANAGEMENT_PAGE_URL,
   };
-
-  if (hasConfiguredCategoryDatabases(categoryDatabaseIds)) {
-    try {
-      rows = await queryCategoryRows(notion, categoryDatabaseIds);
-      if (rows.length > 0) {
-        source = {
-          shortLabel: "Portfolio category DBs",
-          label: "Source: Portfolio category DBs",
-          href: DEFAULT_MANAGEMENT_PAGE_URL,
-        };
-      } else {
-        console.warn("Portfolio category databases returned no Published rows; falling back to Portfolio Entries.");
-      }
-    } catch (error) {
-      console.warn(`Portfolio category DB fetch failed (${error.message}); falling back to Portfolio Entries.`);
-    }
-  }
-
-  if (rows.length === 0) {
-    const pages = await queryAll(notion, entriesDatabaseId);
-    rows = pages.map((page) => rowFromPage(page));
-  }
-
   const children = buildPublicPageBlocks(rows, source);
   await replacePageChildren(notion, pageId, children);
-  return { rows: rows.length, blocks: children.length, pageId, entriesDatabaseId, source: source.shortLabel };
+  return { rows: rows.length, blocks: children.length, pageId, source: source.shortLabel };
 }
 
 async function runCli() {

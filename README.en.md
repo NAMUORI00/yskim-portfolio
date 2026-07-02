@@ -22,14 +22,14 @@ The flow:
 ## Architecture
 
 ```text
-Notion (`Portfolio Entries` single DB) ──fetch──▶  content/*.json + content/**/*.mdx  ──vite build──▶  dist/public  ──▶  Cloudflare Pages
- (single source)     scripts/notion-content.mjs       (imported at build time)
+Notion category DBs ──fetch──▶  content/*.json + content/**/*.mdx  ──vite build──▶  dist/public  ──▶  Cloudflare Pages
+ (section sources)   scripts/notion-content.mjs       (imported at build time)
 ```
 
 - The frontend (`client/src/content/index.ts`) imports `content/*.json` and
   `content/**/*.mdx` at build time.
 - `fetch:notion` regenerates those files from Notion. The committed `content/`
-  is a seed/fallback for offline builds and is overwritten by fetch.
+  is a seed/cache for offline builds and is overwritten by fetch.
 - See [docs/notion-cms.md](docs/notion-cms.md) for the database schema and
   property conventions.
 
@@ -39,7 +39,7 @@ Notion (`Portfolio Entries` single DB) ──fetch──▶  content/*.json + co
 - Content: Notion (`@notionhq/client` + `notion-to-md`)
 - Validation: Zod (`client/src/content/schema.ts`)
 - Deployment: Cloudflare Pages (static)
-- i18n: `Locale=ko/en` rows in the same DB, joined by `Key` → `content/i18n/en.json`
+- i18n: `Locale=ko/en` rows inside each category DB, joined by `Key` → `content/i18n/en.json`
 
 ## Local development
 
@@ -76,18 +76,27 @@ Content sync is handled by GitHub Actions: the `Sync content from Notion` workfl
 (6-hourly schedule + manual dispatch) runs `pnpm fetch:notion` to regenerate
 `content/` (and media under `client/public/notion/`), then runs
 `pnpm sync:notion-public` to regenerate the public Notion rendering page from the
-same database. Any repository content changes are committed to `main`, which
+  same category databases. Any repository content changes are committed to `main`, which
 triggers a Pages deploy. `content/` and `client/public/notion/` are committed so
 the Pages `pnpm build` includes them.
 
 Required GitHub secret/variable (run `pnpm check:notion` to audit):
 
 ```text
-secret   NOTION_TOKEN     # Notion integration token for reading Portfolio Entries and writing the public page
-variable NOTION_ENTRIES_DB_ID # unified Portfolio Entries database id
+secret   NOTION_TOKEN       # Notion integration token for reading category DBs and writing the public page
+variable NOTION_PROFILE_DB_ID
+variable NOTION_INTRO_DB_ID
+variable NOTION_CONTACTS_DB_ID
+variable NOTION_TIMELINE_DB_ID
+variable NOTION_RESEARCH_DB_ID
+variable NOTION_PROJECTS_DB_ID
+variable NOTION_SKILLS_DB_ID
+variable NOTION_STARRED_DB_ID
+variable NOTION_NOTES_DB_ID
+variable NOTION_SITE_DB_ID
 variable NOTION_PUBLIC_PAGE_ID # public Notion rendering page id
 ```
 
-The Notion integration must be shared with both `Portfolio Entries` and the
-public rendering page, and it needs content read/insert/update permissions for
-the public page sync step.
+The Notion integration must be shared with the portfolio management page,
+category databases, and public rendering page. It needs content read/insert/update
+permissions for the public page sync step.
