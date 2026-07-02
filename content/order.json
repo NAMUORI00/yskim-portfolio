@@ -7,7 +7,6 @@
   ],
   "projects": [
     "aerospace-rag",
-    "llm-rag-research",
     "cross-review-bridge",
     "music-source-separation",
     "mediamtx-installer",
