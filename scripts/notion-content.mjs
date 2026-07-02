@@ -706,6 +706,8 @@ function researchFrontmatter(page, coverImage, opts = {}) {
 
 function noteFrontmatter(page, opts = {}) {
   const p = page.properties;
+  const relatedProjects = commaList(readPlainText(p["Related Projects"]));
+  const relatedResearch = commaList(readPlainText(p["Related Research"]));
   return [
     ["slug", opts.slug ?? readPlainText(p.Slug)],
     ["title", readPlainText(p.Title)],
@@ -713,8 +715,8 @@ function noteFrontmatter(page, opts = {}) {
     ["date", readDate(p.Date)],
     ["summary", readPlainText(p.Summary) || opts.summaryFallback || ""],
     ["tags", readMultiSelect(p.Tags)],
-    ["relatedProjects", commaList(readPlainText(p["Related Projects"]))],
-    ["relatedResearch", commaList(readPlainText(p["Related Research"]))],
+    ["relatedProjects", filterKnownSlugs(relatedProjects, opts.projectSlugs)],
+    ["relatedResearch", filterKnownSlugs(relatedResearch, opts.researchSlugs)],
   ];
 }
 
@@ -756,6 +758,8 @@ function entryResearchFrontmatter(page, coverImage, opts = {}) {
 
 function entryNoteFrontmatter(page, opts = {}) {
   const p = page.properties;
+  const relatedProjects = commaList(readPlainText(p["Related Projects"]));
+  const relatedResearch = commaList(readPlainText(p["Related Research"]));
   return [
     ["slug", opts.slug ?? resolveEntrySlug(page)],
     ["title", entryTitle(page)],
@@ -763,9 +767,14 @@ function entryNoteFrontmatter(page, opts = {}) {
     ["date", readDate(p.Date)],
     ["summary", readPlainText(p.Summary) || opts.summaryFallback || ""],
     ["tags", commaList(readPlainText(p.Tags))],
-    ["relatedProjects", commaList(readPlainText(p["Related Projects"]))],
-    ["relatedResearch", commaList(readPlainText(p["Related Research"]))],
+    ["relatedProjects", filterKnownSlugs(relatedProjects, opts.projectSlugs)],
+    ["relatedResearch", filterKnownSlugs(relatedResearch, opts.researchSlugs)],
   ];
+}
+
+function filterKnownSlugs(values, knownSlugs) {
+  if (!knownSlugs) return values;
+  return values.filter((value) => knownSlugs.has(value));
 }
 
 // ---------------------------------------------------------------------------
@@ -1206,6 +1215,8 @@ async function fetchPortfolioEntriesContent({ root, notion, n2m, entryRows, medi
   await writeJson(root, "starred.json", buildEntryStarred(starredRows));
 
   const order = { research: [], projects: [], notes: [] };
+  const publicProjectSlugs = new Set(projectRows.map((page) => resolveEntrySlug(page)).filter(Boolean));
+  const publicResearchSlugs = new Set(researchRows.map((page) => resolveEntrySlug(page)).filter(Boolean));
 
   for (const page of projectRows) {
     const slug = resolveEntrySlug(page);
@@ -1236,7 +1247,15 @@ async function fetchPortfolioEntriesContent({ root, notion, n2m, entryRows, medi
     const ko = await renderKoreanBody(n2m, page.id, root, "notes", slug, mediaMode);
     await writeFile(
       path.join(root, "content", "notes", `${slug}.mdx`),
-      buildDocument(entryNoteFrontmatter(page, { slug, summaryFallback: firstParagraph(ko) }), ko),
+      buildDocument(
+        entryNoteFrontmatter(page, {
+          slug,
+          summaryFallback: firstParagraph(ko),
+          projectSlugs: publicProjectSlugs,
+          researchSlugs: publicResearchSlugs,
+        }),
+        ko,
+      ),
       "utf8",
     );
     order.notes.push(slug);
