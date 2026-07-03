@@ -529,6 +529,24 @@ export function firstListItems(markdown) {
   return items;
 }
 
+export function firstLabeledValue(markdown, labels) {
+  const wanted = new Set(labels.map((label) => label.toLowerCase()));
+  for (const rawLine of String(markdown ?? "").split(/\r?\n/)) {
+    const cleaned = rawLine
+      .trim()
+      .replace(/^(?:[-*+]\s+|\d+[.)]\s+|>\s*)/, "")
+      .replace(/\*\*/g, "")
+      .replace(/__/g, "")
+      .replace(/`/g, "");
+    const match = cleaned.match(/^([^:：]{1,40})\s*[:：]\s*(.+)$/);
+    if (!match) continue;
+    const label = match[1].trim().toLowerCase();
+    const value = match[2].replace(/\s+/g, " ").trim();
+    if (wanted.has(label) && value) return value;
+  }
+  return "";
+}
+
 function pageBody(page) {
   return typeof page?.__body === "string" ? page.__body : "";
 }
@@ -698,7 +716,7 @@ function projectFrontmatter(page, coverImage, opts = {}) {
     ["period", readPlainText(p.Period)],
     ["status", normalizeStatus(readSelect(p.Status))],
     ["desc", readPlainText(p.Desc) || opts.descFallback || ""],
-    ["metric", readPlainText(p.Metric)],
+    ["metric", readPlainText(p.Metric) || opts.metricFallback || ""],
     ["category", readSelect(p.Category) || undefined],
     ["focus", readSelect(p.Focus) || undefined],
     ["proofLevel", readSelect(p["Proof Level"]) || undefined],
@@ -756,7 +774,7 @@ function entryProjectFrontmatter(page, coverImage, opts = {}) {
     ["period", readPlainText(p.Period)],
     ["status", entryStatus(page)],
     ["desc", readPlainText(p.Summary) || opts.descFallback || ""],
-    ["metric", readPlainText(p.Metric)],
+    ["metric", readPlainText(p.Metric) || opts.metricFallback || ""],
     ["category", readPlainText(p.Category) || undefined],
     ["focus", readPlainText(p.Focus) || undefined],
     ["proofLevel", readPlainText(p["Proof Level"]) || undefined],
@@ -907,7 +925,7 @@ export function buildEnglish({
     pushIf(entry, "name", readPlainText(p.Name));
     pushIf(entry, "period", readPlainText(p.Period));
     pushIf(entry, "desc", readPlainText(p.Desc) || firstParagraph(body));
-    pushIf(entry, "metric", readPlainText(p.Metric));
+    pushIf(entry, "metric", readPlainText(p.Metric) || firstLabeledValue(body, ["Metric", "성과", "Evidence", "증거"]));
     pushIf(entry, "tags", commaList(readPlainText(p.Tags)));
     pushIf(entry, "body", body);
     if (Object.keys(entry).length) en.projects[slug] = entry;
@@ -1160,7 +1178,7 @@ async function buildEnglishFromEntries({ grouped, n2m, root, mediaMode, koRows }
     pushIf(entry, "name", entryTitle(row));
     pushIf(entry, "period", readPlainText(p.Period));
     pushIf(entry, "desc", readPlainText(p.Summary) || firstParagraph(body));
-    pushIf(entry, "metric", readPlainText(p.Metric));
+    pushIf(entry, "metric", readPlainText(p.Metric) || firstLabeledValue(body, ["Metric", "성과", "Evidence", "증거"]));
     pushIf(entry, "tags", commaList(readPlainText(p.Tags)));
     pushIf(entry, "body", body);
     if (Object.keys(entry).length) en.projects[slug] = entry;
@@ -1274,7 +1292,14 @@ async function fetchPortfolioEntriesContent({ root, notion, n2m, entryRows, medi
     const ko = await renderKoreanBody(n2m, page.id, root, "projects", slug, mediaMode);
     await writeFile(
       path.join(root, "content", "projects", `${slug}.mdx`),
-      buildDocument(entryProjectFrontmatter(page, coverImage, { slug, descFallback: firstParagraph(ko) }), ko),
+      buildDocument(
+        entryProjectFrontmatter(page, coverImage, {
+          slug,
+          descFallback: firstParagraph(ko),
+          metricFallback: firstLabeledValue(ko, ["Metric", "성과", "Evidence", "증거"]),
+        }),
+        ko,
+      ),
       "utf8",
     );
     order.projects.push(slug);
