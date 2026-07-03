@@ -82,7 +82,8 @@ DB id는 `scripts/notion-content.mjs`에 기본값이 있어, 다른 워크스�
 1. Notion `KYS — Portfolio (CMS)`의 섹션별 데이터베이스에서 항목을 추가/수정합니다.
 2. `Locale`, `Key`, `Status`, `Order`를 채웁니다. 사이트에는 `Status=Published`이면서 `Private=false`인 항목만 반영됩니다.
 3. 영어 노출이 필요하면 같은 `Key`로 `Locale=en` 항목을 하나 더 만듭니다.
-4. GitHub Actions `Sync from Notion and deploy`가 실행되면 사이트에 반영됩니다
+4. 설명, bullet, 기술 스택 항목, 프로젝트 상세, 연구/노트 본문은 DB 컬럼이 아니라 row 내부 페이지에 블로그 글처럼 작성합니다. `Summary`, `Bullets`, `Items`, `Metric` 같은 작성형 컬럼은 비워도 렌더러가 내부 페이지 본문을 우선 사용하거나 안전하게 생략합니다.
+5. GitHub Actions `Sync from Notion and deploy`가 실행되면 사이트에 반영됩니다
    (push / 수동 실행 / 6시간마다 스케줄).
 
 ## 검증

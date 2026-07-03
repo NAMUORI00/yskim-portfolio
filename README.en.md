@@ -11,9 +11,10 @@ The flow:
 
 1. Edit content in the Notion `KYS — Portfolio (CMS)` workspace.
 2. Set each item's `Status` to `Published`.
-3. `scripts/notion-content.mjs` regenerates `content/` (JSON + MDX) from Notion.
-4. Vite builds the static site from `content/`.
-5. Cloudflare Pages deploys it.
+3. Write descriptions, bullets, skill items, project details, research pages, and notes inside the row page like a blog post.
+4. `scripts/notion-content.mjs` regenerates `content/` (JSON + MDX) from Notion.
+5. Vite builds the static site from `content/`.
+6. Cloudflare Pages deploys it.
 
 > The previous `/admin` flow (GitHub OAuth → draft branch → PR) has been removed.
 > Editing now happens **only in Notion**.
@@ -29,6 +30,9 @@ Notion category DBs ──fetch──▶  content/*.json + content/**/*.mdx  ─
   `content/**/*.mdx` at build time.
 - `fetch:notion` regenerates those files from Notion. The committed `content/`
   is a seed/cache for offline builds and is overwritten by fetch.
+- The databases intentionally use a thin schema: metadata stays in properties,
+  while content-like fields such as `Summary`, `Bullets`, `Items`, and `Metric`
+  can live in the row page body or be omitted when optional.
 - See [docs/notion-cms.md](docs/notion-cms.md) for the database schema and
   property conventions.
 

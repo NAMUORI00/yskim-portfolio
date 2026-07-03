@@ -114,7 +114,7 @@ export const projectSchema = z.object({
   name: z.string().min(1),
   period: z.string().min(1),
   desc: z.string().min(1),
-  metric: z.string().min(1),
+  metric: z.string().default(""),
   category: projectCategorySchema.optional(),
   focus: projectFocusSchema.optional(),
   proofLevel: projectProofLevelSchema.optional(),
