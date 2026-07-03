@@ -44,20 +44,20 @@ DB 속성은 "렌더링에 필요한 메타데이터"만 둡니다. 설명, 성�
 | `Slug` | 상세 페이지 URL slug가 필요한 콘텐츠에서 사용 |
 | `Highlight` | 대표 프로젝트 우선 노출 |
 
-`Summary`는 남아 있어도 동작하지만 필수 작성 대상이 아닙니다. 비워두면 내부 페이지의 첫 문단이 카드/목록 요약으로 사용됩니다.
+`Summary`, `Bullets`, `Items`, `Metric`처럼 문장이나 목록을 담던 컬럼은 제거했습니다. 카드/목록 요약은 내부 페이지의 첫 문단에서, 스킬/타임라인 목록은 내부 페이지의 bullet list에서 읽습니다.
 
 ## 섹션별 주요 필드
 
 | DB | 주요 필드 | 산출물 |
 |----|----|----|
 | `Profile` | `Romanized`, `Handle`, `Availability`, `Headline`, `Avatar URL` | `content/profile.json` |
-| `Intro` | 페이지 본문 | `profile.json.summary` |
-| `Contacts` | `Type`, `Handle`, `Href`, `URL`, `Link` | `profile.json.contacts[]` |
-| `Timeline` | `Type`, `School`, `Period`, `Start Date`, `End Date`, `Current` | `content/education.json` |
+| `Intro` | `Summary Lead`, 페이지 본문 | `profile.json.summary` |
+| `Contacts` | `Type`, `Href` | `profile.json.contacts[]` |
+| `Timeline` | `Type`, `School`, `Period`, `Start Date`, `End Date`, `Current`, 페이지 본문 | `content/education.json` |
 | `Research Interests` | `Tags`, `Focus`, `Cover URL`, 페이지 본문 | `content/research/*.mdx` |
-| `Projects` | `Period`, `Metric`, `Proof Level`, `Tags`, `Link`, `Focus`, `Cover URL`, 페이지 본문 | `content/projects/*.mdx` |
-| `Tech Stack` | `Category`, `Related Projects` | `content/skills.json` |
-| `Starred Repos` | `Href`, `Stars`, `Tags`, `Category` | `content/starred.json` |
+| `Projects` | `Period`, `Proof Level`, `Tags`, `Link`, `Focus`, `Cover URL`, 페이지 본문 | `content/projects/*.mdx` |
+| `Tech Stack` | 페이지 본문 | `content/skills.json` |
+| `Starred Repos` | `Href`, `Stars`, 페이지 본문 | `content/starred.json` |
 | `Notes` | `Date`, `Tags`, `Type`, 페이지 본문 | `content/notes/*.mdx` |
 | `Site Config` | `Description`, `URL` | `content/site.json` |
 
@@ -65,14 +65,14 @@ DB 속성은 "렌더링에 필요한 메타데이터"만 둡니다. 설명, 성�
 
 ## 얇은 스키마 원칙
 
-아래 속성은 가능하면 새 글에서 쓰지 않고 내부 페이지 본문으로 관리합니다.
+아래 속성은 삭제됐거나 새 글에서 다시 만들지 않습니다. 같은 내용은 내부 페이지 본문으로 관리합니다.
 
 | 기존 속성 | 권장 위치 | 렌더링 동작 |
 |----|----|----|
-| `Summary`, `Desc` | 내부 페이지 첫 문단 | 비어 있으면 첫 문단을 자동 요약으로 사용 |
-| `Bullets` | 내부 페이지 bullet list | 비어 있으면 첫 bullet list를 타임라인 bullet로 사용 |
-| `Items` | 내부 페이지 bullet list 또는 쉼표 목록 | 비어 있으면 내부 페이지 목록을 기술 스택 items로 사용 |
-| `Metric` | 프로젝트 본문 Evidence/성과 섹션 | 비어 있어도 빌드가 깨지지 않음 |
+| `Summary`, `Desc` | 내부 페이지 첫 문단 | 첫 문단을 자동 요약으로 사용 |
+| `Bullets` | 내부 페이지 bullet list | 첫 bullet list를 타임라인 bullet로 사용 |
+| `Items` | 내부 페이지 bullet list | 첫 bullet list를 기술 스택 items로 사용 |
+| `Metric` | 프로젝트 본문 `Evidence` 섹션의 `Metric:` 줄 | 카드 성과값으로 자동 사용 |
 | `Metrics JSON`, `Evaluation JSON` | 프로젝트 본문 표/목록 | 고급 구조화가 필요할 때만 유지 |
 | `Related ...` 텍스트 | 본문 링크 또는 추후 Relation 속성 | 현재는 선택적 메타데이터 |
 
@@ -83,9 +83,11 @@ DB 속성은 "렌더링에 필요한 메타데이터"만 둡니다. 설명, 성�
 1. 해당 카테고리 DB에서 새 row를 만듭니다.
 2. `Locale`, `Key`, `Status`, `Private`, `Order`를 채웁니다.
 3. 긴 콘텐츠는 row 페이지 안에 일반 Notion 문서처럼 작성합니다.
-4. 영어가 필요하면 같은 DB 안에 같은 `Key`로 `Locale=en` row를 하나 더 만듭니다.
-5. 공개 전에는 `Status=Published`, `Private=false`, 제목, 요약, 순서를 확인합니다.
-6. GitHub Actions `Sync content from Notion`을 실행하거나 6시간 스케줄을 기다립니다.
+4. 프로젝트 성과를 카드에 노출하려면 본문에 `## Evidence` 아래 `- Metric: ...` 형식으로 씁니다.
+5. 타임라인/기술 스택 목록은 본문에 `- item` bullet list로 씁니다.
+6. 영어가 필요하면 같은 DB 안에 같은 `Key`로 `Locale=en` row를 하나 더 만듭니다.
+7. 공개 전에는 `Status=Published`, `Private=false`, 제목, 본문, 순서를 확인합니다.
+8. GitHub Actions `Sync content from Notion`을 실행하거나 6시간 스케줄을 기다립니다.
 7. 같은 워크플로가 `namuori.net` 콘텐츠를 재생성하고 Cloudflare Pages 배포를 트리거합니다.
 
 ## 배포 구조
