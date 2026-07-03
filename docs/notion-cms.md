@@ -58,7 +58,7 @@ DB 속성은 "렌더링에 필요한 메타데이터"만 둡니다. 설명, 성�
 | `Projects` | `Slug`, `Period`, `Category`, `Focus`, `Proof Level`, `Tags`, `Link`, `Highlight`, `Related Notes`, 페이지 본문 | `content/projects/*.mdx` |
 | `Tech Stack` | 페이지 본문 | `content/skills.json` |
 | `Starred Repos` | `Href`, `Stars`, 페이지 본문 | `content/starred.json` |
-| `Notes` | `Slug`, `Date`, `Tags`, `Type`, `Related Projects`, `Related Research`, 페이지 본문 | `content/notes/*.mdx` |
+| `Notes` | `Slug`, `Date`, `Tags`, `Related Projects`, `Related Research`, 페이지 본문 | `content/notes/*.mdx` |
 | `Site Config` | `Description`, `URL` | `content/site.json` |
 
 `Tags`, `Related Notes`, `Related Projects`, `Related Research`를 속성으로 유지할 때는 쉼표 또는 줄바꿈 기반 텍스트로 관리합니다. JSON을 직접 쓰지 않습니다.
