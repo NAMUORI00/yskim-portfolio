@@ -71,6 +71,7 @@
       "degree": "B.S. in Computer Engineering",
       "school": "Jeju National University",
       "period": "2017 — 2024",
+      "note": "- Expanded interests in software development, deployment automation, and reproducible experiment environments",
       "bullets": [
         "Expanded interests in software development, deployment automation, and reproducible experiment environments"
       ]
@@ -120,7 +121,7 @@
         "RAG",
         "LLM"
       ],
-      "body": "A RAG system for aerospace work documents. It combines Qdrant + BM25 + Graph three-channel retrieval, Weighted RRF fusion, and Ollama-based answer generation, optimized for a Colab T4 environment.\n\n\n## Overview\n\n\nA RAG system that combines Dense, Sparse, and Graph retrieval channels for aerospace work documents."
+      "body": "A RAG system for aerospace work documents. It combines Qdrant + BM25 + Graph three-channel retrieval, Weighted RRF fusion, and Ollama-based answer generation, optimized for a Colab T4 environment.\n\n\n## Overview\n\n\nA RAG system that combines Dense, Sparse, and Graph retrieval channels for aerospace work documents.\n\n\n## Evidence\n\n- Metric: Improved MRR by 31% over single-channel retrieval through three-channel hybrid search"
     },
     "cross-review-bridge": {
       "name": "cross-review-bridge",
@@ -131,7 +132,7 @@
         "AI",
         "Automation"
       ],
-      "body": "A human-approved cross-review workflow with external AI reviewers, automated as a Codex skill.\n\n\n## Overview\n\n\nAn automation system that connects external AI reviewers and Codex through a human-approved review loop."
+      "body": "A human-approved cross-review workflow with external AI reviewers, automated as a Codex skill.\n\n\n## Overview\n\n\nAn automation system that connects external AI reviewers and Codex through a human-approved review loop.\n\n\n## Evidence\n\n- Metric: Reduced the code review cycle by about 70% compared with manual review"
     },
     "music-source-separation": {
       "name": "Music-Source-Separation",
@@ -143,7 +144,7 @@
         "CUDA",
         "Hydra"
       ],
-      "body": "Training music source separation models based on MDX23C and Demucs4HT architectures, with Hydra configs for experiment management and CUDA-based GPU training.\n\n\n## Overview\n\n\nA project for training music source separation models and managing experiment configuration."
+      "body": "Training music source separation models based on MDX23C and Demucs4HT architectures, with Hydra configs for experiment management and CUDA-based GPU training.\n\n\n## Overview\n\n\nA project for training music source separation models and managing experiment configuration.\n\n\n## Evidence\n\n- Metric: Reached 8.2 dB vocal separation SDR with a Demucs4HT-based setup"
     },
     "mediamtx-installer": {
       "name": "mediamtx-installer",
@@ -154,7 +155,7 @@
         "Ubuntu",
         "Streaming"
       ],
-      "body": "An automation script that installs a MediaMTX streaming server on Ubuntu 24.04 with a single command.\n\n\n## Overview\n\n\nAn operations automation script that simplifies the MediaMTX installation process."
+      "body": "An automation script that installs a MediaMTX streaming server on Ubuntu 24.04 with a single command.\n\n\n## Overview\n\n\nAn operations automation script that simplifies the MediaMTX installation process.\n\n\n## Evidence\n\n- Metric: Reduced setup time from 15 minutes manually to about 30 seconds"
     },
     "introduce-cv-page": {
       "name": "IntroduceCvPage (namu-log)",
@@ -166,7 +167,7 @@
         "React",
         "GitHub API"
       ],
-      "body": "A blog + CV system where writing in a WYSIWYG Markdown editor automatically creates GitHub PRs. Built with Next.js 16 and Tiptap.\n\n\n## Overview\n\n\nA blog and CV system that experiments with a GitHub PR-based publishing workflow."
+      "body": "A blog + CV system where writing in a WYSIWYG Markdown editor automatically creates GitHub PRs. Built with Next.js 16 and Tiptap.\n\n\n## Overview\n\n\nA blog and CV system that experiments with a GitHub PR-based publishing workflow.\n\n\n## Evidence\n\n- Metric: Fully automated the flow from article publishing to PR creation"
     },
     "spring-community-board": {
       "name": "SpringCommunityBoard",
@@ -177,7 +178,7 @@
         "Spring Boot",
         "JPA"
       ],
-      "body": "A CRUD community board built with Spring Boot and JPA, including member management, posts, and comments.\n\n\n## Overview\n\n\nA Spring Boot-based CRUD board with member, post, and comment features."
+      "body": "A CRUD community board built with Spring Boot and JPA, including member management, posts, and comments.\n\n\n## Overview\n\n\nA Spring Boot-based CRUD board with member, post, and comment features.\n\n\n## Evidence\n\n- Metric: Improved list query response time by 40% by resolving a JPA N+1 issue"
     }
   },
   "skills": {
@@ -259,5 +260,5 @@
       "body": "A practical evaluation lens for comparing RAG systems across retrieval quality, answer grounding, and operating cost.\n\n\n## Why Evaluation Comes First\n\n\nIf you only look at answer quality in a RAG system, it is easy to miss the cause of failure. The retrieval, reranking, and generation stages need to be separated so you can see whether documents were missed, pushed down, or ignored during answer generation.\n\n\n## Basic Metrics\n\n- Recall@5: checks whether the supporting evidence appears in the top five retrieved documents.\n- MRR: measures how early the first useful evidence appears.\n- Groundedness: checks whether the answer is actually supported by retrieved documents."
     }
   },
-  "generatedAt": "2026-07-03T04:32:58.257Z"
+  "generatedAt": "2026-07-03T04:51:19.390Z"
 }
