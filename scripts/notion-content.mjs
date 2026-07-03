@@ -1356,7 +1356,6 @@ async function fetchPortfolioEntriesContent({ root, notion, n2m, entryRows, medi
       noteSlugs: publicNoteSlugs,
     },
   });
-  english.generatedAt = new Date().toISOString();
   await writeJson(root, path.join("i18n", "en.json"), english);
 
   return {

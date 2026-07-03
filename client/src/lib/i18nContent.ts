@@ -25,7 +25,6 @@ type EnglishTimelineTranslations = Partial<Pick<EducationEntry, "degree" | "scho
 
 export interface EnglishTranslations {
   locale: "en";
-  generatedAt?: string;
   site?: EnglishSiteTranslations;
   ui?: {
     nav?: Record<string, string>;
