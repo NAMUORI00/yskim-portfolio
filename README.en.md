@@ -2,11 +2,10 @@
 
 [한국어 README](README.md)
 
-A portfolio that uses **Notion as the single source of truth**. Editing in Notion
-both ① turns the Notion page itself into a shareable portfolio and ② lets GitHub
-Actions pull that content and build/deploy a static site (`namuori.net`). One edit
-covers both audiences — places that expect a Notion portfolio and places that just
-want a website.
+A portfolio that uses **Notion as the single source of truth**. Notion is used
+only for the section databases; GitHub Actions pulls that content and
+builds/deploys the static site (`namuori.net`). Public portfolio rendering lives
+on `namuori.net`, not on a separate Notion page.
 
 The flow:
 
@@ -74,16 +73,14 @@ API token is required.
 
 Content sync is handled by GitHub Actions: the `Sync content from Notion` workflow
 (6-hourly schedule + manual dispatch) runs `pnpm fetch:notion` to regenerate
-`content/` (and media under `client/public/notion/`), then runs
-`pnpm sync:notion-public` to regenerate the public Notion rendering page from the
-  same category databases. Any repository content changes are committed to `main`, which
+`content/` (and media under `client/public/notion/`). Any repository content changes are committed to `main`, which
 triggers a Pages deploy. `content/` and `client/public/notion/` are committed so
 the Pages `pnpm build` includes them.
 
 Required GitHub secret/variable (run `pnpm check:notion` to audit):
 
 ```text
-secret   NOTION_TOKEN       # Notion integration token for reading category DBs and writing the public page
+secret   NOTION_TOKEN       # Notion integration token for reading category DBs
 variable NOTION_PROFILE_DB_ID
 variable NOTION_INTRO_DB_ID
 variable NOTION_CONTACTS_DB_ID
@@ -94,9 +91,7 @@ variable NOTION_SKILLS_DB_ID
 variable NOTION_STARRED_DB_ID
 variable NOTION_NOTES_DB_ID
 variable NOTION_SITE_DB_ID
-variable NOTION_PUBLIC_PAGE_ID # public Notion rendering page id
 ```
 
-The Notion integration must be shared with the portfolio management page,
-category databases, and public rendering page. It needs content read/insert/update
-permissions for the public page sync step.
+The Notion integration must be shared with the portfolio category databases and
+needs read access to them.

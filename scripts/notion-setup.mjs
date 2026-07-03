@@ -23,7 +23,6 @@ const DB_VARIABLES = {
   NOTION_STARRED_DB_ID: DATABASE_DEFAULTS.starred,
   NOTION_NOTES_DB_ID: DATABASE_DEFAULTS.notes,
   NOTION_SITE_DB_ID: DATABASE_DEFAULTS.site,
-  NOTION_PUBLIC_PAGE_ID: "380dcd44-779f-81bc-b4ee-e4076ffa598e",
 };
 
 export function parseGhList(output) {
@@ -44,7 +43,7 @@ export function summarizeSetup({ repo = DEFAULT_REPO, secrets, variables }) {
   if (!secrets.has("NOTION_TOKEN")) {
     missing.push("NOTION_TOKEN (secret)");
     nextSteps.push(`gh secret set NOTION_TOKEN --repo ${repo}`);
-    nextSteps.push("In Notion, share the Portfolio management page, category databases, and public rendering page with your integration.");
+    nextSteps.push("In Notion, share the portfolio category databases with your integration.");
   }
 
   for (const [name, value] of Object.entries(DB_VARIABLES)) {

@@ -1,6 +1,6 @@
 # Notion CMS 구조
 
-이 포트폴리오는 Notion 워크스페이스 **`KYS - Portfolio (CMS)`**의 섹션별 데이터베이스를 운영 원본으로 사용합니다. `scripts/notion-content.mjs`와 `scripts/notion-public-page.mjs`는 더 이상 legacy 단일 DB를 읽지 않습니다.
+이 포트폴리오는 Notion 워크스페이스 **`KYS - Portfolio (CMS)`**의 섹션별 데이터베이스를 운영 원본으로 사용합니다. 공개 포트폴리오 렌더링은 Notion 페이지가 아니라 `namuori.net`에서만 담당합니다.
 
 ## 관리 원칙
 
@@ -68,14 +68,12 @@
 4. 영어가 필요하면 같은 DB 안에 같은 `Key`로 `Locale=en` row를 하나 더 만듭니다.
 5. 공개 전에는 `Status=Published`, `Private=false`, 제목, 요약, 순서를 확인합니다.
 6. GitHub Actions `Sync content from Notion`을 실행하거나 6시간 스케줄을 기다립니다.
-7. 같은 워크플로가 `namuori.net` 콘텐츠와 공개 Notion 렌더링 페이지를 모두 재생성합니다.
+7. 같은 워크플로가 `namuori.net` 콘텐츠를 재생성하고 Cloudflare Pages 배포를 트리거합니다.
 
 ## 배포 구조
 
 - GitHub Actions `Sync content from Notion`이 `pnpm fetch:notion`을 실행합니다.
 - fetch는 섹션별 카테고리 DB를 읽고, `content/`와 `content/i18n/en.json`을 재생성합니다.
-- 이어서 `pnpm sync:notion-public`이 같은 카테고리 DB를 읽어 공개 Notion 렌더링 페이지의 본문 블록을 재생성합니다.
-- 공개 페이지 자동 갱신에는 Notion 통합의 콘텐츠 읽기/삽입/업데이트 권한과 공개 렌더링 페이지 공유가 필요합니다.
 - 변경이 있으면 Actions가 `main`에 `chore(content): sync from Notion` 커밋을 푸시합니다.
 - Cloudflare Pages GitHub 연동이 `main` push를 빌드/배포합니다.
 
@@ -84,7 +82,6 @@
 ```bash
 export NOTION_TOKEN=...     # PowerShell: $env:NOTION_TOKEN="..."
 pnpm fetch:notion
-pnpm sync:notion-public
 pnpm dev
 ```
 
