@@ -3,9 +3,9 @@
 [English README](README.en.md)
 
 **Notion을 단일 원본(Single Source of Truth)으로 쓰는 포트폴리오**입니다.
-Notion에서 내용을 편집하면 ① Notion 페이지 자체가 공유 가능한 포트폴리오가 되고,
-② GitHub Actions가 그 내용을 가져와 정적 사이트(`namuori.net`)로 빌드·배포합니다.
-"Notion을 요구하는 곳"과 "웹사이트를 보는 곳"을 한 번의 편집으로 모두 커버합니다.
+Notion에서는 섹션별 데이터베이스만 관리하고, GitHub Actions가 그 내용을 가져와
+정적 사이트(`namuori.net`)로 빌드·배포합니다. 공개 포트폴리오 렌더링은
+Notion 페이지가 아니라 `namuori.net`이 담당합니다.
 
 흐름은 단순합니다.
 
@@ -103,8 +103,7 @@ pnpm build        # dist/public
 콘텐츠 동기화는 GitHub Actions가 맡습니다.
 
 - 흐름: `Sync content from Notion` 워크플로(스케줄 6h + 수동 실행)가 `pnpm fetch:notion`으로
-  Notion → `content/`(+ 미디어 `client/public/notion/`)를 재생성하고, `pnpm sync:notion-public`으로
-  Notion 공개 렌더링 페이지도 같은 카테고리 DB에서 다시 구성합니다. 변경이 있으면 `main`에 커밋·push →
+  Notion → `content/`(+ 미디어 `client/public/notion/`)를 재생성합니다. 변경이 있으면 `main`에 커밋·push →
   Cloudflare Pages가 그 push를 빌드·배포.
 - 코드 변경(일반 push/PR 머지)은 Cloudflare Pages 연동이 직접 빌드·배포.
 - `content/`와 `client/public/notion/`은 **커밋**됩니다(CF 빌드가 `pnpm build`만 돌리므로 산출물이 저장소에 있어야 함).
@@ -112,7 +111,7 @@ pnpm build        # dist/public
 필요한 GitHub secret/variable (`pnpm check:notion`으로 점검):
 
 ```text
-secret   NOTION_TOKEN       # Notion 통합 토큰. 카테고리 DB 읽기 + 공개 페이지 쓰기에 사용
+secret   NOTION_TOKEN       # Notion 통합 토큰. 카테고리 DB 읽기에 사용
 variable NOTION_PROFILE_DB_ID
 variable NOTION_INTRO_DB_ID
 variable NOTION_CONTACTS_DB_ID
@@ -123,8 +122,7 @@ variable NOTION_SKILLS_DB_ID
 variable NOTION_STARRED_DB_ID
 variable NOTION_NOTES_DB_ID
 variable NOTION_SITE_DB_ID
-variable NOTION_PUBLIC_PAGE_ID # DB 기반 공개 Notion 렌더링 페이지 id
 ```
 
-사용자 수동 작업: Notion 통합을 포트폴리오 관리 페이지, 섹션별 데이터베이스, 공개 렌더링 페이지에 연결(공유), 통합 권한에서 콘텐츠 읽기/삽입/업데이트를 허용, GitHub에 `NOTION_TOKEN` secret 입력.
+사용자 수동 작업: Notion 통합을 섹션별 데이터베이스에 연결(공유), 통합 권한에서 콘텐츠 읽기를 허용, GitHub에 `NOTION_TOKEN` secret 입력.
 (프록시 미디어 모드를 쓸 경우에만 Cloudflare Pages 런타임 secret `NOTION_TOKEN` + `NOTION_MEDIA_MODE=proxy` 추가.)
