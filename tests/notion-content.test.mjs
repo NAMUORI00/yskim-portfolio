@@ -25,6 +25,7 @@ import {
   videoEmbedTag,
   slugify,
   firstParagraph,
+  firstListItems,
   splitByLanguageHeading,
   indexRowsByKey,
 } from "../scripts/notion-content.mjs";
@@ -172,6 +173,34 @@ test("slugify + firstParagraph", () => {
   assert.equal(slugify("LLM + RAG 연구 시스템"), "llm-rag-연구-시스템");
   assert.equal(firstParagraph("## 개요\n\n첫 문단입니다.\n\n둘째."), "첫 문단입니다.");
   assert.equal(firstParagraph("# Title\n> quote\n\nReal text."), "Real text.");
+  assert.deepEqual(firstListItems("Intro\n\n- one\n- two\n\nNext"), ["one", "two"]);
+});
+
+test("unified entry builders can use page body instead of content-like columns", () => {
+  const timelineRows = [
+    {
+      __body: "LLM 시스템과 RAG 아키텍처 중심으로 연구/개발 중\n\n- 연구 방향 정리\n- 실험 환경 구성",
+      properties: {
+        Type: rich("education"),
+        Title: title("CS / AI 석사 과정"),
+        School: rich("제주대학교"),
+        Period: rich("2025 — 2027"),
+        Status: sel("Published"),
+      },
+    },
+  ];
+  const [timeline] = buildEntryEducation(timelineRows);
+  assert.equal(timeline.note, "LLM 시스템과 RAG 아키텍처 중심으로 연구/개발 중");
+  assert.deepEqual(timeline.bullets, ["연구 방향 정리", "실험 환경 구성"]);
+
+  assert.deepEqual(
+    buildEntrySkills([{ __body: "- Python\n- CUDA", properties: { Title: title("핵심 언어") } }]),
+    [{ label: "핵심 언어", items: ["Python", "CUDA"] }],
+  );
+  assert.deepEqual(
+    buildEntryStarred([{ __body: "마크업 기반 조판 시스템", properties: { Title: title("typst/typst"), Href: url("https://github.com/typst/typst") } }]),
+    [{ name: "typst/typst", href: "https://github.com/typst/typst", stars: "", desc: "마크업 기반 조판 시스템" }],
+  );
 });
 
 // splitByLanguageHeading remains as a safety net: Korean DBs are mono-lingual now,

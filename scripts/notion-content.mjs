@@ -515,6 +515,29 @@ export function firstParagraph(markdown) {
   return "";
 }
 
+export function firstListItems(markdown) {
+  const items = [];
+  for (const line of String(markdown ?? "").split(/\r?\n/)) {
+    const trimmed = line.trim();
+    const match = trimmed.match(/^(?:[-*+]\s+|\d+[.)]\s+)(.+)$/);
+    if (!match) {
+      if (items.length && trimmed === "") break;
+      continue;
+    }
+    items.push(match[1].replace(/\s+/g, " ").trim());
+  }
+  return items;
+}
+
+function pageBody(page) {
+  return typeof page?.__body === "string" ? page.__body : "";
+}
+
+function bodyListOrComma(markdown) {
+  const list = firstListItems(markdown);
+  return list.length ? list : commaList(firstParagraph(markdown));
+}
+
 // Render a content page's Korean body. Korean DBs are mono-lingual now (English
 // lives in the parallel "… (EN)" DBs), but as a safety net we still strip an
 // English section if a legacy page kept a "# 한국어 / # English" split.
@@ -622,6 +645,8 @@ export function buildEntryContacts(rows) {
 export function buildEntryEducation(rows) {
   return rows.map((page) => {
     const p = page.properties;
+    const body = pageBody(page);
+    const propBullets = lineList(readPlainText(p.Bullets));
     return {
       type: readTextOrSelect(p.Type) || "education",
       degree: entryTitle(page),
@@ -629,11 +654,11 @@ export function buildEntryEducation(rows) {
       period: readPlainText(p.Period),
       startDate: readPlainText(p["Start Date"]) || undefined,
       endDate: readPlainText(p["End Date"]) || undefined,
-      note: readPlainText(p.Summary),
+      note: readPlainText(p.Summary) || firstParagraph(body),
       current: readCheckbox(p.Current),
       status: entryStatus(page),
       highlight: readCheckbox(p.Highlight, true),
-      bullets: lineList(readPlainText(p.Bullets)),
+      bullets: propBullets.length ? propBullets : firstListItems(body),
       links: parseLinks(readPlainText(p.Links)),
       relatedProjects: commaList(readPlainText(p["Related Projects"])),
       relatedSkills: commaList(readPlainText(p["Related Skills"])),
@@ -642,10 +667,13 @@ export function buildEntryEducation(rows) {
 }
 
 export function buildEntrySkills(rows) {
-  return rows.map((page) => ({
-    label: entryTitle(page),
-    items: commaList(readPlainText(page.properties.Items)),
-  }));
+  return rows.map((page) => {
+    const propItems = commaList(readPlainText(page.properties.Items));
+    return {
+      label: entryTitle(page),
+      items: propItems.length ? propItems : bodyListOrComma(pageBody(page)),
+    };
+  });
 }
 
 export function buildEntryStarred(rows) {
@@ -655,7 +683,7 @@ export function buildEntryStarred(rows) {
       name: entryTitle(page),
       href: readUrl(p.Href),
       stars: readPlainText(p.Stars),
-      desc: readPlainText(p.Summary),
+      desc: readPlainText(p.Summary) || firstParagraph(pageBody(page)),
     };
   });
 }
@@ -1033,6 +1061,18 @@ function withEntrySection(page, section) {
   return { ...page, __section: section };
 }
 
+async function withEntryBodies(rows, { n2m, root, group, mediaMode }) {
+  return Promise.all(
+    rows.map(async (page) => {
+      const slug = resolveEntrySlug(page) || entryKey(page) || page.id.replace(/-/g, "").slice(0, 12);
+      return {
+        ...page,
+        __body: await renderKoreanBody(n2m, page.id, root, group, slug, mediaMode),
+      };
+    }),
+  );
+}
+
 function assertConfiguredCategoryDatabases(ids) {
   const missing = CATEGORY_DATABASE_SECTIONS.filter((section) => !ids[section]);
   if (missing.length) {
@@ -1083,17 +1123,20 @@ async function buildEnglishFromEntries({ grouped, n2m, root, mediaMode, koRows }
   }
 
   const timelineEn = indexEntriesByKey(entriesFor(grouped, "timeline", "en"));
-  en.education = koRows.timeline.map((row) => {
+  en.education = [];
+  for (const row of koRows.timeline) {
     const match = timelineEn.get(entryKey(row));
     const p = match?.properties ?? {};
+    const body = match ? await renderBody(n2m, match.id, root, "timeline", `${entryKey(match)}-en`, mediaMode) : "";
+    const propBullets = lineList(readPlainText(p.Bullets));
     const entry = {};
     pushIf(entry, "degree", match ? entryTitle(match) : "");
     pushIf(entry, "school", readPlainText(p.School));
     pushIf(entry, "period", readPlainText(p.Period));
-    pushIf(entry, "note", readPlainText(p.Summary));
-    pushIf(entry, "bullets", lineList(readPlainText(p.Bullets)));
-    return entry;
-  });
+    pushIf(entry, "note", readPlainText(p.Summary) || firstParagraph(body));
+    pushIf(entry, "bullets", propBullets.length ? propBullets : firstListItems(body));
+    en.education.push(entry);
+  }
 
   en.research = {};
   for (const row of entriesFor(grouped, "research", "en")) {
@@ -1127,9 +1170,11 @@ async function buildEnglishFromEntries({ grouped, n2m, root, mediaMode, koRows }
   en.skills = {};
   for (const row of koRows.skills) {
     const match = skillsEn.get(entryKey(row));
+    const body = match ? await renderBody(n2m, match.id, root, "skills", `${entryKey(match)}-en`, mediaMode) : "";
+    const propItems = commaList(readPlainText(match?.properties?.Items));
     const entry = {};
     pushIf(entry, "label", match ? entryTitle(match) : "");
-    pushIf(entry, "items", commaList(readPlainText(match?.properties?.Items)));
+    pushIf(entry, "items", propItems.length ? propItems : bodyListOrComma(body));
     if (entryTitle(row) && Object.keys(entry).length) en.skills[entryTitle(row)] = entry;
   }
 
@@ -1137,7 +1182,8 @@ async function buildEnglishFromEntries({ grouped, n2m, root, mediaMode, koRows }
   en.starred = {};
   for (const row of koRows.starred) {
     const match = starredEn.get(entryKey(row));
-    const desc = readPlainText(match?.properties?.Summary);
+    const body = match ? await renderBody(n2m, match.id, root, "starred", `${entryKey(match)}-en`, mediaMode) : "";
+    const desc = readPlainText(match?.properties?.Summary) || firstParagraph(body);
     if (entryTitle(row) && desc) en.starred[entryTitle(row)] = { desc };
   }
 
@@ -1175,12 +1221,12 @@ async function fetchPortfolioEntriesContent({ root, notion, n2m, entryRows, medi
 
   const introRows = entriesFor(grouped, "intro", "ko");
   const contactRows = entriesFor(grouped, "contacts", "ko");
-  const timelineRows = entriesFor(grouped, "timeline", "ko");
+  const timelineRows = await withEntryBodies(entriesFor(grouped, "timeline", "ko"), { n2m, root, group: "timeline", mediaMode });
   const projectRows = entriesFor(grouped, "projects", "ko");
   const researchRows = entriesFor(grouped, "research", "ko");
   const noteRows = entriesFor(grouped, "notes", "ko");
-  const skillRows = entriesFor(grouped, "skills", "ko");
-  const starredRows = entriesFor(grouped, "starred", "ko");
+  const skillRows = await withEntryBodies(entriesFor(grouped, "skills", "ko"), { n2m, root, group: "skills", mediaMode });
+  const starredRows = await withEntryBodies(entriesFor(grouped, "starred", "ko"), { n2m, root, group: "starred", mediaMode });
 
   await rm(path.join(root, GENERATED_ASSETS_DIR), { recursive: true, force: true });
   for (const dir of ["projects", "research", "notes"]) {
@@ -1198,7 +1244,7 @@ async function fetchPortfolioEntriesContent({ root, notion, n2m, entryRows, medi
     status: readPlainText(profileRow.properties.Availability),
     avatarUrl: avatarUrl ?? "",
     headline: readPlainText(profileRow.properties.Headline),
-    summaryLead: readPlainText(profileRow.properties["Summary Lead"]),
+    summaryLead: readPlainText(profileRow.properties["Summary Lead"]) || firstParagraph(profileSummaryMd),
     summary: markdownToParagraphs(profileSummaryMd || readPlainText(profileRow.properties.Summary)),
     contacts: buildEntryContacts(contactRows),
   };

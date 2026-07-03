@@ -6,6 +6,8 @@
 
 콘텐츠는 블로그 글처럼 각 카테고리 DB의 row/page에서 관리합니다. KO/EN은 같은 DB 안에서 `Locale=ko/en`, 같은 `Key`로 짝을 맞춥니다.
 
+DB 속성은 "렌더링에 필요한 메타데이터"만 둡니다. 설명, 성과, bullet, 긴 소개, 연구/프로젝트 상세, 번역 본문처럼 사람이 글로 읽고 쓰는 내용은 row 내부 페이지에 작성합니다.
+
 공개 반영 조건은 모든 DB에서 동일합니다.
 
 - `Status=Published`
@@ -39,26 +41,42 @@
 | `Status` | `Published`, `Draft`, `Archived` |
 | `Private` | 공개 사이트와 공개 Notion 페이지에서 제외할지 여부 |
 | `Order` | 같은 DB 안 표시 순서 |
-| `Summary` | 카드/목록에 쓰는 짧은 요약 |
 | `Slug` | 상세 페이지 URL slug가 필요한 콘텐츠에서 사용 |
 | `Highlight` | 대표 프로젝트 우선 노출 |
+
+`Summary`는 남아 있어도 동작하지만 필수 작성 대상이 아닙니다. 비워두면 내부 페이지의 첫 문단이 카드/목록 요약으로 사용됩니다.
 
 ## 섹션별 주요 필드
 
 | DB | 주요 필드 | 산출물 |
 |----|----|----|
-| `Profile` | `Romanized`, `Handle`, `Availability`, `Headline`, `Summary Lead`, `Avatar URL` | `content/profile.json` |
-| `Intro` | `Summary Lead`, `Summary`, 페이지 본문 | `profile.json.summary` |
+| `Profile` | `Romanized`, `Handle`, `Availability`, `Headline`, `Avatar URL` | `content/profile.json` |
+| `Intro` | 페이지 본문 | `profile.json.summary` |
 | `Contacts` | `Type`, `Handle`, `Href`, `URL`, `Link` | `profile.json.contacts[]` |
-| `Timeline` | `Type`, `School`, `Period`, `Start Date`, `End Date`, `Current`, `Bullets` | `content/education.json` |
+| `Timeline` | `Type`, `School`, `Period`, `Start Date`, `End Date`, `Current` | `content/education.json` |
 | `Research Interests` | `Tags`, `Focus`, `Cover URL`, 페이지 본문 | `content/research/*.mdx` |
 | `Projects` | `Period`, `Metric`, `Proof Level`, `Tags`, `Link`, `Focus`, `Cover URL`, 페이지 본문 | `content/projects/*.mdx` |
-| `Tech Stack` | `Items`, `Category`, `Related Projects` | `content/skills.json` |
+| `Tech Stack` | `Category`, `Related Projects` | `content/skills.json` |
 | `Starred Repos` | `Href`, `Stars`, `Tags`, `Category` | `content/starred.json` |
 | `Notes` | `Date`, `Tags`, `Type`, 페이지 본문 | `content/notes/*.mdx` |
 | `Site Config` | `Description`, `URL` | `content/site.json` |
 
-`Tags`, `Items`, `Bullets`, `Related Notes`, `Related Projects`, `Related Research`는 쉼표 또는 줄바꿈 기반 텍스트로 관리합니다. JSON을 직접 쓰지 않습니다.
+`Tags`와 `Related Notes`, `Related Projects`, `Related Research`를 속성으로 유지할 때는 쉼표 또는 줄바꿈 기반 텍스트로 관리합니다. JSON을 직접 쓰지 않습니다.
+
+## 얇은 스키마 원칙
+
+아래 속성은 가능하면 새 글에서 쓰지 않고 내부 페이지 본문으로 관리합니다.
+
+| 기존 속성 | 권장 위치 | 렌더링 동작 |
+|----|----|----|
+| `Summary`, `Desc` | 내부 페이지 첫 문단 | 비어 있으면 첫 문단을 자동 요약으로 사용 |
+| `Bullets` | 내부 페이지 bullet list | 비어 있으면 첫 bullet list를 타임라인 bullet로 사용 |
+| `Items` | 내부 페이지 bullet list 또는 쉼표 목록 | 비어 있으면 내부 페이지 목록을 기술 스택 items로 사용 |
+| `Metric` | 프로젝트 본문 Evidence/성과 섹션 | 비어 있어도 빌드가 깨지지 않음 |
+| `Metrics JSON`, `Evaluation JSON` | 프로젝트 본문 표/목록 | 고급 구조화가 필요할 때만 유지 |
+| `Related ...` 텍스트 | 본문 링크 또는 추후 Relation 속성 | 현재는 선택적 메타데이터 |
+
+새 항목을 만들 때 기본적으로 채울 속성은 `Title`, `Locale`, `Key`, `Status`, `Private`, `Order`입니다. 프로젝트/연구/노트처럼 URL이 있는 글은 `Slug`를 추가하고, 필터링이 필요한 경우에만 `Tags`, `Focus`, `Category`, `Highlight`, `Date`, `Link`, `Cover URL`을 사용합니다.
 
 ## 작성 흐름
 
