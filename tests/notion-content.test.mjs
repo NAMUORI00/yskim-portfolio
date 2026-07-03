@@ -29,6 +29,7 @@ import {
   firstLabeledValue,
   splitByLanguageHeading,
   indexRowsByKey,
+  entrySummaryLead,
 } from "../scripts/notion-content.mjs";
 
 // --- mock Notion property factories -------------------------------------------
@@ -285,4 +286,12 @@ test("buildEnglish prefers short EN databases and falls back to inline fields", 
   assert.equal(en.education[0].degree, "DB degree");
   assert.deepEqual(en.skills["핵심 언어"], { label: "DB label", items: ["Python", "CUDA"] });
   assert.deepEqual(en.starred["owner/repo"], { desc: "DB desc" });
+});
+
+test("entrySummaryLead prefers intro rows before profile fallback", () => {
+  const introRow = { properties: { "Summary Lead": rich("Intro lead") } };
+  const profileRow = { properties: { "Summary Lead": rich("Profile lead") } };
+
+  assert.equal(entrySummaryLead(introRow, profileRow), "Intro lead");
+  assert.equal(entrySummaryLead(null, profileRow), "Profile lead");
 });
