@@ -174,6 +174,7 @@ test("slugify + firstParagraph", () => {
   assert.equal(slugify("LLM + RAG 연구 시스템"), "llm-rag-연구-시스템");
   assert.equal(firstParagraph("## 개요\n\n첫 문단입니다.\n\n둘째."), "첫 문단입니다.");
   assert.equal(firstParagraph("# Title\n> quote\n\nReal text."), "Real text.");
+  assert.equal(firstParagraph("## Notes\n\n- list item only"), "");
   assert.deepEqual(firstListItems("Intro\n\n- one\n- two\n\nNext"), ["one", "two"]);
   assert.equal(firstLabeledValue("## Evidence\n\n- Metric: MRR +31%\n- Other: x", ["Metric"]), "MRR +31%");
   assert.equal(firstLabeledValue("**성과:** 지연 시간 40% 감소", ["성과", "Metric"]), "지연 시간 40% 감소");

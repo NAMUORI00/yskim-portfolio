@@ -509,7 +509,7 @@ function resolveEntrySlug(page) {
 export function firstParagraph(markdown) {
   for (const block of String(markdown ?? "").split(/\n{2,}/)) {
     const text = block.trim();
-    if (!text || /^[#<>|]/.test(text)) continue;
+    if (!text || /^(?:[#<>|]|[-*+]\s+|\d+[.)]\s+)/.test(text)) continue;
     return text.replace(/\s+/g, " ").trim();
   }
   return "";
