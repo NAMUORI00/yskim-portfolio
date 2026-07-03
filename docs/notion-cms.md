@@ -53,15 +53,15 @@ DB 속성은 "렌더링에 필요한 메타데이터"만 둡니다. 설명, 성�
 | `Profile` | `Romanized`, `Handle`, `Availability`, `Headline`, `Avatar URL` | `content/profile.json` |
 | `Intro` | `Summary Lead`, 페이지 본문 | `profile.json.summary` |
 | `Contacts` | `Type`, `Href` | `profile.json.contacts[]` |
-| `Timeline` | `Type`, `School`, `Period`, `Start Date`, `End Date`, `Current`, 페이지 본문 | `content/education.json` |
-| `Research Interests` | `Tags`, `Focus`, `Cover URL`, 페이지 본문 | `content/research/*.mdx` |
-| `Projects` | `Period`, `Proof Level`, `Tags`, `Link`, `Focus`, `Cover URL`, 페이지 본문 | `content/projects/*.mdx` |
+| `Timeline` | `Type`, `School`, `Period`, `Current`, `Highlight`, 페이지 본문 | `content/education.json` |
+| `Research Interests` | `Slug`, `Show Diagram`, `Related Notes`, 페이지 본문 | `content/research/*.mdx` |
+| `Projects` | `Slug`, `Period`, `Category`, `Focus`, `Proof Level`, `Tags`, `Link`, `Highlight`, `Related Notes`, 페이지 본문 | `content/projects/*.mdx` |
 | `Tech Stack` | 페이지 본문 | `content/skills.json` |
 | `Starred Repos` | `Href`, `Stars`, 페이지 본문 | `content/starred.json` |
-| `Notes` | `Date`, `Tags`, `Type`, 페이지 본문 | `content/notes/*.mdx` |
+| `Notes` | `Slug`, `Date`, `Tags`, `Type`, `Related Projects`, `Related Research`, 페이지 본문 | `content/notes/*.mdx` |
 | `Site Config` | `Description`, `URL` | `content/site.json` |
 
-`Tags`와 `Related Notes`, `Related Projects`, `Related Research`를 속성으로 유지할 때는 쉼표 또는 줄바꿈 기반 텍스트로 관리합니다. JSON을 직접 쓰지 않습니다.
+`Tags`, `Related Notes`, `Related Projects`, `Related Research`를 속성으로 유지할 때는 쉼표 또는 줄바꿈 기반 텍스트로 관리합니다. JSON을 직접 쓰지 않습니다.
 
 ## 얇은 스키마 원칙
 
@@ -74,9 +74,9 @@ DB 속성은 "렌더링에 필요한 메타데이터"만 둡니다. 설명, 성�
 | `Items` | 내부 페이지 bullet list | 첫 bullet list를 기술 스택 items로 사용 |
 | `Metric` | 프로젝트 본문 `Evidence` 섹션의 `Metric:` 줄 | 카드 성과값으로 자동 사용 |
 | `Metrics JSON`, `Evaluation JSON` | 프로젝트 본문 표/목록 | 고급 구조화가 필요할 때만 유지 |
-| `Related ...` 텍스트 | 본문 링크 또는 추후 Relation 속성 | 현재는 선택적 메타데이터 |
+| `Related ...` 텍스트 | 본문 링크 또는 추후 Relation 속성 | 노트/프로젝트처럼 화면 연결에 쓰는 경우에만 유지 |
 
-새 항목을 만들 때 기본적으로 채울 속성은 `Title`, `Locale`, `Key`, `Status`, `Private`, `Order`입니다. 프로젝트/연구/노트처럼 URL이 있는 글은 `Slug`를 추가하고, 필터링이 필요한 경우에만 `Tags`, `Focus`, `Category`, `Highlight`, `Date`, `Link`, `Cover URL`을 사용합니다.
+새 항목을 만들 때 기본적으로 채울 속성은 `Title`, `Locale`, `Key`, `Status`, `Private`, `Order`입니다. 프로젝트/연구/노트처럼 URL이 있는 글은 `Slug`를 추가하고, 화면 필터나 링크에 실제로 쓰이는 속성만 더 채웁니다.
 
 ## 작성 흐름
 

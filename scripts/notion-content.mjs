@@ -854,6 +854,10 @@ function keyedRow(section, key) {
   return section?.byKey?.get(key) ?? null;
 }
 
+export function entrySummaryLead(introRow, profileRow) {
+  return readPlainText(introRow?.properties?.["Summary Lead"]) || readPlainText(profileRow?.properties?.["Summary Lead"]);
+}
+
 function englishText(enRow, enProp, koProperties, inlineProp) {
   return readPlainText(enRow?.properties?.[enProp]) || readPlainText(koProperties?.[inlineProp]);
 }
@@ -1128,7 +1132,7 @@ async function buildEnglishFromEntries({ grouped, n2m, root, mediaMode, koRows }
     pushIf(profile, "name", entryTitle(profileEn));
     pushIf(profile, "status", readPlainText(pp.Availability));
     pushIf(profile, "headline", readPlainText(pp.Headline));
-    pushIf(profile, "summaryLead", readPlainText(pp["Summary Lead"]));
+    pushIf(profile, "summaryLead", entrySummaryLead(introEn, profileEn));
     pushIf(profile, "summary", markdownToParagraphs(body || readPlainText(pp.Summary)));
     const contacts = {};
     for (const row of entriesFor(grouped, "contacts", "en")) {
@@ -1262,7 +1266,7 @@ async function fetchPortfolioEntriesContent({ root, notion, n2m, entryRows, medi
     status: readPlainText(profileRow.properties.Availability),
     avatarUrl: avatarUrl ?? "",
     headline: readPlainText(profileRow.properties.Headline),
-    summaryLead: readPlainText(profileRow.properties["Summary Lead"]) || firstParagraph(profileSummaryMd),
+    summaryLead: entrySummaryLead(introRow, profileRow) || firstParagraph(profileSummaryMd),
     summary: markdownToParagraphs(profileSummaryMd || readPlainText(profileRow.properties.Summary)),
     contacts: buildEntryContacts(contactRows),
   };
