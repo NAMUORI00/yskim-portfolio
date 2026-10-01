@@ -19,7 +19,6 @@
       "featured": "Featured",
       "private": "Private",
       "portfolio": "Portfolio",
-      "notes": "notes",
       "detail": "Detail",
       "github": "GitHub",
       "ragCaption": "Dense + Sparse + Graph hybrid retrieval architecture",
@@ -38,7 +37,7 @@
     "summary": [
       "My research and development work explores finding information in documents, understanding events in video, and separating instruments from a mixed recording. I am interested in connecting data processing, servers, and user interfaces so people can inspect and use the results of AI.",
       "In research, I have studied how to select retrieval methods for a question and when video evidence is sufficient to answer rather than abstain. I have taken this work from ideas and implementation through comparisons with existing methods and manuscript writing. In software projects, I connected audio separation to upload and playback interfaces and built a workflow for storing sensor readings and viewing them on the web. My experience also spans data analysis, mobile applications, circuits and firmware, and development environment automation.",
-      "My strength is defining the functions a project needs and connecting technologies into a working result. I have handled planning, core development, and coordination in team projects, and worked on AI features and web/backend development during paid internships. I value being able to explain how an implementation works and examine it through experiments and working user flows."
+      "My strength is defining the functions a project needs and connecting technologies into a working result. I have handled planning, core development, and coordination in team projects, and worked on AI features and web/backend development during internships. I value being able to explain how an implementation works and examine it through experiments and working user flows."
     ],
     "contacts": {
       "email": {
@@ -86,31 +85,31 @@
       ]
     },
     {
-      "degree": "Backend Development Intern · Paid",
+      "degree": "Backend Development Intern",
       "school": "Tilonsoft",
       "period": "2023.07 — 2023.08",
       "note": "Developed a Java/Spring Boot portal with post CRUD, signup/login, search, pagination, and database integration."
     },
     {
-      "degree": "AI Development Intern · Paid",
+      "degree": "AI Development Intern",
       "school": "Kakao · Kakao Track field placement",
       "period": "2023.01 — 2023.02",
       "note": "Developed an audio-to-score project with Python/PyTorch and a Bootstrap web interface. Led ideation, core development, and team coordination."
     },
     {
-      "degree": "Frontend Development Intern · Paid",
+      "degree": "Frontend Development Intern",
       "school": "Tilonsoft",
       "period": "2022.07 — 2022.08",
       "note": "Contributed to a Vue.js corporate website redesign and implemented UI components."
     },
     {
-      "degree": "Coding Teaching Assistant · Paid, short-term",
+      "degree": "Coding Teaching Assistant · Short-term",
       "school": "Jeju Middle School",
       "period": "2020.10",
       "note": "Supported after-school coding practice and explained algorithms to students."
     },
     {
-      "degree": "Coding Teaching Assistant · Paid, short-term",
+      "degree": "Coding Teaching Assistant · Short-term",
       "school": "Jeju Science High School",
       "period": "2017.07",
       "note": "Prepared learning materials and practice environments and supported student questions."
@@ -147,12 +146,6 @@
         "Nov 2017 CS exhibition corporate excellence award: Arduino/PHP/MySQL smart-home monitoring",
         "Aug 2017 AR/VR hackathon encouragement award: Unity game team project"
       ]
-    },
-    {
-      "degree": "OPIc English IM1",
-      "school": "Language",
-      "period": "2026.08",
-      "note": "Achieved OPIc Intermediate Mid 1."
     }
   ],
   "research": {
@@ -506,17 +499,6 @@
     },
     "steipete/oracle": {
       "desc": "GPT-5 Pro context usage"
-    }
-  },
-  "notes": {
-    "rag-evaluation": {
-      "title": "RAG Evaluation Notes",
-      "summary": "A practical evaluation lens for comparing RAG systems across retrieval quality, answer grounding, and operating cost.",
-      "tags": [
-        "RAG",
-        "Evaluation"
-      ],
-      "body": "A practical evaluation lens for comparing RAG systems across retrieval quality, answer grounding, and operating cost.\n\n\n## Why Evaluation Comes First\n\n\nIf you only look at answer quality in a RAG system, it is easy to miss the cause of failure. The retrieval, reranking, and generation stages need to be separated so you can see whether documents were missed, pushed down, or ignored during answer generation.\n\n\n## Basic Metrics\n\n- Recall@5: checks whether the supporting evidence appears in the top five retrieved documents.\n- MRR: measures how early the first useful evidence appears.\n- Groundedness: checks whether the answer is actually supported by retrieved documents."
     }
   }
 }

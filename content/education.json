@@ -61,7 +61,7 @@
   },
   {
     "type": "work",
-    "degree": "백엔드 개발 인턴 · 유급",
+    "degree": "백엔드 개발 인턴",
     "school": "틸론소프트",
     "period": "2023.07 — 2023.08",
     "note": "Java·Spring Boot 기반 게시판 포털을 개발했습니다. 게시글 CRUD, 회원가입·로그인, 검색·페이지네이션과 데이터베이스 연동을 구현했습니다.",
@@ -75,7 +75,7 @@
   },
   {
     "type": "work",
-    "degree": "AI 개발 인턴 · 유급",
+    "degree": "AI 개발 인턴",
     "school": "카카오 · 카카오트랙 연계 현장실습",
     "period": "2023.01 — 2023.02",
     "note": "Python·PyTorch 기반 음원 악보 전사 프로젝트와 Bootstrap 웹 화면을 개발했습니다. 팀장으로 아이디어 구체화, 주요 개발과 진행 관리를 담당했습니다.",
@@ -89,7 +89,7 @@
   },
   {
     "type": "work",
-    "degree": "프론트엔드 개발 인턴 · 유급",
+    "degree": "프론트엔드 개발 인턴",
     "school": "틸론소프트",
     "period": "2022.07 — 2022.08",
     "note": "Vue.js 기반 회사 소개 웹페이지 개편에 참여하고 화면 구현을 지원했습니다.",
@@ -103,7 +103,7 @@
   },
   {
     "type": "work",
-    "degree": "코딩교육 보조강사 · 유급 단기",
+    "degree": "코딩교육 보조강사 · 단기",
     "school": "제주중학교",
     "period": "2020.10",
     "note": "방과후 코딩교육의 학생 실습과 알고리즘 설명을 지원했습니다.",
@@ -117,7 +117,7 @@
   },
   {
     "type": "work",
-    "degree": "코딩교육 보조강사 · 유급 단기",
+    "degree": "코딩교육 보조강사 · 단기",
     "school": "제주과학고등학교",
     "period": "2017.07",
     "note": "코딩교육 학습자료·실습환경 준비와 학생 질의응답을 지원했습니다.",
@@ -179,20 +179,6 @@
       "2017.11 컴퓨터공학과 전시회 기업체우수상: Arduino·PHP·MySQL 스마트홈 모니터링",
       "2017.08 AR·VR 해커톤 장려상: Unity 게임 팀 개발"
     ],
-    "links": [],
-    "relatedProjects": [],
-    "relatedSkills": []
-  },
-  {
-    "type": "milestone",
-    "degree": "OPIc 영어 IM1",
-    "school": "어학",
-    "period": "2026.08",
-    "note": "OPIc Intermediate Mid 1 취득.",
-    "current": false,
-    "status": "published",
-    "highlight": false,
-    "bullets": [],
     "links": [],
     "relatedProjects": [],
     "relatedSkills": []

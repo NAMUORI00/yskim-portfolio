@@ -1,4 +1,4 @@
-import type { NoteEntry, PortfolioContent, ProjectEntry, ResearchEntry } from "@/content";
+import type { PortfolioContent, ProjectEntry, ResearchEntry } from "@/content";
 
 export type KnowledgeNodeKind = "profile" | "project" | "research" | "note" | "skill" | "repo" | "term";
 export type KnowledgeLinkKind = "profile" | "skill" | "repo" | "tag" | "term" | "related";
@@ -37,7 +37,6 @@ type DocumentNode = {
   section: string;
   text: string;
   tags: string[];
-  relatedNotes?: string[];
   relatedProjects?: string[];
   relatedResearch?: string[];
   highlight?: boolean;
@@ -137,7 +136,6 @@ function projectDocument(project: ProjectEntry): DocumentNode {
     section: "projects",
     text: [project.name, project.desc, project.metric, project.tags.join(" "), project.body].join(" "),
     tags: project.tags,
-    relatedNotes: project.relatedNotes,
     highlight: project.highlight,
   };
 }
@@ -151,21 +149,6 @@ function researchDocument(research: ResearchEntry): DocumentNode {
     section: "research",
     text: [research.title, research.desc, research.body].join(" "),
     tags: [],
-    relatedNotes: research.relatedNotes,
-  };
-}
-
-function noteDocument(note: NoteEntry): DocumentNode {
-  return {
-    id: `note:${note.slug}`,
-    label: note.title,
-    kind: "note",
-    href: `/notes/${note.slug}`,
-    section: "interests",
-    text: [note.title, note.summary, note.tags.join(" "), note.body].join(" "),
-    tags: note.tags,
-    relatedProjects: note.relatedProjects,
-    relatedResearch: note.relatedResearch,
   };
 }
 
@@ -173,7 +156,6 @@ function visibleDocuments(content: PortfolioContent): DocumentNode[] {
   return [
     ...content.projects.filter((project) => project.status === "published").map(projectDocument),
     ...content.research.filter((research) => research.status === "published").map(researchDocument),
-    ...content.notes.filter((note) => note.status === "published").map(noteDocument),
   ];
 }
 
@@ -226,7 +208,7 @@ export function buildKnowledgeGraph(content: PortfolioContent, options: Knowledg
     }
   }
 
-  for (const document of documents.filter((item) => item.kind !== "note")) {
+  for (const document of documents) {
     const counts = documentTerms.get(document.id) ?? new Map<string, number>();
     for (const [skillTerm, skillId] of Array.from(skillIdsByTerm.entries())) {
       const count = counts.get(skillTerm) ?? 0;
@@ -273,9 +255,6 @@ export function buildKnowledgeGraph(content: PortfolioContent, options: Knowledg
   }
 
   for (const document of documents) {
-    for (const slug of document.relatedNotes ?? []) {
-      addLink(links, { source: document.id, target: `note:${slug}`, kind: "related", weight: 2.8 });
-    }
     for (const slug of document.relatedProjects ?? []) {
       addLink(links, { source: document.id, target: `project:${slug}`, kind: "related", weight: 2.8 });
     }

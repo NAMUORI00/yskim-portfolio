@@ -8,11 +8,10 @@ import englishTranslationsData from "@content/i18n/en.json";
 import { parseFrontmatter } from "./markdown";
 import { validatePortfolioContent } from "./schema";
 import type { EnglishTranslations } from "@/lib/i18nContent";
-import type { NoteEntry, ProjectCategory, ProjectEntry, ProjectEvaluation, ProjectFocus, ProjectMetric, ProjectProofLevel, ResearchEntry } from "./types";
+import type { ProjectCategory, ProjectEntry, ProjectEvaluation, ProjectFocus, ProjectMetric, ProjectProofLevel, ResearchEntry } from "./types";
 
 const researchModules = import.meta.glob<string>("@content/research/*.mdx", { eager: true, import: "default", query: "?raw" });
 const projectModules = import.meta.glob<string>("@content/projects/*.mdx", { eager: true, import: "default", query: "?raw" });
-const noteModules = import.meta.glob<string>("@content/notes/*.mdx", { eager: true, import: "default", query: "?raw" });
 
 function stringArray(value: unknown): string[] {
   return Array.isArray(value) ? value.map(String) : [];
@@ -99,7 +98,6 @@ function parseResearch(source: string): ResearchEntry {
     desc: String(data.desc ?? ""),
     coverImage: optionalString(data.coverImage),
     showDiagram: bool(data.showDiagram),
-    relatedNotes: stringArray(data.relatedNotes),
     body,
   };
 }
@@ -128,23 +126,7 @@ function parseProject(source: string): ProjectEntry {
     link: String(data.link ?? ""),
     highlight,
     private: bool(data.private),
-    relatedNotes: stringArray(data.relatedNotes),
     coverImage: optionalString(data.coverImage),
-    body,
-  };
-}
-
-function parseNote(source: string): NoteEntry {
-  const { data, body } = parseFrontmatter(source);
-  return {
-    slug: String(data.slug ?? ""),
-    title: String(data.title ?? ""),
-    status: status(data.status),
-    date: String(data.date ?? ""),
-    summary: String(data.summary ?? ""),
-    tags: stringArray(data.tags),
-    relatedProjects: stringArray(data.relatedProjects),
-    relatedResearch: stringArray(data.relatedResearch),
     body,
   };
 }
@@ -173,7 +155,6 @@ export const portfolioContent = validatePortfolioContent({
   projects: orderedBySlug(moduleSources(projectModules).map(parseProject), order.projects),
   skills,
   starred,
-  notes: orderedBySlug(moduleSources(noteModules).map(parseNote), order.notes),
 });
 
 export const englishTranslations = englishTranslationsData as EnglishTranslations;
@@ -183,7 +164,6 @@ export { getProfileAvatarUrl } from "./profile";
 export type {
   EducationEntry,
   ContentOrder,
-  NoteEntry,
   PortfolioContent,
   ProfileContact,
   ProfileContent,

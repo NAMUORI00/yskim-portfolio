@@ -106,7 +106,6 @@ export const researchSchema = z.object({
   coverImage: optionalSafeUrlSchema(),
   showDiagram: z.boolean(),
   body: z.string(),
-  relatedNotes: z.array(z.string()),
 });
 
 export const projectSchema = z.object({
@@ -127,7 +126,6 @@ export const projectSchema = z.object({
   status: statusSchema,
   coverImage: optionalSafeUrlSchema(),
   body: z.string(),
-  relatedNotes: z.array(z.string()),
 });
 
 export const skillGroupSchema = z.object({
@@ -142,18 +140,6 @@ export const starredRepoSchema = z.object({
   desc: z.string().min(1),
 });
 
-export const noteSchema = z.object({
-  slug: z.string().min(1),
-  title: z.string().min(1),
-  status: statusSchema,
-  date: z.string().min(1),
-  summary: z.string().min(1),
-  tags: z.array(z.string()),
-  relatedProjects: z.array(z.string()),
-  relatedResearch: z.array(z.string()),
-  body: z.string(),
-});
-
 export const portfolioContentSchema = z.object({
   site: siteSchema,
   profile: profileSchema,
@@ -162,7 +148,6 @@ export const portfolioContentSchema = z.object({
   projects: z.array(projectSchema),
   skills: z.array(skillGroupSchema),
   starred: z.array(starredRepoSchema),
-  notes: z.array(noteSchema),
 });
 
 function assertUnique(items: Array<{ slug: string }>, label: string) {
@@ -215,6 +200,5 @@ export function validatePortfolioContent(value: unknown): PortfolioContent {
   };
   assertUnique(normalized.projects, "project");
   assertUnique(normalized.research, "research");
-  assertUnique(normalized.notes, "note");
   return normalized;
 }

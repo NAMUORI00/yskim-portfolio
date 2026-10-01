@@ -29,7 +29,7 @@ import { useTheme } from "@/contexts/ThemeContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { englishTranslations, getProfileAvatarUrl, portfolioContent, type ProjectEntry } from "@/content";
 import { DARK, FONT_MONO, FONT_SANS, FONT_SERIF, LIGHT, type PortfolioTheme } from "@/content/theme";
-import { CareerExpandAllButton, CareerRecords, useCareerRecords } from "@/components/CareerRecords";
+import { CareerRecords, useCareerRecords } from "@/components/CareerRecords";
 import { KnowledgeGraphRail } from "@/components/KnowledgeGraphRail";
 import { ProjectDialog } from "@/components/ProjectDialog";
 import { LazyBoundary } from "@/components/LazyBoundary";
@@ -475,7 +475,6 @@ export function HomeView() {
   const TIMELINE_ENTRIES = content.education.filter((item) => item.status === "published");
   const RESEARCH_INTERESTS = content.research.filter((item) => item.status === "published");
   const PROJECTS = content.projects.filter((item) => item.status === "published");
-  const NOTES = content.notes.filter((item) => item.status === "published");
   const SKILL_GROUPS = content.skills;
   const projectRole = (project: ProjectEntry) => project.body.match(/## (?:맡은 역할|My role)\s+([^#]+?)(?=\n\s*\n|$)/)?.[1]?.trim() ?? "";
   const STARRED = content.starred;
@@ -758,11 +757,6 @@ export function HomeView() {
             <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: T.green, flexShrink: 0 }} />
             <span style={{ fontFamily: FONT_MONO, fontSize: "clamp(0.62rem, 0.7vw, 0.72rem)", color: T.green }}>{PROFILE.status}</span>
           </div>
-           <div style={{ fontFamily: FONT_SANS, fontSize: "clamp(0.75rem, 0.86vw, 0.88rem)", color: T.sub, lineHeight: 1.7, wordBreak: "keep-all" }}>
-            {PROFILE.headline.split("\n").map((line) => (
-              <span key={line}>{line}<br /></span>
-            ))}
-          </div>
         </div>
         {/* 네비게이션 */}
         <nav style={{ flex: 1, minHeight: 0 }}>
@@ -937,7 +931,6 @@ export function HomeView() {
               id="education"
               icon="graduation"
               T={T}
-              action={<CareerExpandAllButton state={careerRecords} T={T} locale={locale} />}
             >
               {locale === "en" ? "Research & Experience" : "논문·연구·경력"}
             </SectionTitle>
@@ -1123,16 +1116,6 @@ export function HomeView() {
                         aria-label={locale === "en" ? `${selectedProject.name} — details` : `${selectedProject.name} 자세히 보기`}
                       >
                         {/* 이름·기간은 바로 위 행에 있으므로 되풀이하지 않습니다. */}
-                        <div className="project-detail-meta">
-                          {selectedProject.relatedNotes.length > 0 && (
-                            <span>
-                              {locale === "en" ? "Related notes" : "관련 노트"} ·{" "}
-                              {selectedProject.relatedNotes
-                                .map((slug) => NOTES.find((note) => note.slug === slug)?.title ?? slug)
-                                .join(", ")}
-                            </span>
-                          )}
-                        </div>
                         {/* 프런트매터에 정리한 지표(metrics)가 있을 때만 — 한 줄 성과(metric)는 위 목록에 이미 보입니다. */}
                         {selectedProject.metrics.length > 0 && projectEvidenceMetrics(selectedProject).length > 0 && (
                           <div className="project-evidence-grid">
@@ -1321,17 +1304,6 @@ export function HomeView() {
             <span style={{ fontFamily: FONT_MONO, fontSize: "0.6875rem", color: T.muted }}>
               © 2026 {PROFILE.name} ({PROFILE.romanizedName})
             </span>
-            <a
-              href={previewHref("/notes")}
-              style={{
-                fontFamily: FONT_MONO,
-                fontSize: "0.6875rem",
-                color: T.green,
-                textDecoration: "none",
-              }}
-            >
-              {label("notes", "notes")}
-            </a>
             <a
               href={PROFILE.contacts.find((contact) => contact.type === "github")?.href ?? "https://github.com/NAMUORI00"}
               target="_blank"

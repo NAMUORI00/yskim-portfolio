@@ -16,7 +16,7 @@ Git 저장소의 content/ + client/ → main push → Cloudflare Pages → namuo
 | 논문·학력·경력 | `content/education.json` |
 | 기술·관심 오픈소스 | `content/skills.json`, `content/starred.json` |
 | 연구 관심 분야 | `content/research/*.mdx` |
-| 프로젝트·노트 | `content/projects/*.mdx`, `content/notes/*.mdx` |
+| 프로젝트 | `content/projects/*.mdx` |
 | 프로젝트 자세히 보기(요약·비교·모듈) | `client/src/components/capabilities/projectInsights.ts`, 모듈 흐름 도식은 같은 폴더의 `capability*.ts` |
 | 표시 순서 | `content/order.json` |
 | 영어 번역 | `content/i18n/en.json` |

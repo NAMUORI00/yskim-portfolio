@@ -164,59 +164,6 @@ export function CV() {
   );
 }
 
-export function Notes() {
-  const { T, content, previewHref } = usePalette();
-  const notes = content.notes.filter((note) => note.status === "published");
-  return (
-    <PageFrame title="Notes">
-      <div style={{ display: "grid", gap: "12px" }}>
-        {notes.map((note) => (
-          <Link
-            key={note.slug}
-            href={previewHref(`/notes/${note.slug}`)}
-            style={{
-              display: "block",
-              padding: "18px 20px",
-              border: `1px solid ${T.border}`,
-              background: T.surface,
-              color: T.text,
-              borderRadius: "6px",
-              textDecoration: "none",
-            }}
-          >
-            <div style={{ fontFamily: FONT_MONO, fontSize: "0.72rem", color: T.green, marginBottom: "8px" }}>{note.date}</div>
-            <h2 style={{ margin: "0 0 8px", fontSize: "1.1rem" }}>{note.title}</h2>
-            <p style={{ margin: 0, color: T.sub }}>{note.summary}</p>
-          </Link>
-        ))}
-      </div>
-    </PageFrame>
-  );
-}
-
-export function NoteDetail() {
-  const [, params] = useRoute("/notes/:slug");
-  const { T, content, locale } = usePalette();
-  const note = content.notes.find((item) => item.slug === params?.slug);
-  if (!note) return <PageFrame title="Note not found">{locale === "en" ? "This note does not exist." : "존재하지 않는 노트입니다."}</PageFrame>;
-  const relatedProjects = content.projects.filter((project) => note.relatedProjects.includes(project.slug));
-  const relatedResearch = content.research.filter((research) => note.relatedResearch.includes(research.slug));
-  return (
-    <PageFrame title={note.title}>
-      <p style={{ color: T.sub, marginTop: "-18px" }}>{note.summary}</p>
-      <MarkdownBody markdown={note.body} />
-      <section style={{ borderTop: `1px solid ${T.border}`, marginTop: "28px", paddingTop: "18px" }}>
-        <h2 style={{ fontSize: "1rem" }}>Related</h2>
-        {[...relatedProjects.map((item) => item.name), ...relatedResearch.map((item) => item.title)].map((label) => (
-          <span key={label} style={{ display: "inline-block", margin: "0 6px 6px 0", color: T.green, fontFamily: FONT_MONO }}>
-            {label}
-          </span>
-        ))}
-      </section>
-    </PageFrame>
-  );
-}
-
 export function ProjectDetail() {
   const [, params] = useRoute("/projects/:slug");
   const { content, locale } = usePalette();

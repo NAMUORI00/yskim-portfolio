@@ -1,7 +1,7 @@
 /*
  * 홈 "논문·연구·경력" — content/education.json 의 기록을 성격별 묶음으로 나눠 보여 줍니다.
  *   논문(publication) · 연구 경험(research: 연구실 연구 참여) · 경력(work: 유급 근무)
- *   · 학력·수상·어학(education, award, milestone) · 기타 활동(talk, project — 기록이 있을 때만)
+ *   · 학력·수상(education, award, milestone) · 기타 활동(talk, project — 기록이 있을 때만)
  * 묶음은 기록의 type 으로만 정하고, 제목·기관·기간·설명 문장은 원문을 그대로 씁니다.
  * 논문은 "학술지 · 상태 · 저자" 원문에서 상태(게재·발표 / 심사 중)를 떼어 표시만 바꿉니다.
  * 기록은 처음에 접혀 있고(제목, [상태] 기간 · 기관), 기록을 누르거나 '모두 펼치기'로 설명을 엽니다.
@@ -42,8 +42,8 @@ export const CAREER_COPY = {
     groups: {
       publications: { title: "논문", note: "" },
       research: { title: "연구 경험", note: "연구실 연구 참여" },
-      employment: { title: "경력", note: "유급 근무" },
-      background: { title: "학력·수상·어학", note: "" },
+      employment: { title: "경력", note: "" },
+      background: { title: "학력·수상", note: "" },
       other: { title: "기타 활동", note: "" },
     },
     current: "진행 중",
@@ -57,8 +57,8 @@ export const CAREER_COPY = {
     groups: {
       publications: { title: "Publications", note: "" },
       research: { title: "Research Experience", note: "Lab research participation" },
-      employment: { title: "Employment", note: "Paid positions" },
-      background: { title: "Education, Awards & Languages", note: "" },
+      employment: { title: "Employment", note: "" },
+      background: { title: "Education & Awards", note: "" },
       other: { title: "Other Activities", note: "" },
     },
     current: "In progress",
@@ -204,7 +204,7 @@ function careerRecord(entry: EducationEntry, index: number, projects: Pick<Proje
   };
 }
 
-/** 공개 기록을 묶음 순서(논문 → 연구 경험 → 경력 → 학력·수상·어학 → 기타)로 나눕니다. 묶음 안에서는 원래 순서를 지킵니다. */
+/** 공개 기록을 묶음 순서(논문 → 연구 경험 → 경력 → 학력·수상 → 기타)로 나눕니다. 묶음 안에서는 원래 순서를 지킵니다. */
 export function buildCareerGroups(entries: EducationEntry[], projects: Pick<ProjectEntry, "name" | "slug">[], locale: Locale): CareerGroup[] {
   const byGroup = new Map<CareerGroupId, CareerRecord[]>();
   entries.forEach((entry, index) => {
@@ -218,7 +218,7 @@ export function buildCareerGroups(entries: EducationEntry[], projects: Pick<Proj
 }
 
 /**
- * 넓은 화면의 두 칸 배치: 논문은 위 한 줄, 왼쪽은 연구 경험과 학력·수상·어학, 오른쪽은 경력.
+ * 넓은 화면의 두 칸 배치: 논문은 위 한 줄, 왼쪽은 연구 경험과 학력·수상, 오른쪽은 경력.
  * 경력이나 왼쪽 묶음이 없으면 null — 한 칸으로 둡니다.
  */
 export function careerSplitAreas(ids: CareerGroupId[]): string | null {

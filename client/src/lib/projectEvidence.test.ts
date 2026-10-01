@@ -34,7 +34,6 @@ const baseProject: ProjectEntry = {
   highlight: true,
   private: false,
   status: "published",
-  relatedNotes: [],
   body: "본문",
 };
 

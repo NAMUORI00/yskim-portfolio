@@ -52,8 +52,7 @@ describe("validatePortfolioContent", () => {
           coverImage: "/uploads/research/rag.webp",
           showDiagram: true,
           body: "## RAG\n\n검색과 생성을 연결합니다.",
-          relatedNotes: ["rag-evaluation"],
-        },
+          },
       ],
       projects: [
         {
@@ -74,8 +73,7 @@ describe("validatePortfolioContent", () => {
           status: "published",
           coverImage: "/uploads/projects/aerospace-rag.webp",
           body: "## aerospace-rag\n\n문서 검색 파이프라인입니다.",
-          relatedNotes: ["rag-evaluation"],
-        },
+          },
       ],
       skills: [{ label: "핵심 언어", items: ["Python", "TypeScript"] }],
       starred: [
@@ -84,19 +82,6 @@ describe("validatePortfolioContent", () => {
           href: "https://github.com/typst/typst",
           stars: "53.4k",
           desc: "마크업 기반 조판 시스템",
-        },
-      ],
-      notes: [
-        {
-          slug: "rag-evaluation",
-          title: "RAG 평가 노트",
-          status: "published",
-          date: "2026-05-18",
-          summary: "검색 품질 평가 기준",
-          tags: ["RAG"],
-          relatedProjects: ["aerospace-rag"],
-          relatedResearch: ["rag"],
-          body: "## 평가\n\nRecall@5를 봅니다.",
         },
       ],
     });
@@ -109,7 +94,6 @@ describe("validatePortfolioContent", () => {
     expect(result.projects[0].evaluation.dataset).toBe("항공우주 질의 80개");
     expect(result.projects[0].coverImage).toBe("/uploads/projects/aerospace-rag.webp");
     expect(result.research[0].coverImage).toBe("/uploads/research/rag.webp");
-    expect(result.notes[0].relatedProjects).toEqual(["aerospace-rag"]);
     expect(result.profile.avatarUrl).toBeUndefined();
     expect(result.education[0].type).toBe("education");
     expect(result.education[0].bullets).toEqual(["RAG 아키텍처 연구", "경량 추론 실험"]);
@@ -141,7 +125,6 @@ describe("validatePortfolioContent", () => {
       projects: [],
       skills: [],
       starred: [],
-      notes: [],
     });
 
     expect(result.education[0]).toMatchObject({
@@ -189,12 +172,10 @@ describe("validatePortfolioContent", () => {
           private: false,
           status: "published",
           body: "",
-          relatedNotes: [],
-        },
+          },
       ],
       skills: [],
       starred: [],
-      notes: [],
     });
 
     expect(result.projects[0]).toMatchObject({
@@ -231,7 +212,6 @@ describe("validatePortfolioContent", () => {
       projects: [],
       skills: [],
       starred: [],
-      notes: [],
     });
 
     expect(result.profile.avatarUrl).toBe("https://github.com/NAMUORI00.png");
@@ -258,11 +238,10 @@ describe("validatePortfolioContent", () => {
           contacts: [{ id: "bad", type: "external", label: "bad", href: "javascript:alert(1)" }],
         },
         education: [{ degree: "x", school: "x", period: "x", note: "", current: false, links: [{ label: "bad", href: "data:text/html,x" }] }],
-        research: [{ slug: "r", title: "r", desc: "r", status: "published", coverImage: "javascript:alert(1)", showDiagram: false, body: "", relatedNotes: [] }],
-        projects: [{ slug: "p", name: "p", period: "p", desc: "p", metric: "p", tags: [], link: "javascript:alert(1)", highlight: false, private: false, status: "published", body: "", relatedNotes: [] }],
+        research: [{ slug: "r", title: "r", desc: "r", status: "published", coverImage: "javascript:alert(1)", showDiagram: false, body: "", }],
+        projects: [{ slug: "p", name: "p", period: "p", desc: "p", metric: "p", tags: [], link: "javascript:alert(1)", highlight: false, private: false, status: "published", body: "", }],
         skills: [],
         starred: [{ name: "bad", href: "javascript:alert(1)", stars: "0", desc: "bad" }],
-        notes: [],
       }),
     ).toThrow(/unsafe url/i);
   });
@@ -302,8 +281,7 @@ describe("validatePortfolioContent", () => {
             private: false,
             status: "published",
             body: "",
-            relatedNotes: [],
-          },
+            },
           {
             slug: "same",
             name: "B",
@@ -316,12 +294,10 @@ describe("validatePortfolioContent", () => {
             private: false,
             status: "published",
             body: "",
-            relatedNotes: [],
-          },
+            },
         ],
         skills: [],
         starred: [],
-        notes: [],
       }),
     ).toThrow(/Duplicate project slug/);
   });
