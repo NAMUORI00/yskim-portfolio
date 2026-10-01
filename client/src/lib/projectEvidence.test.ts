@@ -112,11 +112,11 @@ describe("project evidence helpers", () => {
   });
 
   it("localizes project labels", () => {
-    expect(projectCategoryLabel("career", "ko")).toBe("커리어");
-    expect(projectCategoryLabel("toy", "en")).toBe("Toy");
+    expect(projectCategoryLabel("career", "ko")).toBe("연구·개발");
+    expect(projectCategoryLabel("toy", "en")).toBe("Personal Projects");
     expect(projectFocusLabel("research", "ko")).toBe("연구/실험");
     expect(projectFocusLabel("tool", "en")).toBe("Tool");
-    expect(projectProofLevelLabel("core", "ko")).toBe("핵심 증거");
+    expect(projectProofLevelLabel("core", "ko")).toBe("대표 작업");
   });
 
   it("uses structured metrics before falling back to the legacy metric string", () => {

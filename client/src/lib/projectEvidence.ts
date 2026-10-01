@@ -75,8 +75,8 @@ export function toggleProjectFilterChip(filters: ProjectFilterSelection, filter:
 export function projectFilterLabel(filter: ProjectFilter, locale: Locale): string {
   const labels: Record<ProjectFilter, Record<Locale, string>> = {
     all: { ko: "전체 표시", en: "Show all" },
-    career: { ko: "커리어", en: "Career" },
-    toy: { ko: "토이", en: "Toy" },
+    career: { ko: "연구·개발", en: "Research & Development" },
+    toy: { ko: "개인 개발", en: "Personal Projects" },
     research: { ko: "연구/실험", en: "Research" },
     product: { ko: "제품/서비스", en: "Product" },
     tool: { ko: "도구", en: "Tool" },
@@ -87,8 +87,8 @@ export function projectFilterLabel(filter: ProjectFilter, locale: Locale): strin
 
 export function projectCategoryLabel(category: ProjectCategory, locale: Locale): string {
   const labels: Record<ProjectCategory, Record<Locale, string>> = {
-    career: { ko: "커리어", en: "Career" },
-    toy: { ko: "토이", en: "Toy" },
+    career: { ko: "연구·개발", en: "Research & Development" },
+    toy: { ko: "개인 개발", en: "Personal Projects" },
   };
   return labels[category][locale];
 }
@@ -105,8 +105,8 @@ export function projectFocusLabel(focus: ProjectFocus, locale: Locale): string {
 
 export function projectProofLevelLabel(proofLevel: ProjectProofLevel, locale: Locale): string {
   const labels: Record<ProjectProofLevel, Record<Locale, string>> = {
-    core: { ko: "핵심 증거", en: "Core evidence" },
-    supporting: { ko: "보조 증거", en: "Supporting evidence" },
+    core: { ko: "대표 작업", en: "Featured Work" },
+    supporting: { ko: "추가 개발 경험", en: "Additional Experience" },
     exploration: { ko: "탐색", en: "Exploration" },
   };
   return labels[proofLevel][locale];

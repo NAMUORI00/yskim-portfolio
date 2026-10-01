@@ -1033,7 +1033,7 @@ export default function Home() {
                 }}
               />
               <div style={{ position: "relative", padding: "1.75rem 2rem" }}>
-                <SectionTitle id="about" icon="user" T={T}>About</SectionTitle>
+                <SectionTitle id="about" icon="user" T={T}>{locale === "en" ? "What I bring" : "개발자로서의 강점"}</SectionTitle>
                 <p style={{
                   fontFamily: FONT_SANS,
                   fontSize: "1.05rem",
@@ -1135,7 +1135,7 @@ export default function Home() {
                                 padding: "1px 5px",
                                 borderRadius: "2px",
                               }}>
-                                {label("featured", "핵심")}
+                                {label("featured", "대표 작업")}
                               </span>
                             )}
                             <span className="project-axis-badge">{projectCategoryLabel(proj.category, locale)}</span>
@@ -1370,7 +1370,7 @@ export default function Home() {
 
           {/* ── 연구 관심사 ── */}
           <FadeSection>
-            <SectionTitle id="research" icon="flask" T={T}>Research Interests</SectionTitle>
+            <SectionTitle id="research" icon="flask" T={T}>{locale === "en" ? "Research & Technical Interests" : "연구·개발 관심 분야"}</SectionTitle>
             <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
               {RESEARCH_INTERESTS.map((r) => {
                 const ragCaption = label("ragCaption", "Dense + Sparse + Graph 3채널 하이브리드 검색 아키텍처");
@@ -1439,7 +1439,7 @@ export default function Home() {
 
           {/* ── 기술 스택 ── */}
           <FadeSection>
-            <SectionTitle id="skills" icon="layers" T={T}>Technical Skills</SectionTitle>
+            <SectionTitle id="skills" icon="layers" T={T}>{locale === "en" ? "Technologies I Use" : "사용 기술"}</SectionTitle>
             <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
               {SKILL_GROUPS.map((group) => (
                 <div key={group.label} style={{ display: "flex", gap: "1rem", alignItems: "flex-start" }}>
@@ -1468,7 +1468,7 @@ export default function Home() {
 
           {/* ── 관심 저장소 ── */}
           <FadeSection>
-            <SectionTitle id="interests" icon="star" T={T}>Starred Repositories</SectionTitle>
+            <SectionTitle id="interests" icon="star" T={T}>{locale === "en" ? "Open-source Interests" : "관심 오픈소스"}</SectionTitle>
             <div style={{
               display: "grid",
               gridTemplateColumns: "1fr 1fr",
