@@ -608,6 +608,15 @@ export default function Home() {
   const PROJECTS = content.projects.filter((item) => item.status === "published");
   const NOTES = content.notes.filter((item) => item.status === "published");
   const SKILL_GROUPS = content.skills;
+  const projectRole = (project: ProjectEntry) => project.body.match(/## (?:맡은 역할|My role)\s+([^#]+?)(?=\n\s*\n|$)/)?.[1]?.trim() ?? "";
+  const relatedSkillProjects = (items: string[]) => {
+    if (items.includes("기획") || items.includes("Planning")) {
+      return PROJECTS.filter(project => ["golden-glove", "food-scan", "good-price-jeju"].includes(project.slug));
+    }
+    const normalized = items.map(item => item.toLowerCase());
+    return PROJECTS.map(project => ({ project, score: project.tags.filter(tag => normalized.includes(tag.toLowerCase())).length }))
+      .filter(entry => entry.score > 0).sort((a, b) => b.score - a.score).slice(0, 3).map(entry => entry.project);
+  };
   const STARRED = content.starred;
   const PROFILE = content.profile;
   const PROFILE_AVATAR = getProfileAvatarUrl(PROFILE);
@@ -1065,6 +1074,20 @@ export default function Home() {
             </div>
           </FadeSection>
 
+          <FadeSection>
+            <p style={{ color: T.sub, fontFamily: FONT_SANS, lineHeight: 1.8, marginBottom: "0.8rem" }}>
+              {locale === "en" ? "What I can contribute — explore the technologies and projects behind each area." : "기술로 할 수 있는 일 — 각 영역의 사용 기술과 직접 수행한 프로젝트를 확인하세요."}
+            </p>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "0.6rem", marginBottom: "2rem" }}>
+              {SKILL_GROUPS.map((group, index) => (
+                <button key={group.label} type="button" onClick={() => document.getElementById(`skill-capability-${index}`)?.scrollIntoView({ behavior: "smooth", block: "center" })}
+                  style={{ color: T.green, background: T.surface, border: `1px solid ${T.border}`, borderRadius: "8px", padding: "0.7rem 0.9rem", fontFamily: FONT_SANS, textAlign: "left", cursor: "pointer" }}>
+                  {group.label}
+                </button>
+              ))}
+            </div>
+          </FadeSection>
+
           {/* ── 프로젝트 ── */}
           <FadeSection>
             <SectionTitle id="projects" icon="code" T={T}>{locale === "en" ? "Projects & Activities" : "프로젝트·개발 활동"}</SectionTitle>
@@ -1188,6 +1211,11 @@ export default function Home() {
                         }}>
                           {proj.desc}
                         </p>
+                        {projectRole(proj) && (
+                          <p style={{ margin: "0.3rem 0", color: T.text, fontFamily: FONT_SANS, fontSize: "0.8rem", lineHeight: 1.8 }}>
+                            <strong>{locale === "en" ? "My contribution: " : "담당 역할: "}</strong>{projectRole(proj)}
+                          </p>
+                        )}
                         {/* 정량 성과 */}
                         <div style={{ display: "flex", alignItems: "flex-start", gap: "7px", marginTop: "0.05rem" }}>
                           <TrendIcon color={T.green} />
@@ -1440,29 +1468,19 @@ export default function Home() {
 
           {/* ── 기술 스택 ── */}
           <FadeSection>
-            <SectionTitle id="skills" icon="layers" T={T}>{locale === "en" ? "Technologies I Use" : "사용 기술"}</SectionTitle>
-            <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-              {SKILL_GROUPS.map((group) => (
-                <div key={group.label} style={{ display: "flex", gap: "1rem", alignItems: "flex-start" }}>
-                  {/* 카테고리 레이블 */}
-                  <div style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "5px",
-                    fontFamily: FONT_SANS,
-                    fontSize: "0.72rem",
-                    color: T.muted,
-                    minWidth: "100px",
-                    paddingTop: "3px",
-                    flexShrink: 0,
-                  }}>
-                    <span style={{ width: "3px", height: "3px", borderRadius: "50%", background: T.green, flexShrink: 0 }} />
-                    {group.label}
-                  </div>
+            <SectionTitle id="skills" icon="layers" T={T}>{locale === "en" ? "Capabilities, Technologies & Projects" : "기술로 할 수 있는 일"}</SectionTitle>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 300px), 1fr))", gap: "1rem" }}>
+              {SKILL_GROUPS.map((group, index) => (
+                <article key={group.label} id={`skill-capability-${index}`} style={{ background: T.surface, border: `1px solid ${T.border}`, borderRadius: "8px", padding: "1.2rem" }}>
+                  <h3 style={{ color: T.text, fontFamily: FONT_SANS, fontSize: "0.95rem", lineHeight: 1.7, margin: "0 0 0.7rem" }}>{group.label}</h3>
                   <div style={{ display: "flex", flexWrap: "wrap", gap: "4px" }}>
-                    {group.items.map((item) => <Tag key={item} T={T}>{item}</Tag>)}
+                    {group.items.map(item => <Tag key={item} T={T}>{item}</Tag>)}
                   </div>
-                </div>
+                  <p style={{ color: T.muted, fontFamily: FONT_SANS, fontSize: "0.75rem", margin: "1rem 0 0.4rem" }}>{locale === "en" ? "Applied in these projects" : "직접 적용한 프로젝트"}</p>
+                  <ul style={{ margin: 0, paddingLeft: "1rem", color: T.green, fontFamily: FONT_SANS, fontSize: "0.8rem", lineHeight: 1.9 }}>
+                    {relatedSkillProjects(group.items).map(project => <li key={project.slug}><a style={{ color: T.green }} href={`/projects/${project.slug}`}>{project.name}</a></li>)}
+                  </ul>
+                </article>
               ))}
             </div>
           </FadeSection>
