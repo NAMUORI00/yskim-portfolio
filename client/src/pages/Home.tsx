@@ -1,3 +1,4 @@
+import { renderProposedGraph } from "@/components/knowledgeMap/renderKnowledgeMap";
 /*
  * Design: Minimal Two-Column Portfolio / CV  (v5 — 타이포그래피 정비)
  * ─────────────────────────────────────────────────────────────────────────
@@ -24,10 +25,10 @@
  * Layout: 좌측 고정 사이드바 + 우측 스크롤 콘텐츠
  * Colors: #1a1a1a (텍스트), #2d6a4f (포인트), #f5f5f3 (배경)
  */
-import { lazy, Suspense, useEffect, useRef, useState, useCallback, useMemo } from "react";
+import { lazy, Suspense, useEffect, useRef, useState, useCallback, useMemo, type ReactNode } from "react";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { englishTranslations, getProfileAvatarUrl, portfolioContent, type ProjectEntry } from "@/content";
+import { englishTranslations, getProfileAvatarUrl, portfolioContent, type PortfolioContent, type ProjectEntry } from "@/content";
 import { DARK, FONT_MONO, FONT_SANS, FONT_SERIF, LIGHT, type PortfolioTheme } from "@/content/theme";
 import { CareerRecords, useCareerRecords } from "@/components/CareerRecords";
 import { KnowledgeGraphRail } from "@/components/KnowledgeGraphRail";
@@ -37,8 +38,8 @@ import { ResearchInterests } from "@/components/ResearchInterests";
 import { MobileKnowledgeGraph } from "@/components/MobileKnowledgeGraph";
 import { buildCoverPreview, buildResearchDiagramPreview, type CoverPreviewPayload } from "@/lib/coverPreview";
 import { applyDocumentMetadata } from "@/lib/documentMetadata";
-import { localizePortfolioContent, uiText } from "@/lib/i18nContent";
-import { buildKnowledgeGraph } from "@/lib/knowledgeGraph";
+import { localizePortfolioContent, uiText, type Locale } from "@/lib/i18nContent";
+import { buildKnowledgeGraph, type KnowledgeGraphData } from "@/lib/knowledgeGraph";
 import {
   PROJECT_FILTERS,
   createProjectFilterSelection,
@@ -455,11 +456,27 @@ function PreferenceSegmentedControl({
    메인 컴포넌트
 ════════════════════════════ */
 export default function Home() {
-  return <HomeView />;
+  return <HomeView renderKnowledgeGraph={renderProposedGraph} />;
 }
 
-/** 공개 홈("/")과 로컬 검토 라우트(/design/capabilities)가 같은 화면을 씁니다. */
-export function HomeView() {
+/** 지식 그래프 자리에 넘기는 값 — /design/knowledge-graph 미리보기만 씁니다. */
+export interface KnowledgeGraphSlot {
+  /** rail: 오른쪽 레일, drawer: 휴대폰 서랍 */
+  placement: "rail" | "drawer";
+  content: PortfolioContent;
+  /** 지금 쓰는 그래프 자료 (시안이 실패하면 이 자료로 기존 그래프를 그림) */
+  graph: KnowledgeGraphData;
+  T: PortfolioTheme;
+  locale: Locale;
+  active: string;
+  focusNodeId: string | null;
+}
+
+/**
+ * 공개 홈("/")과 로컬 검토 라우트(/design/capabilities)가 같은 화면을 씁니다.
+ * renderKnowledgeGraph 는 /design/knowledge-graph 미리보기 전용이며, 넘기지 않으면 지금의 지식 그래프를 그대로 씁니다.
+ */
+export function HomeView({ renderKnowledgeGraph }: { renderKnowledgeGraph?: (slot: KnowledgeGraphSlot) => ReactNode } = {}) {
   const { theme, toggleTheme } = useTheme();
   const { locale, toggleLocale } = useLanguage();
   const T = theme === "dark" ? DARK : LIGHT;
@@ -632,7 +649,9 @@ export function HomeView() {
             </button>
           ))}
         </nav>
-        <MobileKnowledgeGraph graph={KNOWLEDGE_GRAPH} T={T} active={active} />
+        {renderKnowledgeGraph
+          ? renderKnowledgeGraph({ placement: "drawer", content, graph: KNOWLEDGE_GRAPH, T, locale, active, focusNodeId: activeProjectGraphNodeId })
+          : <MobileKnowledgeGraph graph={KNOWLEDGE_GRAPH} T={T} active={active} />}
         <div
           style={{
             marginTop: "1.15rem",
@@ -1328,7 +1347,9 @@ export function HomeView() {
         </div>
       </div>
 
-      <KnowledgeGraphRail graph={KNOWLEDGE_GRAPH} T={T} active={active} focusNodeId={activeProjectGraphNodeId} />
+      {renderKnowledgeGraph
+        ? renderKnowledgeGraph({ placement: "rail", content, graph: KNOWLEDGE_GRAPH, T, locale, active, focusNodeId: activeProjectGraphNodeId })
+        : <KnowledgeGraphRail graph={KNOWLEDGE_GRAPH} T={T} active={active} focusNodeId={activeProjectGraphNodeId} />}
 
       {coverPreview && (
         <div

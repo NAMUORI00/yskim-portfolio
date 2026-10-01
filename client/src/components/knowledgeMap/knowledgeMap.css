@@ -1,0 +1,968 @@
+/*
+ * 층위형 지식 지도 (/design/knowledge-graph 미리보기 전용 — 공개 홈 번들에는 들어가지 않습니다)
+ * 색과 글꼴은 홈 테마(PortfolioTheme)에서 --km-* 변수로 주입됩니다. 판은 포인트 초록에 투명도만 달리 씁니다.
+ * 글자: 레일의 연구 질문 12px · 프로젝트 11px · 기술 11px 고정폭 · 층 제목 11.5px (화면 폭에 따라 줄지 않음)
+ * 움직임: 처음 한 번 판이 펼쳐지고, 고른 경로가 떠오르며 선이 이어집니다. 반복 애니메이션은 없습니다.
+ */
+
+.km-root {
+  --km-ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  color: var(--km-ink);
+  font-family: var(--km-sans);
+  word-break: keep-all;
+  overflow-wrap: break-word;
+}
+
+.km-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* ── 오른쪽 레일 (지금 레일과 같은 폭·높이) ── */
+
+.km-rail {
+  position: relative;
+  width: clamp(236px, 20vw, 312px);
+  height: 100dvh;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  overflow: hidden;
+  padding: clamp(1.25rem, 2vw, 2rem) clamp(0.85rem, 1.3vw, 1.2rem) clamp(1rem, 1.6vw, 1.5rem);
+  border-left: 1px solid var(--km-border);
+  background: var(--km-panel);
+}
+
+.km-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  min-height: 28px;
+}
+
+.km-kicker {
+  margin: 0;
+  color: var(--km-green);
+  font-family: var(--km-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.km-sub {
+  margin: -0.3rem 0 0;
+  color: var(--km-muted);
+  font-size: 0.75rem;
+  line-height: 1.5;
+}
+
+.km-expand {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  min-height: 28px;
+  padding: 0 0.65rem;
+  border: 1px solid var(--km-border);
+  border-radius: 999px;
+  background: var(--km-bg);
+  color: var(--km-green);
+  font-family: var(--km-sans);
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.km-expand:hover,
+.km-expand:focus-visible {
+  border-color: var(--km-green);
+  background: var(--km-green-bg);
+  outline: none;
+}
+
+.km-expand:focus-visible {
+  box-shadow: 0 0 0 2px var(--km-panel), 0 0 0 4px var(--km-green);
+}
+
+.km-canvas-frame {
+  position: relative;
+  width: 100%;
+  flex-shrink: 0;
+}
+
+/* ── 캔버스 ── */
+
+.km-canvas {
+  position: relative;
+  width: 100%;
+}
+
+.km-svg {
+  position: absolute;
+  inset: 0;
+  display: block;
+  overflow: visible;
+}
+
+.km-overlay {
+  position: absolute;
+  inset: 0;
+}
+
+.km-plane-face {
+  fill: var(--km-plane);
+  stroke: var(--km-plane-edge);
+  stroke-width: 1;
+  stroke-linejoin: round;
+  transition: fill 0.25s ease, stroke 0.25s ease;
+}
+
+.km-plane[data-layer="research"] .km-plane-face {
+  fill: var(--km-plane-top);
+}
+
+.km-plane[data-emphasis="true"] .km-plane-face {
+  fill: var(--km-plane-strong);
+  stroke: var(--km-plane-edge-strong);
+}
+
+.km-plane-slab {
+  fill: var(--km-slab);
+}
+
+.km-plane-grid line {
+  stroke: var(--km-grid);
+  stroke-width: 0.75;
+}
+
+.km-thread {
+  fill: none;
+  stroke: var(--km-green);
+  stroke-width: 1.15;
+  stroke-linecap: round;
+  opacity: 0.45;
+  stroke-dasharray: var(--km-len) var(--km-len);
+  animation: km-draw 0.34s var(--km-ease) both;
+}
+
+.km-thread[data-direct="true"] {
+  stroke-width: 1.45;
+  opacity: 0.9;
+}
+
+@keyframes km-draw {
+  from {
+    stroke-dashoffset: var(--km-len);
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.km-glyph {
+  transition: transform 0.2s var(--km-ease), opacity 0.2s ease;
+}
+
+.km-mark[data-layer="research"] .km-dot {
+  fill: var(--km-green);
+  stroke: var(--km-panel);
+  stroke-width: 1.5;
+}
+
+.km-mark[data-layer="project"] .km-dot {
+  fill: var(--km-panel);
+  stroke: var(--km-ink);
+  stroke-width: 1.4;
+}
+
+.km-mark[data-layer="project"][data-featured="true"] .km-dot {
+  stroke: var(--km-green);
+  stroke-width: 1.8;
+}
+
+.km-mark[data-layer="tech"] .km-dot {
+  fill: var(--km-muted);
+}
+
+.km-mark[data-state="idle"][data-layer="project"] .km-glyph {
+  opacity: 0.62;
+}
+
+.km-mark[data-state="idle"][data-layer="tech"] .km-glyph {
+  opacity: 0.45;
+}
+
+.km-mark[data-state="dim"] .km-glyph {
+  opacity: 0.18;
+}
+
+.km-mark[data-state="path"][data-layer="tech"] .km-dot,
+.km-mark[data-state="focus"][data-layer="tech"] .km-dot {
+  fill: var(--km-ink);
+}
+
+.km-halo {
+  fill: var(--km-green-bg);
+  stroke: var(--km-green);
+  stroke-width: 1.25;
+}
+
+.km-shadow {
+  fill: var(--km-ink);
+  opacity: 0.13;
+  animation: km-fade 0.2s ease-out both;
+}
+
+.km-stem {
+  stroke: var(--km-green);
+  stroke-width: 1;
+  opacity: 0.55;
+  animation: km-fade 0.2s ease-out both;
+}
+
+/* 노드 단추 (이름표를 품고 있어 이름표를 눌러도 같은 노드를 고릅니다) */
+.km-node {
+  position: absolute;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: inherit;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+  transition: left 0.2s var(--km-ease), top 0.2s var(--km-ease);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.km-node:focus {
+  outline: none;
+}
+
+.km-node:focus-visible {
+  box-shadow: 0 0 0 2px var(--km-green);
+}
+
+.km-node-static {
+  width: 0;
+  height: 0;
+  cursor: default;
+  pointer-events: none;
+}
+
+.km-canvas[data-moving="true"] .km-glyph,
+.km-canvas[data-moving="true"] .km-node {
+  transition: none;
+}
+
+.km-label {
+  position: absolute;
+  padding: 1px 4px;
+  border-radius: 3px;
+  color: var(--km-sub);
+  font-family: var(--km-sans);
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: -0.005em;
+  white-space: nowrap;
+  text-shadow:
+    0 0 2px var(--km-panel),
+    0 0 2px var(--km-panel),
+    0 0 4px var(--km-panel);
+  transition: color 0.2s ease, opacity 0.2s ease, background 0.2s ease;
+}
+
+.km-node[data-layer="research"] .km-label {
+  color: var(--km-ink);
+  font-weight: 600;
+}
+
+.km-node[data-layer="tech"] .km-label {
+  font-family: var(--km-mono);
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+.km-node[data-state="path"] .km-label {
+  color: var(--km-ink);
+}
+
+.km-node[data-state="dim"] .km-label {
+  opacity: 0.4;
+}
+
+.km-node[data-state="focus"] .km-label,
+.km-node:hover .km-label {
+  color: var(--km-green);
+}
+
+.km-node[data-state="focus"] .km-label {
+  background: var(--km-green-bg);
+  text-shadow: none;
+}
+
+.km-node[aria-pressed="true"] .km-label {
+  box-shadow: inset 0 0 0 1px var(--km-green);
+}
+
+/* 층 제목 — 판 왼쪽 끝 위에 붙고, 지나가는 연결선은 그 아래로 숨습니다 */
+.km-layer-title {
+  position: absolute;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0 4px 0 2px;
+  border-radius: 3px;
+  background: var(--km-panel);
+  color: var(--km-muted);
+  font-size: 11.5px;
+  font-weight: 600;
+  line-height: 16px;
+  white-space: nowrap;
+  pointer-events: none;
+  transition: color 0.2s ease, opacity 0.2s ease;
+}
+
+.km-layer-title[data-emphasis="true"] {
+  color: var(--km-green);
+}
+
+/* 고른 경로의 이름표가 그 자리를 써야 할 때만 제목을 감춥니다 */
+.km-layer-title[data-covered="true"] {
+  opacity: 0;
+}
+
+.km-layer-count {
+  font-family: var(--km-mono);
+  font-size: 11px;
+  font-weight: 400;
+}
+
+.km-layer-glyph {
+  display: inline-block;
+  flex: 0 0 7px;
+  width: 7px;
+  height: 7px;
+  box-sizing: border-box;
+}
+
+.km-layer-glyph[data-layer="research"] {
+  border-radius: 50%;
+  background: var(--km-green);
+}
+
+.km-layer-glyph[data-layer="project"] {
+  border: 1.4px solid var(--km-ink);
+  border-radius: 50%;
+}
+
+.km-layer-glyph[data-layer="tech"] {
+  flex-basis: 6px;
+  width: 6px;
+  height: 6px;
+  margin: 0 0.5px;
+  background: var(--km-muted);
+  transform: rotate(45deg);
+}
+
+/* ── 설명 칸 ── */
+
+.km-detail {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: grid;
+  align-content: start;
+  gap: 0.6rem;
+  padding: 0.75rem 0.1rem 0.25rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border-top: 1px solid var(--km-border);
+}
+
+.km-detail-kicker {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin: 0;
+  color: var(--km-muted);
+  font-family: var(--km-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.03em;
+}
+
+.km-detail-title {
+  margin: 0;
+  color: var(--km-ink);
+  font-family: var(--km-sans);
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.km-detail-text {
+  margin: 0;
+  color: var(--km-sub);
+  font-size: 0.8125rem;
+  line-height: 1.65;
+}
+
+.km-detail-metric {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.35rem;
+  margin: 0;
+  color: var(--km-green);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  line-height: 1.55;
+}
+
+.km-detail-metric svg {
+  flex-shrink: 0;
+  margin-top: 0.22rem;
+}
+
+.km-detail-section {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.km-detail-section h4 {
+  margin: 0;
+  color: var(--km-muted);
+  font-family: var(--km-sans);
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.km-detail-section h4 b,
+.km-counts b,
+.km-legend b,
+.km-outline h3 b {
+  font-family: var(--km-mono);
+  font-weight: 500;
+}
+
+.km-chips,
+.km-evidence,
+.km-counts,
+.km-legend {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.km-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.km-chip {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 1.65rem;
+  padding: 0 0.55rem;
+  border: 1px solid var(--km-border);
+  border-radius: 999px;
+  background: var(--km-bg);
+  color: var(--km-sub);
+  font-family: var(--km-sans);
+  font-size: 0.75rem;
+  line-height: 1.3;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+}
+
+.km-chip[data-layer="tech"] {
+  border-radius: 3px;
+  font-family: var(--km-mono);
+}
+
+.km-chip:hover,
+.km-chip:focus-visible {
+  border-color: var(--km-green);
+  background: var(--km-green-bg);
+  color: var(--km-green);
+  outline: none;
+}
+
+.km-evidence {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.km-evidence li {
+  display: grid;
+  justify-items: start;
+  gap: 0.15rem;
+}
+
+.km-evidence small {
+  padding-left: 0.25rem;
+  color: var(--km-muted);
+  font-size: 0.75rem;
+  line-height: 1.5;
+}
+
+.km-pin-clear {
+  appearance: none;
+  min-height: 1.45rem;
+  padding: 0 0.5rem;
+  border: 1px solid var(--km-green);
+  border-radius: 999px;
+  background: var(--km-green-bg);
+  color: var(--km-green);
+  font-family: var(--km-sans);
+  font-size: 0.6875rem;
+  letter-spacing: 0;
+  cursor: pointer;
+}
+
+.km-pin-clear:focus-visible {
+  outline: 2px solid var(--km-green);
+  outline-offset: 2px;
+}
+
+.km-locate {
+  appearance: none;
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  min-height: 2rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--km-green);
+  font-family: var(--km-sans);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.km-locate:hover,
+.km-locate:focus-visible {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  outline: none;
+}
+
+.km-hint {
+  margin: 0;
+  color: var(--km-muted);
+  font-size: 0.75rem;
+  line-height: 1.6;
+}
+
+.km-counts,
+.km-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.8rem;
+  color: var(--km-sub);
+  font-size: 0.8125rem;
+}
+
+.km-counts li,
+.km-legend li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+/* ── 휴대폰 서랍 ── */
+
+.km-drawer {
+  display: grid;
+  gap: 0.5rem;
+  padding: 0.7rem 0.75rem 0.8rem;
+  border: 1px solid var(--km-border);
+  border-radius: 6px;
+  background: var(--km-panel);
+}
+
+.km-drawer .km-legend {
+  gap: 0.2rem 0.65rem;
+  font-size: 0.75rem;
+}
+
+.km-drawer-open {
+  justify-self: start;
+}
+
+/* ── 넓게 보기 ── */
+
+@keyframes km-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+.km-dialog-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 400;
+  background: var(--km-scrim);
+  backdrop-filter: blur(2px);
+  animation: km-fade 0.18s ease-out;
+}
+
+.km-dialog {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  z-index: 401;
+  display: flex;
+  flex-direction: column;
+  width: min(1200px, calc(100vw - 2rem));
+  height: min(860px, calc(100dvh - 2rem));
+  overflow: hidden;
+  border: 1px solid var(--km-border);
+  border-radius: 8px;
+  background: var(--km-panel);
+  box-shadow: var(--km-shadow);
+  transform: translate(-50%, -50%);
+  outline: none;
+  animation: km-fade 0.18s ease-out;
+}
+
+.km-dialog-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.25rem 0.8rem;
+  border-bottom: 1px solid var(--km-border);
+}
+
+.km-dialog-title {
+  margin: 0.2rem 0 0.25rem;
+  color: var(--km-ink);
+  font-family: var(--km-sans);
+  font-size: 1.0625rem;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.km-dialog-desc {
+  margin: 0;
+  max-width: 62ch;
+  color: var(--km-sub);
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+
+.km-dialog-close {
+  appearance: none;
+  display: inline-grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--km-border);
+  border-radius: 50%;
+  background: var(--km-panel);
+  color: var(--km-ink);
+  cursor: pointer;
+}
+
+.km-dialog-close:hover,
+.km-dialog-close:focus-visible {
+  border-color: var(--km-green);
+  color: var(--km-green);
+  outline: none;
+}
+
+.km-dialog-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+  padding: 0.6rem 1.25rem;
+  border-bottom: 1px solid var(--km-border);
+}
+
+.km-segment {
+  display: inline-flex;
+  overflow: hidden;
+  border: 1px solid var(--km-border);
+  border-radius: 999px;
+  background: var(--km-bg);
+}
+
+.km-segment button {
+  appearance: none;
+  min-height: 2rem;
+  padding: 0 0.85rem;
+  border: 0;
+  background: transparent;
+  color: var(--km-sub);
+  font-family: var(--km-sans);
+  font-size: 0.8125rem;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.km-segment button + button {
+  border-left: 1px solid var(--km-border);
+}
+
+.km-segment button[aria-pressed="true"] {
+  background: var(--km-green-bg);
+  color: var(--km-green);
+  font-weight: 600;
+}
+
+.km-segment button:focus-visible {
+  outline: none;
+  box-shadow: inset 0 0 0 2px var(--km-green);
+}
+
+.km-tools {
+  display: inline-flex;
+  gap: 0.3rem;
+}
+
+.km-tool {
+  appearance: none;
+  display: inline-grid;
+  place-items: center;
+  min-width: 2rem;
+  min-height: 2rem;
+  padding: 0 0.45rem;
+  border: 1px solid var(--km-border);
+  border-radius: 6px;
+  background: var(--km-panel);
+  color: var(--km-sub);
+  font-family: var(--km-sans);
+  font-size: 0.8125rem;
+  cursor: pointer;
+}
+
+.km-tool:hover,
+.km-tool:focus-visible {
+  border-color: var(--km-green);
+  color: var(--km-green);
+  outline: none;
+}
+
+.km-dialog-hint {
+  margin-left: auto;
+}
+
+.km-dialog-body {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 320px);
+}
+
+.km-dialog-stage {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  cursor: grab;
+  touch-action: none;
+}
+
+.km-dialog-stage[data-dragging="true"] {
+  cursor: grabbing;
+}
+
+.km-dialog-stage[hidden] {
+  display: none;
+}
+
+.km-dialog-canvas {
+  max-width: 100%;
+}
+
+.km-dialog-inspector {
+  min-height: 0;
+  overflow-y: auto;
+  padding: 0 1.1rem 1rem;
+  border-left: 1px solid var(--km-border);
+}
+
+.km-dialog-inspector .km-detail {
+  overflow: visible;
+  padding-top: 1rem;
+  border-top: 0;
+}
+
+.km-dialog-list {
+  min-height: 0;
+  overflow-y: auto;
+  padding: 1rem 1.25rem 1.5rem;
+}
+
+.km-outline {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.km-outline h3 {
+  margin: 0 0 0.5rem;
+  color: var(--km-muted);
+  font-family: var(--km-sans);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.km-outline ol,
+.km-outline ul {
+  display: grid;
+  gap: 0.35rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.km-outline li > ul {
+  margin: 0.35rem 0 0.4rem 1.1rem;
+  padding-left: 0.75rem;
+  border-left: 1px solid var(--km-border);
+}
+
+.km-outline-item {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 1.9rem;
+  padding: 0 0.4rem;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--km-ink);
+  font-family: var(--km-sans);
+  font-size: 0.875rem;
+  line-height: 1.45;
+  text-align: left;
+  cursor: pointer;
+}
+
+.km-outline-item[data-layer="research"] {
+  font-weight: 600;
+}
+
+.km-outline-item:hover,
+.km-outline-item:focus-visible,
+.km-outline-item[aria-pressed="true"] {
+  background: var(--km-green-bg);
+  color: var(--km-green);
+  outline: none;
+}
+
+.km-outline-tech {
+  display: block;
+  padding: 0 0.4rem 0 1.75rem;
+  color: var(--km-muted);
+  font-family: var(--km-mono);
+  font-size: 0.75rem;
+  line-height: 1.5;
+}
+
+/* 미리보기 전용 전환 단추 (/design/knowledge-graph) — 휴대폰 서랍(150~160)과 대화상자(400) 아래에 둡니다 */
+.kgp-switch {
+  position: fixed;
+  bottom: 14px;
+  left: 50%;
+  z-index: 140;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 4px 4px 4px 12px;
+  border: 1px solid var(--km-border);
+  border-radius: 999px;
+  background: var(--km-panel);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.14);
+  color: var(--km-muted);
+  font-size: 0.75rem;
+  transform: translateX(-50%);
+}
+
+.kgp-switch .km-segment button {
+  min-height: 1.85rem;
+  font-size: 0.75rem;
+}
+
+@media (max-width: 820px) {
+  .km-dialog {
+    width: 100vw;
+    height: 100dvh;
+    border: 0;
+    border-radius: 0;
+  }
+
+  .km-dialog-body {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(280px, 1fr) auto;
+    overflow-y: auto;
+  }
+
+  .km-dialog-inspector {
+    max-height: none;
+    overflow: visible;
+    border-top: 1px solid var(--km-border);
+    border-left: 0;
+  }
+
+  .km-dialog-hint {
+    margin-left: 0;
+  }
+}
+
+@media (pointer: coarse) {
+  .km-chip,
+  .km-expand,
+  .km-locate,
+  .km-tool,
+  .km-segment button,
+  .km-outline-item {
+    min-height: 2.75rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .km-glyph,
+  .km-node,
+  .km-label,
+  .km-plane-face,
+  .km-layer-title,
+  .km-chip,
+  .km-expand {
+    transition: none !important;
+  }
+
+  .km-thread,
+  .km-shadow,
+  .km-stem,
+  .km-dialog,
+  .km-dialog-overlay {
+    animation: none !important;
+  }
+}
