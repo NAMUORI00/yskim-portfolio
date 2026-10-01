@@ -5,7 +5,7 @@
       "about": "What I Bring",
       "education": "Research & Experience",
       "research": "Research",
-      "projects": "Selected Projects",
+      "projects": "Projects & Activities",
       "skills": "Skills",
       "interests": "Open-source Interests"
     },
@@ -218,6 +218,79 @@
       ],
       "body": "Built a web service that accepts an audio upload, separates it into five stems, and lets users download the results.\n\n\n## My role\n\n\nDeveloped web-to-server API integration, AI audio separation integration, and signup/login functionality.\n\n\n## What I built\n\n\nConnected a Spring Boot web server to a Python FastAPI server, covering file upload, AI processing, and result download.\n\n\nUsed the existing Spleeter five-stem model and implemented signup/login with Spring Security.\n\n\n## Results and execution environment\n\n\nEvidence: Implemented audio upload → AI separation → result download\n\n\nBuilt a locally run web service as an undergraduate project, integrating an existing AI model into a working web feature.\n\n\n## Technologies\n\n\nJava · Spring Boot · Spring Security · Python · FastAPI · Spleeter"
     },
+    "golden-glove": {
+      "name": "Music-playing Glove",
+      "period": "2023.06",
+      "desc": "A capstone project building a music-playing glove kit for children's coding education.",
+      "metric": "Excellence award, 2023 Andong–Jeju joint capstone",
+      "tags": [
+        "Arduino",
+        "C++",
+        "Circuitry",
+        "Firmware"
+      ],
+      "body": "A capstone project building a music-playing glove kit for children's coding education.\n\n\n## My role\n\n\nLed ideation, circuit implementation, firmware programming, and project coordination.\n\n\n## What I built\n\n\nImplemented circuitry and device firmware. The public repository contains Arduino code for both gloves and sensor/communication test code.\n\n\n## Results\n\n\nEvidence: Excellence award, 2023 Andong–Jeju joint capstone\n\n\n## Technologies\n\n\nArduino, C++, 회로, 펌웨어"
+    },
+    "food-scan": {
+      "name": "Food Photo Nutrition App",
+      "period": "2022.11",
+      "desc": "Developed a mobile app that identifies food from a photo and displays matching nutritional information.",
+      "metric": "Encouragement award, 2022 Andong–Jeju joint capstone",
+      "tags": [
+        "Python",
+        "FastAPI",
+        "Flutter",
+        "Dart",
+        "Google Vision API"
+      ],
+      "body": "Developed a mobile app that identifies food from a photo and displays matching nutritional information.\n\n\n## My role\n\n\nLed ideation, core development, and coordination, connecting a Python backend to a Flutter interface.\n\n\n## What I built\n\n\nConnected photo upload, food recognition, selection, and retrieval of nutrition information from a database. The linked repository is a retained fork of the team project.\n\n\n## Results\n\n\nEvidence: Encouragement award, 2022 Andong–Jeju joint capstone\n\n\n## Technologies\n\n\nPython, FastAPI, Flutter, Dart, Google Vision API"
+    },
+    "tourism-data": {
+      "name": "Tourism Data for Mobility Placement",
+      "period": "2021.11",
+      "desc": "A team project proposing mobility placement using tourism and spending data.",
+      "metric": "Encouragement award, 2021 Smart Tourism Big Data Hackathon",
+      "tags": [
+        "Python",
+        "Data preprocessing",
+        "Visualization"
+      ],
+      "body": "A team project proposing mobility placement using tourism and spending data.\n\n\n## My role\n\n\nHandled Python data preprocessing and visualization and organized team findings into a proposal.\n\n\n## What I built\n\n\nPrepared and visualized tourism/spending data for the team's analysis and placement proposal. Clustering and forecasting were handled by teammates.\n\n\n## Results\n\n\nEvidence: Encouragement award, 2021 Smart Tourism Big Data Hackathon\n\n\n## Technologies\n\n\nPython, 데이터 전처리, 시각화"
+    },
+    "smart-home-2017": {
+      "name": "Sensor-to-Web Smart Home Monitoring",
+      "period": "2017.11 — 2017.12",
+      "desc": "Developed a smart-home monitoring system that stores sensor data and displays it on a web interface.",
+      "metric": "Corporate excellence award, 2017 Computer Engineering Exhibition",
+      "tags": [
+        "Arduino",
+        "PHP",
+        "MySQL"
+      ],
+      "body": "Developed a smart-home monitoring system that stores sensor data and displays it on a web interface.\n\n\n## My role\n\n\nImplemented sensor collection firmware, database storage, and the web monitoring interface.\n\n\n## What I built\n\n\nConnected Arduino sensor collection to data storage and web display using PHP and MySQL.\n\n\n## Results\n\n\nEvidence: Corporate excellence award, 2017 Computer Engineering Exhibition\n\n\n## Technologies\n\n\nArduino, PHP, MySQL"
+    },
+    "unity-hackathon": {
+      "name": "Unity Hackathon Game",
+      "period": "2017.08",
+      "desc": "Built a Unity game with students from other universities during an AR/VR hackathon.",
+      "metric": "Encouragement award, 2017 AR/VR Hackathon",
+      "tags": [
+        "Unity",
+        "Team development"
+      ],
+      "body": "Built a Unity game with students from other universities during an AR/VR hackathon.\n\n\n## My role\n\n\nContributed to the team's game development.\n\n\n## What I built\n\n\nWorked with the team on a Unity game during the hackathon.\n\n\n## Results\n\n\nEvidence: Encouragement award, 2017 AR/VR Hackathon\n\n\n## Technologies\n\n\nUnity, 팀 개발"
+    },
+    "hangul-clock": {
+      "name": "Arduino Korean Word Clock",
+      "period": "2017.04 — 2018.02",
+      "desc": "Built a Korean word clock in a Jeju National University LINC entrepreneurship club.",
+      "metric": "Korean word clock club project",
+      "tags": [
+        "Arduino",
+        "Entrepreneurship club"
+      ],
+      "body": "Built a Korean word clock in a Jeju National University LINC entrepreneurship club.\n\n\n## My role\n\n\nContributed to building an Arduino-based Korean word clock.\n\n\n## What I built\n\n\nWorked on clock construction using Arduino as a club project.\n\n\n## Results\n\n\nEvidence: Korean word clock club project\n\n\n## Technologies\n\n\nArduino, 창업동아리"
+    },
     "aerospace-rag": {
       "name": "Aerospace Document Search & QA · aerospace-rag",
       "desc": "A system that retrieves information from aerospace documents for AI answers, combining keyword, semantic, and relationship-based search.",
@@ -230,6 +303,32 @@
         "LLM"
       ],
       "body": "A system that retrieves information from aerospace documents for AI answers, combining keyword, semantic, and relationship-based search.\n\n\n## Overview\n\n\nA RAG system that combines Dense, Sparse, and Graph retrieval channels for aerospace work documents.\n\n\n## Implementation\n\n- Metric: Dense, Sparse, and Graph retrieval with Qdrant, BM25, and Ollama"
+    },
+    "js-quiz-app": {
+      "name": "Quiz and Incorrect-answer Review App",
+      "period": "Undergraduate project",
+      "desc": "A web app for multiple-choice quizzes and reviewing incorrect answers.",
+      "metric": "Implemented question display, scoring, and incorrect-answer review",
+      "tags": [
+        "JavaScript",
+        "Vue",
+        "Vite",
+        "JSON"
+      ],
+      "body": "A web app for multiple-choice quizzes and reviewing incorrect answers.\n\n\n## My role\n\n\nDeveloped a Vue-based quiz web app.\n\n\n## What I built\n\n\nLoads and shuffles questions from JSON, tracks correct and incorrect answers, and supports starting, restarting, and reviewing incorrect answers.\n\n\n## Results\n\n\nEvidence: Implemented question display, scoring, and incorrect-answer review\n\n\n## Technologies\n\n\nJavaScript, Vue, Vite, JSON"
+    },
+    "good-price-jeju": {
+      "name": "Affordable Local Business Finder",
+      "period": "Undergraduate team project",
+      "desc": "A team project presenting affordable local businesses using public data and map services.",
+      "metric": "Public-data and map-based business information service",
+      "tags": [
+        "JavaScript",
+        "Public data",
+        "Map APIs",
+        "Python"
+      ],
+      "body": "A team project presenting affordable local businesses using public data and map services.\n\n\n## My role\n\n\nParticipated across planning, ideation, and development of the service.\n\n\n## What we built\n\n\nUsed regional business data from a public data portal to present business information on a map-based web interface. The project documentation also includes mobile and chatbot components.\n\n\n## Results\n\n\nEvidence: Public-data and map-based business information service\n\n\nThe linked repository is a retained fork of the team project.\n\n\n## Technologies\n\n\nJavaScript · public data · map APIs · Python"
     },
     "cross-review-bridge": {
       "name": "AI Code Review Integration · cross-review-bridge",
