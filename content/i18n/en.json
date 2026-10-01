@@ -180,6 +180,7 @@
   "projects": {
     "smartfarm-rag": {
       "name": "SmartFarm RAG and Operations System",
+      "period": "Graduate research",
       "desc": "Designed and evaluated query-adaptive retrieval for RAG.",
       "metric": "One related KCI journal publication",
       "tags": [
@@ -191,6 +192,7 @@
     },
     "mv-evirag": {
       "name": "MV-EviRAG · Evidence-grounded Video QA",
+      "period": "Graduate research",
       "desc": "Studied when to answer or abstain based on evidence from multiple video views.",
       "metric": "Under review at IEEE Access · submitted August 2026",
       "tags": [
@@ -203,6 +205,7 @@
     },
     "music-splitter-web": {
       "name": "MusicSplitterWeb · AI Audio Separation",
+      "period": "Undergraduate project",
       "desc": "An undergraduate project connecting Spring Boot and FastAPI for audio upload, separation, and download.",
       "metric": "Implemented upload → five-stem separation → result download",
       "tags": [
