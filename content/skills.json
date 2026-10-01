@@ -1,48 +1,90 @@
 [
   {
-    "label": "핵심 언어",
+    "label": "문서·영상·음원을 처리하는 AI 개발",
     "items": [
       "Python",
-      "C++",
-      "TypeScript",
-      "Java",
-      "Shell",
-      "C#"
-    ]
-  },
-  {
-    "label": "AI / ML / LLM",
-    "items": [
       "PyTorch",
+      "RAG",
+      "LoRA",
+      "Qdrant",
+      "Spleeter",
       "CUDA",
       "HuggingFace",
       "LangChain",
       "OpenAI API",
-      "llama.cpp",
-      "Qdrant",
-      "RAG"
+      "llama.cpp"
     ]
   },
   {
-    "label": "인프라 & DevOps",
+    "label": "웹·서버·모바일 기능 구현",
+    "items": [
+      "Java",
+      "Spring Boot",
+      "Spring Security",
+      "FastAPI",
+      "Vue",
+      "React",
+      "Next.js",
+      "Flutter",
+      "Dart",
+      "PHP",
+      "MySQL",
+      "PostgreSQL",
+      "Supabase"
+    ]
+  },
+  {
+    "label": "데이터 정리·분석·시각화",
+    "items": [
+      "Python",
+      "데이터 전처리",
+      "시각화",
+      "공공데이터"
+    ]
+  },
+  {
+    "label": "센서·장치 제어와 웹 모니터링",
+    "items": [
+      "Arduino",
+      "C++",
+      "회로",
+      "펌웨어",
+      "PHP",
+      "MySQL"
+    ]
+  },
+  {
+    "label": "개발 환경 구성과 반복 작업 자동화",
     "items": [
       "Docker",
       "GitHub Actions",
-      "AWS",
       "Linux",
       "Cloudflare",
-      "DevContainer"
+      "Shell",
+      "PowerShell",
+      "DevContainer",
+      "AWS"
     ]
   },
   {
-    "label": "웹 & 백엔드",
+    "label": "아이디어 구체화와 팀 개발 진행",
     "items": [
-      "Next.js",
-      "React",
-      "FastAPI",
-      "Spring Boot",
-      "PostgreSQL",
-      "Supabase"
+      "기획",
+      "아이디어 구체화",
+      "주요 개발",
+      "팀 진행 관리"
+    ]
+  },
+  {
+    "label": "개발에 사용하는 언어",
+    "items": [
+      "Python",
+      "Java",
+      "JavaScript",
+      "TypeScript",
+      "C++",
+      "C#",
+      "Shell"
     ]
   }
 ]
