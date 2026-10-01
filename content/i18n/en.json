@@ -3,9 +3,9 @@
   "ui": {
     "nav": {
       "about": "About",
-      "education": "Timeline",
+      "education": "Research & Experience",
       "research": "Research",
-      "projects": "Projects",
+      "projects": "Selected Projects",
       "skills": "Skills",
       "interests": "Starred"
     },
@@ -27,19 +27,18 @@
     }
   },
   "site": {
-    "title": "Kim Yuseok | AI Research Engineer Portfolio",
-    "description": "CS/AI master's student focused on LLM systems, RAG architecture, and lightweight inference research."
+    "title": "Kim Yuseok | AI/LLM Developer Portfolio",
+    "description": "Kim Yuseok's portfolio in query-adaptive RAG, video question answering, AI services, and backend development. M.S. student, expected March 2027."
   },
   "profile": {
     "name": "Kim Yuseok",
-    "status": "Study focus and finding future job.",
-    "headline": "CS/AI Master's Degree in AI Research · Engineer Perspective",
-    "summaryLead": "A software engineer who builds efficient and scalable systems with a passion for the intersection of algorithms and machine learning inspired by nature.",
+    "status": "Expected March 2027 · Open to opportunities",
+    "headline": "AI/LLM Developer · M.S. Student",
+    "summaryLead": "RAG design, experimental evaluation, and backend implementation",
     "summary": [
-      "From Python · C++ · CUDA-based AI experiments to web front-end, if you are interested in technology, you are a research developer who creates and experiments directly. All projects should be developed based on planning focus as they should be on solid roots. They also aim at sustainable lightweight architectures without unnecessary complexity, and should be very friendly to and followed by agent coding such as Codex and Claude Code.",
-      "Currently in the CS/AI master’s program, we focus on research/development aimed at research and engineering careers in the fields of LLM systems and RAG architecture.",
-      "Since graduation, the majority of projects related to deployment have been interested in deployment, environmental matching and automation, and they have built experimental environments that can be replicated with DevContainer and Docker.",
-      "As a hobby, we are experimenting with various domains such as voice/voice-related model learning, Edge Environment LLM reasoning, and real-time voice conversion, and we are conducting a top project."
+      "I build AI features with Python and PyTorch and connect them to services using FastAPI and Spring Boot. My research covers query-adaptive RAG and evidence-grounded video question answering, including method design, implementation, comparative evaluation, and first-author manuscripts.",
+      "I am an M.S. student in Computer Engineering at Jeju National University, with expected graduation in March 2027. I am the first author of one published KCI journal paper and one domestic conference paper. A separate first-author manuscript submitted to IEEE Access in August 2026 is under review.",
+      "Paid internships at Kakao and Tilonsoft gave me experience in AI and web/backend development. In undergraduate team projects, I led ideation, core development, and project coordination. I focus on explaining what a system does through comparative experiments and execution results."
     ],
     "contacts": {
       "email": {
@@ -58,32 +57,102 @@
   },
   "education": [
     {
-      "degree": "M.S. track in CS / AI",
-      "school": "Preparing for graduate admission",
-      "period": "2025 — expected 2027",
-      "note": "Research and development around LLM systems, RAG architecture, and lightweight inference",
+      "degree": "KCI journal publication · First author",
+      "school": "Journal of Korean Institute of Information Technology",
+      "period": "2026",
+      "note": "스마트팜 RAG를 위한 질의 적응형 검색 채널 제어 (Query-adaptive retrieval channel control for SmartFarm RAG)."
+    },
+    {
+      "degree": "Domestic conference paper · First author",
+      "school": "KIIT Summer Conference",
+      "period": "2026",
+      "note": "근거 추적형 로컬 RAG 기반 온디바이스 의료 질의응답 시스템 (On-device medical question answering with evidence-traceable local RAG)."
+    },
+    {
+      "degree": "IEEE Access under review · First author",
+      "school": "IEEE Access",
+      "period": "2026.08",
+      "note": "MV-EviRAG manuscript submitted in August 2026; under review, not yet published."
+    },
+    {
+      "degree": "Graduate Student Researcher",
+      "school": "Machine Learning Lab, Jeju National University",
+      "period": "Mar 2025 — present",
+      "note": "Research design, implementation, and evaluation of document- and video-grounded question answering.",
       "bullets": [
-        "Shaping a research direction around LLM systems and RAG architecture",
-        "Building reproducible experiment environments for lightweight inference"
+        "Query-adaptive RAG and MV-EviRAG",
+        "Support for laboratory LLM usage, servers, and internal network configuration",
+        "Graduate research participation"
+      ]
+    },
+    {
+      "degree": "Backend Development Intern · Paid",
+      "school": "Tilonsoft",
+      "period": "2023.07 — 2023.08",
+      "note": "Developed a Java/Spring Boot portal with post CRUD, signup/login, search, pagination, and database integration."
+    },
+    {
+      "degree": "AI Development Intern · Paid",
+      "school": "Kakao · Kakao Track field placement",
+      "period": "2023.01 — 2023.02",
+      "note": "Developed an audio-to-score project with Python/PyTorch and a Bootstrap web interface. Led ideation, core development, and team coordination."
+    },
+    {
+      "degree": "Frontend Development Intern · Paid",
+      "school": "Tilonsoft",
+      "period": "2022.07 — 2022.08",
+      "note": "Contributed to a Vue.js corporate website redesign and implemented UI components."
+    },
+    {
+      "degree": "Coding Teaching Assistant · Paid, short-term",
+      "school": "Jeju Middle School",
+      "period": "2020.10",
+      "note": "Supported after-school coding practice and explained algorithms to students."
+    },
+    {
+      "degree": "Coding Teaching Assistant · Paid, short-term",
+      "school": "Jeju Science High School",
+      "period": "2017.07",
+      "note": "Prepared learning materials and practice environments and supported student questions."
+    },
+    {
+      "degree": "M.S. in Computer Engineering",
+      "school": "Jeju National University",
+      "period": "Mar 2025 — Mar 2027 (expected)",
+      "note": "Research in query-adaptive RAG and evidence-grounded video question answering.",
+      "bullets": [
+        "GPA: 4.49 / 4.5",
+        "Method design, implementation, comparative evaluation, and first-author writing"
       ]
     },
     {
       "degree": "B.S. in Computer Engineering",
       "school": "Jeju National University",
-      "period": "2017 — 2024",
+      "period": "2017.03 — 2024.02",
+      "note": "B.S. in Computer Engineering with a second major in Blockchain Security.",
       "bullets": [
-        "Expanded interests in software development, deployment automation, and reproducible experiment environments"
+        "GPA: 3.73 / 4.5",
+        "AI audio separation web service, capstone projects, and smart-home monitoring"
       ]
     },
     {
-      "degree": "RAG systems and evaluation pipeline experiments",
-      "school": "Independent research / portfolio projects",
-      "period": "2026 — ongoing",
-      "note": "A long-running research portfolio track connecting domain document retrieval, RAG evaluation, and lightweight inference setup",
+      "degree": "Five capstone, hackathon, and exhibition awards",
+      "school": "Development and team projects",
+      "period": "2017 — 2023",
+      "note": "Experience in ideation, development, and collaboration through awarded projects.",
       "bullets": [
-        "Experimenting with Dense/Sparse/Graph retrieval for aerospace documents",
-        "Accumulating notes on RAG strategy comparison and retrieval quality evaluation"
+        "Jun 2023 capstone excellence award: music glove circuitry and firmware; team lead",
+        "Nov 2022 capstone encouragement award: Python/Flutter food recognition and nutrition app; team lead",
+        "Nov 2021 tourism data hackathon encouragement award: Python preprocessing and visualization",
+        "Nov 2017 CS exhibition corporate excellence award: Arduino/PHP/MySQL smart-home monitoring",
+        "Aug 2017 AR/VR hackathon encouragement award: Unity game team project"
       ]
+    },
+    {
+      "degree": "OPIc English IM1",
+      "school": "Language",
+      "period": "2026.08",
+      "note": "Achieved OPIc Intermediate Mid 1."
     }
   ],
   "research": {
@@ -109,10 +178,47 @@
     }
   },
   "projects": {
+    "smartfarm-rag": {
+      "name": "SmartFarm RAG and Operations System",
+      "desc": "Designed and evaluated query-adaptive retrieval for RAG.",
+      "metric": "One related KCI journal publication",
+      "tags": [
+        "Python",
+        "RAG",
+        "FastAPI"
+      ],
+      "body": "Designed and evaluated query-adaptive retrieval for RAG.\n\n\n## Role and implementation\n\n\nLed method design, implementation, comparative evaluation, and first-author writing.\n\n\nCombined lexical, semantic, and relational retrieval signals. Used prior comparisons of retrieval combinations to replace an additional LLM call for choosing retrieval weights, and compared retrieval methods on public data.\n\n\nA separate operations system connects observations, document evidence, AI explanations, operator approval, and execution-result checks.\n\n\nEvidence: One related KCI journal publication\n\n\n## Validation scope\n\n\nThe approval and execution flow was evaluated in simulation. This is not a claim of autonomous operation on a real farm. The source repository is private."
+    },
+    "mv-evirag": {
+      "name": "MV-EviRAG · Evidence-grounded Video QA",
+      "desc": "Studied when to answer or abstain based on evidence from multiple video views.",
+      "metric": "Under review at IEEE Access · submitted August 2026",
+      "tags": [
+        "Python",
+        "PyTorch",
+        "LoRA",
+        "RAG"
+      ],
+      "body": "Studied when to answer or abstain based on evidence from multiple video views.\n\n\n## Role and implementation\n\n\nLed research design, implementation, experiments, and first-author writing.\n\n\nTrained and compared answer/abstention policies, evaluating answer coverage alongside errors. Managed experimental procedures, model responses, and analysis while distinguishing exploratory results from separate evaluation results.\n\n\nEvidence: Under review at IEEE Access · submitted August 2026\n\n\n## Research status\n\n\nThe manuscript is under review and is not a published journal article. The source repository is private."
+    },
+    "music-splitter-web": {
+      "name": "MusicSplitterWeb · AI Audio Separation",
+      "desc": "An undergraduate project connecting Spring Boot and FastAPI for audio upload, separation, and download.",
+      "metric": "Implemented upload → five-stem separation → result download",
+      "tags": [
+        "Java",
+        "Spring Boot",
+        "Spring Security",
+        "Python",
+        "FastAPI",
+        "Spleeter"
+      ],
+      "body": "An undergraduate project connecting Spring Boot and FastAPI for audio upload, separation, and download.\n\n\n## Role and implementation\n\n\nImplemented web/API integration and audio separation functionality.\n\n\nUsed Spleeter's five-stem model and implemented signup and login with Spring Security, connecting web requests to a Python AI-processing server.\n\n\nEvidence: Implemented upload → five-stem separation → result download\n\n\n## Validation scope\n\n\nThis is a locally run web service using the existing Spleeter model. It does not claim a newly trained separation model or commercial operation."
+    },
     "aerospace-rag": {
       "name": "aerospace-rag",
       "desc": "A RAG system for aerospace work documents. It combines Qdrant + BM25 + Graph three-channel retrieval, Weighted RRF fusion, and Ollama-based answer generation, optimized for a Colab T4 environment.",
-      "metric": "Improved MRR by 31% over single-channel retrieval through three-channel hybrid search",
+      "metric": "Dense, Sparse, and Graph retrieval with Qdrant, BM25, and Ollama",
       "tags": [
         "Python",
         "Qdrant",
@@ -120,64 +226,64 @@
         "RAG",
         "LLM"
       ],
-      "body": "A RAG system for aerospace work documents. It combines Qdrant + BM25 + Graph three-channel retrieval, Weighted RRF fusion, and Ollama-based answer generation, optimized for a Colab T4 environment.\n\n\n## Overview\n\n\nA RAG system that combines Dense, Sparse, and Graph retrieval channels for aerospace work documents.\n\n\n## Evidence\n\n- Metric: Improved MRR by 31% over single-channel retrieval through three-channel hybrid search"
+      "body": "A RAG system for aerospace work documents. It combines Qdrant + BM25 + Graph three-channel retrieval, Weighted RRF fusion, and Ollama-based answer generation, optimized for a Colab T4 environment.\n\n\n## Overview\n\n\nA RAG system that combines Dense, Sparse, and Graph retrieval channels for aerospace work documents.\n\n\n## Evidence\n\n- Metric: Dense, Sparse, and Graph retrieval with Qdrant, BM25, and Ollama"
     },
     "cross-review-bridge": {
       "name": "cross-review-bridge",
       "desc": "A human-approved cross-review workflow with external AI reviewers, automated as a Codex skill.",
-      "metric": "Reduced the code review cycle by about 70% compared with manual review",
+      "metric": "Implemented an external AI review workflow with human approval",
       "tags": [
         "PowerShell",
         "AI",
         "Automation"
       ],
-      "body": "A human-approved cross-review workflow with external AI reviewers, automated as a Codex skill.\n\n\n## Overview\n\n\nAn automation system that connects external AI reviewers and Codex through a human-approved review loop.\n\n\n## Evidence\n\n- Metric: Reduced the code review cycle by about 70% compared with manual review"
+      "body": "A human-approved cross-review workflow with external AI reviewers, automated as a Codex skill.\n\n\n## Overview\n\n\nAn automation system that connects external AI reviewers and Codex through a human-approved review loop.\n\n\n## Evidence\n\n- Metric: Implemented an external AI review workflow with human approval"
     },
     "music-source-separation": {
       "name": "Music-Source-Separation",
       "desc": "Training music source separation models based on MDX23C and Demucs4HT architectures, with Hydra configs for experiment management and CUDA-based GPU training.",
-      "metric": "Reached 8.2 dB vocal separation SDR with a Demucs4HT-based setup",
+      "metric": "Managed audio separation training experiments with Hydra configs",
       "tags": [
         "Python",
         "PyTorch",
         "CUDA",
         "Hydra"
       ],
-      "body": "Training music source separation models based on MDX23C and Demucs4HT architectures, with Hydra configs for experiment management and CUDA-based GPU training.\n\n\n## Overview\n\n\nA project for training music source separation models and managing experiment configuration.\n\n\n## Evidence\n\n- Metric: Reached 8.2 dB vocal separation SDR with a Demucs4HT-based setup"
+      "body": "Training music source separation models based on MDX23C and Demucs4HT architectures, with Hydra configs for experiment management and CUDA-based GPU training.\n\n\n## Overview\n\n\nA project for training music source separation models and managing experiment configuration.\n\n\n## Evidence\n\n- Metric: Managed audio separation training experiments with Hydra configs"
     },
     "mediamtx-installer": {
       "name": "mediamtx-installer",
       "desc": "An automation script that installs a MediaMTX streaming server on Ubuntu 24.04 with a single command.",
-      "metric": "Reduced setup time from 15 minutes manually to about 30 seconds",
+      "metric": "Scripted MediaMTX installation on Ubuntu 24.04",
       "tags": [
         "Shell",
         "Ubuntu",
         "Streaming"
       ],
-      "body": "An automation script that installs a MediaMTX streaming server on Ubuntu 24.04 with a single command.\n\n\n## Overview\n\n\nAn operations automation script that simplifies the MediaMTX installation process.\n\n\n## Evidence\n\n- Metric: Reduced setup time from 15 minutes manually to about 30 seconds"
+      "body": "An automation script that installs a MediaMTX streaming server on Ubuntu 24.04 with a single command.\n\n\n## Overview\n\n\nAn operations automation script that simplifies the MediaMTX installation process.\n\n\n## Evidence\n\n- Metric: Scripted MediaMTX installation on Ubuntu 24.04"
     },
     "introduce-cv-page": {
       "name": "IntroduceCvPage (namu-log)",
       "desc": "A blog + CV system where writing in a WYSIWYG Markdown editor automatically creates GitHub PRs. Built with Next.js 16 and Tiptap.",
-      "metric": "Fully automated the flow from article publishing to PR creation",
+      "metric": "Connected Markdown editing to GitHub pull request creation",
       "tags": [
         "TypeScript",
         "Next.js",
         "React",
         "GitHub API"
       ],
-      "body": "A blog + CV system where writing in a WYSIWYG Markdown editor automatically creates GitHub PRs. Built with Next.js 16 and Tiptap.\n\n\n## Overview\n\n\nA blog and CV system that experiments with a GitHub PR-based publishing workflow.\n\n\n## Evidence\n\n- Metric: Fully automated the flow from article publishing to PR creation"
+      "body": "A blog + CV system where writing in a WYSIWYG Markdown editor automatically creates GitHub PRs. Built with Next.js 16 and Tiptap.\n\n\n## Overview\n\n\nA blog and CV system that experiments with a GitHub PR-based publishing workflow.\n\n\n## Evidence\n\n- Metric: Connected Markdown editing to GitHub pull request creation"
     },
     "spring-community-board": {
       "name": "SpringCommunityBoard",
       "desc": "A CRUD community board built with Spring Boot and JPA, including member management, posts, and comments.",
-      "metric": "Improved list query response time by 40% by resolving a JPA N+1 issue",
+      "metric": "Implemented member, post, and comment CRUD with Spring Boot and JPA",
       "tags": [
         "Java",
         "Spring Boot",
         "JPA"
       ],
-      "body": "A CRUD community board built with Spring Boot and JPA, including member management, posts, and comments.\n\n\n## Overview\n\n\nA Spring Boot-based CRUD board with member, post, and comment features.\n\n\n## Evidence\n\n- Metric: Improved list query response time by 40% by resolving a JPA N+1 issue"
+      "body": "A CRUD community board built with Spring Boot and JPA, including member management, posts, and comments.\n\n\n## Overview\n\n\nA Spring Boot-based CRUD board with member, post, and comment features.\n\n\n## Evidence\n\n- Metric: Implemented member, post, and comment CRUD with Spring Boot and JPA"
     }
   },
   "skills": {

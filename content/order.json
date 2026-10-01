@@ -6,6 +6,9 @@
     "agentic-workflow"
   ],
   "projects": [
+    "smartfarm-rag",
+    "mv-evirag",
+    "music-splitter-web",
     "aerospace-rag",
     "cross-review-bridge",
     "music-source-separation",
