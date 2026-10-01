@@ -157,24 +157,24 @@
   ],
   "research": {
     "rag": {
-      "title": "Retrieval-Augmented Generation (RAG)",
-      "desc": "Hybrid retrieval with Dense / Sparse / Graph channels, Weighted RRF integration, and domain-specific document indexing, with hands-on experience building RAG pipelines for aerospace documents.",
-      "body": "Hybrid retrieval with Dense / Sparse / Graph channels, Weighted RRF integration, and domain-specific document indexing, with hands-on experience building RAG pipelines for aerospace documents.\n\n\n## Interest\n\n\nI experiment with hybrid RAG architectures that combine Dense, Sparse, and Graph retrieval and integrate them through Weighted RRF.\n\n\n## Current Focus\n\n- Domain-specific document chunking\n- Retrieval quality evaluation\n- Source-grounded answer generation"
+      "title": "Document-grounded AI Answers · RAG",
+      "desc": "I study how AI can retrieve relevant documents to support its answers. I implemented aerospace document question answering using keyword, semantic, and relationship-based retrieval.",
+      "body": "I study how AI can retrieve relevant documents to support its answers. I implemented aerospace document question answering using keyword, semantic, and relationship-based retrieval.\n\n\n## Interest\n\n\nI experiment with hybrid RAG architectures that combine Dense, Sparse, and Graph retrieval and integrate them through Weighted RRF.\n\n\n## Current Focus\n\n- Domain-specific document chunking\n- Retrieval quality evaluation\n- Source-grounded answer generation"
     },
     "edge-llm": {
-      "title": "Lightweight LLM Inference and Edge AI",
-      "desc": "Building local inference environments with llama.cpp, Qwen3, and GGUF quantization while exploring practical LLM deployment on constrained hardware.",
-      "body": "Building local inference environments with llama.cpp, Qwen3, and GGUF quantization while exploring practical LLM deployment on constrained hardware.\n\n\n## Interest\n\n\nI explore practical LLM inference setups that can run on constrained hardware."
+      "title": "Running AI on Limited Hardware",
+      "desc": "I explore running AI models on resource-constrained devices, including local setups with llama.cpp and reduced-size models.",
+      "body": "I explore running AI models on resource-constrained devices, including local setups with llama.cpp and reduced-size models.\n\n\n## Interest\n\n\nI explore practical LLM inference setups that can run on constrained hardware."
     },
     "audio-voice": {
-      "title": "Music Source Separation and Voice Conversion",
-      "desc": "Training experiments with MDX23C and Demucs4HT architectures, RVC / Applio-based voice conversion, and Hydra-configured experiment management.",
-      "body": "Training experiments with MDX23C and Demucs4HT architectures, RVC / Applio-based voice conversion, and Hydra-configured experiment management.\n\n\n## Interest\n\n\nI work with music source separation and voice conversion models in reproducible experiment environments."
+      "title": "AI for Music and Voice",
+      "desc": "I experiment with separating vocals and instruments and converting voice characteristics, using existing models and managing training settings.",
+      "body": "I experiment with separating vocals and instruments and converting voice characteristics, using existing models and managing training settings.\n\n\n## Interest\n\n\nI work with music source separation and voice conversion models in reproducible experiment environments."
     },
     "agentic-workflow": {
-      "title": "Agentic Workflow & MCP",
-      "desc": "Designing agent workflows based on the Model Context Protocol, including a cross-review automation system with a human approval loop.",
-      "body": "Designing agent workflows based on the Model Context Protocol, including a cross-review automation system with a human approval loop.\n\n\n## Interest\n\n\nI design workflows where AI agents can use tools safely while operating with human approval loops."
+      "title": "Connecting AI Tools to Development",
+      "desc": "I work on connecting AI tools to development tasks, including a cross-review workflow with human approval.",
+      "body": "I work on connecting AI tools to development tasks, including a cross-review workflow with human approval.\n\n\n## Interest\n\n\nI design workflows where AI agents can use tools safely while operating with human approval loops."
     }
   },
   "projects": {
