@@ -3,7 +3,7 @@ import type { PortfolioContent, ProjectCategory, ProjectEntry, ProjectFocus, Pro
 
 const statusSchema = z.enum(["draft", "published", "archived"]);
 const timelineEntryTypeSchema = z.enum(["education", "research", "publication", "project", "award", "talk", "work", "milestone"]);
-const projectCategorySchema = z.enum(["career", "toy"]);
+const projectCategorySchema = z.enum(["career", "toy", "undergraduate"]);
 const projectFocusSchema = z.enum(["research", "product", "tool", "experiment"]);
 const projectProofLevelSchema = z.enum(["core", "supporting", "exploration"]);
 const projectMetricSchema = z.object({

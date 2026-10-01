@@ -631,7 +631,8 @@ export default function Home() {
   const themeToggleLabel = theme === "dark" ? label("lightMode", "라이트 모드") : label("darkMode", "다크 모드");
   const languageToggleLabel = locale === "en" ? label("languageToKorean", "한국어") : label("languageToEnglish", "English");
   const visibleProjects = useMemo(() => filterProjectsBySelection(PROJECTS, projectFilters), [PROJECTS, projectFilters]);
-  const projectHasOverflow = hasProjectOverflow(visibleProjects, PROJECT_VISIBLE_COUNT);
+  const [showAllProjects, setShowAllProjects] = useState(false);
+  const projectHasOverflow = !showAllProjects && hasProjectOverflow(visibleProjects, PROJECT_VISIBLE_COUNT);
   const selectedProject = PROJECTS.find((project) => project.slug === selectedProjectSlug) ?? null;
   const activeProjectGraphNodeId = focusedGraphNodeId ?? (selectedProject ? `project:${selectedProject.slug}` : null);
 
@@ -1066,7 +1067,7 @@ export default function Home() {
 
           {/* ── 프로젝트 ── */}
           <FadeSection>
-            <SectionTitle id="projects" icon="code" T={T}>{locale === "en" ? "Selected Projects" : "대표 프로젝트"}</SectionTitle>
+            <SectionTitle id="projects" icon="code" T={T}>{locale === "en" ? "Projects & Activities" : "프로젝트·개발 활동"}</SectionTitle>
             <div className="project-filter-rail" role="group" aria-label={locale === "en" ? "Project filters" : "프로젝트 필터"}>
               {PROJECT_FILTERS.map((filter) => (
                 <button
@@ -1283,10 +1284,10 @@ export default function Home() {
                 })}
                 {projectHasOverflow && <div className="project-scroll-fade" aria-hidden="true" />}
             </div>
-            {projectHasOverflow && (
-              <p className="project-scroll-hint">
-                {locale === "en" ? "Scroll for more projects" : "더 많은 프로젝트는 스크롤"}
-              </p>
+            {hasProjectOverflow(visibleProjects, PROJECT_VISIBLE_COUNT) && (
+              <button type="button" className="project-scroll-hint" onClick={() => setShowAllProjects(!showAllProjects)} aria-expanded={showAllProjects}>
+                {showAllProjects ? (locale === "en" ? "Collapse project list" : "프로젝트 목록 접기") : (locale === "en" ? `Expand all ${visibleProjects.length} projects` : `전체 ${visibleProjects.length}개 프로젝트 펼쳐 보기`)}
+              </button>
             )}
           </FadeSection>
 
