@@ -29,8 +29,7 @@ const content: PortfolioContent = {
       status: "published",
       showDiagram: true,
       body: "Dense retrieval, sparse retrieval, reranking, RAG evaluation",
-      relatedNotes: ["rag-evaluation"],
-    },
+      },
   ],
   projects: [
     {
@@ -45,8 +44,7 @@ const content: PortfolioContent = {
       private: false,
       status: "published",
       body: "Qdrant vector search and graph retrieval pipeline",
-      relatedNotes: ["rag-evaluation"],
-    },
+      },
     {
       slug: "draft-project",
       name: "draft project",
@@ -59,27 +57,13 @@ const content: PortfolioContent = {
       private: false,
       status: "draft",
       body: "Invisible draft content",
-      relatedNotes: [],
-    },
+      },
   ],
   skills: [
     { label: "핵심 언어", items: ["Python", "TypeScript"] },
     { label: "인프라", items: ["Cloudflare"] },
   ],
   starred: [{ name: "typst/typst", href: "https://github.com/typst/typst", stars: "53.4k", desc: "마크업 기반 조판 시스템" }],
-  notes: [
-    {
-      slug: "rag-evaluation",
-      title: "RAG 평가 노트",
-      status: "published",
-      date: "2026-05-18",
-      summary: "검색 품질 평가 기준",
-      tags: ["RAG", "Evaluation"],
-      relatedProjects: ["aerospace-rag"],
-      relatedResearch: ["rag"],
-      body: "Recall@5, MRR, answer faithfulness evaluation",
-    },
-  ],
 };
 
 describe("buildKnowledgeGraph", () => {
@@ -90,7 +74,7 @@ describe("buildKnowledgeGraph", () => {
     expect(ids).toContain("profile");
     expect(ids).toContain("project:aerospace-rag");
     expect(ids).toContain("research:rag");
-    expect(ids).toContain("note:rag-evaluation");
+    expect(ids).not.toContain("note:rag-evaluation");
     expect(ids).toContain("skill:python");
     expect(ids).toContain("term:rag");
     expect(ids).not.toContain("project:draft-project");
@@ -102,8 +86,6 @@ describe("buildKnowledgeGraph", () => {
 
     expect(graph.links).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ source: "project:aerospace-rag", target: "note:rag-evaluation", kind: "related" }),
-        expect.objectContaining({ source: "research:rag", target: "note:rag-evaluation", kind: "related" }),
         expect.objectContaining({ source: "project:aerospace-rag", target: "term:rag", kind: "term" }),
       ]),
     );

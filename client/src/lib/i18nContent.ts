@@ -1,6 +1,5 @@
 import type {
   EducationEntry,
-  NoteEntry,
   PortfolioContent,
   ProfileContact,
   ProfileContent,
@@ -36,7 +35,6 @@ export interface EnglishTranslations {
   projects?: Record<string, Partial<Pick<ProjectEntry, "name" | "period" | "desc" | "metric" | "tags" | "metrics" | "evaluation" | "body">>>;
   skills?: Record<string, Partial<Pick<SkillGroup, "label" | "items">>>;
   starred?: Record<string, Partial<Pick<StarredRepo, "desc">>>;
-  notes?: Record<string, Partial<Pick<NoteEntry, "title" | "date" | "summary" | "tags" | "body">>>;
   sourceHashes?: Record<string, string>;
 }
 
@@ -103,6 +101,5 @@ export function localizePortfolioContent(content: PortfolioContent, translations
       return translated ? { ...item, ...translated, items: mergeArray(item.items, translated.items) } : item;
     }),
     starred: content.starred.map((item) => ({ ...item, ...(translations.starred?.[item.name] ?? {}) })),
-    notes: content.notes.map((item) => ({ ...item, ...(translations.notes?.[item.slug] ?? {}) })),
   };
 }

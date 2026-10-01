@@ -4,7 +4,7 @@
 
 All content, assets and UI code are managed in this Git repository. A push to `main` triggers the existing Cloudflare Pages GitHub integration.
 
-Edit the JSON files in `content/` and MDX files in `content/research`, `content/projects` and `content/notes`. Keep English translations in `content/i18n/en.json` in sync. Store assets in `client/public`. The expanded project details (summary, comparison, modules) are in `client/src/components/capabilities/projectInsights.ts`, and their module-flow diagrams in the `capability*.ts` files beside it.
+Edit the JSON files in `content/` and MDX files in `content/research` and `content/projects`. Keep English translations in `content/i18n/en.json` in sync. Store assets in `client/public`. The expanded project details (summary, comparison, modules) are in `client/src/components/capabilities/projectInsights.ts`, and their module-flow diagrams in the `capability*.ts` files beside it.
 
 ```bash
 pnpm install --frozen-lockfile

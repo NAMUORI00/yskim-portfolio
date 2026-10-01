@@ -24,10 +24,10 @@ describe("Home 논문·연구·경력 section", () => {
   it("splits publications, research experience, paid employment and education into separate lists instead of one mixed timeline", () => {
     const block = careerBlock();
 
-    expect(source).toContain('import { CareerExpandAllButton, CareerRecords, useCareerRecords } from "@/components/CareerRecords";');
+    expect(source).toContain('import { CareerRecords, useCareerRecords } from "@/components/CareerRecords";');
     expect(block).toContain("<CareerRecords state={careerRecords} T={T} locale={locale} />");
     // '모두 펼치기'는 섹션 제목 줄 오른쪽에 둡니다.
-    expect(block).toContain("action={<CareerExpandAllButton state={careerRecords} T={T} locale={locale} />}");
+    expect(block).not.toContain("CareerExpandAllButton");
     expect(source).toContain("{action}");
     // 예전의 한 줄 타임라인과 스크롤하면 4개씩 더 불러오는 방식은 쓰지 않습니다.
     expect(source).not.toContain("timeline-connection-list");

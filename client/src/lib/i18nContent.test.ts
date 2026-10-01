@@ -24,7 +24,7 @@ const content: PortfolioContent = {
     contacts: [{ id: "blog", type: "external", label: "블로그", href: "https://blog.namuori.net" }],
   },
   education: [{ degree: "석사", school: "학교", period: "2026", note: "노트", current: true }],
-  research: [{ slug: "rag", title: "검색 증강 생성", desc: "검색 설명", status: "published", showDiagram: true, relatedNotes: [], body: "본문" }],
+  research: [{ slug: "rag", title: "검색 증강 생성", desc: "검색 설명", status: "published", showDiagram: true, body: "본문" }],
   projects: [{
     slug: "portfolio",
     name: "포트폴리오",
@@ -41,12 +41,10 @@ const content: PortfolioContent = {
     highlight: true,
     private: false,
     status: "published",
-    relatedNotes: [],
     body: "프로젝트 본문",
   }],
   skills: [{ label: "언어", items: ["타입스크립트"] }],
   starred: [{ name: "vitejs/vite", href: "https://github.com/vitejs/vite", stars: "75k", desc: "설명" }],
-  notes: [{ slug: "note", title: "노트", status: "published", date: "2026-05-20", summary: "요약", tags: ["RAG"], relatedProjects: [], relatedResearch: [], body: "노트 본문" }],
 };
 
 const en: EnglishTranslations = {
@@ -72,7 +70,6 @@ const en: EnglishTranslations = {
     },
   },
   research: { rag: { title: "Retrieval-Augmented Generation" } },
-  notes: { note: { title: "Note", date: "May 20, 2026", summary: "Summary" } },
   skills: { "언어": { label: "Languages", items: ["TypeScript"] } },
   starred: { "vitejs/vite": { desc: "Frontend tooling" } },
   sourceHashes: {},
@@ -100,7 +97,6 @@ describe("localized portfolio content", () => {
     expect(localized.research[0].title).toBe("Retrieval-Augmented Generation");
     expect(localized.skills[0]).toEqual({ label: "Languages", items: ["TypeScript"] });
     expect(localized.starred[0].desc).toBe("Frontend tooling");
-    expect(localized.notes[0].date).toBe("May 20, 2026");
   });
 
   it("looks up translated UI text with fallback", () => {

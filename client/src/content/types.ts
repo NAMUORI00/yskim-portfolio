@@ -84,7 +84,6 @@ export interface ResearchEntry {
   coverImage?: string;
   showDiagram: boolean;
   body: string;
-  relatedNotes: string[];
 }
 
 export interface ProjectEntry {
@@ -105,7 +104,6 @@ export interface ProjectEntry {
   status: PublicationStatus;
   coverImage?: string;
   body: string;
-  relatedNotes: string[];
 }
 
 export interface SkillGroup {
@@ -120,22 +118,9 @@ export interface StarredRepo {
   desc: string;
 }
 
-export interface NoteEntry {
-  slug: string;
-  title: string;
-  status: PublicationStatus;
-  date: string;
-  summary: string;
-  tags: string[];
-  relatedProjects: string[];
-  relatedResearch: string[];
-  body: string;
-}
-
 export interface ContentOrder {
   research: string[];
   projects: string[];
-  notes: string[];
 }
 
 export interface PortfolioContent {
@@ -146,5 +131,4 @@ export interface PortfolioContent {
   projects: ProjectEntry[];
   skills: SkillGroup[];
   starred: StarredRepo[];
-  notes: NoteEntry[];
 }
