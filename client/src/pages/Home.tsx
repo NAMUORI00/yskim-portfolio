@@ -14,15 +14,24 @@
  *   2. 순수 한글 섹션 제목   → FONT_SERIF 허용
  *   3. 날짜·기술태그·수치   → FONT_MONO
  *
+ * 본문 영역 글자 크기 단계 (루트 16px 기준, 전체를 키우지 않고 쓰임새별로 고릅니다):
+ *   소개 첫 문장 1rem · 소개 문단 0.9375rem
+ *   항목 제목(프로젝트·경력·연구 분야) 0.9375rem
+ *   설명 본문 0.875rem · 보조 문장·단추 0.8125rem
+ *   배지·태그·기간 같은 메타 정보 0.75rem · 작은 표식의 하한 0.6875rem
+ *   누르는 조작: 마우스 화면 32~40px, 터치 화면(pointer: coarse) 44px
+ *
  * Layout: 좌측 고정 사이드바 + 우측 스크롤 콘텐츠
  * Colors: #1a1a1a (텍스트), #2d6a4f (포인트), #f5f5f3 (배경)
  */
-import { useEffect, useRef, useState, useCallback, useMemo } from "react";
+import { lazy, Suspense, useEffect, useRef, useState, useCallback, useMemo } from "react";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { englishTranslations, getProfileAvatarUrl, portfolioContent, type ProjectEntry, type TimelineLink } from "@/content";
+import { englishTranslations, getProfileAvatarUrl, portfolioContent, type ProjectEntry } from "@/content";
 import { DARK, FONT_MONO, FONT_SANS, FONT_SERIF, LIGHT, type PortfolioTheme } from "@/content/theme";
+import { CareerExpandAllButton, CareerRecords, useCareerRecords } from "@/components/CareerRecords";
 import { KnowledgeGraphRail } from "@/components/KnowledgeGraphRail";
+import { LazyBoundary } from "@/components/LazyBoundary";
 import { ResearchInterests } from "@/components/ResearchInterests";
 import { MobileKnowledgeGraph } from "@/components/MobileKnowledgeGraph";
 import { buildCoverPreview, buildResearchDiagramPreview, type CoverPreviewPayload } from "@/lib/coverPreview";
@@ -40,7 +49,6 @@ import {
   projectEvidenceMetrics,
   projectFilterLabel,
   projectFocusLabel,
-  projectProofLevelLabel,
   toggleProjectFilterChip,
   type ProjectFilterSelection,
 } from "@/lib/projectEvidence";
@@ -51,8 +59,10 @@ const ACTIVE_SECTION_ANCHOR_RATIO = 0.5;
 const ACTIVE_SCROLL_END_TOLERANCE = 4;
 const MIN_SCROLL_END_PADDING = 48;
 const SCROLL_END_PADDING_GAP = 16;
-const TIMELINE_BATCH_SIZE = 4;
 const PROJECT_VISIBLE_COUNT = 7;
+
+// 프로젝트 "자세히 보기"의 한 문장·흐름 도식·비교/모듈/출처/소개 전문은 처음 펼칠 때 불러옵니다 (첫 화면 번들에 넣지 않음).
+const ProjectInsightPanel = lazy(() => import("@/components/capabilities/ProjectInsightPanel"));
 
 /* ── SVG 아이콘 컴포넌트 ── */
 function NavIcon({ type, color, size = 13 }: { type: string; color: string; size?: number }) {
@@ -241,41 +251,6 @@ function useScrollEndPadding(lastSectionId: string) {
   return `${padding}px`;
 }
 
-function useTimelineProgressiveReveal(totalCount: number) {
-  const [visibleCount, setVisibleCount] = useState(() => Math.min(TIMELINE_BATCH_SIZE, totalCount));
-  const sentinelRef = useRef<HTMLDivElement>(null);
-  const hasMore = visibleCount < totalCount;
-
-  const revealMore = useCallback(() => {
-    setVisibleCount((current) => Math.min(totalCount, current + TIMELINE_BATCH_SIZE));
-  }, [totalCount]);
-
-  useEffect(() => {
-    setVisibleCount((current) => {
-      const minimum = Math.min(TIMELINE_BATCH_SIZE, totalCount);
-      return Math.min(Math.max(current, minimum), totalCount);
-    });
-  }, [totalCount]);
-
-  useEffect(() => {
-    const sentinel = sentinelRef.current;
-    if (!sentinel || !hasMore) return;
-
-    const root = document.getElementById("scroll-area");
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry?.isIntersecting) revealMore();
-      },
-      { root, rootMargin: "400px 0px", threshold: 0 }
-    );
-
-    observer.observe(sentinel);
-    return () => observer.disconnect();
-  }, [hasMore, revealMore]);
-
-  return { visibleCount, hasMore, revealMore, sentinelRef };
-}
-
 /* ── fade-up 애니메이션 훅 ── */
 function useFadeIn(ref: React.RefObject<HTMLElement | null>) {
   useEffect(() => {
@@ -316,10 +291,10 @@ function FadeSection({ children, style }: { children: React.ReactNode; style?: R
   );
 }
 
-/* ── SectionTitle ── */
+/* ── SectionTitle (action: 제목 줄 오른쪽에 두는 섹션 전체 조작) ── */
 function SectionTitle({
-  id, children, icon, T
-}: { id: string; children: React.ReactNode; icon?: string; T: typeof LIGHT }) {
+  id, children, icon, T, action
+}: { id: string; children: React.ReactNode; icon?: string; T: typeof LIGHT; action?: React.ReactNode }) {
   return (
     <div
       id={id}
@@ -337,16 +312,17 @@ function SectionTitle({
       <h2
         style={{
           fontFamily: FONT_SANS,
-          fontSize: "0.68rem",
+          fontSize: "0.75rem",
           fontWeight: 600,
           color: T.muted,
-          letterSpacing: "0.1em",
+          letterSpacing: "0.08em",
           textTransform: "uppercase",
           margin: 0,
         }}
       >
         {children}
       </h2>
+      {action}
     </div>
   );
 }
@@ -358,11 +334,12 @@ function Tag({ children, T }: { children: React.ReactNode; T: typeof LIGHT }) {
       style={{
         display: "inline-block",
         fontFamily: FONT_MONO,
-        fontSize: "0.65rem",
+        fontSize: "0.75rem",
+        lineHeight: 1.6,
         color: T.sub,
         background: T.bg,
         border: `1px solid ${T.border}`,
-        padding: "1px 7px",
+        padding: "0 6px",
         borderRadius: "2px",
       }}
     >
@@ -378,14 +355,16 @@ function ExternalLink({ href, children, T }: { href: string; children: React.Rea
       href={href}
       target="_blank"
       rel="noopener noreferrer"
+      className="project-external-link"
       style={{
         color: T.green,
         textDecoration: "none",
         fontFamily: FONT_MONO,
-        fontSize: "0.72rem",
+        fontSize: "0.75rem",
         display: "inline-flex",
         alignItems: "center",
         gap: "3px",
+        padding: "0 0.15rem",
         transition: "opacity 0.15s",
       }}
       onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.7")}
@@ -395,123 +374,6 @@ function ExternalLink({ href, children, T }: { href: string; children: React.Rea
       <ExternalArrow color={T.green} />
     </a>
   );
-}
-
-function timelineTypeLabel(type: string, locale: "ko" | "en"): string {
-  const ko: Record<string, string> = {
-    education: "학력",
-    research: "연구",
-    publication: "논문",
-    project: "프로젝트",
-    award: "수상",
-    talk: "발표",
-    work: "경력",
-    milestone: "이정표",
-  };
-  const en: Record<string, string> = {
-    education: "Education",
-    research: "Research",
-    publication: "Publication",
-    project: "Project",
-    award: "Award",
-    talk: "Talk",
-    work: "Work",
-    milestone: "Milestone",
-  };
-  return (locale === "en" ? en : ko)[type] ?? type;
-}
-
-function isCvArchiveHref(href: string): boolean {
-  try {
-    const url = new URL(href, "https://namuori.net");
-    return url.pathname.replace(/\/+$/, "") === "/cv";
-  } catch {
-    return href.trim().replace(/\/+$/, "") === "/cv";
-  }
-}
-
-type TimelineChipItem = {
-  key: string;
-  label: string;
-  href?: string;
-  kind: "link" | "project" | "skill";
-  external?: boolean;
-};
-
-function normalizeTimelineChipLabel(value: string): string {
-  return value.trim().toLowerCase().replace(/\s+/g, " ");
-}
-
-function timelineHrefTail(href: string): string {
-  try {
-    const url = new URL(href, "https://namuori.net");
-    const parts = url.pathname.split("/").filter(Boolean);
-    return normalizeTimelineChipLabel(parts[parts.length - 1] ?? "");
-  } catch {
-    const parts = href.split(/[/?#]/)[0].split("/").filter(Boolean);
-    return normalizeTimelineChipLabel(parts[parts.length - 1] ?? href);
-  }
-}
-
-function matchesTimelineProject(link: TimelineLink, project: Pick<ProjectEntry, "name" | "slug">): boolean {
-  const label = normalizeTimelineChipLabel(link.label);
-  const hrefTail = timelineHrefTail(link.href);
-  const projectName = normalizeTimelineChipLabel(project.name);
-  const projectSlug = normalizeTimelineChipLabel(project.slug);
-  return label === projectName || label === projectSlug || hrefTail === projectSlug;
-}
-
-function buildTimelineChipItems({
-  links,
-  relatedProjects,
-  relatedSkills,
-  previewHref,
-}: {
-  links: TimelineLink[];
-  relatedProjects: Pick<ProjectEntry, "name" | "slug">[];
-  relatedSkills: string[];
-  previewHref: (path: string) => string;
-}): TimelineChipItem[] {
-  const seen = new Set<string>();
-  const items: TimelineChipItem[] = [];
-  const add = (item: TimelineChipItem) => {
-    const identity = `${item.kind}:${normalizeTimelineChipLabel(item.label)}`;
-    if (seen.has(identity)) return;
-    seen.add(identity);
-    items.push(item);
-  };
-
-  relatedProjects.forEach((project) => {
-    add({
-      key: `project:${project.slug}`,
-      kind: "project",
-      label: project.name,
-      href: previewHref(`/projects/${project.slug}`),
-    });
-  });
-
-  links
-    .filter((link) => !isCvArchiveHref(link.href))
-    .filter((link) => !relatedProjects.some((project) => matchesTimelineProject(link, project)))
-    .forEach((link) => {
-      add({
-        key: `link:${link.label}:${link.href}`,
-        kind: "link",
-        label: link.label,
-        href: link.href,
-        external: true,
-      });
-    });
-
-  relatedSkills.slice(0, 5).forEach((skill) => {
-    add({
-      key: `skill:${skill}`,
-      kind: "skill",
-      label: skill,
-    });
-  });
-
-  return items;
 }
 
 function ThemeModeIcon({ theme }: { theme: "light" | "dark" }) {
@@ -592,6 +454,11 @@ function PreferenceSegmentedControl({
    메인 컴포넌트
 ════════════════════════════ */
 export default function Home() {
+  return <HomeView />;
+}
+
+/** 공개 홈("/")과 로컬 검토 라우트(/design/capabilities)가 같은 화면을 씁니다. */
+export function HomeView() {
   const { theme, toggleTheme } = useTheme();
   const { locale, toggleLocale } = useLanguage();
   const T = theme === "dark" ? DARK : LIGHT;
@@ -610,27 +477,14 @@ export default function Home() {
   const NOTES = content.notes.filter((item) => item.status === "published");
   const SKILL_GROUPS = content.skills;
   const projectRole = (project: ProjectEntry) => project.body.match(/## (?:맡은 역할|My role)\s+([^#]+?)(?=\n\s*\n|$)/)?.[1]?.trim() ?? "";
-  const relatedSkillProjects = (items: string[]) => {
-    if (items.includes("기획") || items.includes("Planning")) {
-      return PROJECTS.filter(project => ["golden-glove", "food-scan", "good-price-jeju"].includes(project.slug));
-    }
-    const normalized = items.map(item => item.toLowerCase());
-    return PROJECTS.map(project => ({ project, score: project.tags.filter(tag => normalized.includes(tag.toLowerCase())).length }))
-      .filter(entry => entry.score > 0).sort((a, b) => b.score - a.score).slice(0, 3).map(entry => entry.project);
-  };
   const STARRED = content.starred;
   const PROFILE = content.profile;
   const PROFILE_AVATAR = getProfileAvatarUrl(PROFILE);
   const KNOWLEDGE_GRAPH = useMemo(() => buildKnowledgeGraph(content), [content]);
   const active = useActiveSection(NAV_IDS);
   const scrollEndPadding = useScrollEndPadding("interests");
-  const {
-    visibleCount: visibleTimelineCount,
-    hasMore: hasMoreTimelineEntries,
-    revealMore: revealMoreTimelineEntries,
-    sentinelRef: timelineLoadSentinelRef,
-  } = useTimelineProgressiveReveal(TIMELINE_ENTRIES.length);
-  const visibleTimelineEntries = TIMELINE_ENTRIES.slice(0, visibleTimelineCount);
+  // 논문·연구·경력: 기록을 종류별 묶음으로 나누고, 제목 줄의 '모두 펼치기'와 같은 펼침 상태를 씁니다.
+  const careerRecords = useCareerRecords(TIMELINE_ENTRIES, PROJECTS, locale);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [focusedGraphNodeId, setFocusedGraphNodeId] = useState<string | null>(null);
   const [coverPreview, setCoverPreview] = useState<CoverPreviewPayload | null>(null);
@@ -1047,11 +901,11 @@ export default function Home() {
                 <SectionTitle id="about" icon="user" T={T}>{locale === "en" ? "What I bring" : "개발자로서의 강점"}</SectionTitle>
                 <p style={{
                   fontFamily: FONT_SANS,
-                  fontSize: "1.05rem",
+                  fontSize: "1rem",
                   fontWeight: 600,
                   color: T.text,
                   lineHeight: 1.75,
-                  marginBottom: "1.25rem",
+                  marginBottom: "1.1rem",
                   wordBreak: "keep-all",
                 }}>
                   {PROFILE.summaryLead}
@@ -1061,10 +915,10 @@ export default function Home() {
                     key={paragraph}
                     style={{
                       fontFamily: FONT_SANS,
-                      fontSize: "0.88rem",
+                      fontSize: "0.9375rem",
                       color: T.sub,
                       lineHeight: 1.85,
-                      marginBottom: idx < PROFILE.summary.length - 1 ? "1rem" : 0,
+                      marginBottom: idx < PROFILE.summary.length - 1 ? "0.9rem" : 0,
                       wordBreak: "keep-all",
                     }}
                   >
@@ -1072,20 +926,6 @@ export default function Home() {
                   </p>
                 ))}
               </div>
-            </div>
-          </FadeSection>
-
-          <FadeSection>
-            <p style={{ color: T.sub, fontFamily: FONT_SANS, lineHeight: 1.8, marginBottom: "0.8rem" }}>
-              {locale === "en" ? "What I can contribute — explore the technologies and projects behind each area." : "기술로 할 수 있는 일 — 각 영역의 사용 기술과 직접 수행한 프로젝트를 확인하세요."}
-            </p>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: "0.6rem", marginBottom: "2rem" }}>
-              {SKILL_GROUPS.map((group, index) => (
-                <button key={group.label} type="button" onClick={() => document.getElementById(`skill-capability-${index}`)?.scrollIntoView({ behavior: "smooth", block: "center" })}
-                  style={{ color: T.green, background: T.surface, border: `1px solid ${T.border}`, borderRadius: "8px", padding: "0.7rem 0.9rem", fontFamily: FONT_SANS, textAlign: "left", cursor: "pointer" }}>
-                  {group.label}
-                </button>
-              ))}
             </div>
           </FadeSection>
 
@@ -1122,10 +962,10 @@ export default function Home() {
                     className="proj-row"
                     data-kg-node-id={graphNodeId}
                     style={{
-                      padding: "1rem 1.25rem",
+                      padding: "0.85rem 1.1rem",
                       display: "flex",
                       flexDirection: "column",
-                      gap: "0.4rem",
+                      gap: "0.35rem",
                       borderBottom: idx < visibleProjects.length - 1 ? `1px solid ${T.border}` : "none",
                       background: activeProjectGraphNodeId === graphNodeId ? T.bg : T.surface,
                       transition: "background 0.15s",
@@ -1139,25 +979,28 @@ export default function Home() {
                   >
                     <div className={proj.coverImage ? "project-content has-cover" : "project-content"}>
                       <div className="project-copy">
-                        {/* 헤더 */}
-                        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "0.75rem" }}>
-                          <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
+                        {/* 헤더 (좁은 화면에서는 기간·자세히 보기·GitHub가 다음 줄로 내려갑니다) */}
+                        <div style={{ display: "flex", flexWrap: "wrap", alignItems: "flex-start", justifyContent: "space-between", gap: "0.35rem 0.75rem" }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: "5px 7px", flexWrap: "wrap", flex: "1 1 18rem", minWidth: 0, paddingTop: "0.4rem" }}>
                             {proj.private ? <LockIcon color={T.muted} /> : <RepoIcon color={T.muted} />}
                             <span style={{
                               fontFamily: FONT_SANS,
-                              fontSize: "0.82rem",
+                              fontSize: "0.9375rem",
                               fontWeight: 600,
+                              lineHeight: 1.5,
                               color: proj.highlight ? T.green : T.text,
+                              wordBreak: "keep-all",
                             }}>
                               {proj.name}
                             </span>
                             {proj.highlight && (
                               <span style={{
                                 fontFamily: FONT_SANS,
-                                fontSize: "0.58rem",
+                                fontSize: "0.75rem",
+                                lineHeight: 1.5,
                                 color: T.green,
                                 border: `1px solid ${T.green}50`,
-                                padding: "1px 5px",
+                                padding: "0 6px",
                                 borderRadius: "2px",
                               }}>
                                 {label("featured", "대표 작업")}
@@ -1168,18 +1011,19 @@ export default function Home() {
                             {proj.private && (
                               <span style={{
                                 fontFamily: FONT_SANS,
-                                fontSize: "0.58rem",
+                                fontSize: "0.75rem",
+                                lineHeight: 1.5,
                                 color: T.muted,
                                 border: `1px solid ${T.border}`,
-                                padding: "1px 5px",
+                                padding: "0 6px",
                                 borderRadius: "2px",
                               }}>
                                 {label("private", "비공개")}
                               </span>
                             )}
                           </div>
-                          <div style={{ display: "flex", alignItems: "center", gap: "8px", flexShrink: 0 }}>
-                            <span style={{ fontFamily: FONT_MONO, fontSize: "0.62rem", color: T.muted }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: "4px 8px", flexWrap: "wrap", flex: "0 1 auto", maxWidth: "100%" }}>
+                            <span style={{ fontFamily: FONT_MONO, fontSize: "0.75rem", color: T.muted }}>
                               {proj.period}
                             </span>
                             <button
@@ -1204,25 +1048,25 @@ export default function Home() {
                         {/* 설명 */}
                         <p style={{
                           fontFamily: FONT_SANS,
-                          fontSize: "0.82rem",
+                          fontSize: "0.875rem",
                           color: T.sub,
-                          lineHeight: 1.8,
+                          lineHeight: 1.7,
                           margin: 0,
                           wordBreak: "keep-all",
                         }}>
                           {proj.desc}
                         </p>
                         {projectRole(proj) && (
-                          <p style={{ margin: "0.3rem 0", color: T.text, fontFamily: FONT_SANS, fontSize: "0.8rem", lineHeight: 1.8 }}>
-                            <strong>{locale === "en" ? "My contribution: " : "담당 역할: "}</strong>{projectRole(proj)}
+                          <p style={{ margin: "0.1rem 0", color: T.text, fontFamily: FONT_SANS, fontSize: "0.875rem", lineHeight: 1.7, wordBreak: "keep-all" }}>
+                            <strong style={{ fontWeight: 600 }}>{locale === "en" ? "My contribution: " : "담당 역할: "}</strong>{projectRole(proj)}
                           </p>
                         )}
                         {/* 정량 성과 */}
                         <div style={{ display: "flex", alignItems: "flex-start", gap: "7px", marginTop: "0.05rem" }}>
-                          <TrendIcon color={T.green} />
+                          <span style={{ display: "inline-flex", paddingTop: "0.27rem" }}><TrendIcon color={T.green} /></span>
                           <span style={{
                             fontFamily: FONT_SANS,
-                            fontSize: "0.76rem",
+                            fontSize: "0.8125rem",
                             fontWeight: 500,
                             color: T.green,
                             lineHeight: 1.6,
@@ -1256,16 +1100,13 @@ export default function Home() {
                       })()}
                     </div>
                     {selectedProject?.slug === proj.slug && (
-                      <div id={projectDetailPanelId} className="project-detail-panel">
-                        <div className="project-detail-head">
-                          <div>
-                            <span className="project-detail-kicker">{locale === "en" ? "Selected project" : "선택한 프로젝트"}</span>
-                            <strong>{selectedProject.name}</strong>
-                          </div>
-                          <span className="project-detail-period">
-                            {selectedProject.period} · {projectProofLevelLabel(selectedProject.proofLevel, locale)}
-                          </span>
-                        </div>
+                      <div
+                        id={projectDetailPanelId}
+                        className="project-detail-panel"
+                        role="region"
+                        aria-label={locale === "en" ? `${selectedProject.name} — details` : `${selectedProject.name} 자세히 보기`}
+                      >
+                        {/* 이름·기간은 바로 위 행에 있으므로 되풀이하지 않습니다. */}
                         <div className="project-detail-meta">
                           {selectedProject.relatedNotes.length > 0 && (
                             <span>
@@ -1276,7 +1117,8 @@ export default function Home() {
                             </span>
                           )}
                         </div>
-                        {projectEvidenceMetrics(selectedProject).length > 0 && (
+                        {/* 프런트매터에 정리한 지표(metrics)가 있을 때만 — 한 줄 성과(metric)는 위 목록에 이미 보입니다. */}
+                        {selectedProject.metrics.length > 0 && projectEvidenceMetrics(selectedProject).length > 0 && (
                           <div className="project-evidence-grid">
                             {projectEvidenceMetrics(selectedProject).map((metric, metricIndex) => (
                               <div className="project-evidence-card" key={`${selectedProject.slug}-${metric.label}-${metricIndex}`}>
@@ -1301,11 +1143,36 @@ export default function Home() {
                             ))}
                           </div>
                         )}
-                        <article
-                          className="project-detail-body markdown-body"
-                          style={{ color: T.sub }}
-                          dangerouslySetInnerHTML={{ __html: toMarkdownHtml(selectedProject.body) }}
-                        />
+                        {/* 한 문장 · 흐름 도식 · 비교/모듈/출처/소개 전문 단추 (소개 전문은 패널 안 단추로 엽니다). */}
+                        <LazyBoundary
+                          fallback={
+                            <>
+                              <p className="project-detail-loading" role="alert">
+                                {locale === "en"
+                                  ? "The project overview could not be loaded. Please reload the page; the full write-up is below."
+                                  : "프로젝트 요약을 불러오지 못했습니다. 페이지를 새로 고쳐 주세요. 소개 전문은 아래에서 볼 수 있습니다."}
+                              </p>
+                              <details className="project-detail-source">
+                                <summary>{locale === "en" ? "Read the full project write-up" : "프로젝트 소개 전문 보기"}</summary>
+                                <article
+                                  className="project-detail-body markdown-body"
+                                  style={{ color: T.sub }}
+                                  dangerouslySetInnerHTML={{ __html: toMarkdownHtml(selectedProject.body) }}
+                                />
+                              </details>
+                            </>
+                          }
+                        >
+                          <Suspense
+                            fallback={
+                              <p className="project-detail-loading" role="status">
+                                {locale === "en" ? "Loading the project overview…" : "프로젝트 요약을 불러오는 중…"}
+                              </p>
+                            }
+                          >
+                            <ProjectInsightPanel project={selectedProject} T={T} locale={locale} />
+                          </Suspense>
+                        </LazyBoundary>
                       </div>
                     )}
                   </div>
@@ -1320,107 +1187,44 @@ export default function Home() {
             )}
           </FadeSection>
 
-          {/* ── 학력 ── */}
+          {/* ── 논문·연구·경력 ── */}
           <FadeSection>
-            <SectionTitle id="education" icon="graduation" T={T}>{locale === "en" ? "Research & Experience" : "논문·연구·경력"}</SectionTitle>
-            <div className="timeline-connection-list" aria-label={locale === "en" ? "Timeline entries" : "타임라인 항목"}>
-              {visibleTimelineEntries.map((edu) => {
-                const timelineKey = `${edu.type}:${edu.degree}:${edu.period}`;
-                const relatedProjects = PROJECTS.filter((project) => edu.relatedProjects.includes(project.slug));
-                const timelineChipItems = buildTimelineChipItems({
-                  links: edu.links,
-                  relatedProjects,
-                  relatedSkills: edu.relatedSkills,
-                  previewHref,
-                });
-                return (
-                <article key={timelineKey} className="timeline-connection-entry">
-                  <div className="timeline-spine" aria-hidden="true">
-                    <span className={edu.current ? "timeline-node current" : "timeline-node"} />
-                  </div>
-                  <div className="timeline-main-copy">
-                    <div className="timeline-entry-head">
-                      <span className="timeline-kicker">
-                        {timelineTypeLabel(edu.type, locale)} · {edu.period}
-                      </span>
-                      <span className="timeline-entry-summary">
-                        <span>{edu.degree}</span>
-                        <span className="timeline-school">{edu.school}</span>
-                        {edu.current && <span className="timeline-current">{label("current", "진행 중")}</span>}
-                      </span>
-                    </div>
-                    {(edu.note || edu.bullets.length > 0) && (
-                      <div className="timeline-entry-detail">
-                        {edu.note && <p className="timeline-entry-note">{edu.note}</p>}
-                        {edu.bullets.length > 0 && (
-                          <ul className="timeline-entry-bullets">
-                            {edu.bullets.map((bullet) => (
-                              <li key={bullet}>{bullet}</li>
-                            ))}
-                          </ul>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                  {timelineChipItems.length > 0 && (
-                    <>
-                      <div className="timeline-chip-connector" aria-hidden="true" />
-                      <div className="timeline-chip-panel">
-                        {timelineChipItems.map((item) => item.href ? (
-                          <a
-                            key={item.key}
-                            className={`timeline-chip ${item.kind}`}
-                            href={item.href}
-                            target={item.external ? "_blank" : undefined}
-                            rel={item.external ? "noopener noreferrer" : undefined}
-                          >
-                            {item.label}
-                          </a>
-                        ) : (
-                          <span key={item.key} className={`timeline-chip ${item.kind}`}>
-                            {item.label}
-                          </span>
-                        ))}
-                      </div>
-                    </>
-                  )}
-                </article>
-              );
-              })}
-              {hasMoreTimelineEntries && (
-                <>
-                  <div ref={timelineLoadSentinelRef} className="timeline-load-sentinel" aria-hidden="true" />
-                  <button type="button" className="timeline-load-more" onClick={revealMoreTimelineEntries}>
-                    {locale === "en" ? "Load more timeline entries" : "타임라인 더 보기"}
-                  </button>
-                </>
-              )}
-            </div>
+            <SectionTitle
+              id="education"
+              icon="graduation"
+              T={T}
+              action={<CareerExpandAllButton state={careerRecords} T={T} locale={locale} />}
+            >
+              {locale === "en" ? "Research & Experience" : "논문·연구·경력"}
+            </SectionTitle>
+            {/* 논문 · 연구 경험(연구실 연구 참여) · 경력(유급 근무) · 학력·수상·어학을 나눠 한 화면에 요약하고, 설명은 기록마다 펼칩니다. */}
+            <CareerRecords state={careerRecords} T={T} locale={locale} />
           </FadeSection>
 
           {/* ── 연구 관심사 ── */}
           <FadeSection>
-            <SectionTitle id="research" icon="flask" T={T}>{locale === "en" ? "Research & Technical Interests" : "연구·개발 관심 분야"}</SectionTitle>
+            <SectionTitle id="research" icon="flask" T={T}>{locale === "en" ? "Research Interests" : "연구 관심 분야"}</SectionTitle>
             <ResearchInterests items={RESEARCH_INTERESTS} T={T} locale={locale} />
           </FadeSection>
 
           {/* ── 기술 스택 ── */}
           <FadeSection>
-            <SectionTitle id="skills" icon="layers" T={T}>{locale === "en" ? "Capabilities, Technologies & Projects" : "기술로 할 수 있는 일"}</SectionTitle>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 300px), 1fr))", gap: "1rem" }}>
-              {SKILL_GROUPS.map((group, index) => (
-                <article key={group.label} id={`skill-capability-${index}`} style={{ background: T.surface, border: `1px solid ${T.border}`, borderRadius: "8px", padding: "1.2rem" }}>
-                  <h3 style={{ color: T.text, fontFamily: FONT_SANS, fontSize: "0.95rem", lineHeight: 1.7, margin: "0 0 0.7rem" }}>{group.label}</h3>
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: "4px" }}>
-                    {group.items.map(item => <Tag key={item} T={T}>{item}</Tag>)}
-                  </div>
-                  <p style={{ color: T.muted, fontFamily: FONT_SANS, fontSize: "0.75rem", margin: "1rem 0 0.4rem" }}>{locale === "en" ? "Applied in these projects" : "직접 적용한 프로젝트"}</p>
-                  <ul style={{ margin: 0, paddingLeft: "1rem", color: T.green, fontFamily: FONT_SANS, fontSize: "0.8rem", lineHeight: 1.9 }}>
-                    {relatedSkillProjects(group.items).map(project => <li key={project.slug}><a style={{ color: T.green }} href={`/projects/${project.slug}`}>{project.name}</a></li>)}
-                  </ul>
-                </article>
+            <SectionTitle id="skills" icon="layers" T={T}>{locale === "en" ? "Technology Stack" : "기술 스택"}</SectionTitle>
+            {/* 분야별 기술 목록만 둡니다. 프로젝트별 사용 기술과 동작 흐름은 위 프로젝트의 자세히 보기에 있습니다. */}
+            <dl className="stack-inventory">
+              {SKILL_GROUPS.map((group) => (
+                <div key={group.label} className="stack-row">
+                  <dt className="stack-label">{group.label}</dt>
+                  <dd className="stack-items">
+                    <ul aria-label={group.label}>
+                      {group.items.map((item) => (
+                        <li key={item}>{item}</li>
+                      ))}
+                    </ul>
+                  </dd>
+                </div>
               ))}
-            </div>
+            </dl>
           </FadeSection>
 
           {/* ── 관심 저장소 ── */}
@@ -1460,7 +1264,7 @@ export default function Home() {
                       aria-label={`${repo.name} GitHub repository`}
                       style={{
                         fontFamily: FONT_MONO,
-                        fontSize: "0.72rem",
+                        fontSize: "0.75rem",
                         fontWeight: 500,
                         color: T.green,
                         textDecoration: "none",
@@ -1475,7 +1279,7 @@ export default function Home() {
                     </a>
                     <span style={{
                       fontFamily: FONT_MONO,
-                      fontSize: "0.62rem",
+                      fontSize: "0.6875rem",
                       color: T.muted,
                       whiteSpace: "nowrap",
                       display: "flex",
@@ -1489,7 +1293,8 @@ export default function Home() {
                   </div>
                   <div style={{
                     fontFamily: FONT_SANS,
-                    fontSize: "0.72rem",
+                    fontSize: "0.8125rem",
+                    lineHeight: 1.6,
                     color: T.muted,
                   }}>
                     {repo.desc}
@@ -1509,14 +1314,14 @@ export default function Home() {
             flexWrap: "wrap",
             gap: "0.5rem",
           }}>
-            <span style={{ fontFamily: FONT_MONO, fontSize: "0.65rem", color: T.muted }}>
+            <span style={{ fontFamily: FONT_MONO, fontSize: "0.6875rem", color: T.muted }}>
               © 2026 {PROFILE.name} ({PROFILE.romanizedName})
             </span>
             <a
               href={previewHref("/notes")}
               style={{
                 fontFamily: FONT_MONO,
-                fontSize: "0.65rem",
+                fontSize: "0.6875rem",
                 color: T.green,
                 textDecoration: "none",
               }}
@@ -1529,7 +1334,7 @@ export default function Home() {
               rel="noopener noreferrer"
               style={{
                 fontFamily: FONT_MONO,
-                fontSize: "0.65rem",
+                fontSize: "0.6875rem",
                 color: T.green,
                 textDecoration: "none",
                 display: "flex",
@@ -1654,193 +1459,6 @@ export default function Home() {
            font-weight: 700;
            letter-spacing: 0;
          }
-         .timeline-connection-list {
-           display: flex;
-           flex-direction: column;
-           gap: 0;
-         }
-         .timeline-connection-entry {
-           display: grid;
-           grid-template-columns: 18px minmax(0, 1fr) clamp(28px, 4vw, 54px) minmax(160px, 0.42fr);
-           gap: 0 clamp(0.75rem, 1.5vw, 1.15rem);
-           position: relative;
-           padding: 0 0 1.35rem;
-         }
-         .timeline-spine {
-           position: relative;
-           display: flex;
-           justify-content: center;
-           padding-top: 0.55rem;
-         }
-         .timeline-spine::before {
-           content: "";
-           position: absolute;
-           top: 1.35rem;
-           bottom: -1.35rem;
-           width: 1px;
-           background: linear-gradient(to bottom, ${T.green}55, ${T.border});
-         }
-         .timeline-connection-entry:last-child .timeline-spine::before {
-           display: none;
-         }
-         .timeline-node {
-           position: relative;
-           z-index: 1;
-           width: 8px;
-           height: 8px;
-           border-radius: 50%;
-           border: 2px solid ${T.muted};
-           background: ${T.surface};
-           box-shadow: 0 0 0 5px ${T.bg};
-         }
-         .timeline-node.current {
-           border-color: ${T.green};
-           background: ${T.green};
-           box-shadow: 0 0 0 5px ${T.greenBg};
-         }
-         .timeline-main-copy {
-           min-width: 0;
-           padding-bottom: 0.15rem;
-         }
-          .timeline-entry-head {
-            padding: 0.05rem 0 0;
-          }
-         .timeline-kicker {
-           display: block;
-           font-family: ${FONT_MONO};
-           font-size: 0.65rem;
-           color: ${T.muted};
-           margin-bottom: 0.35rem;
-         }
-         .timeline-entry-summary {
-           display: flex;
-           align-items: center;
-           gap: 0.5rem;
-           flex-wrap: wrap;
-           max-width: 70ch;
-           font-family: ${FONT_SANS};
-           font-size: 0.9rem;
-           font-weight: 600;
-           color: ${T.text};
-           line-height: 1.55;
-         }
-         .timeline-school {
-           color: ${T.sub};
-           font-weight: 500;
-         }
-         .timeline-current {
-           font-family: ${FONT_MONO};
-           font-size: 0.6rem;
-           color: ${T.green};
-           background: ${T.greenBg};
-           border: 1px solid ${T.green}40;
-           padding: 1px 6px;
-           border-radius: 2px;
-           font-weight: 400;
-         }
-          .timeline-entry-detail {
-            position: relative;
-            max-width: 70ch;
-            max-height: none;
-            margin-top: 0.65rem;
-            overflow: visible;
-            color: ${T.sub};
-            font-family: ${FONT_SANS};
-            font-size: 0.8rem;
-            line-height: 1.78;
-            word-break: keep-all;
-          }
-         .timeline-entry-note {
-           margin: 0;
-         }
-         .timeline-entry-bullets {
-           display: grid;
-           gap: 0.28rem;
-           margin: 0.45rem 0 0;
-           padding-left: 1rem;
-         }
-         .timeline-entry-bullets li::marker {
-           color: ${T.green};
-         }
-          .timeline-chip-connector {
-           align-self: start;
-           position: relative;
-           height: 1px;
-           min-height: 2.6rem;
-         }
-         .timeline-chip-connector::before {
-           content: "";
-           position: absolute;
-           left: 0;
-           right: 0;
-           top: 50%;
-           height: 1px;
-           background: linear-gradient(to right, ${T.border}, ${T.green}70);
-         }
-         .timeline-chip-panel {
-           display: flex;
-           flex-wrap: wrap;
-           align-content: flex-start;
-           gap: 0.38rem;
-           padding-top: 1.35rem;
-           min-width: 0;
-         }
-         .timeline-chip {
-           display: inline-flex;
-           align-items: center;
-           max-width: 100%;
-           min-height: 22px;
-           border-radius: 999px;
-           padding: 3px 7px;
-           font-family: ${FONT_MONO};
-           font-size: 0.64rem;
-           line-height: 1.25;
-           text-decoration: none;
-           word-break: break-word;
-         }
-         .timeline-chip.link {
-           color: ${T.green};
-           background: ${T.greenBg};
-           border: 1px solid ${T.green}40;
-         }
-         .timeline-chip.project {
-           color: ${T.green};
-           border: 1px solid ${T.green}30;
-           background: ${T.surface};
-         }
-         .timeline-chip.skill {
-           color: ${T.sub};
-           border: 1px solid ${T.border};
-           background: ${T.bg};
-         }
-          .timeline-chip:hover,
-          .timeline-chip:focus-visible {
-            border-color: ${T.green};
-            color: ${T.green};
-            outline: none;
-          }
-          .timeline-load-sentinel {
-            width: 100%;
-            height: 1px;
-          }
-          .timeline-load-more {
-            align-self: flex-start;
-            margin: 0.2rem 0 0 18px;
-            border: 1px solid ${T.green}40;
-            background: ${T.greenBg};
-            color: ${T.green};
-            border-radius: 999px;
-            padding: 0.35rem 0.7rem;
-            font-family: ${FONT_MONO};
-            font-size: 0.68rem;
-            line-height: 1.3;
-            cursor: pointer;
-          }
-          .timeline-load-more:hover,
-          .timeline-load-more:focus-visible {
-            border-color: ${T.green};
-            outline: none;
-          }
          .research-card.has-cover {
            display: grid;
            grid-template-columns: minmax(0, 1fr) clamp(76px, 12vw, 108px);
@@ -1871,18 +1489,19 @@ export default function Home() {
           display: flex;
           flex-wrap: wrap;
           align-items: center;
-          gap: 0.4rem;
-          margin: -0.25rem 0 0.85rem;
+          gap: 0.35rem;
+          margin: -0.25rem 0 0.8rem;
         }
         .project-filter-rail button {
           appearance: none;
           border: 1px solid ${T.border};
           border-radius: 999px;
           background: ${T.surface};
-          color: ${T.muted};
-          padding: 4px 9px;
+          color: ${T.sub};
+          min-height: 2rem;
+          padding: 0 0.75rem;
           font-family: ${FONT_SANS};
-          font-size: 0.63rem;
+          font-size: 0.8125rem;
           line-height: 1.35;
           cursor: pointer;
           white-space: nowrap;
@@ -1899,7 +1518,7 @@ export default function Home() {
           margin-left: auto;
           color: ${T.muted};
           font-family: ${FONT_MONO};
-          font-size: 0.62rem;
+          font-size: 0.75rem;
           line-height: 1.35;
         }
         .project-scroll-panel {
@@ -1938,31 +1557,46 @@ export default function Home() {
           pointer-events: none;
         }
         .project-scroll-hint {
-          margin: 0.55rem 0 0;
-          color: ${T.muted};
-          font-family: ${FONT_MONO};
-          font-size: 0.62rem;
-          line-height: 1.5;
+          appearance: none;
+          display: inline-flex;
+          align-items: center;
+          min-height: 2.25rem;
+          margin: 0.6rem 0 0;
+          padding: 0 0.9rem;
+          border: 1px solid ${T.green}40;
+          border-radius: 999px;
+          background: ${T.surface};
+          color: ${T.green};
+          font-family: ${FONT_SANS};
+          font-size: 0.8125rem;
+          line-height: 1.4;
+          cursor: pointer;
+        }
+        .project-scroll-hint:hover,
+        .project-scroll-hint:focus-visible {
+          border-color: ${T.green};
+          background: ${T.greenBg};
+          outline: none;
         }
         .project-empty-state {
-          padding: 1.4rem 1.25rem;
+          padding: 1.25rem 1.1rem;
           color: ${T.muted};
           font-family: ${FONT_SANS};
-          font-size: 0.82rem;
+          font-size: 0.875rem;
           line-height: 1.7;
         }
         .project-axis-badge {
           display: inline-flex;
           align-items: center;
-          min-height: 17px;
+          min-height: 1.3rem;
           border: 1px solid ${T.green}42;
           border-radius: 999px;
           background: ${T.greenBg};
           color: ${T.green};
-          padding: 1px 6px;
+          padding: 0 7px;
           font-family: ${FONT_SANS};
-          font-size: 0.56rem;
-          line-height: 1.2;
+          font-size: 0.75rem;
+          line-height: 1.4;
         }
         .project-axis-badge.muted {
           border-color: ${T.border};
@@ -1973,14 +1607,15 @@ export default function Home() {
           appearance: none;
           display: inline-flex;
           align-items: center;
-          min-height: 24px;
+          min-height: 2.25rem;
           border: 1px solid;
           border-radius: 999px;
           background: ${T.bg};
           color: ${T.green};
-          padding: 2px 8px;
+          padding: 0 0.85rem;
           font-family: ${FONT_SANS};
-          font-size: 0.62rem;
+          font-size: 0.8125rem;
+          font-weight: 600;
           line-height: 1.25;
           cursor: pointer;
         }
@@ -1991,46 +1626,73 @@ export default function Home() {
           background: ${T.greenBg};
           outline: none;
         }
+        .project-external-link {
+          min-height: 2.25rem;
+        }
         .project-detail-panel {
-          margin-top: 0.8rem;
-          padding-top: 0.9rem;
+          min-width: 0;
+          margin-top: 0.7rem;
+          padding-top: 0.85rem;
           border-top: 1px dashed ${T.border};
-          overflow: hidden;
-        }
-        .project-detail-head {
-          display: flex;
-          align-items: flex-start;
-          justify-content: space-between;
-          gap: 0.85rem;
-          margin-bottom: 0.55rem;
-        }
-        .project-detail-head strong {
-          display: block;
-          margin-top: 0.22rem;
-          color: ${T.text};
-          font-family: ${FONT_SANS};
-          font-size: 0.95rem;
-          line-height: 1.45;
-          word-break: keep-all;
-        }
-        .project-detail-kicker,
-        .project-detail-period {
-          color: ${T.muted};
-          font-family: ${FONT_MONO};
-          font-size: 0.64rem;
-        }
-        .project-detail-period {
-          flex-shrink: 0;
         }
         .project-detail-meta {
           display: flex;
           flex-wrap: wrap;
-          gap: 0.45rem 0.7rem;
-          margin-bottom: 0.75rem;
+          gap: 0.4rem 0.7rem;
+          margin-bottom: 0.7rem;
           color: ${T.muted};
           font-family: ${FONT_MONO};
-          font-size: 0.66rem;
+          font-size: 0.75rem;
           line-height: 1.6;
+        }
+        .project-detail-meta:empty {
+          display: none;
+        }
+        .project-detail-loading {
+          margin: 0.5rem 0;
+          color: ${T.muted};
+          font-family: ${FONT_SANS};
+          font-size: 0.875rem;
+          line-height: 1.7;
+        }
+        .project-detail-source {
+          margin-top: 1.1rem;
+          border: 1px solid ${T.border};
+          border-radius: 4px;
+          background: ${T.bg};
+        }
+        .project-detail-source summary {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          min-height: 2.5rem;
+          padding: 0 0.85rem;
+          color: ${T.text};
+          font-family: ${FONT_SANS};
+          font-size: 0.875rem;
+          font-weight: 600;
+          list-style: none;
+          cursor: pointer;
+        }
+        .project-detail-source summary::-webkit-details-marker {
+          display: none;
+        }
+        .project-detail-source summary::before {
+          content: "▸";
+          display: inline-block;
+          width: 0.8rem;
+          color: ${T.green};
+          transition: transform 0.2s ease;
+        }
+        .project-detail-source[open] summary::before {
+          transform: rotate(90deg);
+        }
+        .project-detail-source summary:focus-visible {
+          outline: 2px solid ${T.green};
+          outline-offset: 2px;
+        }
+        .project-detail-source .project-detail-body {
+          padding: 0 0.85rem 0.85rem;
         }
         .project-detail-metric {
           display: inline-flex;
@@ -2056,21 +1718,21 @@ export default function Home() {
         .project-evaluation-panel span {
           color: ${T.muted};
           font-family: ${FONT_MONO};
-          font-size: 0.61rem;
+          font-size: 0.75rem;
           line-height: 1.4;
         }
         .project-evidence-card strong,
         .project-evaluation-panel strong {
           color: ${T.text};
           font-family: ${FONT_SANS};
-          font-size: 0.83rem;
+          font-size: 0.875rem;
           line-height: 1.5;
           word-break: keep-all;
         }
         .project-evidence-card small {
           color: ${T.sub};
           font-family: ${FONT_MONO};
-          font-size: 0.59rem;
+          font-size: 0.75rem;
           line-height: 1.5;
         }
         .project-evaluation-panel {
@@ -2089,12 +1751,75 @@ export default function Home() {
         .project-detail-body {
           max-width: min(74ch, 100%);
           overflow-x: auto;
-          font-size: 0.84rem;
-          line-height: 1.86;
+          font-size: 0.875rem;
+          line-height: 1.8;
           word-break: keep-all;
+        }
+        /* 펼친 소개 전문 안의 제목은 패널 제목보다 크지 않게 둡니다. */
+        .project-detail-body h2,
+        .project-detail-body h3 {
+          margin: 1.35rem 0 0.45rem;
+          color: ${T.text};
+          font-family: ${FONT_SANS};
+          font-size: 0.9375rem;
+          font-weight: 700;
+          line-height: 1.5;
+        }
+        .project-detail-body h3 {
+          font-size: 0.875rem;
+        }
+        .project-detail-body > :first-child {
+          margin-top: 0.35rem;
         }
         .project-detail-body :last-child {
           margin-bottom: 0;
+        }
+        .stack-inventory {
+          margin: 0;
+          border: 1px solid ${T.border};
+          border-radius: 4px;
+          background: ${T.surface};
+        }
+        .stack-row {
+          display: grid;
+          grid-template-columns: minmax(8rem, 11.5rem) minmax(0, 1fr);
+          align-items: baseline;
+          gap: 0.4rem 1rem;
+          padding: 0.65rem 1rem;
+        }
+        .stack-row + .stack-row {
+          border-top: 1px solid ${T.border};
+        }
+        .stack-label {
+          margin: 0;
+          color: ${T.text};
+          font-family: ${FONT_SANS};
+          font-size: 0.875rem;
+          font-weight: 600;
+          line-height: 1.6;
+          word-break: keep-all;
+        }
+        .stack-items {
+          min-width: 0;
+          margin: 0;
+        }
+        .stack-items ul {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 0.35rem;
+          margin: 0;
+          padding: 0;
+          list-style: none;
+        }
+        .stack-items li {
+          padding: 1px 7px;
+          border: 1px solid ${T.border};
+          border-radius: 3px;
+          background: ${T.bg};
+          color: ${T.sub};
+          font-family: ${FONT_MONO};
+          font-size: 0.75rem;
+          line-height: 1.6;
         }
         .content-cover-button {
           appearance: none;
@@ -2217,33 +1942,15 @@ export default function Home() {
           }
            .research-card.has-cover,
            .project-content.has-cover { grid-template-columns: 1fr; }
-           .timeline-connection-entry {
-             grid-template-columns: 16px minmax(0, 1fr);
-             gap: 0 0.85rem;
-           }
-           .timeline-chip-connector {
-             display: none;
-           }
-           .timeline-chip-panel {
-             grid-column: 2;
-             padding-top: 0.65rem;
-           }
-           .timeline-load-more {
-             margin-left: 16px;
-           }
-           .project-detail-head {
-             flex-direction: column;
-             gap: 0.35rem;
-           }
-           .project-detail-period {
-             flex-shrink: 1;
-           }
            .project-filter-rail {
              gap: 0.35rem;
            }
            .project-filter-rail button {
-             font-size: 0.6rem;
-             padding: 4px 7px;
+             padding: 0 0.65rem;
+           }
+           .stack-row {
+             grid-template-columns: minmax(0, 1fr);
+             padding: 0.6rem 0.85rem;
            }
            .project-scroll-panel.has-overflow {
              max-height: min(80vh, 860px);
@@ -2262,6 +1969,16 @@ export default function Home() {
           .cover-preview-modal {
             width: 94vw;
             padding: 0.65rem;
+          }
+        }
+        /* 터치 화면에서는 글자 크기는 그대로 두고 누르는 자리만 44px로 넓힙니다. */
+        @media (pointer: coarse) {
+          .project-filter-rail button,
+          .project-detail-button,
+          .project-external-link,
+          .project-scroll-hint,
+          .project-detail-source summary {
+            min-height: 2.75rem;
           }
         }
         .mobile-overlay {

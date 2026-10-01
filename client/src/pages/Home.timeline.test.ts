@@ -2,51 +2,42 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 const source = readFileSync(new URL("./Home.tsx", import.meta.url), "utf8");
+const careerCss = readFileSync(new URL("../components/careerRecords.css", import.meta.url), "utf8");
 
-function timelineBlock() {
-  const start = source.indexOf('<SectionTitle id="education"');
+function careerBlock() {
+  const start = source.indexOf('id="education"');
   const end = source.indexOf("{/* ── 연구 관심사 ── */}", start);
   expect(start).toBeGreaterThanOrEqual(0);
   expect(end).toBeGreaterThan(start);
   return source.slice(start, end);
 }
 
-describe("Home timeline section", () => {
-  it("shows every published timeline entry on the main page instead of only highlighted items", () => {
+describe("Home 논문·연구·경력 section", () => {
+  it("shows every published record on the main page instead of only highlighted items", () => {
     const timelineDeclaration = source.match(/const TIMELINE_ENTRIES = content\.education\.filter\([^;]+;/)?.[0] ?? "";
 
     expect(timelineDeclaration).toContain('item.status === "published"');
     expect(timelineDeclaration).not.toContain("item.highlight");
+    expect(source).toContain("useCareerRecords(TIMELINE_ENTRIES, PROJECTS, locale)");
   });
 
-  it("uses a connected B-type progressive timeline structure", () => {
-    const block = timelineBlock();
+  it("splits publications, research experience, paid employment and education into separate lists instead of one mixed timeline", () => {
+    const block = careerBlock();
 
-    expect(source).toContain("function buildTimelineChipItems");
-    expect(source).toContain("function useTimelineProgressiveReveal");
-    expect(source).toContain("TIMELINE_BATCH_SIZE");
-    expect(block).toContain('className="timeline-connection-list"');
-    expect(block).toContain('className="timeline-connection-entry"');
-    expect(block).toContain('className="timeline-entry-summary"');
-    expect(block).toContain('className="timeline-entry-detail"');
-    expect(block).toContain('className="timeline-chip-connector"');
-    expect(block).toContain('className="timeline-chip-panel"');
-    expect(block).toContain("visibleTimelineEntries.map");
-    expect(block).toContain('className="timeline-load-sentinel"');
-    expect(block).toContain('className="timeline-load-more"');
-    expect(block).toContain("timelineChipItems");
-    expect(block).not.toContain("timelineLinks.map");
-    expect(block).not.toContain("relatedProjects.map");
-    expect(source).toContain("function isCvArchiveHref");
-    expect(source).not.toContain("expandedTimelineKeys");
-    expect(source).not.toContain("toggleTimelineEntry");
-    expect(block).not.toContain("aria-expanded");
-    expect(block).not.toContain("timeline-entry-toggle");
-    expect(block).not.toContain("timeline-toggle-icon");
+    expect(source).toContain('import { CareerExpandAllButton, CareerRecords, useCareerRecords } from "@/components/CareerRecords";');
+    expect(block).toContain("<CareerRecords state={careerRecords} T={T} locale={locale} />");
+    // '모두 펼치기'는 섹션 제목 줄 오른쪽에 둡니다.
+    expect(block).toContain("action={<CareerExpandAllButton state={careerRecords} T={T} locale={locale} />}");
+    expect(source).toContain("{action}");
+    // 예전의 한 줄 타임라인과 스크롤하면 4개씩 더 불러오는 방식은 쓰지 않습니다.
+    expect(source).not.toContain("timeline-connection-list");
+    expect(source).not.toContain("useTimelineProgressiveReveal");
+    expect(source).not.toContain("TIMELINE_BATCH_SIZE");
+    expect(source).not.toContain("timeline-load-more");
   });
 
   it("keeps archive detail on the main page instead of depending on a CV link or auto-scroll panel", () => {
-    const block = timelineBlock();
+    const block = careerBlock();
 
     expect(block).not.toContain('previewHref("/cv")');
     expect(block).not.toContain('className="timeline-focus-panel"');
@@ -54,17 +45,10 @@ describe("Home timeline section", () => {
     expect(source).not.toContain("TIMELINE_AUTOSCROLL_STEP");
   });
 
-  it("keeps timeline entry content fully visible, structured, readable, and unclipped", () => {
-    const block = timelineBlock();
-
-    expect(block).toContain('className="timeline-entry-note"');
-    expect(block).toContain('className="timeline-entry-bullets"');
-    expect(block).not.toContain('detailParts.join(" ")');
-    expect(source).not.toContain(".timeline-entry-detail.collapsed");
-    expect(source).not.toContain(".timeline-entry-detail.expanded");
-    expect(source).toContain("max-height: none");
-    expect(source).not.toContain("max-height: 18rem");
-    expect(source).not.toContain("opacity: 0.72");
-    expect(source).not.toContain("margin-top: 2.35rem");
+  it("folds descriptions behind each record instead of clipping them or adding a scroll box", () => {
+    expect(careerCss).not.toMatch(/max-height/);
+    expect(careerCss).not.toMatch(/overflow(-y)?:\s*(auto|scroll)/);
+    expect(careerCss).not.toMatch(/line-clamp/);
+    expect(careerCss).not.toMatch(/opacity:\s*0\.\d/);
   });
 });

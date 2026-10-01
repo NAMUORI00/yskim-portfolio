@@ -4,7 +4,7 @@
 
 All content, assets and UI code are managed in this Git repository. A push to `main` triggers the existing Cloudflare Pages GitHub integration.
 
-Edit the JSON files in `content/` and MDX files in `content/research`, `content/projects` and `content/notes`. Keep English translations in `content/i18n/en.json` in sync. Store assets in `client/public`.
+Edit the JSON files in `content/` and MDX files in `content/research`, `content/projects` and `content/notes`. Keep English translations in `content/i18n/en.json` in sync. Store assets in `client/public`. The expanded project details (summary, comparison, modules) are in `client/src/components/capabilities/projectInsights.ts`, and their module-flow diagrams in the `capability*.ts` files beside it.
 
 ```bash
 pnpm install --frozen-lockfile
@@ -16,4 +16,4 @@ pnpm build
 
 Pages project: `namuori-portfolio-cms`; production branch: `main`; build: `pnpm build`; output: `dist/public`. GitHub Actions validates changes; Pages deploys independently, so run checks before pushing.
 
-No CMS token is required. Notion sync and the media proxy were removed on 2026-10-01. Existing Notion pages remain untouched. Repository content is the source of truth, not a generated cache.
+No CMS token is required. Notion sync and the media proxy were removed on 2026-10-01. The portfolio CMS page and its child databases were exported in full and moved to Trash. Notion blog pages remain unchanged. The repository Notion token and database variables were removed. Repository content is the source of truth, not a generated cache.

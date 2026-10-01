@@ -1,0 +1,312 @@
+/*
+ * 홈 프로젝트 "자세히 보기" 패널 (ProjectInsightPanel.tsx, 자세히 보기를 처음 열 때 함께 불러옴)
+ * 한 문장 → 흐름 도식(flowJourney.css) → 더 알아보기 단추 한 줄. 단추를 누르면 그 내용 하나만 아래에 펼칩니다.
+ * 색과 글꼴은 홈 테마(PortfolioTheme)에서 --cf-* 변수로 주입됩니다.
+ *
+ * 글자 크기 (루트 16px, 홈 본문 단계와 같습니다):
+ *   패널 첫 문장 0.9375rem · 항목 제목 0.875rem · 설명·단추 0.8125rem · 메타 정보 0.75rem
+ * 누르는 조작은 마우스 화면에서 32px, 터치 화면(pointer: coarse)에서 44px 입니다.
+ */
+
+.pi {
+  container: pi / inline-size;
+  display: grid;
+  gap: 0.9rem;
+  min-width: 0;
+  margin-top: 0.1rem;
+  font-family: var(--cf-sans);
+  color: var(--cf-text);
+  word-break: keep-all;
+  overflow-wrap: break-word;
+}
+
+.pi :focus-visible {
+  outline: 2px solid var(--cf-green);
+  outline-offset: 2px;
+}
+
+/* ── 한 문장 ── */
+.pi-lead {
+  max-width: 68ch;
+  margin: 0;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  line-height: 1.7;
+  color: var(--cf-text);
+}
+
+/* 기록이 짧아 도식을 그리지 않은 프로젝트 */
+.pi-sparse {
+  margin: 0;
+  padding: 0.6rem 0.8rem;
+  font-size: 0.875rem;
+  line-height: 1.65;
+  color: var(--cf-sub);
+  background: var(--cf-bg);
+  border: 1px dashed var(--cf-border);
+  border-radius: 4px;
+}
+
+.pi-sparse b {
+  margin-right: 0.3rem;
+  font-weight: 600;
+  color: var(--cf-text);
+}
+
+/* ── 더 알아보기: 단추 한 줄, 펼친 내용은 하나만 ── */
+.pi-more {
+  display: grid;
+  gap: 0.6rem;
+  min-width: 0;
+}
+
+.pi-more-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  padding-top: 0.7rem;
+  border-top: 1px solid var(--cf-border);
+}
+
+.pi-more-btn {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  min-height: 2rem;
+  padding: 0 0.6rem 0 0.75rem;
+  font-family: var(--cf-sans);
+  font-size: 0.8125rem;
+  line-height: 1.3;
+  color: var(--cf-sub);
+  background: var(--cf-surface);
+  border: 1px solid var(--cf-border);
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.pi-more-btn:hover {
+  border-color: var(--cf-green);
+}
+
+.pi-more-btn svg {
+  flex: none;
+  color: var(--cf-green);
+  transition: transform 0.2s ease;
+}
+
+.pi-more-btn[aria-expanded="true"] {
+  font-weight: 600;
+  color: var(--cf-text);
+  background: var(--cf-green-bg);
+  border-color: var(--cf-green);
+}
+
+.pi-more-btn[aria-expanded="true"] svg {
+  transform: rotate(180deg);
+}
+
+.pi-more-body {
+  min-width: 0;
+  padding: 0.8rem 0.9rem;
+  background: var(--cf-bg);
+  border: 1px solid var(--cf-border);
+  border-radius: 4px;
+}
+
+.pi-more-body[hidden] {
+  display: none;
+}
+
+/* 비교 */
+.pi-cmp + .pi-cmp {
+  margin-top: 0.9rem;
+  padding-top: 0.9rem;
+  border-top: 1px dashed var(--cf-border);
+}
+
+.pi-cmp-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.15rem 0.6rem;
+  margin: 0 0 0.5rem;
+}
+
+.pi-cmp-topic {
+  font-size: 0.875rem;
+  font-weight: 700;
+  line-height: 1.5;
+  color: var(--cf-text);
+}
+
+.pi-basis {
+  font-size: 0.75rem;
+  line-height: 1.5;
+  color: var(--cf-muted);
+}
+
+.pi-cmp-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: stretch;
+  gap: 0.5rem;
+}
+
+.pi-cmp-side {
+  display: grid;
+  align-content: start;
+  gap: 0.2rem;
+  min-width: 0;
+  padding: 0.55rem 0.7rem;
+  background: var(--cf-surface);
+  border: 1px solid var(--cf-border);
+  border-radius: 4px;
+}
+
+.pi-cmp-side.is-after {
+  border-color: color-mix(in srgb, var(--cf-green) 50%, var(--cf-border));
+}
+
+.pi-cmp-kicker {
+  font-size: 0.75rem;
+  line-height: 1.45;
+  color: var(--cf-muted);
+}
+
+.pi-cmp-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--cf-text);
+}
+
+.pi-cmp-text {
+  margin: 0;
+  font-size: 0.8125rem;
+  line-height: 1.6;
+  color: var(--cf-sub);
+}
+
+.pi-cmp-arrow {
+  align-self: center;
+  font-weight: 700;
+  color: var(--cf-green);
+}
+
+.pi-cmp-note {
+  max-width: 76ch;
+  margin: 0.45rem 0 0;
+  font-size: 0.75rem;
+  line-height: 1.55;
+  color: var(--cf-muted);
+}
+
+/* 구현한 모듈 */
+.pi-mods {
+  display: grid;
+  gap: 0.45rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pi-mods li {
+  display: grid;
+  grid-template-columns: minmax(8rem, 12rem) minmax(0, 1fr);
+  gap: 0.15rem 0.85rem;
+  font-size: 0.8125rem;
+  line-height: 1.6;
+}
+
+.pi-mods b {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--cf-text);
+}
+
+.pi-mods span {
+  color: var(--cf-sub);
+}
+
+/* 출처와 한계 */
+.pi-src-title {
+  margin: 0 0 0.45rem;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  line-height: 1.5;
+  color: var(--cf-text);
+}
+
+.pi-src-title.is-limits {
+  margin-top: 0.75rem;
+}
+
+.pi-src-list {
+  display: grid;
+  gap: 0.4rem;
+  margin: 0;
+}
+
+.pi-src-list > div {
+  display: grid;
+  grid-template-columns: minmax(6rem, 9rem) minmax(0, 1fr);
+  gap: 0.15rem 0.75rem;
+}
+
+.pi-src-list dt {
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.6;
+  color: var(--cf-muted);
+}
+
+.pi-src-list dd {
+  margin: 0;
+  font-size: 0.8125rem;
+  line-height: 1.6;
+  color: var(--cf-sub);
+}
+
+.pi-src-limits {
+  display: grid;
+  gap: 0.2rem;
+  margin: 0;
+  padding-left: 1.1rem;
+  font-size: 0.8125rem;
+  line-height: 1.6;
+  color: var(--cf-sub);
+}
+
+/* 소개 전문 (글자 크기와 제목은 홈의 .project-detail-body 를 따릅니다) */
+.pi-full {
+  color: var(--cf-sub);
+}
+
+@container pi (max-width: 34rem) {
+  .pi-cmp-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .pi-cmp-arrow {
+    justify-self: center;
+    transform: rotate(90deg);
+  }
+
+  .pi-mods li,
+  .pi-src-list > div {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (pointer: coarse) {
+  .pi-more-btn {
+    min-height: 2.75rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pi-more-btn svg {
+    transition: none;
+  }
+}
