@@ -111,7 +111,7 @@ export function CV() {
   const timeline = content.education.filter((item) => item.status === "published");
 
   return (
-    <PageFrame title={locale === "en" ? "CV Timeline" : "CV 타임라인"}>
+    <PageFrame title={locale === "en" ? "Research, Experience & Education" : "논문·경력·학력"}>
       <div style={{ display: "grid", gap: "14px" }}>
         {timeline.map((item) => {
           const relatedProjects = content.projects.filter((project) => item.relatedProjects.includes(project.slug));

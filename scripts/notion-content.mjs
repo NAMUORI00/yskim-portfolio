@@ -55,12 +55,12 @@ const CATEGORY_DATABASE_SECTIONS = [
 // description / url come from the Site database.
 const SITE_DEFAULTS = {
   navigation: [
-    { id: "about", label: "소개", icon: "user" },
+    { id: "about", label: "개발자로서의 강점", icon: "user" },
     { id: "projects", label: "대표 프로젝트", icon: "code" },
     { id: "education", label: "논문·연구·경력", icon: "graduation" },
-    { id: "research", label: "연구 관심사", icon: "flask" },
-    { id: "skills", label: "기술 스택", icon: "layers" },
-    { id: "interests", label: "관심 저장소", icon: "star" },
+    { id: "research", label: "연구·개발 관심 분야", icon: "flask" },
+    { id: "skills", label: "사용 기술", icon: "layers" },
+    { id: "interests", label: "관심 오픈소스", icon: "star" },
   ],
   images: {
     heroTree:
@@ -75,7 +75,7 @@ const SITE_DEFAULTS = {
 // UI chrome strings (navigation labels, button text) are not stored per-row in
 // Notion; they are part of the app's English locale.
 const EN_UI = {
-  nav: { about: "About", education: "Research & Experience", research: "Research", projects: "Selected Projects", skills: "Skills", interests: "Starred" },
+  nav: { about: "What I Bring", education: "Research & Experience", research: "Research", projects: "Selected Projects", skills: "Skills", interests: "Open-source Interests" },
   labels: {
     contact: "CONTACT",
     darkMode: "Dark mode",
