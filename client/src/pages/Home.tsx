@@ -31,6 +31,7 @@ import { englishTranslations, getProfileAvatarUrl, portfolioContent, type Projec
 import { DARK, FONT_MONO, FONT_SANS, FONT_SERIF, LIGHT, type PortfolioTheme } from "@/content/theme";
 import { CareerExpandAllButton, CareerRecords, useCareerRecords } from "@/components/CareerRecords";
 import { KnowledgeGraphRail } from "@/components/KnowledgeGraphRail";
+import { ProjectDialog } from "@/components/ProjectDialog";
 import { LazyBoundary } from "@/components/LazyBoundary";
 import { ResearchInterests } from "@/components/ResearchInterests";
 import { MobileKnowledgeGraph } from "@/components/MobileKnowledgeGraph";
@@ -489,6 +490,7 @@ export function HomeView() {
   const [focusedGraphNodeId, setFocusedGraphNodeId] = useState<string | null>(null);
   const [coverPreview, setCoverPreview] = useState<CoverPreviewPayload | null>(null);
   const [projectFilters, setProjectFilters] = useState<ProjectFilterSelection>(() => createProjectFilterSelection());
+  const projectTriggerRef = useRef<HTMLButtonElement>(null);
   const [selectedProjectSlug, setSelectedProjectSlug] = useState<string | null>(null);
   const previewHref = useCallback((path: string) => path, []);
   const label = (key: string, fallback: string) => (locale === "en" ? uiText(englishTranslations, key, fallback) : fallback);
@@ -898,7 +900,7 @@ export function HomeView() {
                 }}
               />
               <div style={{ position: "relative", padding: "1.75rem 2rem" }}>
-                <SectionTitle id="about" icon="user" T={T}>{locale === "en" ? "What I bring" : "개발자로서의 강점"}</SectionTitle>
+                <SectionTitle id="about" icon="user" T={T}>About Me</SectionTitle>
                 <p style={{
                   fontFamily: FONT_SANS,
                   fontSize: "1rem",
@@ -927,6 +929,20 @@ export function HomeView() {
                 ))}
               </div>
             </div>
+          </FadeSection>
+
+          {/* ── 논문·연구·경력 ── */}
+          <FadeSection>
+            <SectionTitle
+              id="education"
+              icon="graduation"
+              T={T}
+              action={<CareerExpandAllButton state={careerRecords} T={T} locale={locale} />}
+            >
+              {locale === "en" ? "Research & Experience" : "논문·연구·경력"}
+            </SectionTitle>
+            {/* 논문 · 연구 경험(연구실 연구 참여) · 경력(유급 근무) · 학력·수상·어학을 나눠 한 화면에 요약하고, 설명은 기록마다 펼칩니다. */}
+            <CareerRecords state={careerRecords} T={T} locale={locale} />
           </FadeSection>
 
           {/* ── 프로젝트 ── */}
@@ -1031,16 +1047,15 @@ export function HomeView() {
                               className="project-detail-button"
                               aria-controls={projectDetailPanelId}
                               aria-expanded={isProjectExpanded}
-                              aria-pressed={isProjectExpanded}
-                              onClick={() => {
+                              aria-haspopup="dialog"
+                              onClick={(event) => {
+                                projectTriggerRef.current = event.currentTarget;
                                 setSelectedProjectSlug(isProjectExpanded ? null : proj.slug);
                                 setFocusedGraphNodeId(graphNodeId);
                               }}
                               style={{ borderColor: isProjectExpanded ? T.green : T.border }}
                             >
-                              {isProjectExpanded
-                                ? (locale === "en" ? "Summary" : "요약")
-                                : (locale === "en" ? "Details" : "자세히 보기")}
+                              {locale === "en" ? "Wide view" : "넓게 보기"}
                             </button>
                             {proj.link && <ExternalLink href={proj.link} T={T}>GitHub</ExternalLink>}
                           </div>
@@ -1100,6 +1115,7 @@ export function HomeView() {
                       })()}
                     </div>
                     {selectedProject?.slug === proj.slug && (
+                      <ProjectDialog title={selectedProject.name} T={T} locale={locale} onClose={() => setSelectedProjectSlug(null)} triggerRef={projectTriggerRef}>
                       <div
                         id={projectDetailPanelId}
                         className="project-detail-panel"
@@ -1170,10 +1186,11 @@ export function HomeView() {
                               </p>
                             }
                           >
-                            <ProjectInsightPanel project={selectedProject} T={T} locale={locale} />
+                            <ProjectInsightPanel project={selectedProject} T={T} locale={locale} wideMode />
                           </Suspense>
                         </LazyBoundary>
                       </div>
+                      </ProjectDialog>
                     )}
                   </div>
                 );
@@ -1185,26 +1202,6 @@ export function HomeView() {
                 {showAllProjects ? (locale === "en" ? "Collapse project list" : "프로젝트 목록 접기") : (locale === "en" ? `Expand all ${visibleProjects.length} projects` : `전체 ${visibleProjects.length}개 프로젝트 펼쳐 보기`)}
               </button>
             )}
-          </FadeSection>
-
-          {/* ── 논문·연구·경력 ── */}
-          <FadeSection>
-            <SectionTitle
-              id="education"
-              icon="graduation"
-              T={T}
-              action={<CareerExpandAllButton state={careerRecords} T={T} locale={locale} />}
-            >
-              {locale === "en" ? "Research & Experience" : "논문·연구·경력"}
-            </SectionTitle>
-            {/* 논문 · 연구 경험(연구실 연구 참여) · 경력(유급 근무) · 학력·수상·어학을 나눠 한 화면에 요약하고, 설명은 기록마다 펼칩니다. */}
-            <CareerRecords state={careerRecords} T={T} locale={locale} />
-          </FadeSection>
-
-          {/* ── 연구 관심사 ── */}
-          <FadeSection>
-            <SectionTitle id="research" icon="flask" T={T}>{locale === "en" ? "Research Interests" : "연구 관심 분야"}</SectionTitle>
-            <ResearchInterests items={RESEARCH_INTERESTS} T={T} locale={locale} />
           </FadeSection>
 
           {/* ── 기술 스택 ── */}
@@ -1227,9 +1224,16 @@ export function HomeView() {
             </dl>
           </FadeSection>
 
+          {/* ── 연구 관심사 ── */}
+          <FadeSection>
+            <SectionTitle id="research" icon="flask" T={T}>{locale === "en" ? "Research & Development Interests" : "연구·개발 관심 분야"}</SectionTitle>
+            <ResearchInterests items={RESEARCH_INTERESTS} T={T} locale={locale} />
+          </FadeSection>
+
           {/* ── 관심 저장소 ── */}
           <FadeSection>
             <SectionTitle id="interests" icon="star" T={T}>{locale === "en" ? "Open-source Interests" : "관심 오픈소스"}</SectionTitle>
+            <p style={{ color: T.sub, fontSize: "0.875rem", marginBottom: "1rem" }}>{locale === "en" ? "Recently starred on GitHub · refreshed daily" : "GitHub에서 최근 스타한 저장소 · 매일 업데이트"}</p>
             <div style={{
               display: "grid",
               gridTemplateColumns: "1fr 1fr",

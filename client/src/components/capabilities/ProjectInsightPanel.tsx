@@ -69,6 +69,7 @@ type Copy = (typeof INSIGHT_COPY)[Locale];
 type MoreId = "compare" | "modules" | "source" | "full";
 
 export interface ProjectInsightPanelProps {
+  wideMode?: boolean;
   project: ProjectEntry;
   T: PortfolioTheme;
   locale: Locale;
@@ -136,7 +137,7 @@ function Source({ flow, copy, text }: { flow: FlowView; copy: Copy; text: (value
   );
 }
 
-export default function ProjectInsightPanel({ project, T, locale }: ProjectInsightPanelProps) {
+export default function ProjectInsightPanel({ project, T, locale, wideMode = false }: ProjectInsightPanelProps) {
   const copy = INSIGHT_COPY[locale];
   const base = useId().replace(/[^a-zA-Z0-9_-]/g, "");
   const insight = insightFor(project.slug);
@@ -161,7 +162,7 @@ export default function ProjectInsightPanel({ project, T, locale }: ProjectInsig
       <p className="pi-lead">{lead}</p>
 
       {flow ? (
-        <ProjectFlowInline project={project} flows={flows} flow={flow} onFlowChange={setFlowKey} T={T} locale={locale} lead={lead} />
+        <ProjectFlowInline project={project} flows={flows} flow={flow} onFlowChange={setFlowKey} T={T} locale={locale} lead={lead} wideMode={wideMode} />
       ) : (
         insight?.sparse && (
           <p className="pi-sparse">

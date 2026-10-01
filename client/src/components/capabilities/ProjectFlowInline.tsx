@@ -36,6 +36,7 @@ const COPY = {
 } as const;
 
 export interface ProjectFlowInlineProps {
+  wideMode?: boolean;
   project: ProjectEntry;
   flows: FlowView[];
   /** 지금 보여 줄 흐름 (흐름 고르기는 바깥에서 관리합니다) */
@@ -47,7 +48,7 @@ export interface ProjectFlowInlineProps {
   lead: string;
 }
 
-export function ProjectFlowInline({ project, flows, flow, onFlowChange, T, locale, lead }: ProjectFlowInlineProps) {
+export function ProjectFlowInline({ project, flows, flow, onFlowChange, T, locale, lead, wideMode = false }: ProjectFlowInlineProps) {
   const copy = COPY[locale];
   const idBase = useId().replace(/[^a-zA-Z0-9_-]/g, "");
   const journey = useJourney(flow.nodes.length, flow.key, true, INLINE_STEP_MS);
@@ -64,7 +65,7 @@ export function ProjectFlowInline({ project, flows, flow, onFlowChange, T, local
         {multiple && <FlowTabs flows={flows} selectedKey={flow.key} onSelect={onFlowChange} locale={locale} idBase={idBase} />}
         <div className="fj-tools">
           <PlayButton journey={journey} locale={locale} />
-          <button
+          {!wideMode && <button
             ref={wideRef}
             type="button"
             className="fj-btn"
@@ -76,12 +77,12 @@ export function ProjectFlowInline({ project, flows, flow, onFlowChange, T, local
           >
             <Maximize2 size={14} strokeWidth={2} aria-hidden="true" focusable="false" />
             <span>{copy.wide}</span>
-          </button>
+          </button>}
         </div>
       </div>
       <div {...(multiple ? { role: "tabpanel", id: `${idBase}-panel`, "aria-labelledby": `${idBase}-tab-${selectedIndex}` } : {})}>
         {/* 넓게 보기가 열려 있는 동안 뒤의 작은 도식은 데이터 이동을 멈춥니다 (재생 상태는 함께 씁니다). */}
-        <FlowStage flow={flow} journey={journey} locale={locale} mode="compact" title={title} dormant={wideOpen} />
+        <FlowStage flow={flow} journey={journey} locale={locale} mode={wideMode ? "wide" : "compact"} title={title} dormant={wideOpen} />
       </div>
       <FlowCaption flow={flow} locale={locale} />
       {wideMounted && (

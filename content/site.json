@@ -5,13 +5,8 @@
   "navigation": [
     {
       "id": "about",
-      "label": "개발자로서의 강점",
+      "label": "자기소개",
       "icon": "user"
-    },
-    {
-      "id": "projects",
-      "label": "프로젝트·개발 활동",
-      "icon": "code"
     },
     {
       "id": "education",
@@ -19,14 +14,19 @@
       "icon": "graduation"
     },
     {
-      "id": "research",
-      "label": "연구 관심 분야",
-      "icon": "flask"
+      "id": "projects",
+      "label": "프로젝트·개발 활동",
+      "icon": "code"
     },
     {
       "id": "skills",
       "label": "기술 스택",
       "icon": "layers"
+    },
+    {
+      "id": "research",
+      "label": "연구·개발 관심 분야",
+      "icon": "flask"
     },
     {
       "id": "interests",

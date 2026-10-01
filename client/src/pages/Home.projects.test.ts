@@ -53,10 +53,10 @@ describe("Home projects section", () => {
     expect(block).toContain("const isProjectExpanded = selectedProjectSlug === proj.slug");
     expect(block).toContain("setSelectedProjectSlug(isProjectExpanded ? null : proj.slug)");
     expect(block).toContain('aria-expanded={isProjectExpanded}');
-    expect(block).toContain('aria-pressed={isProjectExpanded}');
+    expect(block).toContain('aria-haspopup="dialog"');
     expect(block).toContain("isProjectExpanded ? T.green : T.border");
-    expect(block).toContain('locale === "en" ? "Summary" : "요약"');
-    expect(block).toContain('locale === "en" ? "Details" : "자세히 보기"');
+    expect(block).toContain('<ProjectDialog');
+    expect(block).toContain('locale === "en" ? "Wide view" : "넓게 보기"');
     expect(block).not.toContain("setSelectedProjectSlug(proj.slug);");
   });
 
@@ -152,7 +152,7 @@ describe("Home projects section", () => {
     expect(source).not.toContain('import ProjectInsightPanel from');
     expect(panel).toContain("<Suspense");
     expect(panel).toContain("<LazyBoundary");
-    expect(panel).toContain("<ProjectInsightPanel project={selectedProject} T={T} locale={locale} />");
+    expect(panel).toContain("<ProjectInsightPanel project={selectedProject} T={T} locale={locale} wideMode />");
     // 이름·기간·구분은 바로 위 행에 있으므로 패널 머리에서 되풀이하지 않습니다.
     expect(panel).not.toContain("project-detail-head");
     expect(panel).not.toContain("projectProofLevelLabel");

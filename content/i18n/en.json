@@ -2,9 +2,9 @@
   "locale": "en",
   "ui": {
     "nav": {
-      "about": "What I Bring",
+      "about": "About Me",
       "education": "Research & Experience",
-      "research": "Research Interests",
+      "research": "Research & Development Interests",
       "projects": "Projects & Activities",
       "skills": "Technology Stack",
       "interests": "Open-source Interests"
