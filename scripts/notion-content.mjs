@@ -66,9 +66,9 @@ const SITE_DEFAULTS = {
     heroTree:
       "https://d2xsxph8kpxj0f.cloudfront.net/106867672/XFaxs2Z8r6G3GyzQNwSSoE/hero_abstract-QnvWc7iMMJmimwoF3wARey.webp",
     ragDiagram:
-      "https://d2xsxph8kpxj0f.cloudfront.net/106867672/XFaxs2Z8r6G3GyzQNwSSoE/research_rag-jArZ5FsJdCJiktQYGMp6rA.webp",
+      "/images/rag-diagram.svg",
     dotPattern:
-      "https://d2xsxph8kpxj0f.cloudfront.net/106867672/XFaxs2Z8r6G3GyzQNwSSoE/profile_card_bg-hV5HrJ3CNXxcdXaMYuNA6G.webp",
+      "/images/dot-pattern.svg",
   },
 };
 
