@@ -5,6 +5,7 @@ import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { LanguageProvider } from "./contexts/LanguageContext";
 import { ThemeProvider } from "./contexts/ThemeContext";
+import CapabilitiesPreview from "./pages/CapabilitiesPreview";
 import { CV, NoteDetail, Notes, ProjectDetail, ResearchDetail } from "./pages/ContentPages";
 import Home from "./pages/Home";
 
@@ -17,6 +18,7 @@ function Router() {
       <Route path={"/notes/:slug"} component={NoteDetail} />
       <Route path={"/projects/:slug"} component={ProjectDetail} />
       <Route path={"/research/:slug"} component={ResearchDetail} />
+      <Route path={"/design/capabilities"} component={CapabilitiesPreview} />
       <Route path={"/404"} component={NotFound} />
       <Route component={NotFound} />
     </Switch>

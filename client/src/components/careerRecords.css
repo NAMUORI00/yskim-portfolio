@@ -1,0 +1,362 @@
+/*
+ * 홈 "논문·연구·경력" — 기록을 성격별 묶음으로 나눈 목록 (CareerRecords.tsx)
+ *   논문 · 연구 경험(연구실 연구 참여) · 경력(유급 근무) · 학력·수상·어학
+ * 기록 한 줄은 제목과 [상태] 기간 · 기관 두 줄로 접혀 있고, 누르면 설명과 세부 항목이 펼쳐집니다.
+ * 넓은 화면에서는 논문을 위에 두고 연구 경험·학력과 경력을 두 칸으로 나눕니다. 좁으면 한 칸입니다.
+ * 목록 안에 따로 스크롤되는 영역을 두지 않습니다.
+ * 색과 글꼴은 홈 테마(PortfolioTheme)에서 --cr-* 변수로 주입됩니다.
+ *
+ * 글자 크기 (루트 16px 기준, 홈 본문 단계와 같습니다):
+ *   기록 제목 0.9375rem · 기관·설명·세부 항목 0.875rem · 묶음 제목 0.875rem
+ *   묶음 설명·단추 0.8125rem · 기간·상태·개수 같은 메타 정보 0.75rem
+ * 누르는 조작은 마우스 화면 32px 이상, 터치 화면(pointer: coarse)에서 44px 입니다.
+ */
+
+.career-records {
+  container: career / inline-size;
+  min-width: 0;
+  font-family: var(--cr-sans);
+  color: var(--cr-text);
+  word-break: keep-all;
+  overflow-wrap: break-word;
+}
+
+.career-ledger {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.75rem;
+}
+
+/* ── 묶음 (논문 / 연구 경험 / 경력 / 학력·수상·어학) ── */
+.career-group {
+  min-width: 0;
+  background: var(--cr-surface);
+  border: 1px solid var(--cr-border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.career-group-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.15rem 0.5rem;
+  padding: 0.5rem 0.9rem;
+  background: var(--cr-bg);
+  border-bottom: 1px solid var(--cr-border);
+}
+
+.career-group-icon {
+  flex: none;
+  color: var(--cr-green);
+}
+
+.career-group-title {
+  margin: 0;
+  font-family: var(--cr-sans);
+  font-size: 0.875rem;
+  font-weight: 700;
+  line-height: 1.5;
+  color: var(--cr-text);
+}
+
+.career-group-count {
+  font-family: var(--cr-mono);
+  font-size: 0.75rem;
+  line-height: 1.5;
+  color: var(--cr-green);
+}
+
+.career-group-note {
+  margin-left: auto;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--cr-sub);
+}
+
+/* ── 기록 ── */
+.career-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.career-item + .career-item {
+  border-top: 1px solid var(--cr-border);
+}
+
+.career-record[open] {
+  background: var(--cr-bg);
+}
+
+.career-record-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0 0.6rem;
+  padding: 0.6rem 0.9rem;
+}
+
+summary.career-record-head {
+  list-style: none;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+summary.career-record-head::-webkit-details-marker {
+  display: none;
+}
+
+summary.career-record-head:hover {
+  background: var(--cr-bg);
+}
+
+summary.career-record-head:focus-visible {
+  outline: 2px solid var(--cr-green);
+  outline-offset: -2px;
+}
+
+.career-record-main {
+  display: grid;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.career-record-title {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--cr-text);
+}
+
+.career-record-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.15rem 0.45rem;
+  min-width: 0;
+}
+
+.career-record-period {
+  font-family: var(--cr-mono);
+  font-size: 0.75rem;
+  line-height: 1.6;
+  color: var(--cr-muted);
+  white-space: nowrap;
+}
+
+.career-record-sep {
+  font-size: 0.75rem;
+  line-height: 1.6;
+  color: var(--cr-muted);
+}
+
+.career-record-org {
+  min-width: 0;
+  font-size: 0.875rem;
+  line-height: 1.55;
+  color: var(--cr-sub);
+}
+
+.career-record-chevron {
+  flex: none;
+  color: var(--cr-muted);
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.career-record[open] .career-record-chevron {
+  transform: rotate(180deg);
+  color: var(--cr-green);
+}
+
+/* ── 상태 표시: 게재·발표는 채운 점, 심사 중은 비운 점, 진행 중은 채운 점 ── */
+.career-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0 0.45rem;
+  font-family: var(--cr-sans);
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.55;
+  color: var(--cr-green);
+  white-space: nowrap;
+  border: 1px solid color-mix(in srgb, var(--cr-green) 45%, transparent);
+  border-radius: 999px;
+}
+
+.career-status::before {
+  content: "";
+  flex: none;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--cr-green);
+}
+
+.career-status.is-published,
+.career-status.is-current {
+  background: var(--cr-green-bg);
+}
+
+.career-status.is-review {
+  background: transparent;
+}
+
+.career-status.is-review::before {
+  background: transparent;
+  box-shadow: inset 0 0 0 1.5px var(--cr-green);
+}
+
+/* ── 펼친 설명 ── */
+.career-record-body {
+  display: grid;
+  gap: 0.45rem;
+  padding: 0 0.9rem 0.85rem;
+}
+
+.career-record-note {
+  max-width: 70ch;
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.75;
+  color: var(--cr-sub);
+}
+
+.career-record-bullets {
+  display: grid;
+  gap: 0.25rem;
+  max-width: 70ch;
+  margin: 0;
+  padding-left: 1.1rem;
+  font-size: 0.875rem;
+  line-height: 1.7;
+  color: var(--cr-sub);
+}
+
+.career-record-bullets li::marker {
+  color: var(--cr-green);
+}
+
+.career-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin: 0.1rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.career-chip {
+  display: inline-flex;
+  align-items: center;
+  max-width: 100%;
+  min-height: 1.75rem;
+  padding: 0 0.6rem;
+  font-family: var(--cr-mono);
+  font-size: 0.75rem;
+  line-height: 1.4;
+  color: var(--cr-sub);
+  text-decoration: none;
+  background: var(--cr-surface);
+  border: 1px solid var(--cr-border);
+  border-radius: 999px;
+}
+
+.career-chip.is-link,
+.career-chip.is-project {
+  color: var(--cr-green);
+  border-color: color-mix(in srgb, var(--cr-green) 40%, transparent);
+}
+
+.career-chip.is-link {
+  background: var(--cr-green-bg);
+}
+
+a.career-chip:hover {
+  border-color: var(--cr-green);
+}
+
+a.career-chip:focus-visible {
+  outline: 2px solid var(--cr-green);
+  outline-offset: 2px;
+}
+
+/* ── 설명 모두 펼치기 (섹션 제목 줄 오른쪽) ── */
+.career-expand-all {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 2rem;
+  margin-left: auto;
+  padding: 0 0.75rem;
+  font-family: var(--cr-sans);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--cr-green);
+  white-space: nowrap;
+  cursor: pointer;
+  background: var(--cr-surface);
+  border: 1px solid color-mix(in srgb, var(--cr-green) 40%, transparent);
+  border-radius: 999px;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.career-expand-all:hover,
+.career-expand-all[aria-expanded="true"] {
+  background: var(--cr-green-bg);
+  border-color: var(--cr-green);
+}
+
+.career-expand-all:focus-visible {
+  outline: 2px solid var(--cr-green);
+  outline-offset: 2px;
+}
+
+/* ── 넓은 화면: 논문은 위에 한 줄로, 연구 경험·학력(왼쪽)과 경력(오른쪽)은 두 칸 ── */
+@container career (min-width: 42rem) {
+  .career-ledger.is-split {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-areas: var(--career-areas);
+    align-items: start;
+  }
+
+  .career-ledger.is-split > [data-group="publications"] {
+    grid-area: publications;
+  }
+
+  .career-ledger.is-split > [data-group="research"] {
+    grid-area: research;
+  }
+
+  .career-ledger.is-split > [data-group="employment"] {
+    grid-area: employment;
+  }
+
+  .career-ledger.is-split > [data-group="background"] {
+    grid-area: background;
+  }
+
+  .career-ledger.is-split > [data-group="other"] {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  summary.career-record-head,
+  .career-record-chevron,
+  .career-expand-all {
+    transition: none;
+  }
+}
+
+/* 터치 화면에서는 글자 크기는 그대로 두고 누르는 자리만 44px로 넓힙니다. */
+@media (pointer: coarse) {
+  .career-expand-all,
+  .career-chip,
+  summary.career-record-head {
+    min-height: 2.75rem;
+  }
+}

@@ -103,9 +103,66 @@ describe("Home projects section", () => {
     expect(axisBadgeCss).toContain("font-family: ${FONT_SANS};");
     expect(detailButtonCss).toContain("font-family: ${FONT_SANS};");
     expect(metricBlock).toContain("fontFamily: FONT_SANS");
-    expect(metricBlock).toContain('fontSize: "0.76rem"');
+    expect(metricBlock).toContain('fontSize: "0.8125rem"');
     expect(metricBlock).toContain("fontWeight: 500");
-    expect(block).toContain("<span style={{ fontFamily: FONT_MONO, fontSize: \"0.62rem\", color: T.muted }}>");
+    expect(block).toContain("<span style={{ fontFamily: FONT_MONO, fontSize: \"0.75rem\", color: T.muted }}>");
     expect(block).toContain("{proj.tags.map((tag) => <Tag key={tag} T={T}>{tag}</Tag>)}");
+  });
+
+  it("keeps a compact reading hierarchy in project rows: name > description > metadata, nothing tiny or oversized", () => {
+    const block = projectsBlock();
+    const nameBlock = sourceBetween(block, "{proj.private ? <LockIcon color={T.muted} />", "{proj.highlight &&");
+    const descBlock = sourceBetween(block, "{/* 설명 */}", "{projectRole(proj) &&");
+    const axisBadgeCss = sourceBetween(source, ".project-axis-badge {", ".project-axis-badge.muted");
+
+    expect(nameBlock).toContain('fontSize: "0.9375rem"');
+    expect(descBlock).toContain('fontSize: "0.875rem"');
+    expect(axisBadgeCss).toContain("font-size: 0.75rem;");
+    // 프로젝트 목록의 글자는 0.6875rem(11px)보다 작지 않고 1rem보다 크지 않습니다.
+    const sizes = [...block.matchAll(/fontSize: "([\d.]+)rem"/g)].map((match) => Number(match[1]));
+    expect(sizes.length).toBeGreaterThan(4);
+    for (const size of sizes) {
+      expect(size).toBeGreaterThanOrEqual(0.6875);
+      expect(size).toBeLessThanOrEqual(1);
+    }
+  });
+
+  it("keeps project controls compact for a mouse and widens them to 44px on touch screens", () => {
+    const detailButtonCss = sourceBetween(source, ".project-detail-button {", ".project-detail-button:hover");
+    const filterButtonCss = sourceBetween(source, ".project-filter-rail button {", ".project-filter-rail button:hover");
+    const scrollHintCss = sourceBetween(source, ".project-scroll-hint {", ".project-scroll-hint:hover");
+
+    for (const css of [detailButtonCss, scrollHintCss]) expect(css).toContain("min-height: 2.25rem;");
+    expect(filterButtonCss).toContain("min-height: 2rem;");
+    const touchCss = sourceBetween(source, "@media (pointer: coarse) {", ".mobile-overlay {");
+    for (const selector of [".project-filter-rail button", ".project-detail-button", ".project-external-link", ".project-scroll-hint"]) {
+      expect(touchCss).toContain(selector);
+    }
+    expect(touchCss).toContain("min-height: 2.75rem;");
+    // 휴대폰 폭에서도 필터 단추 글자를 줄이지 않습니다.
+    const mobileCss = sourceBetween(source, "@media (max-width: 768px) {", "@media (pointer: coarse) {");
+    expect(sourceBetween(mobileCss, ".project-filter-rail button {", "}")).not.toContain("font-size");
+  });
+
+  it("lazy-loads the one-sentence outcome, flow diagram and optional details inside the expanded project panel", () => {
+    const block = projectsBlock();
+    const panel = sourceBetween(block, 'className="project-detail-panel"', '{projectHasOverflow && <div className="project-scroll-fade"');
+
+    expect(source).toContain('const ProjectInsightPanel = lazy(() => import("@/components/capabilities/ProjectInsightPanel"));');
+    expect(source).not.toContain('import ProjectInsightPanel from');
+    expect(panel).toContain("<Suspense");
+    expect(panel).toContain("<LazyBoundary");
+    expect(panel).toContain("<ProjectInsightPanel project={selectedProject} T={T} locale={locale} />");
+    // 이름·기간·구분은 바로 위 행에 있으므로 패널 머리에서 되풀이하지 않습니다.
+    expect(panel).not.toContain("project-detail-head");
+    expect(panel).not.toContain("projectProofLevelLabel");
+    // 소개 전문은 패널 안 단추로 열고, 패널을 불러오지 못하면 대체 문구 아래에서 바로 열 수 있게 둡니다.
+    const fallback = sourceBetween(panel, "<LazyBoundary", "<Suspense");
+    expect(fallback).toContain('<details className="project-detail-source">');
+    expect(fallback).toContain("toMarkdownHtml(selectedProject.body)");
+    expect(panel.split("toMarkdownHtml(selectedProject.body)")).toHaveLength(2);
+    // 한 줄 성과는 프런트매터 지표(metrics)가 있을 때만 다시 보여 줍니다.
+    expect(panel).toContain("selectedProject.metrics.length > 0 && projectEvidenceMetrics(selectedProject).length > 0");
+    expect(panel).toContain('role="region"');
   });
 });

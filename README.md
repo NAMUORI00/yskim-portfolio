@@ -17,6 +17,7 @@ Git 저장소의 content/ + client/ → main push → Cloudflare Pages → namuo
 | 기술·관심 오픈소스 | `content/skills.json`, `content/starred.json` |
 | 연구 관심 분야 | `content/research/*.mdx` |
 | 프로젝트·노트 | `content/projects/*.mdx`, `content/notes/*.mdx` |
+| 프로젝트 자세히 보기(요약·비교·모듈) | `client/src/components/capabilities/projectInsights.ts`, 모듈 흐름 도식은 같은 폴더의 `capability*.ts` |
 | 표시 순서 | `content/order.json` |
 | 영어 번역 | `content/i18n/en.json` |
 | 사이트 정보 | `content/site.json` |
@@ -48,4 +49,4 @@ pnpm build
 
 ## 이전 Notion 연동
 
-2026-10-01부터 Notion 자동 동기화와 미디어 프록시를 제거했습니다. 기존 Notion 페이지는 변경하지 않습니다. `content/`는 캐시가 아닌 정식 원본이며 자동 가져오기로 덮어쓰지 않습니다. 이전에 내려받은 정적 이미지도 Git에서 계속 관리합니다. [전환 기록](docs/notion-cms.md)
+2026-10-01부터 Notion 자동 동기화와 미디어 프록시를 제거했습니다. 기존 포트폴리오 관리 페이지는 전체 백업 후 휴지통으로 이동했으며, 블로그용 Notion 페이지는 유지합니다. `content/`는 캐시가 아닌 정식 원본이며 자동 가져오기로 덮어쓰지 않습니다. 이전에 내려받은 정적 이미지도 Git에서 계속 관리합니다. [전환 기록](docs/notion-cms.md)

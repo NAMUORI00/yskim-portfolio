@@ -20,12 +20,12 @@
     },
     {
       "id": "research",
-      "label": "연구·개발 관심 분야",
+      "label": "연구 관심 분야",
       "icon": "flask"
     },
     {
       "id": "skills",
-      "label": "기술로 할 수 있는 일",
+      "label": "기술 스택",
       "icon": "layers"
     },
     {
