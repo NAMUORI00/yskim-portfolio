@@ -1,38 +1,38 @@
 [
   {
-    "name": "czlonkowski/n8n-mcp",
-    "href": "https://github.com/czlonkowski/n8n-mcp",
-    "stars": "20.5k",
-    "desc": "n8n 워크플로우 MCP 서버"
+    "name": "BlackSnufkin/BYOVD",
+    "href": "https://github.com/BlackSnufkin/BYOVD",
+    "stars": "962",
+    "desc": "BYOVD research use cases featuring vulnerable driver discovery and reverse engineering methodology.  (CVE-2025-52915,  CVE-2025-1055, CVE-2026-3609, CVE-2026-8501)."
   },
   {
-    "name": "typst/typst",
-    "href": "https://github.com/typst/typst",
-    "stars": "53.4k",
-    "desc": "마크업 기반 조판 시스템"
+    "name": "AlSch092/UltimateAntiCheat",
+    "href": "https://github.com/AlSch092/UltimateAntiCheat",
+    "stars": "652",
+    "desc": "UltimateAnticheat is an open source usermode anti-cheat system made to detect and prevent common attack vectors in game cheating (C++, Windows)"
   },
   {
-    "name": "google-research/timesfm",
-    "href": "https://github.com/google-research/timesfm",
-    "stars": "19.6k",
-    "desc": "시계열 파운데이션 모델"
+    "name": "noahware/hyper-reV",
+    "href": "https://github.com/noahware/hyper-reV",
+    "stars": "790",
+    "desc": "memory introspection and reverse engineering hypervisor powered by leveraging Hyper-V"
   },
   {
-    "name": "terrastruct/d2",
-    "href": "https://github.com/terrastruct/d2",
-    "stars": "23.7k",
-    "desc": "텍스트 → 다이어그램"
+    "name": "lidge-jun/opencodex",
+    "href": "https://github.com/lidge-jun/opencodex",
+    "stars": "16.7K",
+    "desc": "Universal provider proxy for OpenAI Codex & Claude Code — use any LLM (Claude, Gemini, Grok, DeepSeek, Ollama…) with Codex CLI, App, SDK, and Claude Code"
   },
   {
-    "name": "bokeh/bokeh",
-    "href": "https://github.com/bokeh/bokeh",
-    "stars": "20.4k",
-    "desc": "Python 인터랙티브 시각화"
+    "name": "MengTo/Skills",
+    "href": "https://github.com/MengTo/Skills",
+    "stars": "6.5K",
+    "desc": "Agent skills for designers and builders using Codex, Claude, Cursor, and other AI coding agents"
   },
   {
-    "name": "steipete/oracle",
-    "href": "https://github.com/steipete/oracle",
-    "stars": "2.2k",
-    "desc": "GPT-5 Pro 컨텍스트 활용"
+    "name": "lidge-jun/agbrowse",
+    "href": "https://github.com/lidge-jun/agbrowse",
+    "stars": "231",
+    "desc": "Ultimate browser automation toolkit for AI agents. Zero MCP token tax, JS evaluate, vision-click with DPR correction."
   }
 ]

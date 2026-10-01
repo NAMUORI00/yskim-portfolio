@@ -14,14 +14,14 @@ function sourceBetween(text: string, startNeedle: string, endNeedle: string) {
 }
 
 describe("Home technology stack and research sections", () => {
-  it("names the sections '기술 스택' and '연구 관심 분야' in the page and the navigation (Korean and English)", () => {
+  it("names the sections '기술 스택' and '연구·개발 관심 분야' in the page and the navigation (Korean and English)", () => {
     const navLabel = (id: string) => portfolioContent.site.navigation.find((item) => item.id === id)?.label;
     expect(navLabel("skills")).toBe("기술 스택");
-    expect(navLabel("research")).toBe("연구 관심 분야");
+    expect(navLabel("research")).toBe("연구·개발 관심 분야");
     expect(englishTranslations.ui?.nav?.skills).toBe("Technology Stack");
-    expect(englishTranslations.ui?.nav?.research).toBe("Research Interests");
+    expect(englishTranslations.ui?.nav?.research).toBe("Research & Development Interests");
     expect(source).toContain('locale === "en" ? "Technology Stack" : "기술 스택"');
-    expect(source).toContain('locale === "en" ? "Research Interests" : "연구 관심 분야"');
+    expect(source).toContain('locale === "en" ? "Research & Development Interests" : "연구·개발 관심 분야"');
     expect(source).not.toContain("기술로 할 수 있는 일");
   });
 

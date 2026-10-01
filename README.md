@@ -50,3 +50,7 @@ pnpm build
 ## 이전 Notion 연동
 
 2026-10-01부터 Notion 자동 동기화와 미디어 프록시를 제거했습니다. 기존 포트폴리오 관리 페이지는 전체 백업 후 휴지통으로 이동했으며, 블로그용 Notion 페이지는 유지합니다. `content/`는 캐시가 아닌 정식 원본이며 자동 가져오기로 덮어쓰지 않습니다. 이전에 내려받은 정적 이미지도 Git에서 계속 관리합니다. [전환 기록](docs/notion-cms.md)
+
+## 관심 오픈소스 자동 갱신
+
+GitHub 공개 스타 목록의 최근 6개를 매일 07:23 KST에 갱신합니다(예약 실행은 지연될 수 있습니다). `.github/workflows/sync-starred.yml`에서 `scripts/sync-starred.mjs`를 실행하고 검사 후 변경이 있을 때만 Git에 저장합니다. Cloudflare는 main의 변경을 자동 배포합니다. API 오류 시 기존 목록을 보존하며 개인 토큰이나 비공개 저장소를 사용하지 않습니다. 수동 갱신은 Actions의 Update recent GitHub stars에서 실행할 수 있습니다.
