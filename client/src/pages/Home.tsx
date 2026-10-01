@@ -23,6 +23,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { englishTranslations, getProfileAvatarUrl, portfolioContent, type ProjectEntry, type TimelineLink } from "@/content";
 import { DARK, FONT_MONO, FONT_SANS, FONT_SERIF, LIGHT, type PortfolioTheme } from "@/content/theme";
 import { KnowledgeGraphRail } from "@/components/KnowledgeGraphRail";
+import { ResearchInterests } from "@/components/ResearchInterests";
 import { MobileKnowledgeGraph } from "@/components/MobileKnowledgeGraph";
 import { buildCoverPreview, buildResearchDiagramPreview, type CoverPreviewPayload } from "@/lib/coverPreview";
 import { applyDocumentMetadata } from "@/lib/documentMetadata";
@@ -1400,70 +1401,7 @@ export default function Home() {
           {/* ── 연구 관심사 ── */}
           <FadeSection>
             <SectionTitle id="research" icon="flask" T={T}>{locale === "en" ? "Research & Technical Interests" : "연구·개발 관심 분야"}</SectionTitle>
-            <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
-              {RESEARCH_INTERESTS.map((r) => {
-                const ragCaption = label("ragCaption", "Dense + Sparse + Graph 3채널 하이브리드 검색 아키텍처");
-                const researchPreview = r.coverImage
-                  ? buildCoverPreview({ locale, kind: "research", title: r.title, src: r.coverImage })
-                  : r.showDiagram
-                    ? buildResearchDiagramPreview({ locale, title: r.title, src: IMG.ragDiagram, caption: ragCaption })
-                    : null;
-
-                return (
-                <div key={r.title}>
-                  <div
-                    className={researchPreview ? "research-card has-cover" : "research-card"}
-                    style={{
-                      paddingLeft: "0.9rem",
-                      borderLeft: `2px solid ${T.border}`,
-                      transition: "border-color 0.15s",
-                    }}
-                    onMouseEnter={(e) => (e.currentTarget.style.borderLeftColor = T.green)}
-                    onMouseLeave={(e) => (e.currentTarget.style.borderLeftColor = T.border)}
-                  >
-                    <div className="research-copy">
-                      <div style={{
-                        fontFamily: FONT_SANS,
-                        fontSize: "0.88rem",
-                        fontWeight: 600,
-                        color: T.text,
-                        marginBottom: "4px",
-                      }}>
-                        {r.title}
-                      </div>
-                      <div style={{
-                        fontFamily: FONT_SANS,
-                        fontSize: "0.82rem",
-                        color: T.sub,
-                        lineHeight: 1.8,
-                        wordBreak: "keep-all",
-                      }}>
-                        {r.desc}
-                      </div>
-                    </div>
-                    {researchPreview && (
-                      <button
-                        type="button"
-                        className="content-cover-button research-cover-button"
-                        aria-label={researchPreview.actionLabel}
-                        onClick={() => setCoverPreview(researchPreview)}
-                      >
-                        <img
-                          src={researchPreview.src}
-                          alt={researchPreview.alt}
-                          className="content-cover-thumb research-cover-thumb"
-                          style={{
-                            borderColor: T.border,
-                            background: T.surface,
-                          }}
-                        />
-                      </button>
-                    )}
-                  </div>
-                </div>
-                );
-              })}
-            </div>
+            <ResearchInterests items={RESEARCH_INTERESTS} T={T} locale={locale} />
           </FadeSection>
 
           {/* ── 기술 스택 ── */}

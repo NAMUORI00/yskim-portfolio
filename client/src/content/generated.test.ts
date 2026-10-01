@@ -3,7 +3,7 @@ import { portfolioContent, englishTranslations } from "./index";
 import { validatePortfolioContent } from "./schema";
 import { localizePortfolioContent } from "@/lib/i18nContent";
 
-describe("generated Notion content", () => {
+describe("Git-managed portfolio content", () => {
   it("loads the actual published content without a runtime schema error", () => {
     expect(() => validatePortfolioContent(portfolioContent)).not.toThrow();
     expect(portfolioContent.projects.length).toBeGreaterThan(0);

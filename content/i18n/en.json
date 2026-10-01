@@ -40,7 +40,7 @@
       "My AI work covers document retrieval and question answering, multi-view video question answering, and audio source separation. With Python and PyTorch, I implement training and evaluation code and study how to choose retrieval methods or decide whether video evidence supports an answer. I have carried out research design, implementation, comparative experiments, and manuscript writing. I am the first author of one published KCI journal paper and one domestic conference paper; a separate IEEE Access manuscript is under review.",
       "In software development, I connect AI processing, server APIs, databases, and user interfaces. I have implemented Spring Boot and FastAPI servers, account and post management, and audio upload, separation, and download workflows. My projects also include Vue interfaces and a Flutter application connected to a Python server. Three paid internships at Kakao and Tilonsoft gave me experience in AI features and web/backend development.",
       "My work also involves data and devices. I prepared and visualized tourism and spending data in Python for a team mobility-placement proposal and participated in planning and developing a local-business information service using public data and maps. In Arduino projects, I implemented circuits and firmware for a musical glove and a smart-home workflow that stores sensor readings in a database and displays them on the web.",
-      "I also prepare environments and automate recurring work to support development and experiments. I have configured GPU training and local AI environments and managed experiment settings. I developed video-streaming server installation scripts and a tool that connects external AI code review to human approval. This portfolio connects Notion content to GitHub and Cloudflare deployment.",
+      "I also prepare environments and automate recurring work to support development and experiments. I have configured GPU training and local AI environments and managed experiment settings. I developed video-streaming server installation scripts and a tool that connects external AI code review to human approval. I manage this portfolio’s content and UI code in GitHub and deploy it through Cloudflare.",
       "As a team leader in undergraduate projects, I handled ideation, core development, and coordination. My contributions range from implementing individual functions to integrating components and preparing team deliverables. The projects below describe their purpose, technologies, my role, and results. I am an M.S. student in Computer Engineering at Jeju National University, expecting to graduate in March 2027."
     ],
     "contacts": {
@@ -160,24 +160,34 @@
   ],
   "research": {
     "rag": {
-      "title": "Document-grounded AI Answers · RAG",
-      "desc": "I study how AI can retrieve relevant documents to support its answers. I implemented aerospace document question answering using keyword, semantic, and relationship-based retrieval.",
-      "body": "I study how AI can retrieve relevant documents to support its answers. I implemented aerospace document question answering using keyword, semantic, and relationship-based retrieval.\n\n\n## Interest\n\n\nI experiment with hybrid RAG architectures that combine Dense, Sparse, and Graph retrieval and integrate them through Weighted RRF.\n\n\n## Current Focus\n\n- Domain-specific document chunking\n- Retrieval quality evaluation\n- Source-grounded answer generation"
+      "title": "Question-adaptive Retrieval and Grounded Answers",
+      "desc": "I study how to combine keyword, semantic and relationship-based retrieval for each question and connect retrieved documents to answers. I implemented and compared query-adaptive retrieval-channel control in a published KCI paper, and connected retrieval to answer generation for aerospace documents.",
+      "body": "I study how to combine keyword, semantic and relationship-based retrieval for each question and connect retrieved documents to answers. I implemented and compared query-adaptive retrieval-channel control in a published KCI paper, and connected retrieval to answer generation for aerospace documents.\n\n## Related project\n\n[Implementation and my role](/projects/smartfarm-rag)"
     },
     "edge-llm": {
-      "title": "Running AI on Limited Hardware",
-      "desc": "I explore running AI models on resource-constrained devices, including local setups with llama.cpp and reduced-size models.",
-      "body": "I explore running AI models on resource-constrained devices, including local setups with llama.cpp and reduced-size models.\n\n\n## Interest\n\n\nI explore practical LLM inference setups that can run on constrained hardware."
+      "title": "Local AI and Experiment Environments",
+      "desc": "I explore running models on personal computers and GPU servers and managing training and evaluation settings. My experience includes local llama.cpp and quantized-model setups, PyTorch/CUDA training environments and configuration-based experiment management.",
+      "body": "I explore running models on personal computers and GPU servers and managing training and evaluation settings. My experience includes local llama.cpp and quantized-model setups, PyTorch/CUDA training environments and configuration-based experiment management.\n\n## Related project\n\n[Implementation and my role](/projects/music-source-separation)"
     },
     "audio-voice": {
-      "title": "AI for Music and Voice",
-      "desc": "I experiment with separating vocals and instruments and converting voice characteristics, using existing models and managing training settings.",
-      "body": "I experiment with separating vocals and instruments and converting voice characteristics, using existing models and managing training settings.\n\n\n## Interest\n\n\nI work with music source separation and voice conversion models in reproducible experiment environments."
+      "title": "Audio Models and User-facing Features",
+      "desc": "I configure training experiments for vocal and instrument separation and connect audio processing to usable features. Alongside model experiments, I built an upload, separation and download service using Spring Boot, FastAPI and Spleeter.",
+      "body": "I configure training experiments for vocal and instrument separation and connect audio processing to usable features. Alongside model experiments, I built an upload, separation and download service using Spring Boot, FastAPI and Spleeter.\n\n## Related project\n\n[Implementation and my role](/projects/music-splitter-web)"
     },
     "agentic-workflow": {
-      "title": "Connecting AI Tools to Development",
-      "desc": "I work on connecting AI tools to development tasks, including a cross-review workflow with human approval.",
-      "body": "I work on connecting AI tools to development tasks, including a cross-review workflow with human approval.\n\n\n## Interest\n\n\nI design workflows where AI agents can use tools safely while operating with human approval loops."
+      "title": "Development Automation with Review and Approval",
+      "desc": "I turn recurring setup and AI code-review tasks into inspectable workflows. I developed a video-streaming server installer and a tool connecting external AI reviews to operator approval. This portfolio also keeps content and code in Git with Cloudflare deployment.",
+      "body": "I turn recurring setup and AI code-review tasks into inspectable workflows. I developed a video-streaming server installer and a tool connecting external AI reviews to operator approval. This portfolio also keeps content and code in Git with Cloudflare deployment.\n\n## Related project\n\n[Implementation and my role](/projects/cross-review-bridge)"
+    },
+    "video-qa": {
+      "title": "Video-grounded Answers and Abstention",
+      "desc": "I study how to select relevant camera views and decide whether they support an answer. In MV-EviRAG, I separated view selection, answer-or-abstain behavior and response release, implementing model training and comparative experiments. The first-author IEEE Access manuscript submitted in August 2026 is under review.",
+      "body": "I study how to select relevant camera views and decide whether they support an answer. In MV-EviRAG, I separated view selection, answer-or-abstain behavior and response release, implementing model training and comparative experiments. The first-author IEEE Access manuscript submitted in August 2026 is under review.\n\n## Related project\n\n[Implementation and my role](/projects/mv-evirag)"
+    },
+    "sensor-operations": {
+      "title": "Sensor-aware Operations Support",
+      "desc": "I connect sensor observations, document evidence and AI explanations so an operator can review conditions and proposed adjustments. I implemented observation checks, operator approval and result verification in a SmartFarm support system, validated in simulation rather than physical farm control.",
+      "body": "I connect sensor observations, document evidence and AI explanations so an operator can review conditions and proposed adjustments. I implemented observation checks, operator approval and result verification in a SmartFarm support system, validated in simulation rather than physical farm control.\n\n## Related project\n\n[Implementation and my role](/projects/smartfarm-rag)"
     }
   },
   "projects": {
