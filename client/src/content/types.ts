@@ -1,6 +1,6 @@
 export type PublicationStatus = "draft" | "published" | "archived";
 export type TimelineEntryType = "education" | "research" | "publication" | "project" | "award" | "talk" | "work" | "milestone";
-export type ProjectCategory = "career" | "toy";
+export type ProjectCategory = "career" | "toy" | "undergraduate";
 export type ProjectFocus = "research" | "product" | "tool" | "experiment";
 export type ProjectProofLevel = "core" | "supporting" | "exploration";
 

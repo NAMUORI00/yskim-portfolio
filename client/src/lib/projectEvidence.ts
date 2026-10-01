@@ -15,11 +15,11 @@ export interface ProjectYearBucket {
   count: number;
 }
 
-export const PROJECT_FILTERS: ProjectFilter[] = ["all", "career", "toy", "research", "product", "tool", "experiment"];
+export const PROJECT_FILTERS: ProjectFilter[] = ["all", "career", "undergraduate", "toy", "research", "product", "tool", "experiment"];
 
 export function filterProjects(projects: ProjectEntry[], filter: ProjectFilter): ProjectEntry[] {
   if (filter === "all") return projects;
-  if (filter === "career" || filter === "toy") return projects.filter((project) => project.category === filter);
+  if (filter === "career" || filter === "toy" || filter === "undergraduate") return projects.filter((project) => project.category === filter);
   return projects.filter((project) => project.focus === filter);
 }
 
@@ -54,7 +54,7 @@ export function filterProjectsBySelection(projects: ProjectEntry[], filters: Pro
 
 function projectFilterAxis(filter: ProjectFilter): ProjectFilterAxis | null {
   if (filter === "all") return null;
-  if (filter === "career" || filter === "toy") return "category";
+  if (filter === "career" || filter === "toy" || filter === "undergraduate") return "category";
   return "focus";
 }
 
@@ -77,6 +77,7 @@ export function projectFilterLabel(filter: ProjectFilter, locale: Locale): strin
     all: { ko: "전체 표시", en: "Show all" },
     career: { ko: "연구·개발", en: "Research & Development" },
     toy: { ko: "개인 개발", en: "Personal Projects" },
+    undergraduate: { ko: "학부·동아리", en: "Undergraduate" },
     research: { ko: "연구/실험", en: "Research" },
     product: { ko: "제품/서비스", en: "Product" },
     tool: { ko: "도구", en: "Tool" },
@@ -89,6 +90,7 @@ export function projectCategoryLabel(category: ProjectCategory, locale: Locale):
   const labels: Record<ProjectCategory, Record<Locale, string>> = {
     career: { ko: "연구·개발", en: "Research & Development" },
     toy: { ko: "개인 개발", en: "Personal Projects" },
+    undergraduate: { ko: "학부·동아리", en: "Undergraduate" },
   };
   return labels[category][locale];
 }

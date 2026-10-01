@@ -53,9 +53,17 @@ describe("project evidence helpers", () => {
     expect(filterProjects(projects, "experiment").map((project) => project.slug)).toEqual(["experiment"]);
   });
 
-  it("exposes only seven compact project filter chips including show all", () => {
-    expect(PROJECT_FILTERS).toEqual(["all", "career", "toy", "research", "product", "tool", "experiment"]);
-    expect(PROJECT_FILTERS).toHaveLength(7);
+  it("filters undergraduate work independently from research and personal projects", () => {
+    const academic = { ...baseProject, slug: "glove", category: "undergraduate" as const };
+    const selection = toggleProjectFilterChip(createProjectFilterSelection(), "undergraduate");
+    expect(filterProjectsBySelection([baseProject, academic], selection)).toEqual([academic]);
+    expect(filterProjects([baseProject, academic], "undergraduate")).toEqual([academic]);
+    expect(isProjectFilterSelected(selection, "undergraduate")).toBe(true);
+  });
+
+  it("includes the undergraduate filter alongside existing filters", () => {
+    expect(PROJECT_FILTERS).toEqual(["all", "career", "undergraduate", "toy", "research", "product", "tool", "experiment"]);
+    expect(PROJECT_FILTERS).toHaveLength(8);
     expect(projectFilterLabel("all", "ko")).toBe("전체 표시");
     expect(projectFilterLabel("all", "en")).toBe("Show all");
   });

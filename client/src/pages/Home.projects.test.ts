@@ -81,12 +81,12 @@ describe("Home projects section", () => {
     const block = projectsBlock();
 
     expect(source).toContain("const PROJECT_VISIBLE_COUNT = 7");
-    expect(source).toContain("const projectHasOverflow = hasProjectOverflow(visibleProjects, PROJECT_VISIBLE_COUNT)");
+    expect(source).toContain("const projectHasOverflow = !showAllProjects && hasProjectOverflow(visibleProjects, PROJECT_VISIBLE_COUNT)");
     expect(block).not.toContain('className="project-bucket-layout"');
     expect(block).not.toContain('className="project-year-rail"');
     expect(block).toContain('className={projectHasOverflow ? "project-scroll-panel has-overflow" : "project-scroll-panel"}');
     expect(block).toContain('className="project-scroll-fade"');
-    expect(block).toContain("locale === \"en\" ? \"Scroll for more projects\" : \"더 많은 프로젝트는 스크롤\"");
+    expect(block).toContain("setShowAllProjects(!showAllProjects)");
   });
 
   it("uses sans for project reading controls and emphasized metrics while preserving mono for compact tokens", () => {
