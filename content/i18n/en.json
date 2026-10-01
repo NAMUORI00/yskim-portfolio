@@ -57,22 +57,22 @@
   },
   "education": [
     {
-      "degree": "KCI journal publication · First author",
-      "school": "Journal of Korean Institute of Information Technology",
+      "degree": "스마트팜 RAG를 위한 질의 적응형 검색 채널 제어",
+      "school": "Journal of KIIT · Published · First author",
       "period": "2026",
-      "note": "스마트팜 RAG를 위한 질의 적응형 검색 채널 제어 (Query-adaptive retrieval channel control for SmartFarm RAG)."
+      "note": "Research on query-adaptive retrieval channel control for SmartFarm RAG, including implementation and comparison with existing retrieval methods on public data."
     },
     {
-      "degree": "Domestic conference paper · First author",
-      "school": "KIIT Summer Conference",
+      "degree": "근거 추적형 로컬 RAG 기반 온디바이스 의료 질의응답 시스템",
+      "school": "KIIT Summer Conference · Presented · First author",
       "period": "2026",
-      "note": "근거 추적형 로컬 RAG 기반 온디바이스 의료 질의응답 시스템 (On-device medical question answering with evidence-traceable local RAG)."
+      "note": "Research on on-device medical question answering with local retrieval-augmented generation and traceable document evidence."
     },
     {
-      "degree": "IEEE Access under review · First author",
-      "school": "IEEE Access",
+      "degree": "Role-Separated Selective Response for Question Answering in Multi-View Video Surveillance",
+      "school": "IEEE Access · Under review · First author",
       "period": "2026.08",
-      "note": "MV-EviRAG manuscript submitted in August 2026; under review, not yet published."
+      "note": "Studied input-view selection, answer/abstention, and final response release as separate decisions in multi-view surveillance question answering. Trained on evidence-bearing and evidence-deficient inputs and evaluated answer coverage alongside errors."
     },
     {
       "degree": "Graduate Student Researcher",
@@ -179,7 +179,7 @@
   },
   "projects": {
     "smartfarm-rag": {
-      "name": "Evidence-based Document QA · SmartFarm RAG",
+      "name": "Query-adaptive Retrieval and SmartFarm Operations Support",
       "period": "Graduate research",
       "desc": "Developed question-adaptive document retrieval for AI question answering, with a related KCI journal publication.",
       "metric": "One related KCI journal publication",
@@ -191,20 +191,20 @@
       "body": "Developed question-adaptive document retrieval for AI question answering, with a related KCI journal publication.\n\n\n## My role\n\n\nDesigned the research method, implemented the AI functionality, compared it with existing approaches, and wrote the first-author paper.\n\n\n## What I built\n\n\nCombined keyword, semantic, and relationship-based retrieval, selecting a suitable combination for each question. Connecting retrieved documents to AI-generated answers is known as retrieval-augmented generation (RAG).\n\n\nUsed prior comparisons of retrieval combinations to replace an additional AI call for choosing retrieval weights.\n\n\n## Results and evaluation scope\n\n\nEvidence: One related KCI journal publication\n\n\nCompared retrieval methods on public data.\n\n\nA separate SmartFarm operations system connects observations, document evidence, AI explanations, operator approval, and execution-result checks. This operational flow was validated in simulation.\n\n\n## Technologies\n\n\nPython · RAG · FastAPI. The research source repository is private."
     },
     "mv-evirag": {
-      "name": "Evidence-based Video QA · MV-EviRAG",
+      "name": "Selective Response for Multi-View Video Question Answering",
       "period": "Graduate research",
-      "desc": "Studied AI that checks multiple video views, answers when evidence is sufficient, and abstains when it is not.",
-      "metric": "Under review at IEEE Access · submitted August 2026",
+      "desc": "Question answering across multiple camera views involves choosing an input, deciding whether to answer or abstain, and deciding whether to release the generated response. This research separates these decisions and trains answer/abstention behavior using the information available in the input.",
+      "metric": "Under review at IEEE Access · submitted August 2026 · First author",
       "tags": [
         "Python",
         "PyTorch",
         "LoRA",
         "RAG"
       ],
-      "body": "Studied AI that checks multiple video views, answers when evidence is sufficient, and abstains when it is not.\n\n\n## My role\n\n\nLed research design, model training and implementation, comparative experiments, and first-author writing.\n\n\n## What I built and evaluated\n\n\nTrained and evaluated a method for deciding whether the available video evidence supports an answer. Analyzed both the proportion of questions answered and answer errors.\n\n\nManaged experimental procedures, model responses, and analysis, distinguishing exploratory experiments from separate evaluation results.\n\n\n## Publication status\n\n\nEvidence: Under review at IEEE Access · submitted August 2026\n\n\nThe first-author manuscript is currently under review at the international journal IEEE Access.\n\n\n## Technologies\n\n\nPython · PyTorch · LoRA (efficient training of a subset of model parameters). The research source repository is private."
+      "body": "Question answering across multiple camera views involves choosing an input, deciding whether to answer or abstain, and deciding whether to release the generated response. This research separates these decisions and trains answer/abstention behavior using the information available in the input.\n\n\n## My role\n\n\nLed research design, model training and implementation, comparative experiments, and first-author writing.\n\n\n## View selection and response decisions\n\n\nA relevant person may appear in a video while the region needed to judge an action is occluded. Input selection and answerability were therefore treated as different decisions, using the information available at each stage.\n\n\nThe answerer was trained on both evidence-bearing and evidence-deficient inputs. Response confidence was then used to decide whether to release a generated answer.\n\n\n## Evaluation and publication\n\n\nEvaluated answer coverage alongside incorrect responses, managed experimental procedures and model outputs, and reported the comparisons in the manuscript.\n\n\nEvidence: Under review at IEEE Access · submitted August 2026 · First author\n\n\nPaper title: Role-Separated Selective Response for Question Answering in Multi-View Video Surveillance\n\n\n## Technologies\n\n\nImplemented training and evaluation with Python, PyTorch, and LoRA. The evaluation used supplied regions of interest and rule-defined evidence availability."
     },
     "music-splitter-web": {
-      "name": "Audio Upload and Stem Separation · MusicSplitterWeb",
+      "name": "AI Audio Separation Web Service",
       "period": "Undergraduate project",
       "desc": "Built a web service that accepts an audio upload, separates it into five stems, and lets users download the results.",
       "metric": "Implemented audio upload → AI separation → result download",
@@ -292,7 +292,7 @@
       "body": "Built a Korean word clock in a Jeju National University LINC entrepreneurship club.\n\n\n## My role\n\n\nContributed to building an Arduino-based Korean word clock.\n\n\n## What I built\n\n\nWorked on clock construction using Arduino as a club project.\n\n\n## Results\n\n\nEvidence: Korean word clock club project\n\n\n## Technologies\n\n\nArduino, 창업동아리"
     },
     "aerospace-rag": {
-      "name": "Aerospace Document Search & QA · aerospace-rag",
+      "name": "Aerospace Document Retrieval and Question Answering",
       "desc": "A system that retrieves information from aerospace documents for AI answers, combining keyword, semantic, and relationship-based search.",
       "metric": "Dense, Sparse, and Graph retrieval with Qdrant, BM25, and Ollama",
       "tags": [
@@ -331,7 +331,7 @@
       "body": "A team project presenting affordable local businesses using public data and map services.\n\n\n## My role\n\n\nParticipated across planning, ideation, and development of the service.\n\n\n## What we built\n\n\nUsed regional business data from a public data portal to present business information on a map-based web interface. The project documentation also includes mobile and chatbot components.\n\n\n## Results\n\n\nEvidence: Public-data and map-based business information service\n\n\nThe linked repository is a retained fork of the team project.\n\n\n## Technologies\n\n\nJavaScript · public data · map APIs · Python"
     },
     "cross-review-bridge": {
-      "name": "AI Code Review Integration · cross-review-bridge",
+      "name": "Code Review with External AI Tools",
       "desc": "A tool connecting external AI code reviews to development workflows, with a human approval step.",
       "metric": "Implemented an external AI review workflow with human approval",
       "tags": [
@@ -342,7 +342,7 @@
       "body": "A tool connecting external AI code reviews to development workflows, with a human approval step.\n\n\n## Overview\n\n\nAn automation system that connects external AI reviewers and Codex through a human-approved review loop.\n\n\n## Implementation\n\n- Metric: Implemented an external AI review workflow with human approval"
     },
     "music-source-separation": {
-      "name": "Audio Separation Model Training · Music-Source-Separation",
+      "name": "Audio Separation Model Training and Experiment Management",
       "desc": "Experimented with training existing models for separating vocals and instruments, managing experiment settings in a GPU training environment.",
       "metric": "Managed audio separation training experiments with Hydra configs",
       "tags": [
@@ -354,7 +354,7 @@
       "body": "Experimented with training existing models for separating vocals and instruments, managing experiment settings in a GPU training environment.\n\n\n## Overview\n\n\nA project for training music source separation models and managing experiment configuration.\n\n\n## Implementation\n\n- Metric: Managed audio separation training experiments with Hydra configs"
     },
     "mediamtx-installer": {
-      "name": "Streaming Server Setup Automation · MediaMTX",
+      "name": "Video Streaming Server Setup Automation",
       "desc": "Scripted the installation of a video streaming server on Ubuntu so repeated setup steps can be run as commands.",
       "metric": "Scripted MediaMTX installation on Ubuntu 24.04",
       "tags": [
@@ -365,7 +365,7 @@
       "body": "Scripted the installation of a video streaming server on Ubuntu so repeated setup steps can be run as commands.\n\n\n## Overview\n\n\nAn operations automation script that simplifies the MediaMTX installation process.\n\n\n## Implementation\n\n- Metric: Scripted MediaMTX installation on Ubuntu 24.04"
     },
     "introduce-cv-page": {
-      "name": "Blog Editor with GitHub Review · namu-log",
+      "name": "Blog Editing and Change Review",
       "desc": "A blog and CV system that connects posts written in an editor to GitHub pull requests for reviewing changes.",
       "metric": "Connected Markdown editing to GitHub pull request creation",
       "tags": [
@@ -377,7 +377,7 @@
       "body": "A blog and CV system that connects posts written in an editor to GitHub pull requests for reviewing changes.\n\n\n## Overview\n\n\nA blog and CV system that experiments with a GitHub PR-based publishing workflow.\n\n\n## Implementation\n\n- Metric: Connected Markdown editing to GitHub pull request creation"
     },
     "spring-community-board": {
-      "name": "Community Board Backend · SpringCommunityBoard",
+      "name": "Member, Post, and Comment Management Service",
       "desc": "A web community board with member management and create, read, update, and delete operations for posts and comments, using Spring Boot and JPA.",
       "metric": "Implemented member, post, and comment CRUD with Spring Boot and JPA",
       "tags": [
