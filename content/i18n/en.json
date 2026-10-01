@@ -6,7 +6,7 @@
       "education": "Research & Experience",
       "research": "Research",
       "projects": "Projects & Activities",
-      "skills": "Skills",
+      "skills": "Capabilities & Skills",
       "interests": "Open-source Interests"
     },
     "labels": {
@@ -389,50 +389,92 @@
     }
   },
   "skills": {
-    "핵심 언어": {
-      "label": "Core Languages",
+    "문서·영상·음원을 처리하는 AI 개발": {
+      "label": "AI for Documents, Video & Audio",
       "items": [
         "Python",
-        "C++",
-        "TypeScript",
-        "Java",
-        "Shell",
-        "C#"
-      ]
-    },
-    "AI / ML / LLM": {
-      "label": "AI / ML / LLM",
-      "items": [
         "PyTorch",
+        "RAG",
+        "LoRA",
+        "Qdrant",
+        "Spleeter",
         "CUDA",
         "HuggingFace",
         "LangChain",
         "OpenAI API",
-        "llama.cpp",
-        "Qdrant",
-        "RAG"
+        "llama.cpp"
       ]
     },
-    "인프라 & DevOps": {
-      "label": "Infra & DevOps",
+    "웹·서버·모바일 기능 구현": {
+      "label": "Web, Backend & Mobile Development",
+      "items": [
+        "Java",
+        "Spring Boot",
+        "Spring Security",
+        "FastAPI",
+        "Vue",
+        "React",
+        "Next.js",
+        "Flutter",
+        "Dart",
+        "PHP",
+        "MySQL",
+        "PostgreSQL",
+        "Supabase"
+      ]
+    },
+    "데이터 정리·분석·시각화": {
+      "label": "Data Preparation & Visualization",
+      "items": [
+        "Python",
+        "Data preprocessing",
+        "Visualization",
+        "Public data"
+      ]
+    },
+    "센서·장치 제어와 웹 모니터링": {
+      "label": "Sensors, Device Firmware & Web Monitoring",
+      "items": [
+        "Arduino",
+        "C++",
+        "Circuitry",
+        "Firmware",
+        "PHP",
+        "MySQL"
+      ]
+    },
+    "개발 환경 구성과 반복 작업 자동화": {
+      "label": "Development Environments & Automation",
       "items": [
         "Docker",
         "GitHub Actions",
-        "AWS",
         "Linux",
         "Cloudflare",
-        "DevContainer"
+        "Shell",
+        "PowerShell",
+        "DevContainer",
+        "AWS"
       ]
     },
-    "웹 & 백엔드": {
-      "label": "Web & Backend",
+    "아이디어 구체화와 팀 개발 진행": {
+      "label": "Project Planning & Team Coordination",
       "items": [
-        "Next.js",
-        "React",
-        "FastAPI",
-        "Spring Boot",
-        "PostgreSQL",
-        "Supabase"
+        "Planning",
+        "Ideation",
+        "Core development",
+        "Team coordination"
+      ]
+    },
+    "개발에 사용하는 언어": {
+      "label": "Programming Languages",
+      "items": [
+        "Python",
+        "Java",
+        "JavaScript",
+        "TypeScript",
+        "C++",
+        "C#",
+        "Shell"
       ]
     }
   },
