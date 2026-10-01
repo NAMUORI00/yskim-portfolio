@@ -33,12 +33,15 @@
   "profile": {
     "name": "Kim Yuseok",
     "status": "Expected March 2027 · Open to opportunities",
-    "headline": "AI & Backend Developer · M.S. Student",
-    "summaryLead": "Building AI features into working web services",
+    "headline": "AI Research & Software Development · M.S. Student",
+    "summaryLead": "Connecting AI research, software, data, and devices",
     "summary": [
-      "I develop AI and backend systems that find evidence in documents and videos to answer questions. I implement AI features with Python and PyTorch and connect them to web services with FastAPI and Spring Boot.",
-      "My graduate research covers choosing retrieval methods for each question and deciding whether video evidence is sufficient to answer. I led research design, implementation, comparative experiments, and manuscript writing. I am the first author of one published KCI journal paper and one domestic conference paper; a separate IEEE Access manuscript is under review.",
-      "Across three paid internships at Kakao and Tilonsoft, I developed AI features and web/backend functionality. In undergraduate team projects, I led ideation, core development, and coordination. I am an M.S. student in Computer Engineering at Jeju National University, expecting to graduate in March 2027."
+      "I am Yuseok Kim, a developer who turns ideas into working systems by defining the work and connecting the technologies it requires. My experience spans AI research and model implementation, data processing, servers and user interfaces, sensor integration, and development environments. I design the functions a problem requires and examine the results through experiments and working user flows.",
+      "My AI work covers document retrieval and question answering, multi-view video question answering, and audio source separation. With Python and PyTorch, I implement training and evaluation code and study how to choose retrieval methods or decide whether video evidence supports an answer. I have carried out research design, implementation, comparative experiments, and manuscript writing. I am the first author of one published KCI journal paper and one domestic conference paper; a separate IEEE Access manuscript is under review.",
+      "In software development, I connect AI processing, server APIs, databases, and user interfaces. I have implemented Spring Boot and FastAPI servers, account and post management, and audio upload, separation, and download workflows. My projects also include Vue interfaces and a Flutter application connected to a Python server. Three paid internships at Kakao and Tilonsoft gave me experience in AI features and web/backend development.",
+      "My work also involves data and devices. I prepared and visualized tourism and spending data in Python for a team mobility-placement proposal and participated in planning and developing a local-business information service using public data and maps. In Arduino projects, I implemented circuits and firmware for a musical glove and a smart-home workflow that stores sensor readings in a database and displays them on the web.",
+      "I also prepare environments and automate recurring work to support development and experiments. I have configured GPU training and local AI environments and managed experiment settings. I developed video-streaming server installation scripts and a tool that connects external AI code review to human approval. This portfolio connects Notion content to GitHub and Cloudflare deployment.",
+      "As a team leader in undergraduate projects, I handled ideation, core development, and coordination. My contributions range from implementing individual functions to integrating components and preparing team deliverables. The projects below describe their purpose, technologies, my role, and results. I am an M.S. student in Computer Engineering at Jeju National University, expecting to graduate in March 2027."
     ],
     "contacts": {
       "email": {
