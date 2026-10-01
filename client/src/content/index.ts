@@ -32,7 +32,7 @@ function optionalString(value: unknown): string | undefined {
 }
 
 function projectCategory(value: unknown): ProjectCategory | undefined {
-  return value === "career" || value === "toy" ? value : undefined;
+  return value === "career" || value === "toy" || value === "undergraduate" ? value : undefined;
 }
 
 function projectFocus(value: unknown): ProjectFocus | undefined {
