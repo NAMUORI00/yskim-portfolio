@@ -1,10 +1,10 @@
 ---
 slug: music-splitter-web
-name: MusicSplitterWeb · AI 음원 분리 웹 서비스
+name: 음원을 업로드하면 악기별로 분리하는 웹 · MusicSplitterWeb
 period: 학부 프로젝트
 status: published
-desc: Spring Boot와 FastAPI를 연결해 음원 업로드부터 AI 분리 결과 다운로드까지 구현한 학부 프로젝트입니다.
-metric: 업로드 → 5개 음원 분리 → 결과 다운로드 흐름 구현
+desc: 사용자가 음원을 올리면 보컬과 악기 등 5개 음원으로 분리하고 결과를 내려받을 수 있는 웹 서비스를 구현했습니다.
+metric: 음원 업로드 → AI 분리 → 결과 다운로드 구현
 category: career
 focus: product
 proofLevel: core
@@ -21,22 +21,34 @@ private: false
 relatedNotes: []
 ---
 
-Spring Boot와 FastAPI를 연결해 음원 업로드부터 AI 분리 결과 다운로드까지 구현한 학부 프로젝트입니다.
+사용자가 음원을 올리면 보컬과 악기 등 5개 음원으로 분리하고 결과를 내려받을 수 있는 웹 서비스를 구현했습니다.
 
 
-## 본인 역할과 구현
+## 맡은 역할
 
 
-웹·API 연동과 음원 분리 기능 개발을 담당했습니다.
+웹 화면과 서버 API 연결, AI 음원 분리 기능 연동, 회원가입·로그인 기능을 개발했습니다.
 
 
-Spleeter의 5개 음원 분리 모델을 활용하고 Spring Security 기반 회원가입·로그인을 구현했습니다. 웹 요청과 Python 기반 AI 처리 서버를 연결했습니다.
+## 구현한 기능
 
 
-성과: 업로드 → 5개 음원 분리 → 결과 다운로드 흐름 구현
+Spring Boot 웹 서버와 Python 기반 FastAPI 서버를 연결해 파일 업로드부터 AI 처리, 결과 다운로드까지 하나의 흐름으로 구성했습니다.
 
 
-## 검증 범위
+기존 Spleeter 모델로 음원을 5개로 분리하고, Spring Security로 회원가입·로그인을 구현했습니다.
 
 
-로컬 실행 환경의 웹 서비스입니다. 기존 Spleeter 모델을 활용했으며 자체 분리 모델 학습이나 상용 서비스 운영 실적으로 제시하지 않습니다.
+## 결과와 실행 환경
+
+
+성과: 음원 업로드 → AI 분리 → 결과 다운로드 구현
+
+
+학부 프로젝트로 로컬 환경에서 실행하는 웹 서비스를 개발했습니다. 기존 AI 모델을 실제 웹 기능으로 연결한 경험입니다.
+
+
+## 사용 기술
+
+
+Java · Spring Boot · Spring Security · Python · FastAPI · Spleeter

@@ -2,12 +2,12 @@
   "locale": "en",
   "ui": {
     "nav": {
-      "about": "About",
+      "about": "What I Bring",
       "education": "Research & Experience",
       "research": "Research",
       "projects": "Selected Projects",
       "skills": "Skills",
-      "interests": "Starred"
+      "interests": "Open-source Interests"
     },
     "labels": {
       "contact": "CONTACT",
@@ -33,12 +33,12 @@
   "profile": {
     "name": "Kim Yuseok",
     "status": "Expected March 2027 · Open to opportunities",
-    "headline": "AI/LLM Developer · M.S. Student",
-    "summaryLead": "RAG design, experimental evaluation, and backend implementation",
+    "headline": "AI & Backend Developer · M.S. Student",
+    "summaryLead": "Building AI features into working web services",
     "summary": [
-      "I build AI features with Python and PyTorch and connect them to services using FastAPI and Spring Boot. My research covers query-adaptive RAG and evidence-grounded video question answering, including method design, implementation, comparative evaluation, and first-author manuscripts.",
-      "I am an M.S. student in Computer Engineering at Jeju National University, with expected graduation in March 2027. I am the first author of one published KCI journal paper and one domestic conference paper. A separate first-author manuscript submitted to IEEE Access in August 2026 is under review.",
-      "Paid internships at Kakao and Tilonsoft gave me experience in AI and web/backend development. In undergraduate team projects, I led ideation, core development, and project coordination. I focus on explaining what a system does through comparative experiments and execution results."
+      "I develop AI and backend systems that find evidence in documents and videos to answer questions. I implement AI features with Python and PyTorch and connect them to web services with FastAPI and Spring Boot.",
+      "My graduate research covers choosing retrieval methods for each question and deciding whether video evidence is sufficient to answer. I led research design, implementation, comparative experiments, and manuscript writing. I am the first author of one published KCI journal paper and one domestic conference paper; a separate IEEE Access manuscript is under review.",
+      "Across three paid internships at Kakao and Tilonsoft, I developed AI features and web/backend functionality. In undergraduate team projects, I led ideation, core development, and coordination. I am an M.S. student in Computer Engineering at Jeju National University, expecting to graduate in March 2027."
     ],
     "contacts": {
       "email": {
@@ -179,21 +179,21 @@
   },
   "projects": {
     "smartfarm-rag": {
-      "name": "SmartFarm RAG and Operations System",
+      "name": "Evidence-based Document QA · SmartFarm RAG",
       "period": "Graduate research",
-      "desc": "Designed and evaluated query-adaptive retrieval for RAG.",
+      "desc": "Developed question-adaptive document retrieval for AI question answering, with a related KCI journal publication.",
       "metric": "One related KCI journal publication",
       "tags": [
         "Python",
         "RAG",
         "FastAPI"
       ],
-      "body": "Designed and evaluated query-adaptive retrieval for RAG.\n\n\n## Role and implementation\n\n\nLed method design, implementation, comparative evaluation, and first-author writing.\n\n\nCombined lexical, semantic, and relational retrieval signals. Used prior comparisons of retrieval combinations to replace an additional LLM call for choosing retrieval weights, and compared retrieval methods on public data.\n\n\nA separate operations system connects observations, document evidence, AI explanations, operator approval, and execution-result checks.\n\n\nEvidence: One related KCI journal publication\n\n\n## Validation scope\n\n\nThe approval and execution flow was evaluated in simulation. This is not a claim of autonomous operation on a real farm. The source repository is private."
+      "body": "Developed question-adaptive document retrieval for AI question answering, with a related KCI journal publication.\n\n\n## My role\n\n\nDesigned the research method, implemented the AI functionality, compared it with existing approaches, and wrote the first-author paper.\n\n\n## What I built\n\n\nCombined keyword, semantic, and relationship-based retrieval, selecting a suitable combination for each question. Connecting retrieved documents to AI-generated answers is known as retrieval-augmented generation (RAG).\n\n\nUsed prior comparisons of retrieval combinations to replace an additional AI call for choosing retrieval weights.\n\n\n## Results and evaluation scope\n\n\nEvidence: One related KCI journal publication\n\n\nCompared retrieval methods on public data.\n\n\nA separate SmartFarm operations system connects observations, document evidence, AI explanations, operator approval, and execution-result checks. This operational flow was validated in simulation.\n\n\n## Technologies\n\n\nPython · RAG · FastAPI. The research source repository is private."
     },
     "mv-evirag": {
-      "name": "MV-EviRAG · Evidence-grounded Video QA",
+      "name": "Evidence-based Video QA · MV-EviRAG",
       "period": "Graduate research",
-      "desc": "Studied when to answer or abstain based on evidence from multiple video views.",
+      "desc": "Studied AI that checks multiple video views, answers when evidence is sufficient, and abstains when it is not.",
       "metric": "Under review at IEEE Access · submitted August 2026",
       "tags": [
         "Python",
@@ -201,13 +201,13 @@
         "LoRA",
         "RAG"
       ],
-      "body": "Studied when to answer or abstain based on evidence from multiple video views.\n\n\n## Role and implementation\n\n\nLed research design, implementation, experiments, and first-author writing.\n\n\nTrained and compared answer/abstention policies, evaluating answer coverage alongside errors. Managed experimental procedures, model responses, and analysis while distinguishing exploratory results from separate evaluation results.\n\n\nEvidence: Under review at IEEE Access · submitted August 2026\n\n\n## Research status\n\n\nThe manuscript is under review and is not a published journal article. The source repository is private."
+      "body": "Studied AI that checks multiple video views, answers when evidence is sufficient, and abstains when it is not.\n\n\n## My role\n\n\nLed research design, model training and implementation, comparative experiments, and first-author writing.\n\n\n## What I built and evaluated\n\n\nTrained and evaluated a method for deciding whether the available video evidence supports an answer. Analyzed both the proportion of questions answered and answer errors.\n\n\nManaged experimental procedures, model responses, and analysis, distinguishing exploratory experiments from separate evaluation results.\n\n\n## Publication status\n\n\nEvidence: Under review at IEEE Access · submitted August 2026\n\n\nThe first-author manuscript is currently under review at the international journal IEEE Access.\n\n\n## Technologies\n\n\nPython · PyTorch · LoRA (efficient training of a subset of model parameters). The research source repository is private."
     },
     "music-splitter-web": {
-      "name": "MusicSplitterWeb · AI Audio Separation",
+      "name": "Audio Upload and Stem Separation · MusicSplitterWeb",
       "period": "Undergraduate project",
-      "desc": "An undergraduate project connecting Spring Boot and FastAPI for audio upload, separation, and download.",
-      "metric": "Implemented upload → five-stem separation → result download",
+      "desc": "Built a web service that accepts an audio upload, separates it into five stems, and lets users download the results.",
+      "metric": "Implemented audio upload → AI separation → result download",
       "tags": [
         "Java",
         "Spring Boot",
@@ -216,11 +216,11 @@
         "FastAPI",
         "Spleeter"
       ],
-      "body": "An undergraduate project connecting Spring Boot and FastAPI for audio upload, separation, and download.\n\n\n## Role and implementation\n\n\nImplemented web/API integration and audio separation functionality.\n\n\nUsed Spleeter's five-stem model and implemented signup and login with Spring Security, connecting web requests to a Python AI-processing server.\n\n\nEvidence: Implemented upload → five-stem separation → result download\n\n\n## Validation scope\n\n\nThis is a locally run web service using the existing Spleeter model. It does not claim a newly trained separation model or commercial operation."
+      "body": "Built a web service that accepts an audio upload, separates it into five stems, and lets users download the results.\n\n\n## My role\n\n\nDeveloped web-to-server API integration, AI audio separation integration, and signup/login functionality.\n\n\n## What I built\n\n\nConnected a Spring Boot web server to a Python FastAPI server, covering file upload, AI processing, and result download.\n\n\nUsed the existing Spleeter five-stem model and implemented signup/login with Spring Security.\n\n\n## Results and execution environment\n\n\nEvidence: Implemented audio upload → AI separation → result download\n\n\nBuilt a locally run web service as an undergraduate project, integrating an existing AI model into a working web feature.\n\n\n## Technologies\n\n\nJava · Spring Boot · Spring Security · Python · FastAPI · Spleeter"
     },
     "aerospace-rag": {
-      "name": "aerospace-rag",
-      "desc": "A RAG system for aerospace work documents. It combines Qdrant + BM25 + Graph three-channel retrieval, Weighted RRF fusion, and Ollama-based answer generation, optimized for a Colab T4 environment.",
+      "name": "Aerospace Document Search & QA · aerospace-rag",
+      "desc": "A system that retrieves information from aerospace documents for AI answers, combining keyword, semantic, and relationship-based search.",
       "metric": "Dense, Sparse, and Graph retrieval with Qdrant, BM25, and Ollama",
       "tags": [
         "Python",
@@ -229,22 +229,22 @@
         "RAG",
         "LLM"
       ],
-      "body": "A RAG system for aerospace work documents. It combines Qdrant + BM25 + Graph three-channel retrieval, Weighted RRF fusion, and Ollama-based answer generation, optimized for a Colab T4 environment.\n\n\n## Overview\n\n\nA RAG system that combines Dense, Sparse, and Graph retrieval channels for aerospace work documents.\n\n\n## Evidence\n\n- Metric: Dense, Sparse, and Graph retrieval with Qdrant, BM25, and Ollama"
+      "body": "A system that retrieves information from aerospace documents for AI answers, combining keyword, semantic, and relationship-based search.\n\n\n## Overview\n\n\nA RAG system that combines Dense, Sparse, and Graph retrieval channels for aerospace work documents.\n\n\n## Implementation\n\n- Metric: Dense, Sparse, and Graph retrieval with Qdrant, BM25, and Ollama"
     },
     "cross-review-bridge": {
-      "name": "cross-review-bridge",
-      "desc": "A human-approved cross-review workflow with external AI reviewers, automated as a Codex skill.",
+      "name": "AI Code Review Integration · cross-review-bridge",
+      "desc": "A tool connecting external AI code reviews to development workflows, with a human approval step.",
       "metric": "Implemented an external AI review workflow with human approval",
       "tags": [
         "PowerShell",
         "AI",
         "Automation"
       ],
-      "body": "A human-approved cross-review workflow with external AI reviewers, automated as a Codex skill.\n\n\n## Overview\n\n\nAn automation system that connects external AI reviewers and Codex through a human-approved review loop.\n\n\n## Evidence\n\n- Metric: Implemented an external AI review workflow with human approval"
+      "body": "A tool connecting external AI code reviews to development workflows, with a human approval step.\n\n\n## Overview\n\n\nAn automation system that connects external AI reviewers and Codex through a human-approved review loop.\n\n\n## Implementation\n\n- Metric: Implemented an external AI review workflow with human approval"
     },
     "music-source-separation": {
-      "name": "Music-Source-Separation",
-      "desc": "Training music source separation models based on MDX23C and Demucs4HT architectures, with Hydra configs for experiment management and CUDA-based GPU training.",
+      "name": "Audio Separation Model Training · Music-Source-Separation",
+      "desc": "Experimented with training existing models for separating vocals and instruments, managing experiment settings in a GPU training environment.",
       "metric": "Managed audio separation training experiments with Hydra configs",
       "tags": [
         "Python",
@@ -252,22 +252,22 @@
         "CUDA",
         "Hydra"
       ],
-      "body": "Training music source separation models based on MDX23C and Demucs4HT architectures, with Hydra configs for experiment management and CUDA-based GPU training.\n\n\n## Overview\n\n\nA project for training music source separation models and managing experiment configuration.\n\n\n## Evidence\n\n- Metric: Managed audio separation training experiments with Hydra configs"
+      "body": "Experimented with training existing models for separating vocals and instruments, managing experiment settings in a GPU training environment.\n\n\n## Overview\n\n\nA project for training music source separation models and managing experiment configuration.\n\n\n## Implementation\n\n- Metric: Managed audio separation training experiments with Hydra configs"
     },
     "mediamtx-installer": {
-      "name": "mediamtx-installer",
-      "desc": "An automation script that installs a MediaMTX streaming server on Ubuntu 24.04 with a single command.",
+      "name": "Streaming Server Setup Automation · MediaMTX",
+      "desc": "Scripted the installation of a video streaming server on Ubuntu so repeated setup steps can be run as commands.",
       "metric": "Scripted MediaMTX installation on Ubuntu 24.04",
       "tags": [
         "Shell",
         "Ubuntu",
         "Streaming"
       ],
-      "body": "An automation script that installs a MediaMTX streaming server on Ubuntu 24.04 with a single command.\n\n\n## Overview\n\n\nAn operations automation script that simplifies the MediaMTX installation process.\n\n\n## Evidence\n\n- Metric: Scripted MediaMTX installation on Ubuntu 24.04"
+      "body": "Scripted the installation of a video streaming server on Ubuntu so repeated setup steps can be run as commands.\n\n\n## Overview\n\n\nAn operations automation script that simplifies the MediaMTX installation process.\n\n\n## Implementation\n\n- Metric: Scripted MediaMTX installation on Ubuntu 24.04"
     },
     "introduce-cv-page": {
-      "name": "IntroduceCvPage (namu-log)",
-      "desc": "A blog + CV system where writing in a WYSIWYG Markdown editor automatically creates GitHub PRs. Built with Next.js 16 and Tiptap.",
+      "name": "Blog Editor with GitHub Review · namu-log",
+      "desc": "A blog and CV system that connects posts written in an editor to GitHub pull requests for reviewing changes.",
       "metric": "Connected Markdown editing to GitHub pull request creation",
       "tags": [
         "TypeScript",
@@ -275,18 +275,18 @@
         "React",
         "GitHub API"
       ],
-      "body": "A blog + CV system where writing in a WYSIWYG Markdown editor automatically creates GitHub PRs. Built with Next.js 16 and Tiptap.\n\n\n## Overview\n\n\nA blog and CV system that experiments with a GitHub PR-based publishing workflow.\n\n\n## Evidence\n\n- Metric: Connected Markdown editing to GitHub pull request creation"
+      "body": "A blog and CV system that connects posts written in an editor to GitHub pull requests for reviewing changes.\n\n\n## Overview\n\n\nA blog and CV system that experiments with a GitHub PR-based publishing workflow.\n\n\n## Implementation\n\n- Metric: Connected Markdown editing to GitHub pull request creation"
     },
     "spring-community-board": {
-      "name": "SpringCommunityBoard",
-      "desc": "A CRUD community board built with Spring Boot and JPA, including member management, posts, and comments.",
+      "name": "Community Board Backend · SpringCommunityBoard",
+      "desc": "A web community board with member management and create, read, update, and delete operations for posts and comments, using Spring Boot and JPA.",
       "metric": "Implemented member, post, and comment CRUD with Spring Boot and JPA",
       "tags": [
         "Java",
         "Spring Boot",
         "JPA"
       ],
-      "body": "A CRUD community board built with Spring Boot and JPA, including member management, posts, and comments.\n\n\n## Overview\n\n\nA Spring Boot-based CRUD board with member, post, and comment features.\n\n\n## Evidence\n\n- Metric: Implemented member, post, and comment CRUD with Spring Boot and JPA"
+      "body": "A web community board with member management and create, read, update, and delete operations for posts and comments, using Spring Boot and JPA.\n\n\n## Overview\n\n\nA Spring Boot-based CRUD board with member, post, and comment features.\n\n\n## Implementation\n\n- Metric: Implemented member, post, and comment CRUD with Spring Boot and JPA"
     }
   },
   "skills": {
