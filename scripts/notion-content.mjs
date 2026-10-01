@@ -56,9 +56,9 @@ const CATEGORY_DATABASE_SECTIONS = [
 const SITE_DEFAULTS = {
   navigation: [
     { id: "about", label: "소개", icon: "user" },
-    { id: "education", label: "타임라인", icon: "graduation" },
+    { id: "projects", label: "대표 프로젝트", icon: "code" },
+    { id: "education", label: "논문·연구·경력", icon: "graduation" },
     { id: "research", label: "연구 관심사", icon: "flask" },
-    { id: "projects", label: "프로젝트", icon: "code" },
     { id: "skills", label: "기술 스택", icon: "layers" },
     { id: "interests", label: "관심 저장소", icon: "star" },
   ],
@@ -75,7 +75,7 @@ const SITE_DEFAULTS = {
 // UI chrome strings (navigation labels, button text) are not stored per-row in
 // Notion; they are part of the app's English locale.
 const EN_UI = {
-  nav: { about: "About", education: "Timeline", research: "Research", projects: "Projects", skills: "Skills", interests: "Starred" },
+  nav: { about: "About", education: "Research & Experience", research: "Research", projects: "Selected Projects", skills: "Skills", interests: "Starred" },
   labels: {
     contact: "CONTACT",
     darkMode: "Dark mode",

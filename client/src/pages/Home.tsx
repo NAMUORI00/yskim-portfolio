@@ -1064,156 +1064,9 @@ export default function Home() {
             </div>
           </FadeSection>
 
-          {/* ── 학력 ── */}
-          <FadeSection>
-            <SectionTitle id="education" icon="graduation" T={T}>Timeline</SectionTitle>
-            <div className="timeline-connection-list" aria-label={locale === "en" ? "Timeline entries" : "타임라인 항목"}>
-              {visibleTimelineEntries.map((edu) => {
-                const timelineKey = `${edu.type}:${edu.degree}:${edu.period}`;
-                const relatedProjects = PROJECTS.filter((project) => edu.relatedProjects.includes(project.slug));
-                const timelineChipItems = buildTimelineChipItems({
-                  links: edu.links,
-                  relatedProjects,
-                  relatedSkills: edu.relatedSkills,
-                  previewHref,
-                });
-                return (
-                <article key={timelineKey} className="timeline-connection-entry">
-                  <div className="timeline-spine" aria-hidden="true">
-                    <span className={edu.current ? "timeline-node current" : "timeline-node"} />
-                  </div>
-                  <div className="timeline-main-copy">
-                    <div className="timeline-entry-head">
-                      <span className="timeline-kicker">
-                        {timelineTypeLabel(edu.type, locale)} · {edu.period}
-                      </span>
-                      <span className="timeline-entry-summary">
-                        <span>{edu.degree}</span>
-                        <span className="timeline-school">{edu.school}</span>
-                        {edu.current && <span className="timeline-current">{label("current", "진행 중")}</span>}
-                      </span>
-                    </div>
-                    {(edu.note || edu.bullets.length > 0) && (
-                      <div className="timeline-entry-detail">
-                        {edu.note && <p className="timeline-entry-note">{edu.note}</p>}
-                        {edu.bullets.length > 0 && (
-                          <ul className="timeline-entry-bullets">
-                            {edu.bullets.map((bullet) => (
-                              <li key={bullet}>{bullet}</li>
-                            ))}
-                          </ul>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                  {timelineChipItems.length > 0 && (
-                    <>
-                      <div className="timeline-chip-connector" aria-hidden="true" />
-                      <div className="timeline-chip-panel">
-                        {timelineChipItems.map((item) => item.href ? (
-                          <a
-                            key={item.key}
-                            className={`timeline-chip ${item.kind}`}
-                            href={item.href}
-                            target={item.external ? "_blank" : undefined}
-                            rel={item.external ? "noopener noreferrer" : undefined}
-                          >
-                            {item.label}
-                          </a>
-                        ) : (
-                          <span key={item.key} className={`timeline-chip ${item.kind}`}>
-                            {item.label}
-                          </span>
-                        ))}
-                      </div>
-                    </>
-                  )}
-                </article>
-              );
-              })}
-              {hasMoreTimelineEntries && (
-                <>
-                  <div ref={timelineLoadSentinelRef} className="timeline-load-sentinel" aria-hidden="true" />
-                  <button type="button" className="timeline-load-more" onClick={revealMoreTimelineEntries}>
-                    {locale === "en" ? "Load more timeline entries" : "타임라인 더 보기"}
-                  </button>
-                </>
-              )}
-            </div>
-          </FadeSection>
-
-          {/* ── 연구 관심사 ── */}
-          <FadeSection>
-            <SectionTitle id="research" icon="flask" T={T}>Research Interests</SectionTitle>
-            <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
-              {RESEARCH_INTERESTS.map((r) => {
-                const ragCaption = label("ragCaption", "Dense + Sparse + Graph 3채널 하이브리드 검색 아키텍처");
-                const researchPreview = r.coverImage
-                  ? buildCoverPreview({ locale, kind: "research", title: r.title, src: r.coverImage })
-                  : r.showDiagram
-                    ? buildResearchDiagramPreview({ locale, title: r.title, src: IMG.ragDiagram, caption: ragCaption })
-                    : null;
-
-                return (
-                <div key={r.title}>
-                  <div
-                    className={researchPreview ? "research-card has-cover" : "research-card"}
-                    style={{
-                      paddingLeft: "0.9rem",
-                      borderLeft: `2px solid ${T.border}`,
-                      transition: "border-color 0.15s",
-                    }}
-                    onMouseEnter={(e) => (e.currentTarget.style.borderLeftColor = T.green)}
-                    onMouseLeave={(e) => (e.currentTarget.style.borderLeftColor = T.border)}
-                  >
-                    <div className="research-copy">
-                      <div style={{
-                        fontFamily: FONT_SANS,
-                        fontSize: "0.88rem",
-                        fontWeight: 600,
-                        color: T.text,
-                        marginBottom: "4px",
-                      }}>
-                        {r.title}
-                      </div>
-                      <div style={{
-                        fontFamily: FONT_SANS,
-                        fontSize: "0.82rem",
-                        color: T.sub,
-                        lineHeight: 1.8,
-                        wordBreak: "keep-all",
-                      }}>
-                        {r.desc}
-                      </div>
-                    </div>
-                    {researchPreview && (
-                      <button
-                        type="button"
-                        className="content-cover-button research-cover-button"
-                        aria-label={researchPreview.actionLabel}
-                        onClick={() => setCoverPreview(researchPreview)}
-                      >
-                        <img
-                          src={researchPreview.src}
-                          alt={researchPreview.alt}
-                          className="content-cover-thumb research-cover-thumb"
-                          style={{
-                            borderColor: T.border,
-                            background: T.surface,
-                          }}
-                        />
-                      </button>
-                    )}
-                  </div>
-                </div>
-                );
-              })}
-            </div>
-          </FadeSection>
-
           {/* ── 프로젝트 ── */}
           <FadeSection>
-            <SectionTitle id="projects" icon="code" T={T}>Projects</SectionTitle>
+            <SectionTitle id="projects" icon="code" T={T}>{locale === "en" ? "Selected Projects" : "대표 프로젝트"}</SectionTitle>
             <div className="project-filter-rail" role="group" aria-label={locale === "en" ? "Project filters" : "프로젝트 필터"}>
               {PROJECT_FILTERS.map((filter) => (
                 <button
@@ -1435,6 +1288,153 @@ export default function Home() {
                 {locale === "en" ? "Scroll for more projects" : "더 많은 프로젝트는 스크롤"}
               </p>
             )}
+          </FadeSection>
+
+          {/* ── 학력 ── */}
+          <FadeSection>
+            <SectionTitle id="education" icon="graduation" T={T}>{locale === "en" ? "Research & Experience" : "논문·연구·경력"}</SectionTitle>
+            <div className="timeline-connection-list" aria-label={locale === "en" ? "Timeline entries" : "타임라인 항목"}>
+              {visibleTimelineEntries.map((edu) => {
+                const timelineKey = `${edu.type}:${edu.degree}:${edu.period}`;
+                const relatedProjects = PROJECTS.filter((project) => edu.relatedProjects.includes(project.slug));
+                const timelineChipItems = buildTimelineChipItems({
+                  links: edu.links,
+                  relatedProjects,
+                  relatedSkills: edu.relatedSkills,
+                  previewHref,
+                });
+                return (
+                <article key={timelineKey} className="timeline-connection-entry">
+                  <div className="timeline-spine" aria-hidden="true">
+                    <span className={edu.current ? "timeline-node current" : "timeline-node"} />
+                  </div>
+                  <div className="timeline-main-copy">
+                    <div className="timeline-entry-head">
+                      <span className="timeline-kicker">
+                        {timelineTypeLabel(edu.type, locale)} · {edu.period}
+                      </span>
+                      <span className="timeline-entry-summary">
+                        <span>{edu.degree}</span>
+                        <span className="timeline-school">{edu.school}</span>
+                        {edu.current && <span className="timeline-current">{label("current", "진행 중")}</span>}
+                      </span>
+                    </div>
+                    {(edu.note || edu.bullets.length > 0) && (
+                      <div className="timeline-entry-detail">
+                        {edu.note && <p className="timeline-entry-note">{edu.note}</p>}
+                        {edu.bullets.length > 0 && (
+                          <ul className="timeline-entry-bullets">
+                            {edu.bullets.map((bullet) => (
+                              <li key={bullet}>{bullet}</li>
+                            ))}
+                          </ul>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                  {timelineChipItems.length > 0 && (
+                    <>
+                      <div className="timeline-chip-connector" aria-hidden="true" />
+                      <div className="timeline-chip-panel">
+                        {timelineChipItems.map((item) => item.href ? (
+                          <a
+                            key={item.key}
+                            className={`timeline-chip ${item.kind}`}
+                            href={item.href}
+                            target={item.external ? "_blank" : undefined}
+                            rel={item.external ? "noopener noreferrer" : undefined}
+                          >
+                            {item.label}
+                          </a>
+                        ) : (
+                          <span key={item.key} className={`timeline-chip ${item.kind}`}>
+                            {item.label}
+                          </span>
+                        ))}
+                      </div>
+                    </>
+                  )}
+                </article>
+              );
+              })}
+              {hasMoreTimelineEntries && (
+                <>
+                  <div ref={timelineLoadSentinelRef} className="timeline-load-sentinel" aria-hidden="true" />
+                  <button type="button" className="timeline-load-more" onClick={revealMoreTimelineEntries}>
+                    {locale === "en" ? "Load more timeline entries" : "타임라인 더 보기"}
+                  </button>
+                </>
+              )}
+            </div>
+          </FadeSection>
+
+          {/* ── 연구 관심사 ── */}
+          <FadeSection>
+            <SectionTitle id="research" icon="flask" T={T}>Research Interests</SectionTitle>
+            <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
+              {RESEARCH_INTERESTS.map((r) => {
+                const ragCaption = label("ragCaption", "Dense + Sparse + Graph 3채널 하이브리드 검색 아키텍처");
+                const researchPreview = r.coverImage
+                  ? buildCoverPreview({ locale, kind: "research", title: r.title, src: r.coverImage })
+                  : r.showDiagram
+                    ? buildResearchDiagramPreview({ locale, title: r.title, src: IMG.ragDiagram, caption: ragCaption })
+                    : null;
+
+                return (
+                <div key={r.title}>
+                  <div
+                    className={researchPreview ? "research-card has-cover" : "research-card"}
+                    style={{
+                      paddingLeft: "0.9rem",
+                      borderLeft: `2px solid ${T.border}`,
+                      transition: "border-color 0.15s",
+                    }}
+                    onMouseEnter={(e) => (e.currentTarget.style.borderLeftColor = T.green)}
+                    onMouseLeave={(e) => (e.currentTarget.style.borderLeftColor = T.border)}
+                  >
+                    <div className="research-copy">
+                      <div style={{
+                        fontFamily: FONT_SANS,
+                        fontSize: "0.88rem",
+                        fontWeight: 600,
+                        color: T.text,
+                        marginBottom: "4px",
+                      }}>
+                        {r.title}
+                      </div>
+                      <div style={{
+                        fontFamily: FONT_SANS,
+                        fontSize: "0.82rem",
+                        color: T.sub,
+                        lineHeight: 1.8,
+                        wordBreak: "keep-all",
+                      }}>
+                        {r.desc}
+                      </div>
+                    </div>
+                    {researchPreview && (
+                      <button
+                        type="button"
+                        className="content-cover-button research-cover-button"
+                        aria-label={researchPreview.actionLabel}
+                        onClick={() => setCoverPreview(researchPreview)}
+                      >
+                        <img
+                          src={researchPreview.src}
+                          alt={researchPreview.alt}
+                          className="content-cover-thumb research-cover-thumb"
+                          style={{
+                            borderColor: T.border,
+                            background: T.surface,
+                          }}
+                        />
+                      </button>
+                    )}
+                  </div>
+                </div>
+                );
+              })}
+            </div>
           </FadeSection>
 
           {/* ── 기술 스택 ── */}
