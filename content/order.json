@@ -1,6 +1,8 @@
 {
   "research": [
     "rag",
+    "video-qa",
+    "sensor-operations",
     "edge-llm",
     "audio-voice",
     "agentic-workflow"
