@@ -1,0 +1,1835 @@
+{
+  "domains": [
+    {
+      "id": "ml",
+      "label": {
+        "ko": "AI·ML",
+        "en": "AI · ML"
+      },
+      "title": {
+        "ko": "AI 모델 학습·실행·평가",
+        "en": "AI models: training, running, evaluating"
+      },
+      "summary": {
+        "ko": "모델을 학습시키고, 장비에서 실행하고, 기존 방법과 비교해 평가하는 데 쓴 지식을 모았습니다.",
+        "en": "Knowledge used to train models, run them on hardware and evaluate them against existing methods."
+      }
+    },
+    {
+      "id": "retrieval",
+      "label": {
+        "ko": "검색·RAG",
+        "en": "Retrieval"
+      },
+      "title": {
+        "ko": "문서 검색과 RAG",
+        "en": "Document retrieval and RAG"
+      },
+      "summary": {
+        "ko": "질문에 맞는 문서를 찾고, 찾은 문서를 근거로 답을 만드는 데 쓴 지식을 모았습니다.",
+        "en": "Knowledge used to find the documents a question needs and to answer from them."
+      }
+    },
+    {
+      "id": "media",
+      "label": {
+        "ko": "영상·음원",
+        "en": "Video · audio"
+      },
+      "title": {
+        "ko": "영상·이미지·음원 AI",
+        "en": "Video, image and audio AI"
+      },
+      "summary": {
+        "ko": "카메라 영상과 사진을 이해하고, 음원을 나누거나 옮겨 적는 데 쓴 지식을 모았습니다.",
+        "en": "Knowledge used to understand camera video and photos, and to separate or transcribe audio."
+      }
+    },
+    {
+      "id": "backend",
+      "label": {
+        "ko": "백엔드",
+        "en": "Backend"
+      },
+      "title": {
+        "ko": "서버와 API",
+        "en": "Servers and APIs"
+      },
+      "summary": {
+        "ko": "서버를 만들고, 화면·앱과 데이터를 주고받게 연결하는 데 쓴 지식을 모았습니다.",
+        "en": "Knowledge used to build servers and connect them to interfaces, apps and data."
+      }
+    },
+    {
+      "id": "frontend",
+      "label": {
+        "ko": "화면·앱",
+        "en": "Frontend"
+      },
+      "title": {
+        "ko": "웹 화면과 모바일 앱",
+        "en": "Web interfaces and mobile apps"
+      },
+      "summary": {
+        "ko": "사용자가 보고 조작하는 웹 화면과 모바일 앱을 만드는 데 쓴 지식을 모았습니다.",
+        "en": "Knowledge used to build the web pages and mobile apps people see and use."
+      }
+    },
+    {
+      "id": "data",
+      "label": {
+        "ko": "데이터·DB",
+        "en": "Data · DB"
+      },
+      "title": {
+        "ko": "데이터 정리와 데이터베이스",
+        "en": "Data preparation and databases"
+      },
+      "summary": {
+        "ko": "데이터를 정리·시각화하고, 데이터베이스에 저장하고 꺼내 쓰는 데 쓴 지식을 모았습니다.",
+        "en": "Knowledge used to prepare and chart data, and to store it in and read it from databases."
+      }
+    },
+    {
+      "id": "device",
+      "label": {
+        "ko": "장치·센서",
+        "en": "Devices"
+      },
+      "title": {
+        "ko": "장치·센서와 운영 지원",
+        "en": "Devices, sensors and operations support"
+      },
+      "summary": {
+        "ko": "센서 값을 모으고, 장치를 만들고, 사람이 승인하는 운영 지원 흐름을 만드는 데 쓴 지식을 모았습니다.",
+        "en": "Knowledge used to collect sensor readings, build devices and support operations that a person approves."
+      }
+    },
+    {
+      "id": "infra",
+      "label": {
+        "ko": "인프라·자동화",
+        "en": "Automation"
+      },
+      "title": {
+        "ko": "인프라와 개발 자동화",
+        "en": "Infrastructure and development automation"
+      },
+      "summary": {
+        "ko": "설치·검사·배포를 자동화하고, 자동화에 사람의 확인 단계를 두는 데 쓴 지식을 모았습니다.",
+        "en": "Knowledge used to automate setup, checks and deployment, keeping a human review step where it matters."
+      }
+    }
+  ],
+  "nodes": [
+    {
+      "id": "python",
+      "kind": "tech",
+      "domain": "ml",
+      "label": {
+        "ko": "Python",
+        "en": "Python"
+      },
+      "stack": "Python",
+      "what": {
+        "ko": "데이터 처리, 모델 학습, 서버 개발에 두루 쓰이는 프로그래밍 언어입니다.",
+        "en": "A general-purpose language widely used for data work, model training and servers."
+      }
+    },
+    {
+      "id": "pytorch",
+      "kind": "tech",
+      "domain": "ml",
+      "label": {
+        "ko": "PyTorch",
+        "en": "PyTorch"
+      },
+      "stack": "PyTorch",
+      "what": {
+        "ko": "신경망 모델을 만들고 학습시키는 딥러닝 프레임워크입니다.",
+        "en": "A deep-learning framework for building and training neural networks."
+      }
+    },
+    {
+      "id": "cuda",
+      "kind": "tech",
+      "domain": "ml",
+      "label": {
+        "ko": "CUDA",
+        "en": "CUDA"
+      },
+      "stack": "CUDA",
+      "what": {
+        "ko": "NVIDIA GPU에서 연산을 돌리는 플랫폼으로, 딥러닝 학습을 GPU로 빠르게 할 때 씁니다.",
+        "en": "NVIDIA's GPU computing platform, used to speed up deep-learning training."
+      }
+    },
+    {
+      "id": "hydra",
+      "kind": "tech",
+      "domain": "ml",
+      "label": {
+        "ko": "Hydra",
+        "en": "Hydra"
+      },
+      "what": {
+        "ko": "실험 설정을 파일로 나누어 두고 조합하게 해 주는 Python 설정 도구입니다.",
+        "en": "A Python configuration tool for keeping experiment settings in composable files."
+      }
+    },
+    {
+      "id": "scikit-learn",
+      "kind": "tech",
+      "domain": "ml",
+      "label": {
+        "ko": "scikit-learn",
+        "en": "scikit-learn"
+      },
+      "what": {
+        "ko": "로지스틱 회귀 같은 고전적인 머신러닝 모델을 제공하는 Python 라이브러리입니다.",
+        "en": "A Python library of classic machine-learning models such as logistic regression."
+      }
+    },
+    {
+      "id": "llama-cpp",
+      "kind": "tech",
+      "domain": "ml",
+      "label": {
+        "ko": "llama.cpp",
+        "en": "llama.cpp"
+      },
+      "stack": "llama.cpp",
+      "what": {
+        "ko": "양자화한 언어 모델을 개인 PC 같은 일반 장비에서 돌리는 실행 도구입니다.",
+        "en": "A runtime for running quantized language models on ordinary hardware such as a PC."
+      }
+    },
+    {
+      "id": "training",
+      "kind": "concept",
+      "domain": "ml",
+      "label": {
+        "ko": "학습·평가",
+        "en": "Training"
+      },
+      "title": {
+        "ko": "모델 학습과 평가",
+        "en": "Model training and evaluation"
+      },
+      "what": {
+        "ko": "데이터로 모델을 학습시키고, 정해 둔 기준으로 결과를 재는 과정입니다.",
+        "en": "Fitting a model to data and measuring the result against agreed criteria."
+      }
+    },
+    {
+      "id": "lora",
+      "kind": "method",
+      "domain": "ml",
+      "label": {
+        "ko": "LoRA",
+        "en": "LoRA"
+      },
+      "title": {
+        "ko": "LoRA 미세조정",
+        "en": "LoRA fine-tuning"
+      },
+      "stack": "LoRA",
+      "what": {
+        "ko": "큰 모델의 가중치는 그대로 두고 작은 보조 행렬만 학습해 모델을 목적에 맞게 조정하는 방법입니다.",
+        "en": "Adapting a large model by training small low-rank matrices while its original weights stay frozen."
+      }
+    },
+    {
+      "id": "baseline-comparison",
+      "kind": "method",
+      "domain": "ml",
+      "label": {
+        "ko": "비교 실험",
+        "en": "Baselines"
+      },
+      "title": {
+        "ko": "기존 방법과의 비교 실험",
+        "en": "Comparison with existing methods"
+      },
+      "what": {
+        "ko": "새 방법을 기존 방법과 같은 자료·같은 기준으로 나란히 견주어 무엇이 달라지는지 확인하는 실험입니다.",
+        "en": "Running a new method side by side with existing ones on the same data and criteria to see what changes."
+      }
+    },
+    {
+      "id": "experiment-config",
+      "kind": "method",
+      "domain": "ml",
+      "label": {
+        "ko": "실험 관리",
+        "en": "Experiments"
+      },
+      "title": {
+        "ko": "실험 조건·기록 관리",
+        "en": "Experiment configuration and records"
+      },
+      "what": {
+        "ko": "실험마다 설정과 결과를 기록해, 다시 돌리거나 서로 비교할 수 있게 관리하는 일입니다.",
+        "en": "Recording each run's settings and outputs so experiments can be rerun and compared."
+      }
+    },
+    {
+      "id": "local-inference",
+      "kind": "concept",
+      "domain": "ml",
+      "label": {
+        "ko": "로컬 실행",
+        "en": "Local inference"
+      },
+      "title": {
+        "ko": "로컬·온디바이스 모델 실행",
+        "en": "Local and on-device model execution"
+      },
+      "what": {
+        "ko": "외부 서비스 대신 개인 PC·GPU 서버·기기 안에서 AI 모델을 직접 돌리는 방식입니다.",
+        "en": "Running AI models on your own PC, GPU server or device instead of a hosted service."
+      }
+    },
+    {
+      "id": "selective-prediction",
+      "kind": "concept",
+      "domain": "ml",
+      "label": {
+        "ko": "선택적 응답",
+        "en": "Selective answers"
+      },
+      "title": {
+        "ko": "선택적 응답 (답한 비율과 오답)",
+        "en": "Selective prediction (coverage and risk)"
+      },
+      "what": {
+        "ko": "모든 질문에 답하는 대신 확실한 것만 답하게 하고, 답한 비율과 그 가운데 틀린 비율을 함께 보는 접근입니다.",
+        "en": "Answering only what can be answered reliably, judged by how much is answered together with how much of that is wrong."
+      }
+    },
+    {
+      "id": "resource-aware",
+      "kind": "concept",
+      "domain": "ml",
+      "label": {
+        "ko": "장비 맞춤",
+        "en": "Fit to device"
+      },
+      "title": {
+        "ko": "장비 제약에 맞춘 실행 구성",
+        "en": "Fitting runs to device limits"
+      },
+      "what": {
+        "ko": "기기의 메모리·연산 한계에 맞춰 모델 크기와 실행 방식을 고르는 일입니다.",
+        "en": "Choosing model size and execution settings to fit a device's memory and compute limits."
+      }
+    },
+    {
+      "id": "huggingface",
+      "kind": "tech",
+      "domain": "ml",
+      "label": {
+        "ko": "HuggingFace",
+        "en": "HuggingFace"
+      },
+      "stack": "HuggingFace",
+      "what": {
+        "ko": "공개 AI 모델·데이터셋을 내려받아 쓰는 플랫폼과 라이브러리입니다.",
+        "en": "A hub and libraries for downloading and using open AI models and datasets."
+      }
+    },
+    {
+      "id": "openai-api",
+      "kind": "tech",
+      "domain": "ml",
+      "label": {
+        "ko": "OpenAI API",
+        "en": "OpenAI API"
+      },
+      "stack": "OpenAI API",
+      "what": {
+        "ko": "OpenAI의 언어 모델을 프로그램에서 부르는 API입니다.",
+        "en": "An API for calling OpenAI's language models from code."
+      }
+    },
+    {
+      "id": "rag",
+      "kind": "concept",
+      "domain": "retrieval",
+      "label": {
+        "ko": "RAG",
+        "en": "RAG"
+      },
+      "title": {
+        "ko": "RAG (검색 증강 생성)",
+        "en": "RAG (retrieval-augmented generation)"
+      },
+      "stack": "RAG",
+      "what": {
+        "ko": "질문과 관련된 문서를 먼저 찾고, 그 내용을 근거로 AI가 답을 만들게 하는 방식입니다.",
+        "en": "Finding documents relevant to a question first, then having an AI write its answer from them."
+      }
+    },
+    {
+      "id": "lexical",
+      "kind": "concept",
+      "domain": "retrieval",
+      "label": {
+        "ko": "어휘 검색",
+        "en": "Lexical search"
+      },
+      "title": {
+        "ko": "어휘 검색 (Sparse · BM25)",
+        "en": "Lexical search (sparse · BM25)"
+      },
+      "what": {
+        "ko": "질문과 문서에 같은 단어가 얼마나 겹치는지로 찾는 검색입니다. BM25가 대표적인 방법입니다.",
+        "en": "Search that matches the words a question and a document share; BM25 is the classic method."
+      }
+    },
+    {
+      "id": "semantic",
+      "kind": "concept",
+      "domain": "retrieval",
+      "label": {
+        "ko": "의미 검색",
+        "en": "Semantic search"
+      },
+      "title": {
+        "ko": "의미 검색 (Dense · 벡터)",
+        "en": "Semantic search (dense vectors)"
+      },
+      "what": {
+        "ko": "문장을 벡터로 바꿔, 쓰인 단어가 달라도 뜻이 가까운 문서를 찾는 검색입니다.",
+        "en": "Search that turns text into vectors so documents with similar meaning are found even when the words differ."
+      }
+    },
+    {
+      "id": "graph-retrieval",
+      "kind": "concept",
+      "domain": "retrieval",
+      "label": {
+        "ko": "그래프 검색",
+        "en": "Graph search"
+      },
+      "title": {
+        "ko": "그래프 검색 (정보 관계)",
+        "en": "Graph retrieval (relations)"
+      },
+      "what": {
+        "ko": "문서 속 개체와 그 관계를 그래프로 엮어, 관계를 따라 관련 정보를 찾는 검색입니다.",
+        "en": "Search that links entities and their relations into a graph and follows those links to related information."
+      }
+    },
+    {
+      "id": "hybrid",
+      "kind": "concept",
+      "domain": "retrieval",
+      "label": {
+        "ko": "하이브리드 검색",
+        "en": "Hybrid search"
+      },
+      "title": {
+        "ko": "하이브리드 검색 (여러 채널 결합)",
+        "en": "Hybrid retrieval (combining channels)"
+      },
+      "what": {
+        "ko": "여러 검색 방식(채널)을 함께 써서 한 방식만으로는 놓치는 문서를 보완하는 검색입니다.",
+        "en": "Using several retrieval channels together so one covers what another misses."
+      }
+    },
+    {
+      "id": "channel-control",
+      "kind": "method",
+      "domain": "retrieval",
+      "label": {
+        "ko": "적응형 검색",
+        "en": "Adaptive retrieval"
+      },
+      "title": {
+        "ko": "질의 적응형 검색 채널 제어",
+        "en": "Query-adaptive retrieval channel control"
+      },
+      "what": {
+        "ko": "질문의 특징을 보고, 여러 검색 채널 가운데 어떤 조합을 쓸지 질문마다 고르는 방법입니다.",
+        "en": "Choosing, question by question, which combination of retrieval channels to use from the question's features."
+      }
+    },
+    {
+      "id": "fusion",
+      "kind": "method",
+      "domain": "retrieval",
+      "label": {
+        "ko": "결과 통합",
+        "en": "Fusion"
+      },
+      "title": {
+        "ko": "검색 결과 통합",
+        "en": "Result fusion"
+      },
+      "what": {
+        "ko": "여러 채널이 찾은 결과 목록을 하나의 순위로 합치는 단계입니다.",
+        "en": "Merging the result lists from several channels into one ranking."
+      }
+    },
+    {
+      "id": "grounded-answer",
+      "kind": "concept",
+      "domain": "retrieval",
+      "label": {
+        "ko": "근거 기반 답변",
+        "en": "Grounded answers"
+      },
+      "title": {
+        "ko": "근거 기반 답변 생성",
+        "en": "Grounded answer generation"
+      },
+      "what": {
+        "ko": "언어 모델이 기억에만 기대지 않고, 찾아 준 문서를 근거로 답을 쓰게 하는 것입니다.",
+        "en": "Having a language model answer from the documents it is given rather than from memory alone."
+      }
+    },
+    {
+      "id": "evidence-tracing",
+      "kind": "concept",
+      "domain": "retrieval",
+      "label": {
+        "ko": "근거 추적",
+        "en": "Evidence tracing"
+      },
+      "what": {
+        "ko": "AI가 답을 만들 때 어떤 문서를 근거로 썼는지 나중에 확인할 수 있게 남기는 것입니다.",
+        "en": "Keeping track of which documents an AI answer relied on, so it can be checked later."
+      }
+    },
+    {
+      "id": "qdrant",
+      "kind": "tech",
+      "domain": "retrieval",
+      "label": {
+        "ko": "Qdrant",
+        "en": "Qdrant"
+      },
+      "stack": "Qdrant",
+      "what": {
+        "ko": "문장 벡터를 저장하고 가까운 벡터를 빠르게 찾아 주는 벡터 데이터베이스입니다.",
+        "en": "A vector database that stores embeddings and finds the nearest ones quickly."
+      }
+    },
+    {
+      "id": "ollama",
+      "kind": "tech",
+      "domain": "retrieval",
+      "label": {
+        "ko": "Ollama",
+        "en": "Ollama"
+      },
+      "what": {
+        "ko": "언어 모델을 내려받아 API로 실행해 주는 모델 실행 도구입니다.",
+        "en": "A tool that downloads language models and serves them behind an API."
+      }
+    },
+    {
+      "id": "rag-eval",
+      "kind": "concept",
+      "domain": "retrieval",
+      "label": {
+        "ko": "RAG 평가",
+        "en": "RAG eval"
+      },
+      "title": {
+        "ko": "검색 관련성과 답변 근거 평가",
+        "en": "Evaluating relevance and grounding"
+      },
+      "what": {
+        "ko": "찾은 문서가 질문에 맞는지, 답이 그 문서에 실제로 근거하는지를 함께 재는 평가입니다.",
+        "en": "Measuring both whether retrieved documents fit the question and whether the answer is really grounded in them."
+      }
+    },
+    {
+      "id": "chunking",
+      "kind": "concept",
+      "domain": "retrieval",
+      "label": {
+        "ko": "분할·색인",
+        "en": "Chunking"
+      },
+      "title": {
+        "ko": "문서 분할·색인",
+        "en": "Document chunking and indexing"
+      },
+      "what": {
+        "ko": "긴 문서를 검색하기 좋은 단위로 나누고 색인을 만드는 방법입니다.",
+        "en": "Splitting long documents into retrievable units and indexing them."
+      }
+    },
+    {
+      "id": "langchain",
+      "kind": "tech",
+      "domain": "retrieval",
+      "label": {
+        "ko": "LangChain",
+        "en": "LangChain"
+      },
+      "stack": "LangChain",
+      "what": {
+        "ko": "언어 모델과 검색·도구 호출을 엮는 애플리케이션 프레임워크입니다.",
+        "en": "A framework for wiring language models together with retrieval and tool calls."
+      }
+    },
+    {
+      "id": "mv-video-qa",
+      "kind": "concept",
+      "domain": "media",
+      "label": {
+        "ko": "다중 시점 QA",
+        "en": "Multi-view QA"
+      },
+      "title": {
+        "ko": "다중 시점 영상 질의응답",
+        "en": "Multi-view video question answering"
+      },
+      "what": {
+        "ko": "여러 대의 카메라 영상을 보고, 사람이 낸 질문에 답하는 문제입니다.",
+        "en": "Answering a person's question by looking at video from several cameras."
+      }
+    },
+    {
+      "id": "qwen3-vl",
+      "kind": "tech",
+      "domain": "media",
+      "label": {
+        "ko": "Qwen3-VL",
+        "en": "Qwen3-VL"
+      },
+      "title": {
+        "ko": "Qwen3-VL 8B (시각-언어 모델)",
+        "en": "Qwen3-VL 8B (vision-language model)"
+      },
+      "what": {
+        "ko": "이미지와 글을 함께 입력받아 글로 답하는 시각-언어 모델(VLM)입니다.",
+        "en": "A vision-language model (VLM) that takes images and text together and replies in text."
+      }
+    },
+    {
+      "id": "vllm",
+      "kind": "tech",
+      "domain": "media",
+      "label": {
+        "ko": "vLLM",
+        "en": "vLLM"
+      },
+      "what": {
+        "ko": "언어·시각-언어 모델을 서버로 띄워 요청을 효율적으로 처리하는 추론 엔진입니다.",
+        "en": "An inference engine that serves language and vision-language models and handles requests efficiently."
+      }
+    },
+    {
+      "id": "siglip2",
+      "kind": "tech",
+      "domain": "media",
+      "label": {
+        "ko": "SigLIP2",
+        "en": "SigLIP2"
+      },
+      "what": {
+        "ko": "이미지와 문장을 같은 벡터 공간에 놓아 둘이 얼마나 관련 있는지 재게 해 주는 모델입니다.",
+        "en": "A model that embeds images and text in one vector space so their relatedness can be measured."
+      }
+    },
+    {
+      "id": "grounding-dino",
+      "kind": "tech",
+      "domain": "media",
+      "label": {
+        "ko": "Grounding DINO",
+        "en": "Grounding DINO"
+      },
+      "what": {
+        "ko": "글로 설명한 대상을 이미지에서 찾아 상자로 표시하는 물체 검출 모델입니다.",
+        "en": "An object detector that finds what a text prompt describes and boxes it in the image."
+      }
+    },
+    {
+      "id": "availability",
+      "kind": "method",
+      "domain": "media",
+      "label": {
+        "ko": "가용성 점수",
+        "en": "Availability"
+      },
+      "title": {
+        "ko": "근거 가용성 점수 (답변 전 화면 선택)",
+        "en": "Evidence-availability score (pre-answer view choice)"
+      },
+      "what": {
+        "ko": "답을 만들기 전에, 각 화면에 질문의 근거가 보일 가능성을 점수로 매겨 먼저 볼 화면을 정하는 방법입니다.",
+        "en": "Before any answer is generated, scoring each view for how likely the evidence is visible, to decide which to look at first."
+      }
+    },
+    {
+      "id": "abstention",
+      "kind": "method",
+      "domain": "media",
+      "label": {
+        "ko": "답변·보류",
+        "en": "Abstention"
+      },
+      "title": {
+        "ko": "답변·보류 판단",
+        "en": "Answer-or-abstain decisions"
+      },
+      "what": {
+        "ko": "주어진 근거로 답할 수 없으면 억지로 답하지 않고 판단을 보류하게 하는 것입니다.",
+        "en": "Making a model decline — abstain — when the given evidence cannot support an answer, instead of guessing."
+      }
+    },
+    {
+      "id": "confidence-release",
+      "kind": "method",
+      "domain": "media",
+      "label": {
+        "ko": "확신도 제공",
+        "en": "Confidence release"
+      },
+      "title": {
+        "ko": "확신도 기반 응답 제공",
+        "en": "Confidence-based answer release"
+      },
+      "what": {
+        "ko": "모델이 낸 답의 확신도를 계산해, 확신이 높은 답만 내보내고 나머지는 보류하는 방법입니다.",
+        "en": "Computing how confident each generated answer is and releasing only the confident ones, holding the rest."
+      }
+    },
+    {
+      "id": "google-vision",
+      "kind": "tech",
+      "domain": "media",
+      "label": {
+        "ko": "Google Vision",
+        "en": "Google Vision"
+      },
+      "title": {
+        "ko": "Google Vision API",
+        "en": "Google Vision API"
+      },
+      "what": {
+        "ko": "사진 속 사물을 인식해 결과를 돌려주는 구글의 이미지 인식 API입니다.",
+        "en": "Google's image-recognition API that returns what it recognises in a photo."
+      }
+    },
+    {
+      "id": "source-separation",
+      "kind": "concept",
+      "domain": "media",
+      "label": {
+        "ko": "음원 분리",
+        "en": "Separation"
+      },
+      "title": {
+        "ko": "음원 분리 (보컬·악기)",
+        "en": "Music source separation"
+      },
+      "what": {
+        "ko": "하나로 섞인 음악에서 보컬, 드럼, 베이스 같은 소리를 따로 떼어 내는 기술입니다.",
+        "en": "Pulling vocals, drums, bass and other parts out of a mixed recording."
+      }
+    },
+    {
+      "id": "spleeter",
+      "kind": "tech",
+      "domain": "media",
+      "label": {
+        "ko": "Spleeter",
+        "en": "Spleeter"
+      },
+      "stack": "Spleeter",
+      "what": {
+        "ko": "미리 학습된 음원 분리 모델로, 음악을 보컬·드럼·베이스 등으로 나눕니다.",
+        "en": "A pre-trained source-separation model that splits music into vocals, drums, bass and more."
+      }
+    },
+    {
+      "id": "transcription",
+      "kind": "concept",
+      "domain": "media",
+      "label": {
+        "ko": "악보 전사",
+        "en": "Transcription"
+      },
+      "title": {
+        "ko": "음원 악보 전사",
+        "en": "Audio-to-score transcription"
+      },
+      "what": {
+        "ko": "녹음된 음악을 음표(악보)로 옮겨 적는 일을 프로그램으로 하는 것입니다.",
+        "en": "Converting recorded music into notes — a score — with software."
+      }
+    },
+    {
+      "id": "fastapi",
+      "kind": "tech",
+      "domain": "backend",
+      "label": {
+        "ko": "FastAPI",
+        "en": "FastAPI"
+      },
+      "stack": "FastAPI",
+      "what": {
+        "ko": "Python으로 웹 API 서버를 빠르게 만드는 프레임워크입니다.",
+        "en": "A Python framework for building web API servers quickly."
+      }
+    },
+    {
+      "id": "spring-boot",
+      "kind": "tech",
+      "domain": "backend",
+      "label": {
+        "ko": "Spring Boot",
+        "en": "Spring Boot"
+      },
+      "stack": "Spring Boot",
+      "what": {
+        "ko": "Java로 웹 서버를 만들 때 설정을 크게 줄여 주는 프레임워크입니다.",
+        "en": "A Java framework that takes most of the setup out of building web servers."
+      }
+    },
+    {
+      "id": "spring-security",
+      "kind": "tech",
+      "domain": "backend",
+      "label": {
+        "ko": "Spring Security",
+        "en": "Spring Security"
+      },
+      "stack": "Spring Security",
+      "what": {
+        "ko": "Spring 서버에 로그인과 권한 확인을 붙이는 보안 프레임워크입니다.",
+        "en": "Spring's framework for adding login and access control to a server."
+      }
+    },
+    {
+      "id": "jpa",
+      "kind": "tech",
+      "domain": "backend",
+      "label": {
+        "ko": "JPA",
+        "en": "JPA"
+      },
+      "what": {
+        "ko": "Java 객체를 데이터베이스 표(테이블)와 이어 주는 표준(ORM)입니다.",
+        "en": "The Java standard (ORM) that maps objects to database tables."
+      }
+    },
+    {
+      "id": "java",
+      "kind": "tech",
+      "domain": "backend",
+      "label": {
+        "ko": "Java",
+        "en": "Java"
+      },
+      "stack": "Java",
+      "what": {
+        "ko": "서버 개발에 널리 쓰이는 객체지향 프로그래밍 언어입니다.",
+        "en": "An object-oriented language widely used for server development."
+      }
+    },
+    {
+      "id": "php",
+      "kind": "tech",
+      "domain": "backend",
+      "label": {
+        "ko": "PHP",
+        "en": "PHP"
+      },
+      "stack": "PHP",
+      "what": {
+        "ko": "웹 서버에서 화면과 데이터 처리를 맡는 스크립트 언어입니다.",
+        "en": "A server-side scripting language for web pages and data handling."
+      }
+    },
+    {
+      "id": "api-integration",
+      "kind": "concept",
+      "domain": "backend",
+      "label": {
+        "ko": "API 연동",
+        "en": "API integration"
+      },
+      "title": {
+        "ko": "화면–서버 API 연동",
+        "en": "Client–server API integration"
+      },
+      "what": {
+        "ko": "앱이나 웹 화면이 서버의 API를 불러 데이터를 주고받게 연결하는 일입니다.",
+        "en": "Wiring an app or web page to call a server's API and exchange data."
+      }
+    },
+    {
+      "id": "upload-pipeline",
+      "kind": "method",
+      "domain": "backend",
+      "label": {
+        "ko": "업로드 API",
+        "en": "Upload API"
+      },
+      "title": {
+        "ko": "파일 업로드 → 처리 → 결과 API",
+        "en": "Upload → process → result API"
+      },
+      "what": {
+        "ko": "사용자가 올린 파일을 서버가 받아 처리하고, 결과를 내려받을 수 있게 돌려주는 흐름입니다.",
+        "en": "A server flow that receives an uploaded file, processes it and returns results ready to download."
+      }
+    },
+    {
+      "id": "auth",
+      "kind": "concept",
+      "domain": "backend",
+      "label": {
+        "ko": "로그인·인증",
+        "en": "Auth"
+      },
+      "title": {
+        "ko": "회원가입·로그인 (인증)",
+        "en": "Sign-up and login (authentication)"
+      },
+      "what": {
+        "ko": "사용자를 등록하고, 로그인한 사람만 기능을 쓰게 확인하는 인증 기능입니다.",
+        "en": "Authentication: registering users and checking who is signed in before they use a feature."
+      }
+    },
+    {
+      "id": "crud",
+      "kind": "method",
+      "domain": "backend",
+      "label": {
+        "ko": "CRUD",
+        "en": "CRUD"
+      },
+      "title": {
+        "ko": "CRUD (등록·조회·수정·삭제)",
+        "en": "CRUD (create, read, update, delete)"
+      },
+      "what": {
+        "ko": "데이터를 등록·조회·수정·삭제하는, 대부분의 서비스가 갖는 기본 기능입니다.",
+        "en": "Create, read, update and delete — the basic operations most services provide on their data."
+      }
+    },
+    {
+      "id": "javascript",
+      "kind": "tech",
+      "domain": "frontend",
+      "label": {
+        "ko": "JavaScript",
+        "en": "JavaScript"
+      },
+      "stack": "JavaScript",
+      "what": {
+        "ko": "웹 브라우저에서 화면의 동작을 만드는 프로그래밍 언어입니다.",
+        "en": "The programming language that drives behaviour in web browsers."
+      }
+    },
+    {
+      "id": "typescript",
+      "kind": "tech",
+      "domain": "frontend",
+      "label": {
+        "ko": "TypeScript",
+        "en": "TypeScript"
+      },
+      "stack": "TypeScript",
+      "what": {
+        "ko": "JavaScript에 타입을 더해 큰 코드에서 실수를 줄여 주는 언어입니다.",
+        "en": "JavaScript with types, which catches mistakes in larger codebases."
+      }
+    },
+    {
+      "id": "react",
+      "kind": "tech",
+      "domain": "frontend",
+      "label": {
+        "ko": "React",
+        "en": "React"
+      },
+      "stack": "React",
+      "what": {
+        "ko": "화면을 작은 컴포넌트로 나누어 만드는 JavaScript UI 라이브러리입니다.",
+        "en": "A JavaScript library for building interfaces out of components."
+      }
+    },
+    {
+      "id": "nextjs",
+      "kind": "tech",
+      "domain": "frontend",
+      "label": {
+        "ko": "Next.js",
+        "en": "Next.js"
+      },
+      "stack": "Next.js",
+      "what": {
+        "ko": "React 위에서 페이지 구성과 서버 렌더링을 제공하는 웹 프레임워크입니다.",
+        "en": "A React framework that adds routing and server rendering."
+      }
+    },
+    {
+      "id": "vue",
+      "kind": "tech",
+      "domain": "frontend",
+      "label": {
+        "ko": "Vue",
+        "en": "Vue"
+      },
+      "stack": "Vue",
+      "what": {
+        "ko": "화면 상태와 표시를 이어 주는 JavaScript 화면 프레임워크입니다.",
+        "en": "A JavaScript framework that binds interface state to what is shown."
+      }
+    },
+    {
+      "id": "vite",
+      "kind": "tech",
+      "domain": "frontend",
+      "label": {
+        "ko": "Vite",
+        "en": "Vite"
+      },
+      "what": {
+        "ko": "웹 앱을 빠르게 개발하고 빌드하는 도구입니다.",
+        "en": "A fast development server and build tool for web apps."
+      }
+    },
+    {
+      "id": "flutter",
+      "kind": "tech",
+      "domain": "frontend",
+      "label": {
+        "ko": "Flutter",
+        "en": "Flutter"
+      },
+      "stack": "Flutter",
+      "what": {
+        "ko": "하나의 코드로 안드로이드·iOS 앱 화면을 만드는 UI 프레임워크입니다.",
+        "en": "A UI framework for building Android and iOS apps from one codebase."
+      }
+    },
+    {
+      "id": "dart",
+      "kind": "tech",
+      "domain": "frontend",
+      "label": {
+        "ko": "Dart",
+        "en": "Dart"
+      },
+      "stack": "Dart",
+      "what": {
+        "ko": "Flutter 앱을 작성하는 프로그래밍 언어입니다.",
+        "en": "The programming language Flutter apps are written in."
+      }
+    },
+    {
+      "id": "bootstrap",
+      "kind": "tech",
+      "domain": "frontend",
+      "label": {
+        "ko": "Bootstrap",
+        "en": "Bootstrap"
+      },
+      "what": {
+        "ko": "미리 만든 스타일과 배치 규칙으로 웹 화면을 빨리 구성하는 CSS 프레임워크입니다.",
+        "en": "A CSS framework of ready-made styles and layout rules for building web pages quickly."
+      }
+    },
+    {
+      "id": "map-api",
+      "kind": "tech",
+      "domain": "frontend",
+      "label": {
+        "ko": "지도 API",
+        "en": "Map APIs"
+      },
+      "what": {
+        "ko": "웹 화면에 지도를 띄우고 위치 정보를 표시하게 해 주는 서비스 API입니다.",
+        "en": "Service APIs for embedding maps and plotting locations on a web page."
+      }
+    },
+    {
+      "id": "unity",
+      "kind": "tech",
+      "domain": "frontend",
+      "label": {
+        "ko": "Unity",
+        "en": "Unity"
+      },
+      "what": {
+        "ko": "2D·3D 게임과 AR·VR 콘텐츠를 만드는 게임 엔진입니다.",
+        "en": "A game engine for 2D/3D games and AR/VR content."
+      }
+    },
+    {
+      "id": "web-ui",
+      "kind": "concept",
+      "domain": "frontend",
+      "label": {
+        "ko": "웹 화면",
+        "en": "Web UI"
+      },
+      "title": {
+        "ko": "웹 화면 구현",
+        "en": "Web interfaces"
+      },
+      "what": {
+        "ko": "사용자가 보고 조작하는 웹 페이지의 화면과 동작을 만드는 일입니다.",
+        "en": "Building what people see and interact with on a web page."
+      }
+    },
+    {
+      "id": "mobile-app",
+      "kind": "concept",
+      "domain": "frontend",
+      "label": {
+        "ko": "모바일 앱",
+        "en": "Mobile apps"
+      },
+      "what": {
+        "ko": "휴대폰에서 실행되는 앱의 화면과 기능을 만드는 일입니다.",
+        "en": "Building the screens and features of apps that run on phones."
+      }
+    },
+    {
+      "id": "csharp",
+      "kind": "tech",
+      "domain": "frontend",
+      "label": {
+        "ko": "C#",
+        "en": "C#"
+      },
+      "stack": "C#",
+      "what": {
+        "ko": "Microsoft의 객체지향 언어로, 데스크톱 앱과 Unity 스크립트 등에 쓰입니다.",
+        "en": "Microsoft's object-oriented language, used for desktop apps, Unity scripts and more."
+      }
+    },
+    {
+      "id": "mysql",
+      "kind": "tech",
+      "domain": "data",
+      "label": {
+        "ko": "MySQL",
+        "en": "MySQL"
+      },
+      "stack": "MySQL",
+      "what": {
+        "ko": "표 형태로 데이터를 저장하고 SQL로 조회하는 관계형 데이터베이스입니다.",
+        "en": "A relational database that stores tables and is queried with SQL."
+      }
+    },
+    {
+      "id": "db-integration",
+      "kind": "concept",
+      "domain": "data",
+      "label": {
+        "ko": "DB 연동",
+        "en": "DB integration"
+      },
+      "title": {
+        "ko": "데이터베이스 저장·조회 연동",
+        "en": "Database storage and lookup"
+      },
+      "what": {
+        "ko": "서비스가 데이터를 데이터베이스에 저장하고 필요할 때 꺼내 쓰도록 연결하는 일입니다.",
+        "en": "Connecting a service to a database so it can store data and read it back when needed."
+      }
+    },
+    {
+      "id": "preprocessing",
+      "kind": "method",
+      "domain": "data",
+      "label": {
+        "ko": "전처리",
+        "en": "Data prep"
+      },
+      "title": {
+        "ko": "데이터 전처리",
+        "en": "Data preparation"
+      },
+      "stack": "데이터 전처리",
+      "what": {
+        "ko": "분석에 쓰기 전에 원자료를 정리하고 형식을 맞추는 과정입니다.",
+        "en": "Cleaning raw data and putting it into shape before analysis."
+      }
+    },
+    {
+      "id": "visualization",
+      "kind": "method",
+      "domain": "data",
+      "label": {
+        "ko": "시각화",
+        "en": "Data viz"
+      },
+      "title": {
+        "ko": "데이터 시각화",
+        "en": "Data visualization"
+      },
+      "stack": "시각화",
+      "what": {
+        "ko": "데이터를 그래프나 지도 같은 그림으로 바꿔 패턴을 읽기 쉽게 하는 일입니다.",
+        "en": "Turning data into charts or maps so patterns are easy to read."
+      }
+    },
+    {
+      "id": "public-data",
+      "kind": "concept",
+      "domain": "data",
+      "label": {
+        "ko": "공공데이터",
+        "en": "Public data"
+      },
+      "title": {
+        "ko": "공공데이터 활용",
+        "en": "Using open public data"
+      },
+      "stack": "공공데이터",
+      "what": {
+        "ko": "정부·공공기관이 공개한 데이터를 받아 서비스나 분석에 쓰는 것입니다.",
+        "en": "Using datasets published by government and public bodies in services or analysis."
+      }
+    },
+    {
+      "id": "postgresql",
+      "kind": "tech",
+      "domain": "data",
+      "label": {
+        "ko": "PostgreSQL",
+        "en": "PostgreSQL"
+      },
+      "stack": "PostgreSQL",
+      "what": {
+        "ko": "확장 기능이 풍부한 오픈소스 관계형 데이터베이스입니다.",
+        "en": "A feature-rich open-source relational database."
+      }
+    },
+    {
+      "id": "supabase",
+      "kind": "tech",
+      "domain": "data",
+      "label": {
+        "ko": "Supabase",
+        "en": "Supabase"
+      },
+      "stack": "Supabase",
+      "what": {
+        "ko": "PostgreSQL 데이터베이스와 인증·파일 저장을 함께 제공하는 백엔드 서비스입니다.",
+        "en": "A hosted backend offering a PostgreSQL database with auth and file storage."
+      }
+    },
+    {
+      "id": "arduino",
+      "kind": "tech",
+      "domain": "device",
+      "label": {
+        "ko": "Arduino",
+        "en": "Arduino"
+      },
+      "stack": "Arduino",
+      "what": {
+        "ko": "센서와 부품을 연결해 간단한 장치를 만드는 마이크로컨트롤러 보드와 개발 환경입니다.",
+        "en": "Microcontroller boards and tooling for building small devices with sensors and parts."
+      }
+    },
+    {
+      "id": "cpp",
+      "kind": "tech",
+      "domain": "device",
+      "label": {
+        "ko": "C++",
+        "en": "C++"
+      },
+      "stack": "C++",
+      "what": {
+        "ko": "하드웨어 가까이에서 빠르게 동작하는 코드를 쓰는 언어로, Arduino 펌웨어도 C++로 작성합니다.",
+        "en": "A systems language for fast code close to the hardware; Arduino firmware is written in it."
+      }
+    },
+    {
+      "id": "circuits",
+      "kind": "concept",
+      "domain": "device",
+      "label": {
+        "ko": "회로 구현",
+        "en": "Circuits"
+      },
+      "stack": "회로",
+      "what": {
+        "ko": "센서·버튼 같은 부품을 보드에 연결해 신호가 흐르는 장치를 만드는 일입니다.",
+        "en": "Wiring sensors, buttons and other parts to a board so the device can sense and act."
+      }
+    },
+    {
+      "id": "firmware",
+      "kind": "concept",
+      "domain": "device",
+      "label": {
+        "ko": "펌웨어",
+        "en": "Firmware"
+      },
+      "stack": "펌웨어",
+      "what": {
+        "ko": "장치 안에서 돌며 센서를 읽고 부품을 움직이는 프로그램입니다.",
+        "en": "The program running inside a device that reads sensors and drives its parts."
+      }
+    },
+    {
+      "id": "sensor-collection",
+      "kind": "method",
+      "domain": "device",
+      "label": {
+        "ko": "센서 수집",
+        "en": "Sensing"
+      },
+      "title": {
+        "ko": "센서 데이터 수집",
+        "en": "Sensor data collection"
+      },
+      "what": {
+        "ko": "센서가 잰 값을 정해진 주기로 읽어 모으는 일입니다.",
+        "en": "Reading and gathering sensor measurements at regular intervals."
+      }
+    },
+    {
+      "id": "web-monitoring",
+      "kind": "method",
+      "domain": "device",
+      "label": {
+        "ko": "웹 모니터링",
+        "en": "Web monitoring"
+      },
+      "title": {
+        "ko": "센서 값 저장과 웹 모니터링",
+        "en": "Storing readings and monitoring on the web"
+      },
+      "what": {
+        "ko": "장치가 보낸 값을 저장해 두고 웹 화면에서 지켜볼 수 있게 하는 것입니다.",
+        "en": "Storing what a device reports and letting people watch it on a web page."
+      }
+    },
+    {
+      "id": "sensor-quality",
+      "kind": "method",
+      "domain": "device",
+      "label": {
+        "ko": "센서 품질",
+        "en": "Sensor checks"
+      },
+      "title": {
+        "ko": "센서 품질 검사와 교차 확인",
+        "en": "Sensor quality checks and cross-checks"
+      },
+      "what": {
+        "ko": "센서 값마다 품질 표시를 확인하고, 이상해 보이는 값을 같은 구역의 다른 센서와 비교해 센서 고장인지 가려내는 규칙입니다.",
+        "en": "Rules that check each reading's quality flag and compare a doubtful value with the zone's other sensors to tell a faulty sensor from a real change."
+      }
+    },
+    {
+      "id": "operations-flow",
+      "kind": "method",
+      "domain": "device",
+      "label": {
+        "ko": "운영 지원",
+        "en": "Ops support"
+      },
+      "title": {
+        "ko": "운영자 승인형 운영 지원 흐름",
+        "en": "Operator-approved operations support"
+      },
+      "what": {
+        "ko": "관측 → 근거·설명 → 사람의 승인 → 실행 결과 확인으로 이어져, 최종 결정을 사람이 내리는 운영 지원 방식입니다.",
+        "en": "An operations flow — observe, explain with evidence, get human approval, check the result — in which a person makes the final call."
+      }
+    },
+    {
+      "id": "simulation",
+      "kind": "concept",
+      "domain": "device",
+      "label": {
+        "ko": "시뮬레이터",
+        "en": "Simulation"
+      },
+      "title": {
+        "ko": "시뮬레이터로 검증",
+        "en": "Validation against a simulator"
+      },
+      "what": {
+        "ko": "실제 장비 대신 상태를 흉내 내는 시뮬레이터로 시스템의 동작을 확인하는 방법입니다.",
+        "en": "Checking a system's behaviour against a simulator that mimics the real equipment."
+      }
+    },
+    {
+      "id": "action-history",
+      "kind": "concept",
+      "domain": "device",
+      "label": {
+        "ko": "이력 설명",
+        "en": "Action history"
+      },
+      "title": {
+        "ko": "판단 근거와 조작 이력 설명",
+        "en": "Explaining evidence and action history"
+      },
+      "what": {
+        "ko": "판단의 근거와 그동안의 조작 이력을 사용자가 이해하기 쉽게 보여 주는 방법입니다.",
+        "en": "Showing users the evidence behind a judgement and the history of actions in an understandable way."
+      }
+    },
+    {
+      "id": "shell",
+      "kind": "tech",
+      "domain": "infra",
+      "label": {
+        "ko": "Shell",
+        "en": "Shell"
+      },
+      "stack": "Shell",
+      "what": {
+        "ko": "명령어를 묶어 반복 작업을 자동으로 실행하는 리눅스 셸 스크립트입니다.",
+        "en": "Shell scripting: bundling commands so repetitive work runs automatically on Linux."
+      }
+    },
+    {
+      "id": "powershell",
+      "kind": "tech",
+      "domain": "infra",
+      "label": {
+        "ko": "PowerShell",
+        "en": "PowerShell"
+      },
+      "stack": "PowerShell",
+      "what": {
+        "ko": "Windows에서 작업을 자동화하는 명령줄 셸이자 스크립트 언어입니다.",
+        "en": "Windows' command shell and scripting language for automating tasks."
+      }
+    },
+    {
+      "id": "linux",
+      "kind": "tech",
+      "domain": "infra",
+      "label": {
+        "ko": "Linux",
+        "en": "Linux"
+      },
+      "title": {
+        "ko": "Linux (Ubuntu)",
+        "en": "Linux (Ubuntu)"
+      },
+      "stack": "Linux",
+      "what": {
+        "ko": "서버에서 가장 많이 쓰는 운영체제 계열로, Ubuntu는 대표적인 배포판입니다.",
+        "en": "The operating system family most servers run; Ubuntu is a popular distribution."
+      }
+    },
+    {
+      "id": "mediamtx",
+      "kind": "tech",
+      "domain": "infra",
+      "label": {
+        "ko": "MediaMTX",
+        "en": "MediaMTX"
+      },
+      "what": {
+        "ko": "RTSP·WebRTC 같은 방식으로 영상을 중계하는 스트리밍 서버입니다.",
+        "en": "A streaming server that relays video over RTSP, WebRTC and other protocols."
+      }
+    },
+    {
+      "id": "cloudflare",
+      "kind": "tech",
+      "domain": "infra",
+      "label": {
+        "ko": "Cloudflare",
+        "en": "Cloudflare"
+      },
+      "title": {
+        "ko": "Cloudflare Pages",
+        "en": "Cloudflare Pages"
+      },
+      "stack": "Cloudflare",
+      "what": {
+        "ko": "Git 저장소의 변경을 받아 웹사이트를 빌드하고 배포해 주는 사이트 호스팅입니다.",
+        "en": "Site hosting that builds and deploys a website from changes in a Git repository."
+      }
+    },
+    {
+      "id": "github-actions",
+      "kind": "tech",
+      "domain": "infra",
+      "label": {
+        "ko": "GitHub Actions",
+        "en": "GitHub Actions"
+      },
+      "stack": "GitHub Actions",
+      "what": {
+        "ko": "저장소에 변경이 생기거나 정한 시간이 되면 검사와 작업을 자동으로 돌리는 GitHub의 자동화 기능입니다.",
+        "en": "GitHub's automation that runs checks and jobs on changes or on a schedule."
+      }
+    },
+    {
+      "id": "github-api",
+      "kind": "tech",
+      "domain": "infra",
+      "label": {
+        "ko": "GitHub API",
+        "en": "GitHub API"
+      },
+      "what": {
+        "ko": "프로그램에서 GitHub의 저장소·이슈·PR을 다룰 수 있게 해 주는 API입니다.",
+        "en": "The API for working with GitHub repositories, issues and pull requests from code."
+      }
+    },
+    {
+      "id": "install-automation",
+      "kind": "method",
+      "domain": "infra",
+      "label": {
+        "ko": "설치 자동화",
+        "en": "Scripted setup"
+      },
+      "title": {
+        "ko": "설치·설정 자동화 스크립트",
+        "en": "Scripted installation and setup"
+      },
+      "what": {
+        "ko": "매번 손으로 치던 설치·설정 명령을 스크립트로 묶어 같은 결과를 반복해 얻는 방법입니다.",
+        "en": "Bundling install and setup commands into a script so the same result can be reproduced on demand."
+      }
+    },
+    {
+      "id": "human-approval",
+      "kind": "concept",
+      "domain": "infra",
+      "label": {
+        "ko": "사람 승인",
+        "en": "Human approval"
+      },
+      "title": {
+        "ko": "사람 승인 단계 (Human-in-the-loop)",
+        "en": "Human-in-the-loop approval"
+      },
+      "what": {
+        "ko": "자동화나 AI가 제안한 것을 바로 실행하지 않고, 사람이 확인·승인한 뒤에만 다음 단계로 넘기는 설계입니다.",
+        "en": "A design where what automation or AI proposes is carried out only after a person checks and approves it."
+      }
+    },
+    {
+      "id": "ai-review-loop",
+      "kind": "method",
+      "domain": "infra",
+      "label": {
+        "ko": "AI 교차 리뷰",
+        "en": "AI review loop"
+      },
+      "title": {
+        "ko": "AI 교차 리뷰 흐름",
+        "en": "AI cross-review loop"
+      },
+      "what": {
+        "ko": "외부 AI가 낸 코드 검토 의견을 개발 작업에 반영하는 과정을 정해진 흐름으로 만든 것입니다.",
+        "en": "A defined loop for bringing an external AI's code-review comments into development work."
+      }
+    },
+    {
+      "id": "pr-publishing",
+      "kind": "method",
+      "domain": "infra",
+      "label": {
+        "ko": "PR 발행",
+        "en": "PR publishing"
+      },
+      "title": {
+        "ko": "PR 기반 글 발행",
+        "en": "Publishing through pull requests"
+      },
+      "what": {
+        "ko": "글이나 변경 사항을 바로 반영하지 않고 Git의 변경 검토 요청(PR)으로 만들어, 검토한 뒤 반영하는 방식입니다.",
+        "en": "Turning a post or change into a Git pull request so it is reviewed before it is applied."
+      }
+    },
+    {
+      "id": "git-content",
+      "kind": "method",
+      "domain": "infra",
+      "label": {
+        "ko": "Git 배포",
+        "en": "Git deploys"
+      },
+      "title": {
+        "ko": "Git 기반 콘텐츠 관리와 자동 배포",
+        "en": "Git-managed content and automatic deployment"
+      },
+      "what": {
+        "ko": "글·이미지·코드를 Git 저장소에서 버전 관리하고, 변경이 반영되면 사이트가 자동으로 빌드·배포되게 하는 방식입니다.",
+        "en": "Versioning text, images and code in a Git repository so the site rebuilds and deploys automatically when changes land."
+      }
+    },
+    {
+      "id": "run-records",
+      "kind": "concept",
+      "domain": "infra",
+      "label": {
+        "ko": "실행 기록",
+        "en": "Run records"
+      },
+      "title": {
+        "ko": "자동화의 실행 상태와 변경 근거 기록",
+        "en": "Recording automation runs and change rationale"
+      },
+      "what": {
+        "ko": "자동화가 무엇을 언제 왜 바꿨는지 실행 상태와 변경 근거를 남기는 것입니다.",
+        "en": "Keeping a record of what automation changed, when and why."
+      }
+    },
+    {
+      "id": "docker",
+      "kind": "tech",
+      "domain": "infra",
+      "label": {
+        "ko": "Docker",
+        "en": "Docker"
+      },
+      "stack": "Docker",
+      "what": {
+        "ko": "앱과 실행 환경을 컨테이너로 묶어 어디서나 같게 실행하게 하는 도구입니다.",
+        "en": "Packages an app with its environment into containers that run the same anywhere."
+      }
+    },
+    {
+      "id": "devcontainer",
+      "kind": "tech",
+      "domain": "infra",
+      "label": {
+        "ko": "DevContainer",
+        "en": "DevContainer"
+      },
+      "stack": "DevContainer",
+      "what": {
+        "ko": "개발 환경을 컨테이너로 정의해 누구나 같은 환경에서 개발하게 하는 설정 방식입니다.",
+        "en": "A way to define the development environment as a container so everyone codes in the same setup."
+      }
+    },
+    {
+      "id": "aws",
+      "kind": "tech",
+      "domain": "infra",
+      "label": {
+        "ko": "AWS",
+        "en": "AWS"
+      },
+      "stack": "AWS",
+      "what": {
+        "ko": "서버·저장소·네트워크를 빌려 쓰는 아마존의 클라우드 서비스입니다.",
+        "en": "Amazon's cloud platform for renting servers, storage and networking."
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "paper:kci",
+      "kind": "paper",
+      "files": [
+        "content/education.json"
+      ],
+      "ref": "스마트팜 RAG를 위한 질의 적응형 검색 채널 제어",
+      "short": {
+        "ko": "KCI 논문",
+        "en": "KCI paper"
+      },
+      "href": "/cv"
+    },
+    {
+      "id": "paper:kiit",
+      "kind": "paper",
+      "files": [
+        "content/education.json"
+      ],
+      "ref": "근거 추적형 로컬 RAG 기반 온디바이스 의료 질의응답 시스템",
+      "short": {
+        "ko": "학술대회 발표",
+        "en": "Conference talk"
+      },
+      "href": "/cv"
+    },
+    {
+      "id": "paper:ieee",
+      "kind": "paper",
+      "files": [
+        "content/education.json"
+      ],
+      "ref": "Role-Separated Selective Response for Question Answering in Multi-View Video Surveillance",
+      "short": {
+        "ko": "IEEE 원고 · 심사 중",
+        "en": "IEEE draft · in review"
+      },
+      "href": "/cv"
+    },
+    {
+      "id": "work:kakao",
+      "kind": "work",
+      "files": [
+        "content/education.json"
+      ],
+      "ref": "AI 개발 인턴",
+      "short": {
+        "ko": "카카오 인턴",
+        "en": "Kakao intern"
+      },
+      "href": "/cv"
+    },
+    {
+      "id": "work:tilon-backend",
+      "kind": "work",
+      "files": [
+        "content/education.json"
+      ],
+      "ref": "백엔드 개발 인턴",
+      "short": {
+        "ko": "백엔드 인턴",
+        "en": "Backend intern"
+      },
+      "href": "/cv"
+    },
+    {
+      "id": "work:tilon-frontend",
+      "kind": "work",
+      "files": [
+        "content/education.json"
+      ],
+      "ref": "프론트엔드 개발 인턴",
+      "short": {
+        "ko": "프론트엔드 인턴",
+        "en": "Frontend intern"
+      },
+      "href": "/cv"
+    },
+    {
+      "id": "work:ml-lab",
+      "kind": "work",
+      "files": [
+        "content/education.json"
+      ],
+      "ref": "석사과정 학생연구원",
+      "short": {
+        "ko": "연구실",
+        "en": "ML lab"
+      },
+      "href": "/cv"
+    },
+    {
+      "id": "code:mv-evirag",
+      "kind": "code",
+      "files": [
+        "client/src/components/capabilities/capabilityCodeFlows.ts",
+        "client/src/components/capabilities/capabilityJourneys.ts"
+      ],
+      "title": {
+        "ko": "다중 시점 영상 질의응답 — 코드로 확인한 흐름",
+        "en": "Multi-view video QA — flow read from the code"
+      },
+      "short": {
+        "ko": "MV-EviRAG 코드",
+        "en": "MV-EviRAG code"
+      },
+      "status": {
+        "ko": "연구 저장소의 평가 실행 코드 · 실행 기록 아님",
+        "en": "Evaluation code in the research repository · not a run record"
+      },
+      "href": "/projects/mv-evirag"
+    },
+    {
+      "id": "code:music-splitter",
+      "kind": "code",
+      "files": [
+        "client/src/components/capabilities/capabilityCodeFlows.ts",
+        "client/src/components/capabilities/capabilityJourneys.ts"
+      ],
+      "title": {
+        "ko": "음원 분리 웹 서비스 — 코드로 확인한 흐름",
+        "en": "Audio separation web service — flow read from the code"
+      },
+      "short": {
+        "ko": "음원 분리 웹 코드",
+        "en": "Splitter web code"
+      },
+      "status": {
+        "ko": "공개 저장소 코드 · 실행 기록 아님",
+        "en": "Public repository code · not a run record"
+      },
+      "href": "/projects/music-splitter-web"
+    },
+    {
+      "id": "record:smartfarm",
+      "kind": "record",
+      "files": [
+        "client/src/components/capabilities/capabilityRecordedTraces.ts",
+        "client/src/components/capabilities/capabilityJourneys.ts"
+      ],
+      "title": {
+        "ko": "스마트팜 운영 지원 대시보드 — 화면 기록",
+        "en": "Smart-farm operations dashboard — screen record"
+      },
+      "short": {
+        "ko": "스마트팜 화면 기록",
+        "en": "SmartFarm screen record"
+      },
+      "status": {
+        "ko": "2026-10-01 기록 · 시뮬레이터 값 · 실제 농장 아님",
+        "en": "Recorded 2026-10-01 · simulator values · not a real farm"
+      },
+      "href": "/projects/smartfarm-rag"
+    },
+    {
+      "id": "site:portfolio",
+      "kind": "site",
+      "files": [
+        "README.md"
+      ],
+      "title": {
+        "ko": "이 포트폴리오 사이트",
+        "en": "This portfolio site"
+      },
+      "short": {
+        "ko": "이 사이트",
+        "en": "This site"
+      },
+      "status": {
+        "ko": "사이트 저장소 설명",
+        "en": "The site's repository notes"
+      }
+    },
+    {
+      "id": "stack:skills",
+      "kind": "stack",
+      "files": [
+        "content/skills.json"
+      ],
+      "title": {
+        "ko": "기술 스택 목록",
+        "en": "Technology stack list"
+      },
+      "short": {
+        "ko": "기술 스택 목록",
+        "en": "Stack list"
+      },
+      "status": {
+        "ko": "연결된 작업 기록 없음",
+        "en": "No linked work"
+      }
+    }
+  ],
+  "relations": [
+    "uses",
+    "implements",
+    "applies",
+    "supports",
+    "prerequisite"
+  ]
+}

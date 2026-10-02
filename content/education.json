@@ -11,7 +11,23 @@
     "bullets": [],
     "links": [],
     "relatedProjects": [],
-    "relatedSkills": []
+    "relatedSkills": [],
+    "id": "paper:kci",
+    "knowledge": {
+      "claims": [
+        {
+          "node": "baseline-comparison",
+          "mode": "studied",
+          "quote": "공개 자료를 이용해 기존 검색 방식과 비교했습니다."
+        },
+        {
+          "node": "channel-control",
+          "mode": "studied",
+          "quote": "검색 채널을 결합하는 방식과 선택 절차를 구현하고"
+        }
+      ],
+      "relations": []
+    }
   },
   {
     "type": "publication",
@@ -25,7 +41,36 @@
     "bullets": [],
     "links": [],
     "relatedProjects": [],
-    "relatedSkills": []
+    "relatedSkills": [],
+    "id": "paper:kiit",
+    "knowledge": {
+      "claims": [
+        {
+          "node": "local-inference",
+          "mode": "studied",
+          "quote": "기기에서 실행하는 의료 질의응답 시스템을 다루었습니다."
+        },
+        {
+          "node": "evidence-tracing",
+          "mode": "studied",
+          "quote": "답변에 사용한 문서 근거를 추적할 수 있도록 구성하는 로컬 RAG 연구입니다."
+        }
+      ],
+      "relations": [
+        {
+          "from": "local-inference",
+          "to": "rag",
+          "relation": "applies",
+          "quote": "근거 추적형 로컬 RAG 기반 온디바이스 의료 질의응답 시스템"
+        },
+        {
+          "from": "evidence-tracing",
+          "to": "grounded-answer",
+          "relation": "supports",
+          "quote": "답변에 사용한 문서 근거를 추적할 수 있도록 구성하는 로컬 RAG 연구입니다."
+        }
+      ]
+    }
   },
   {
     "type": "publication",
@@ -39,7 +84,40 @@
     "bullets": [],
     "links": [],
     "relatedProjects": [],
-    "relatedSkills": []
+    "relatedSkills": [],
+    "id": "paper:ieee",
+    "knowledge": {
+      "claims": [
+        {
+          "node": "training",
+          "mode": "studied",
+          "quote": "영상에 답변에 필요한 정보가 있는 경우와 없는 경우를 함께 학습하고"
+        },
+        {
+          "node": "selective-prediction",
+          "mode": "studied",
+          "quote": "Role-Separated Selective Response for Question Answering in Multi-View Video Surveillance"
+        },
+        {
+          "node": "mv-video-qa",
+          "mode": "studied",
+          "quote": "입력 영상의 선택과 답변·보류, 최종 답변의 제공을 서로 다른 단계로 나누어 연구했습니다."
+        },
+        {
+          "node": "abstention",
+          "mode": "studied",
+          "quote": "영상에 답변에 필요한 정보가 있는 경우와 없는 경우를 함께 학습하고"
+        }
+      ],
+      "relations": [
+        {
+          "from": "abstention",
+          "to": "selective-prediction",
+          "relation": "implements",
+          "quote": "Role-Separated Selective Response for Question Answering in Multi-View Video Surveillance"
+        }
+      ]
+    }
   },
   {
     "type": "research",
@@ -57,7 +135,18 @@
     ],
     "links": [],
     "relatedProjects": [],
-    "relatedSkills": []
+    "relatedSkills": [],
+    "id": "work:ml-lab",
+    "knowledge": {
+      "claims": [
+        {
+          "node": "local-inference",
+          "mode": "built",
+          "quote": "연구실 LLM 활용과 서버·내부망 설정 지원"
+        }
+      ],
+      "relations": []
+    }
   },
   {
     "type": "work",
@@ -71,7 +160,45 @@
     "bullets": [],
     "links": [],
     "relatedProjects": [],
-    "relatedSkills": []
+    "relatedSkills": [],
+    "id": "work:tilon-backend",
+    "knowledge": {
+      "claims": [
+        {
+          "node": "spring-boot",
+          "mode": "built",
+          "quote": "Java·Spring Boot 기반 게시판 포털을 개발했습니다."
+        },
+        {
+          "node": "java",
+          "mode": "built",
+          "quote": "Java·Spring Boot 기반 게시판 포털을 개발했습니다."
+        },
+        {
+          "node": "auth",
+          "mode": "built",
+          "quote": "게시글 CRUD, 회원가입·로그인, 검색·페이지네이션과 데이터베이스 연동을 구현했습니다."
+        },
+        {
+          "node": "crud",
+          "mode": "built",
+          "quote": "게시글 CRUD, 회원가입·로그인, 검색·페이지네이션과 데이터베이스 연동을 구현했습니다."
+        },
+        {
+          "node": "db-integration",
+          "mode": "built",
+          "quote": "검색·페이지네이션과 데이터베이스 연동을 구현했습니다."
+        }
+      ],
+      "relations": [
+        {
+          "from": "java",
+          "to": "spring-boot",
+          "relation": "prerequisite",
+          "quote": "Java·Spring Boot 기반 게시판 포털을 개발했습니다."
+        }
+      ]
+    }
   },
   {
     "type": "work",
@@ -85,7 +212,52 @@
     "bullets": [],
     "links": [],
     "relatedProjects": [],
-    "relatedSkills": []
+    "relatedSkills": [],
+    "id": "work:kakao",
+    "knowledge": {
+      "claims": [
+        {
+          "node": "python",
+          "mode": "built",
+          "quote": "Python·PyTorch 기반 음원 악보 전사 프로젝트"
+        },
+        {
+          "node": "pytorch",
+          "mode": "built",
+          "quote": "Python·PyTorch 기반 음원 악보 전사 프로젝트"
+        },
+        {
+          "node": "transcription",
+          "mode": "built",
+          "quote": "Python·PyTorch 기반 음원 악보 전사 프로젝트와 Bootstrap 웹 화면을 개발했습니다."
+        },
+        {
+          "node": "bootstrap",
+          "mode": "built",
+          "quote": "Bootstrap 웹 화면을 개발했습니다."
+        }
+      ],
+      "relations": [
+        {
+          "from": "transcription",
+          "to": "python",
+          "relation": "uses",
+          "quote": "Python·PyTorch 기반 음원 악보 전사 프로젝트"
+        },
+        {
+          "from": "transcription",
+          "to": "pytorch",
+          "relation": "uses",
+          "quote": "Python·PyTorch 기반 음원 악보 전사 프로젝트"
+        },
+        {
+          "from": "web-ui",
+          "to": "bootstrap",
+          "relation": "uses",
+          "quote": "Bootstrap 웹 화면을 개발했습니다."
+        }
+      ]
+    }
   },
   {
     "type": "work",
@@ -99,7 +271,23 @@
     "bullets": [],
     "links": [],
     "relatedProjects": [],
-    "relatedSkills": []
+    "relatedSkills": [],
+    "id": "work:tilon-frontend",
+    "knowledge": {
+      "claims": [
+        {
+          "node": "vue",
+          "mode": "built",
+          "quote": "Vue.js 기반 회사 소개 웹페이지 개편에 참여하고 화면 구현을 지원했습니다."
+        },
+        {
+          "node": "web-ui",
+          "mode": "built",
+          "quote": "Vue.js 기반 회사 소개 웹페이지 개편에 참여하고 화면 구현을 지원했습니다."
+        }
+      ],
+      "relations": []
+    }
   },
   {
     "type": "work",

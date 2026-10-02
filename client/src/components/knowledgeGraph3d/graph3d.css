@@ -1,0 +1,1380 @@
+/*
+ * 3D 지식 지도 (/design/knowledge-graph-3d 미리보기 전용 — 공개 홈 번들에는 들어가지 않습니다)
+ * 색과 글꼴은 층위형 지도와 같은 --km-* 변수(홈 테마)를 씁니다. 색은 숲 초록 하나와 먹색만 씁니다.
+ * 전체 보기: 가운데 이름(사람) · 정리 선(모두 같은 굵기의 점선 — 숙련도가 아님) · 적도 고리 · 분야 묶음의 옅은 원 · 별(지식).
+ * 펼친 분야: 종류별 층(비스듬한 판) 위의 칩, 기록된 관계 선(실선, 바탕은 점선), 근거 선(점선은 고른 것에만).
+ * 점 모양 = 종류: 개념 ●(초록) · 구현한 방법 ◎(초록 테두리) · 기술 ◆(먹색) · 근거 ■(테두리). 점선 테두리 = 관심·스택 목록(작업 기록 없음).
+ * 크기는 숙련도가 아닙니다. 숨쉬기·기울기·펼치기는 스크립트가 transform 으로 씁니다. 끝없이 되풀이되는 CSS 애니메이션은 없습니다.
+ */
+
+/* ── 레일 지도 자리 (지금 레일과 같은 폭, 높이는 폭의 1.2배 — graph3dLayout 의 RAIL_ASPECT 와 같음) ── */
+
+.kg3-frame {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 5 / 6;
+  max-height: 52dvh;
+  flex-shrink: 0;
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.kg3-thumb {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 10 / 11;
+  max-height: 240px;
+  overflow: hidden;
+}
+
+.kg3-stage-root {
+  position: relative;
+}
+
+/* ── 전체 보기 (지식의 구) ── */
+
+.kg3-globe {
+  position: absolute;
+  inset: 0;
+  cursor: grab;
+  touch-action: none;
+}
+
+.kg3-globe:not([data-live]) {
+  pointer-events: none;
+}
+
+.kg3-frame[data-dragging="true"] .kg3-globe,
+.kg3-stage[data-dragging="true"] .kg3-globe {
+  cursor: grabbing;
+}
+
+.kg3-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.kg3-svg {
+  position: absolute;
+  inset: 0;
+  display: block;
+  overflow: visible;
+  /* 가까운 점의 은은한 빛(방사형 그라디언트)이 이 색을 씁니다 */
+  color: var(--km-green);
+}
+
+.kg3-overlay {
+  position: absolute;
+  inset: 0;
+}
+
+/* 적도 고리 — 구의 기울기와 회전을 보여 주는 옅은 선 */
+.kg3-equator {
+  fill: none;
+  stroke: var(--km-green);
+  stroke-width: 0.8;
+  stroke-dasharray: 1.5 4;
+  opacity: 0.28;
+}
+
+/* 가운데(사람) → 분야: 정리 선. 모두 같은 굵기 — 숙련도·성과를 뜻하지 않습니다 */
+.kg3-spoke {
+  stroke: var(--km-green);
+  stroke-width: 0.8;
+  stroke-dasharray: 1.5 3.5;
+  stroke-linecap: round;
+  opacity: 0.4;
+  transition: opacity 0.2s ease;
+}
+
+.kg3-spoke[data-state="focus"] {
+  stroke-dasharray: none;
+  opacity: 0.85;
+}
+
+.kg3-spoke[data-state="dim"] {
+  opacity: 0.12;
+}
+
+.kg3-core-glow {
+  fill: var(--km-green-bg);
+  stroke: var(--km-green);
+  stroke-width: 0.8;
+  stroke-opacity: 0.35;
+}
+
+/* 가운데 이름 — 지도의 중심. 누르는 대상이 아닙니다 */
+.kg3-core-label {
+  position: absolute;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid color-mix(in srgb, var(--km-green) 55%, transparent);
+  border-radius: 46% 54% 48% 52%;
+  background: radial-gradient(circle at 48% 48%, var(--km-green) 0 17%, var(--km-green-bg) 24% 65%, transparent 100%);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--km-green) 15%, transparent);
+  font-family: var(--km-sans);
+  line-height: 1.15;
+  white-space: nowrap;
+  pointer-events: auto;
+}
+
+.kg3-core-label b {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 2px 5px;
+  border-radius: 4px;
+  background: var(--km-panel);
+  color: var(--km-ink);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.kg3-core-label:hover b,
+.kg3-core-label:focus-visible b {
+  opacity: 1;
+}
+
+.kg3-core-label:focus-visible {
+  outline: 2px solid var(--km-green);
+  outline-offset: 4px;
+}
+
+.kg3-halo-region {
+  fill: var(--km-green);
+  /* 숨쉬기 배율을 묶음 가운데 기준으로 */
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: opacity 0.2s ease;
+}
+
+.kg3-halo-region[data-state="focus"] {
+  stroke: var(--km-green);
+  stroke-width: 1;
+  stroke-dasharray: 2 4;
+}
+
+.kg3-link {
+  fill: none;
+  stroke: var(--km-muted);
+  stroke-width: 0.75;
+  stroke-linecap: round;
+}
+
+/* 설명용 '바탕' 관계는 점선 — 직접 한 일의 연결과 구분합니다 */
+.kg3-link[data-relation="prerequisite"] {
+  stroke-dasharray: 2 2.5;
+}
+
+.kg3-link[data-tier="far"] {
+  stroke: var(--km-green);
+  stroke-width: 0.95;
+}
+
+.kg3-link[data-tier="near"] {
+  stroke: var(--km-green);
+  stroke-width: 1.3;
+  animation: kg3-fade 0.24s ease-out both;
+}
+
+.kg3-node {
+  transition: opacity 0.18s ease;
+}
+
+.kg3-node[data-kind="concept"] .kg3-dot {
+  fill: var(--km-green);
+  stroke: var(--km-panel);
+  stroke-width: 1.1;
+}
+
+.kg3-node[data-kind="method"] .kg3-dot {
+  fill: var(--km-panel);
+  stroke: var(--km-green);
+  stroke-width: 1.5;
+}
+
+.kg3-pip {
+  fill: var(--km-green);
+}
+
+.kg3-node[data-kind="tech"] .kg3-dot {
+  fill: var(--km-sub);
+  stroke: var(--km-panel);
+  stroke-width: 0.8;
+}
+
+.kg3-node[data-kind="tech"][data-state="focus"] .kg3-dot,
+.kg3-node[data-kind="tech"][data-state="near"] .kg3-dot {
+  fill: var(--km-ink);
+}
+
+/* 관심·스택 목록 — Obsidian 의 아직 없는 노트처럼 속이 빈 점선 */
+.kg3-node[data-status="interest"] .kg3-dot,
+.kg3-node[data-status="listed"] .kg3-dot {
+  fill: var(--km-panel);
+  stroke: var(--km-muted);
+  stroke-width: 1;
+  stroke-dasharray: 1.6 1.4;
+}
+
+/* 가리킨 별 — 옅은 원과 가는 테두리 */
+.kg3-halo {
+  fill: var(--km-green-bg);
+  stroke: var(--km-green);
+  stroke-width: 1;
+}
+
+/* 가리킨 곳 가까운 점의 은은한 빛 (불투명도는 스크립트가 거리로 정함) */
+.kg3-glow {
+  pointer-events: none;
+}
+
+/* 별을 가리킨 순간 한 번만 퍼지는 물결 */
+.kg3-pulse {
+  fill: none;
+  stroke: var(--km-green);
+  stroke-width: 1.2;
+  opacity: 0;
+  pointer-events: none;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: kg3-pulse 0.75s cubic-bezier(0.2, 0.7, 0.3, 1) both;
+}
+
+/* 미리 보는 분야의 실제 연결 위를 한 번 지나가는 빛 */
+.kg3-spark {
+  fill: none;
+  stroke: var(--km-green);
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  opacity: 0;
+  pointer-events: none;
+  filter: drop-shadow(0 0 1.5px var(--km-green));
+  animation: kg3-spark 0.9s cubic-bezier(0.3, 0.55, 0.35, 1) 0.06s both;
+}
+
+.kg3-canvas[data-motion="off"] .kg3-pulse,
+.kg3-canvas[data-motion="off"] .kg3-spark {
+  display: none;
+}
+
+.kg3-canvas[data-moving="true"] .kg3-node,
+.kg3-canvas[data-moving="true"] .kg3-label,
+.kg3-canvas[data-moving="true"] .kg3-halo-region,
+.kg3-canvas[data-moving="true"] .kg3-spoke {
+  transition: none;
+}
+
+/* 분야 묶음을 가리키고 누르는 자리 (보이지 않음 — 분야 이름 단추가 키보드 대상) */
+.kg3-region-hit {
+  position: absolute;
+  border-radius: 50%;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* 별을 가리키는 자리 (보이지 않음) */
+.kg3-star {
+  position: absolute;
+  border-radius: 999px;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.kg3-static {
+  pointer-events: none;
+}
+
+/* 지식 이름 — 넓게 보기의 확대 · 가리킨 별. 글자만 있고 누르는 대상이 아닙니다 */
+.kg3-label {
+  position: absolute;
+  padding: 1px 4px;
+  border-radius: 3px;
+  color: var(--km-sub);
+  font-family: var(--km-sans);
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: -0.005em;
+  white-space: nowrap;
+  pointer-events: none;
+  text-shadow:
+    0 0 2px var(--km-panel),
+    0 0 2px var(--km-panel),
+    0 0 4px var(--km-panel);
+  transition: color 0.18s ease, opacity 0.18s ease;
+}
+
+.kg3-label[data-kind="tech"] {
+  font-family: var(--km-mono);
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+.kg3-label[data-status="interest"],
+.kg3-label[data-status="listed"] {
+  color: var(--km-muted);
+  font-style: italic;
+}
+
+.kg3-label[data-state="near"] {
+  color: var(--km-ink);
+}
+
+.kg3-label[data-state="far"] {
+  opacity: 0.75;
+}
+
+.kg3-label[data-state="dim"] {
+  opacity: 0.4;
+}
+
+.kg3-label[data-active="true"] {
+  background: var(--km-panel);
+  color: var(--km-ink);
+  font-weight: 600;
+  text-shadow: none;
+  opacity: 1;
+  box-shadow:
+    0 0 0 1px var(--km-green),
+    0 1px 4px rgba(0, 0, 0, 0.12);
+}
+
+/* 분야 이름 — 묶음 위에 지도 글씨처럼 씁니다 (근거가 있는 지식 수를 뒤에). 누르면 펼칩니다 */
+.kg3-domain {
+  position: absolute;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  margin: 0;
+  padding: 0 6px;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--km-green);
+  font-family: var(--km-sans);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  cursor: pointer;
+  text-shadow:
+    0 0 2px var(--km-panel),
+    0 0 3px var(--km-panel),
+    0 0 6px var(--km-panel);
+  transition: opacity 0.18s ease, background 0.18s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.kg3-domain:focus {
+  outline: none;
+}
+
+.kg3-domain-count {
+  color: var(--km-muted);
+  font-family: var(--km-mono);
+  font-size: 0.84em;
+  font-weight: 500;
+}
+
+.kg3-domain[data-state="dim"] {
+  opacity: 0.5;
+}
+
+.kg3-domain[data-state="focus"],
+.kg3-domain[data-active="true"] {
+  background: var(--km-panel);
+  text-shadow: none;
+  opacity: 1;
+  box-shadow:
+    0 0 0 1px var(--km-green),
+    0 1px 4px rgba(0, 0, 0, 0.12);
+}
+
+/* 펼치는 동안 구에서 감춘 분야 — 접고 돌아올 때 초점을 돌려줄 자리만 남깁니다 */
+.kg3-domain[data-hidden="true"] {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.kg3-domain:hover .kg3-domain-name {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.kg3-domain:focus-visible {
+  box-shadow:
+    0 0 0 2px var(--km-panel),
+    0 0 0 4px var(--km-green);
+}
+
+.kg3-static-domain {
+  cursor: default;
+  pointer-events: none;
+  font-weight: 600;
+}
+
+/* ── 펼친 분야 (2.5D 층 그림) ── */
+
+.kg3-dv {
+  position: absolute;
+  inset: 0;
+  background: var(--km-panel);
+}
+
+.kg3-dv-head {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 2;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0 4px;
+  border-bottom: 1px solid var(--km-border);
+  background: var(--km-panel);
+}
+
+.kg3-dv[data-variant="explorer"] .kg3-dv-head {
+  gap: 0.85rem;
+  padding: 0 22px;
+}
+
+.kg3-back {
+  appearance: none;
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 0.25rem;
+  min-height: 24px;
+  padding: 0 0.55rem 0 0.45rem;
+  border: 1px solid var(--km-green);
+  border-radius: 999px;
+  background: var(--km-green-bg);
+  color: var(--km-green);
+  font-family: var(--km-sans);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.kg3-dv[data-variant="explorer"] .kg3-back {
+  min-height: 30px;
+  font-size: 0.8125rem;
+}
+
+.kg3-back:hover,
+.kg3-back:focus-visible {
+  background: var(--km-green);
+  color: var(--km-panel);
+  outline: none;
+}
+
+.kg3-back:focus-visible {
+  box-shadow:
+    0 0 0 2px var(--km-panel),
+    0 0 0 4px var(--km-green);
+}
+
+.kg3-dv-title {
+  display: flex;
+  min-width: 0;
+  align-items: baseline;
+  gap: 0.3rem;
+  margin: 0;
+  overflow: hidden;
+  color: var(--km-ink);
+  font-family: var(--km-sans);
+  font-size: 0.75rem;
+  white-space: nowrap;
+}
+
+.kg3-dv[data-variant="explorer"] .kg3-dv-title {
+  font-size: 0.9375rem;
+}
+
+.kg3-dv-path,
+.kg3-dv-sep {
+  color: var(--km-muted);
+}
+
+.kg3-dv-title b {
+  color: var(--km-green);
+  font-weight: 700;
+}
+
+.kg3-dv-count {
+  color: var(--km-muted);
+  font-family: var(--km-mono);
+  font-size: 0.9em;
+}
+
+.kg3-dv-scroll {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  /* 터치: 펼친 그림은 세로로 스크롤합니다 (구를 돌리는 끌기는 전체 보기에서만) */
+  touch-action: pan-y;
+}
+
+/* 레일에서는 그림 끝에서 페이지가 따라 스크롤되지 않게 — 휴대폰 넓게 보기는 끝에서 설명 칸 쪽으로 이어 스크롤 */
+.kg3-dv[data-variant="rail"] .kg3-dv-scroll {
+  overscroll-behavior: contain;
+}
+
+.kg3-dv[data-unfolding="true"] .kg3-dv-scroll {
+  overflow: hidden;
+}
+
+.kg3-dv[data-unfolding="true"] .kg3-dv-overlay,
+.kg3-dv[data-unfolding="true"] .kg3-dv-head {
+  pointer-events: none;
+}
+
+.kg3-dv-content {
+  position: relative;
+}
+
+.kg3-dv-svg {
+  position: absolute;
+  inset: 0;
+  display: block;
+  overflow: visible;
+}
+
+.kg3-dv-plane {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.kg3-dv-face {
+  fill: var(--km-plane);
+  stroke: var(--km-plane-edge);
+  stroke-width: 1;
+  stroke-linejoin: round;
+}
+
+.kg3-dv-plane[data-tier="concept"] .kg3-dv-face {
+  fill: var(--km-plane-top);
+}
+
+.kg3-dv-plane[data-tier="evidence"] .kg3-dv-face {
+  fill: none;
+  stroke-dasharray: 3 3;
+}
+
+.kg3-dv-slab {
+  fill: var(--km-slab);
+}
+
+.kg3-dv-plane[data-tier="evidence"] .kg3-dv-slab {
+  fill: none;
+}
+
+/* 기록된 관계 — 실선, 바탕(설명용)은 점선. 고른 지식의 선만 진하게 (관계 이름과 방향 화살표) */
+.kg3-dv-link {
+  fill: none;
+  stroke: var(--km-green);
+  stroke-width: 0.9;
+  stroke-linecap: round;
+  opacity: 0.32;
+  transition: opacity 0.18s ease;
+}
+
+.kg3-dv-link[data-relation="prerequisite"] {
+  stroke-dasharray: 3 3;
+}
+
+.kg3-dv-link[data-state="near"] {
+  stroke-width: 1.4;
+  opacity: 0.95;
+}
+
+.kg3-dv-link[data-state="dim"] {
+  opacity: 0.08;
+}
+
+.kg3-dv-arrow {
+  fill: var(--km-green);
+}
+
+/* 근거로 이어진 선 — 고른 지식·근거에만 */
+.kg3-dv-claim {
+  fill: none;
+  stroke: var(--km-sub);
+  stroke-width: 1;
+  stroke-dasharray: 1 3;
+  stroke-linecap: round;
+  opacity: 0.8;
+}
+
+.kg3-dv-overlay {
+  position: absolute;
+  inset: 0;
+}
+
+.kg3-dv-tier {
+  position: absolute;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  color: var(--km-muted);
+  font-family: var(--km-sans);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.kg3-dv[data-variant="explorer"] .kg3-dv-tier {
+  font-size: 0.8125rem;
+}
+
+.kg3-dv-tier b {
+  color: var(--km-sub);
+  font-family: var(--km-mono);
+  font-weight: 500;
+}
+
+.kg3-dv-gutter {
+  position: absolute;
+  display: inline-flex;
+  align-items: center;
+  overflow: hidden;
+  color: var(--km-muted);
+  font-family: var(--km-sans);
+  font-size: 10px;
+  font-weight: 700;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.kg3-dv[data-variant="explorer"] .kg3-dv-gutter {
+  font-size: 11.5px;
+}
+
+/* 지식·근거 칩 — 점 모양 + 화면을 향한 글자 */
+.kg3-dv-item {
+  position: absolute;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  margin: 0;
+  padding-right: 4px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: var(--km-panel);
+  color: var(--km-sub);
+  font-family: var(--km-sans);
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: opacity 0.18s ease, background 0.18s ease, color 0.18s ease, border-color 0.18s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.kg3-dv-item[data-kind="tech"] {
+  border-radius: 4px;
+  font-family: var(--km-mono);
+  font-weight: 400;
+}
+
+.kg3-dv-item[data-kind="evidence"] {
+  border-color: var(--km-border);
+  border-radius: 4px;
+  color: var(--km-ink);
+}
+
+.kg3-dv-item[data-status="interest"],
+.kg3-dv-item[data-status="listed"] {
+  color: var(--km-muted);
+  font-style: italic;
+}
+
+.kg3-dv-item:hover {
+  border-color: var(--km-green);
+  color: var(--km-green);
+}
+
+.kg3-dv-item:focus {
+  outline: none;
+}
+
+.kg3-dv-item:focus-visible {
+  box-shadow:
+    0 0 0 2px var(--km-panel),
+    0 0 0 4px var(--km-green);
+}
+
+.kg3-dv-item[data-state="dim"] {
+  opacity: 0.42;
+}
+
+.kg3-dv-item[data-state="near"] {
+  border-color: var(--km-green);
+  color: var(--km-ink);
+}
+
+/* 미리 보기(가리킴·키보드 초점) — 또렷한 초록 테두리 */
+.kg3-dv-item[data-state="focus"],
+.kg3-dv-item[data-active="true"] {
+  border-color: var(--km-green);
+  background: var(--km-green-bg);
+  color: var(--km-ink);
+  font-weight: 600;
+  opacity: 1;
+}
+
+/* 고정한 동안 가리킨 다른 칩 — 점선 테두리 (설명·강조는 고정한 쪽 그대로) */
+.kg3-dv-item[data-cue="true"] {
+  border-style: dashed;
+  border-color: var(--km-green);
+  background: var(--km-panel);
+  opacity: 1;
+}
+
+/* 고정 — 진한 숲 초록 칩과 핀 */
+.kg3-dv-item[data-pinned="true"] {
+  border-color: var(--km-green);
+  background: var(--km-green);
+  color: var(--km-panel);
+  font-weight: 600;
+  opacity: 1;
+}
+
+.kg3-dv-glyph,
+.kg3-dv-pin {
+  position: absolute;
+  top: 50%;
+}
+
+.kg3-dv-pin,
+.kg3-dv-item > .kg3-dv-glyph.kg3-glyph {
+  transform: translate(-50%, -50%);
+}
+
+.kg3-dv-item > .kg3-dv-glyph.kg3-glyph[data-kind="tech"]:not([data-open="true"]) {
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.kg3-dv-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 고른 지식의 선에 붙는 관계 이름 (사용·구현·적용·뒷받침·바탕) */
+.kg3-dv-rel {
+  position: absolute;
+  z-index: 3;
+  padding: 0 3px;
+  border-radius: 3px;
+  background: var(--km-panel);
+  color: var(--km-green);
+  font-family: var(--km-sans);
+  font-size: 9.5px;
+  font-weight: 700;
+  line-height: 1.35;
+  white-space: nowrap;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 0 1px var(--km-plane-edge);
+}
+
+.kg3-dv[data-variant="explorer"] .kg3-dv-rel {
+  font-size: 11px;
+}
+
+.kg3-dv-foot {
+  display: grid;
+  gap: 0.35rem;
+  padding: 0 6px 10px;
+}
+
+.kg3-dv[data-variant="explorer"] .kg3-dv-foot {
+  padding: 0 22px 18px;
+}
+
+.kg3-dv-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.2rem 0.7rem;
+  margin: 0;
+  padding: 0;
+  color: var(--km-muted);
+  font-size: 0.6875rem;
+  list-style: none;
+}
+
+.kg3-dv-legend li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.kg3-dv-legend li::before {
+  content: "";
+  display: inline-block;
+  width: 14px;
+  height: 0;
+  border-top: 1.4px solid var(--km-green);
+}
+
+.kg3-dv-legend li[data-line="background"]::before {
+  border-top-style: dashed;
+}
+
+.kg3-dv-legend li[data-line="evidence"]::before {
+  border-top: 1.6px dotted var(--km-sub);
+}
+
+.kg3-dv-legend li[data-line="open"]::before {
+  width: 7px;
+  height: 7px;
+  border: 1px dashed var(--km-muted);
+  border-radius: 50%;
+}
+
+.kg3-dv-note {
+  margin: 0;
+  color: var(--km-muted);
+  font-size: 0.6875rem;
+  line-height: 1.55;
+}
+
+.kg3-dv[data-variant="explorer"] .kg3-dv-note,
+.kg3-dv[data-variant="explorer"] .kg3-dv-legend {
+  font-size: 0.75rem;
+}
+
+/* ── 움직임 켬/끔 (레일: 지도 아래, 넓게 보기: 도구 줄) ── */
+
+.kg3-foot {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: -0.35rem;
+}
+
+.kg3-motion {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 24px;
+  padding: 0 0.6rem;
+  border: 1px solid var(--km-border);
+  border-radius: 999px;
+  background: var(--km-bg);
+  color: var(--km-sub);
+  font-family: var(--km-sans);
+  font-size: 0.6875rem;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.kg3-motion:hover,
+.kg3-motion:focus-visible {
+  border-color: var(--km-green);
+  color: var(--km-green);
+  outline: none;
+}
+
+.kg3-motion:focus-visible {
+  box-shadow:
+    0 0 0 2px var(--km-panel),
+    0 0 0 4px var(--km-green);
+}
+
+.kg3-motion-dot {
+  width: 7px;
+  height: 7px;
+  box-sizing: border-box;
+  border: 1.5px solid var(--km-muted);
+  border-radius: 50%;
+}
+
+.kg3-motion[aria-pressed="true"] .kg3-motion-dot {
+  border-color: var(--km-green);
+  background: var(--km-green);
+}
+
+.kg3-motion-state {
+  color: var(--km-muted);
+  font-family: var(--km-mono);
+}
+
+.kg3-motion[aria-pressed="true"] .kg3-motion-state {
+  color: var(--km-green);
+}
+
+.kg3-motion:disabled {
+  cursor: default;
+  opacity: 0.8;
+}
+
+.kg3-motion:disabled:hover {
+  border-color: var(--km-border);
+  color: var(--km-sub);
+}
+
+.kg3-toolbar .kg3-motion {
+  min-height: 2rem;
+  font-size: 0.8125rem;
+}
+
+/* ── 점 모양 범례·칩 ── */
+
+.kg3-glyph {
+  display: inline-block;
+  flex: 0 0 8px;
+  width: 8px;
+  height: 8px;
+  box-sizing: border-box;
+  border-radius: 50%;
+  background: var(--km-green);
+}
+
+.kg3-glyph[data-kind="method"] {
+  border: 1.6px solid var(--km-green);
+  background: radial-gradient(circle, var(--km-green) 0 1.4px, var(--km-panel) 1.6px);
+}
+
+.kg3-glyph[data-kind="tech"] {
+  flex-basis: 7px;
+  width: 7px;
+  height: 7px;
+  margin: 0 0.5px;
+  border-radius: 0;
+  background: var(--km-sub);
+  transform: rotate(45deg);
+}
+
+/* 근거(프로젝트·논문·경력·코드 기록) — 테두리만 있는 네모 */
+.kg3-glyph[data-kind="evidence"] {
+  border: 1.4px solid var(--km-sub);
+  border-radius: 1.5px;
+  background: transparent;
+}
+
+.kg3-glyph[data-open="true"] {
+  border: 1px dashed var(--km-muted);
+  border-radius: 50%;
+  background: transparent;
+  transform: none;
+}
+
+.kg3-dv-item[data-pinned="true"] .kg3-glyph,
+.kg3-dv-item[data-pinned="true"] .kg3-dv-pin {
+  color: var(--km-panel);
+}
+
+.kg3-chip {
+  max-width: 100%;
+}
+
+.kg3-chip[data-kind="tech"] {
+  font-family: var(--km-mono);
+}
+
+.kg3-chip[data-status="interest"],
+.kg3-chip[data-status="listed"] {
+  border-style: dashed;
+  color: var(--km-muted);
+}
+
+/* 다른 분야의 지식 — 분야 이름을 붙여 층 그림 밖으로 이어진 연결임을 밝힙니다 */
+.kg3-chip-field {
+  color: var(--km-muted);
+  font-family: var(--km-sans);
+  font-size: 0.625rem;
+}
+
+.kg3-field-chip {
+  font-weight: 600;
+}
+
+.kg3-field-chip b {
+  color: var(--km-muted);
+  font-family: var(--km-mono);
+  font-weight: 500;
+}
+
+/* ── 설명 칸 ── */
+
+/* 지금 보는 방식: 미리 보기(점선 표) / 고정됨(진한 표 + 고정 풀기) / 펼친 분야 */
+.kg3-mode-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  min-height: 1.45rem;
+}
+
+.kg3-mode {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.05rem 0.5rem;
+  border: 1px solid var(--km-green);
+  border-radius: 999px;
+  font-family: var(--km-sans);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  line-height: 1.5;
+  white-space: nowrap;
+}
+
+.kg3-mode-row[data-mode="preview"] .kg3-mode {
+  border-style: dashed;
+  color: var(--km-green);
+}
+
+.kg3-mode-row[data-mode="pinned"] .kg3-mode {
+  background: var(--km-green);
+  color: var(--km-panel);
+}
+
+.kg3-mode-row[data-mode="open"] .kg3-mode {
+  background: var(--km-green-bg);
+  color: var(--km-green);
+}
+
+.kg3-mode-hint {
+  color: var(--km-muted);
+  font-size: 0.6875rem;
+  line-height: 1.4;
+  text-align: right;
+}
+
+.kg3-identity {
+  font-size: 1rem;
+}
+
+.kg3-detail .km-detail-kicker span {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.kg3-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin: -0.15rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.kg3-badges li {
+  padding: 0.1rem 0.5rem;
+  border: 1px solid var(--km-green);
+  border-radius: 999px;
+  color: var(--km-green);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.kg3-badges li[data-status="studied"] {
+  background: var(--km-green-bg);
+}
+
+.kg3-badges li[data-status="interest"],
+.kg3-badges li[data-status="listed"] {
+  border-color: var(--km-muted);
+  border-style: dashed;
+  color: var(--km-muted);
+}
+
+.kg3-explain {
+  display: grid;
+  gap: 0.2rem;
+  margin: 0;
+}
+
+.kg3-explain dt {
+  color: var(--km-muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.kg3-explain dd {
+  margin: 0 0 0.35rem;
+  color: var(--km-sub);
+  font-size: 0.8125rem;
+  line-height: 1.62;
+}
+
+.kg3-sources {
+  display: grid;
+  gap: 0.45rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.kg3-sources li {
+  display: grid;
+  justify-items: start;
+  gap: 0.1rem;
+}
+
+.kg3-source-kind {
+  color: var(--km-muted);
+  font-family: var(--km-mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.04em;
+}
+
+.kg3-source-title {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.2rem;
+  color: var(--km-ink);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  line-height: 1.45;
+  text-decoration: none;
+}
+
+a.kg3-source-title:hover,
+a.kg3-source-title:focus-visible {
+  color: var(--km-green);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  outline: none;
+}
+
+.kg3-source-status {
+  color: var(--km-green);
+  font-size: 0.6875rem;
+  line-height: 1.45;
+}
+
+.kg3-quote {
+  display: block;
+  padding-left: 0.5rem;
+  border-left: 2px solid var(--km-border);
+  color: var(--km-muted);
+  font-size: 0.6875rem;
+  line-height: 1.55;
+}
+
+.kg3-meta {
+  margin: 0;
+  color: var(--km-sub);
+  font-family: var(--km-mono);
+  font-size: 0.6875rem;
+}
+
+.kg3-via {
+  padding-left: 0.25rem;
+  color: var(--km-muted);
+  font-size: 0.6875rem;
+  line-height: 1.5;
+}
+
+.kg3-two-step {
+  gap: 0.55rem;
+  padding-top: 0.55rem;
+  border-top: 1px dashed var(--km-border);
+}
+
+.kg3-group {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.kg3-group h5 {
+  margin: 0;
+  color: var(--km-sub);
+  font-family: var(--km-sans);
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.kg3-group h5 b {
+  font-family: var(--km-mono);
+  font-weight: 500;
+}
+
+.kg3-legend li {
+  gap: 0.4rem;
+}
+
+/* ── 목록 보기 ── */
+
+.kg3-outline-field {
+  font-weight: 700;
+}
+
+.kg3-outline-group[data-open="true"] .km-outline-item {
+  color: var(--km-muted);
+  font-style: italic;
+}
+
+.kg3-outline-note {
+  margin: 0.5rem 0 0.25rem;
+  color: var(--km-muted);
+  font-size: 0.75rem;
+}
+
+.kg3-outline-status {
+  margin-left: 0.4rem;
+  color: var(--km-green);
+  font-size: 0.6875rem;
+}
+
+/* ── 넓게 보기 ── */
+
+.kg3-dialog-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.85rem 1.25rem 0.7rem;
+  border-bottom: 1px solid var(--km-border);
+}
+
+.kg3-dialog-title {
+  margin: 0.15rem 0 0.2rem;
+  color: var(--km-ink);
+  font-family: var(--km-sans);
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.kg3-dialog-desc {
+  margin: 0;
+  max-width: 72ch;
+  color: var(--km-sub);
+  font-size: 0.8125rem;
+  line-height: 1.55;
+}
+
+.kg3-stage {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.kg3-stage[hidden] {
+  display: none;
+}
+
+@keyframes kg3-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes kg3-pulse {
+  from {
+    opacity: 0.6;
+    transform: scale(0.7);
+  }
+  to {
+    opacity: 0;
+    transform: scale(1.9);
+  }
+}
+
+@keyframes kg3-spark {
+  0% {
+    stroke-dashoffset: calc(var(--kg3-spark-segment) * 1px);
+    opacity: 0;
+  }
+  12% {
+    opacity: 0.95;
+  }
+  100% {
+    stroke-dashoffset: calc(var(--kg3-spark-length) * -1px);
+    opacity: 0;
+  }
+}
+
+@media (max-width: 820px) {
+  .kg3-stage {
+    min-height: 320px;
+  }
+}
+
+@media (pointer: coarse) {
+  .kg3-motion,
+  .kg3-back {
+    min-height: 2.75rem;
+  }
+}
+
+/* 움직임 줄이기: 숨쉬기·기울기·펼치기 이동은 스크립트가 하지 않고, 물결·연결 위의 빛은 그리지 않습니다 (고르기 표시는 그대로). */
+@media (prefers-reduced-motion: reduce) {
+  .kg3-node,
+  .kg3-label,
+  .kg3-domain,
+  .kg3-halo-region,
+  .kg3-spoke,
+  .kg3-dv-item,
+  .kg3-dv-link {
+    transition: none !important;
+  }
+
+  .kg3-link {
+    animation: none !important;
+  }
+
+  .kg3-pulse,
+  .kg3-spark {
+    display: none;
+    animation: none !important;
+  }
+}
+
+/* Give the integrated map and its reading panel more room on desktop. */
+@media (min-width: 1181px) {
+  .kg3-rail {
+    width: clamp(292px, 24vw, 400px);
+    padding: 1.75rem 1.5rem;
+    gap: 1rem;
+  }
+}
+@media (min-width: 769px) {
+  .kg3-dialog {
+    width: min(1420px, calc(100vw - 3rem));
+  }
+  .kg3-dialog .km-dialog-body {
+    grid-template-columns: minmax(0, 1fr) minmax(300px, 370px);
+  }
+  .kg3-dialog .km-dialog-inspector {
+    padding: 0.5rem 1.6rem 1.5rem;
+  }
+}
+.kg3-rail .km-detail p,
+.kg3-dialog .km-detail p {
+  line-height: 1.8;
+}

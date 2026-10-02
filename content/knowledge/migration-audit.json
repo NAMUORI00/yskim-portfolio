@@ -1,0 +1,6 @@
+{
+  "nodes": 98,
+  "relations": 101,
+  "sources": 5,
+  "policy": "Claims migrated without upgrading evidence. Work descriptions now come from source claims, not separate did strings."
+}

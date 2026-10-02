@@ -26,7 +26,7 @@ describe("/design/knowledge-graph preview", () => {
     expect(appSource).toContain('lazy(() => import("./pages/KnowledgeGraphPreview"))');
     expect(appSource).toContain('path={"/design/knowledge-graph"}');
     expect(previewSource).toContain('meta.content = "noindex, nofollow"');
-    expect(homeSource).toContain('return <HomeView renderKnowledgeGraph={renderProposedGraph} />;');
+    expect(homeSource).toContain('return <HomeView renderKnowledgeGraph={renderGraph3D} />;');
 
   });
 

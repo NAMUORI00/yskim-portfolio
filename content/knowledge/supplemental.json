@@ -1,0 +1,286 @@
+{
+  "code:mv-evirag": {
+    "claims": [
+      {
+        "node": "scikit-learn",
+        "mode": "built",
+        "quote": "\"Grounding DINO\", \"scikit-learn\""
+      },
+      {
+        "node": "scikit-learn",
+        "mode": "built",
+        "quote": "로지스틱 회귀에 넣어 0–1 점수를 냅니다"
+      },
+      {
+        "node": "lora",
+        "mode": "studied",
+        "quote": "Qwen3-VL 8B 시각-언어 모델(그대로 쓴 모델 또는 LoRA로 정렬한 모델)이"
+      },
+      {
+        "node": "selective-prediction",
+        "mode": "studied",
+        "quote": "평가는 답변한 비율과 그 가운데 틀린 비율(선택 위험)을 함께 봅니다."
+      },
+      {
+        "node": "qwen3-vl",
+        "mode": "built",
+        "quote": "Qwen3-VL 8B 시각-언어 모델(그대로 쓴 모델 또는 LoRA로 정렬한 모델)이"
+      },
+      {
+        "node": "vllm",
+        "mode": "built",
+        "quote": "평가 실행 코드 → vLLM 추론 서버: POST /chat/completions"
+      },
+      {
+        "node": "siglip2",
+        "mode": "built",
+        "quote": "SigLIP2로 화면 이미지와 질문을 각각 벡터로 바꾸고"
+      },
+      {
+        "node": "grounding-dino",
+        "mode": "built",
+        "quote": "Grounding DINO 검출 수치(검출 영역 수, 사람 영역 수"
+      },
+      {
+        "node": "availability",
+        "mode": "built",
+        "quote": "답변을 만들기 전에, 화면 후보마다 질문에 답할 근거가 보이는지 0–1 점수를 매겨 어떤 화면부터 볼지 정하는 데 씁니다."
+      },
+      {
+        "node": "abstention",
+        "mode": "built",
+        "quote": "시각-언어 모델이 주어진 화면만 근거로 답하거나 보류하고, 결과를 JSON 한 줄로 돌려줍니다."
+      },
+      {
+        "node": "confidence-release",
+        "mode": "built",
+        "quote": "확신도는 생성된 토큰 로그 확률의 평균을 지수로 바꾼 값입니다."
+      }
+    ],
+    "relations": [
+      {
+        "from": "training",
+        "to": "availability",
+        "relation": "applies",
+        "quote": "학습한 선택 모델"
+      },
+      {
+        "from": "lora",
+        "to": "abstention",
+        "relation": "applies",
+        "quote": "Qwen3-VL 8B 시각-언어 모델(그대로 쓴 모델 또는 LoRA로 정렬한 모델)이"
+      },
+      {
+        "from": "availability",
+        "to": "mv-video-qa",
+        "relation": "supports",
+        "quote": "답변을 만들기 전에, 화면 후보마다 질문에 답할 근거가 보이는지 0–1 점수를 매겨 어떤 화면부터 볼지 정하는 데 씁니다."
+      },
+      {
+        "from": "availability",
+        "to": "siglip2",
+        "relation": "uses",
+        "quote": "SigLIP2로 화면 이미지와 질문을 각각 벡터로 바꾸고"
+      },
+      {
+        "from": "availability",
+        "to": "grounding-dino",
+        "relation": "uses",
+        "quote": "Grounding DINO 검출 수치"
+      },
+      {
+        "from": "availability",
+        "to": "scikit-learn",
+        "relation": "uses",
+        "quote": "로지스틱 회귀에 넣어 0–1 점수를 냅니다"
+      },
+      {
+        "from": "abstention",
+        "to": "qwen3-vl",
+        "relation": "uses",
+        "quote": "Qwen3-VL 8B 시각-언어 모델(그대로 쓴 모델 또는 LoRA로 정렬한 모델)이"
+      },
+      {
+        "from": "abstention",
+        "to": "vllm",
+        "relation": "uses",
+        "quote": "평가 실행 코드 → vLLM 추론 서버: POST /chat/completions"
+      },
+      {
+        "from": "confidence-release",
+        "to": "selective-prediction",
+        "relation": "implements",
+        "quote": "확신도가 높은 응답부터 정한 비율만큼만 답변을 내보내고 나머지는 보류합니다."
+      }
+    ]
+  },
+  "stack:skills": {
+    "claims": [
+      {
+        "node": "huggingface",
+        "mode": "listed",
+        "quote": "\"HuggingFace\""
+      },
+      {
+        "node": "openai-api",
+        "mode": "listed",
+        "quote": "\"OpenAI API\""
+      },
+      {
+        "node": "langchain",
+        "mode": "listed",
+        "quote": "\"LangChain\""
+      },
+      {
+        "node": "csharp",
+        "mode": "listed",
+        "quote": "\"C#\""
+      },
+      {
+        "node": "postgresql",
+        "mode": "listed",
+        "quote": "\"PostgreSQL\""
+      },
+      {
+        "node": "supabase",
+        "mode": "listed",
+        "quote": "\"Supabase\""
+      },
+      {
+        "node": "docker",
+        "mode": "listed",
+        "quote": "\"Docker\""
+      },
+      {
+        "node": "devcontainer",
+        "mode": "listed",
+        "quote": "\"DevContainer\""
+      },
+      {
+        "node": "aws",
+        "mode": "listed",
+        "quote": "\"AWS\""
+      }
+    ],
+    "relations": []
+  },
+  "code:music-splitter": {
+    "claims": [
+      {
+        "node": "spleeter",
+        "mode": "built",
+        "quote": "기존 Spleeter 5stems 모델로 보컬·드럼·베이스·피아노·나머지 다섯 개의 WAV 파일을 만듭니다."
+      },
+      {
+        "node": "fastapi",
+        "mode": "built",
+        "quote": "FastAPI /audio · 파일 저장"
+      },
+      {
+        "node": "upload-pipeline",
+        "mode": "built",
+        "quote": "화면의 JavaScript가 고른 음원 파일을 FormData에 담아 FastAPI 서버의 /audio로 보냅니다."
+      },
+      {
+        "node": "upload-pipeline",
+        "mode": "built",
+        "quote": "브라우저가 직접 부르는 /audio 경로는 같은 로그인 검사를 거치지 않습니다."
+      },
+      {
+        "node": "javascript",
+        "mode": "built",
+        "quote": "화면의 JavaScript가 고른 음원 파일을 FormData에 담아"
+      }
+    ],
+    "relations": [
+      {
+        "from": "upload-pipeline",
+        "to": "api-integration",
+        "relation": "implements",
+        "quote": "화면의 JavaScript가 고른 음원 파일을 FormData에 담아 FastAPI 서버의 /audio로 보냅니다."
+      },
+      {
+        "from": "upload-pipeline",
+        "to": "fastapi",
+        "relation": "uses",
+        "quote": "FastAPI /audio · 파일 저장"
+      },
+      {
+        "from": "upload-pipeline",
+        "to": "javascript",
+        "relation": "uses",
+        "quote": "화면의 JavaScript가 고른 음원 파일을 FormData에 담아"
+      }
+    ]
+  },
+  "record:smartfarm": {
+    "claims": [
+      {
+        "node": "api-integration",
+        "mode": "built",
+        "quote": "대시보드가 2초마다 현재 상태를 요청합니다."
+      },
+      {
+        "node": "sensor-quality",
+        "mode": "built",
+        "quote": "품질 검사, 기준 범위 비교, 교차 확인은 모두 정해진 규칙으로 계산합니다."
+      },
+      {
+        "node": "sensor-quality",
+        "mode": "built",
+        "quote": "실제 농장의 측정값이나 설비 제어 결과가 아닙니다."
+      },
+      {
+        "node": "simulation",
+        "mode": "built",
+        "quote": "시뮬레이터가 2초마다 상태를 한 칸 진행하며 구역별 관측 기록을 만듭니다."
+      }
+    ],
+    "relations": [
+      {
+        "from": "api-integration",
+        "to": "operations-flow",
+        "relation": "supports",
+        "quote": "대시보드가 2초마다 현재 상태를 요청합니다."
+      }
+    ]
+  },
+  "site:portfolio": {
+    "claims": [
+      {
+        "node": "cloudflare",
+        "mode": "built",
+        "quote": "Cloudflare Pages의 GitHub 연동이 사이트를 빌드하고 배포합니다."
+      },
+      {
+        "node": "github-actions",
+        "mode": "built",
+        "quote": "GitHub Actions는 타입·테스트·빌드를 검사하고, Cloudflare Pages가 배포합니다."
+      },
+      {
+        "node": "github-actions",
+        "mode": "built",
+        "quote": "GitHub 공개 스타 목록의 최근 6개를 매일 07:23 KST에 갱신합니다"
+      },
+      {
+        "node": "git-content",
+        "mode": "built",
+        "quote": "외부 CMS나 API 키 없이 저장소만으로 빌드됩니다."
+      }
+    ],
+    "relations": [
+      {
+        "from": "git-content",
+        "to": "cloudflare",
+        "relation": "uses",
+        "quote": "Cloudflare Pages의 GitHub 연동이 사이트를 빌드하고 배포합니다."
+      },
+      {
+        "from": "git-content",
+        "to": "github-actions",
+        "relation": "uses",
+        "quote": "GitHub Actions는 타입·테스트·빌드를 검사하고, Cloudflare Pages가 배포합니다."
+      }
+    ]
+  }
+}

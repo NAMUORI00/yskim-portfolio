@@ -1,3 +1,4 @@
+import { contentRevision } from "@/content/contentRevision";
 import { describe, expect, it } from "vitest";
 import type { PortfolioContent } from "@/content";
 import { localizePortfolioContent, uiText, type EnglishTranslations } from "./i18nContent";
@@ -81,7 +82,7 @@ describe("localized portfolio content", () => {
   });
 
   it("overlays English translations while preserving missing Korean fallbacks", () => {
-    const localized = localizePortfolioContent(content, en, "en");
+    const localized = localizePortfolioContent(content, en, "en", { "project:portfolio": contentRevision(content.projects[0]), "research:rag":contentRevision(content.research[0]) });
 
     expect(localized.site.title).toBe("Portfolio");
     expect(localized.site.description).toBe("Description");

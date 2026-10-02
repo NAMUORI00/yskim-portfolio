@@ -1,3 +1,7 @@
+export interface KnowledgeRecord {
+  claims: { node: string; mode: "built" | "studied" | "interest" | "listed"; quote: string }[];
+  relations: { from: string; to: string; relation: "uses" | "implements" | "applies" | "supports" | "prerequisite"; quote: string }[];
+}
 export type PublicationStatus = "draft" | "published" | "archived";
 export type TimelineEntryType = "education" | "research" | "publication" | "project" | "award" | "talk" | "work" | "milestone";
 export type ProjectCategory = "career" | "toy" | "undergraduate";
@@ -60,6 +64,8 @@ export interface TimelineLink {
 }
 
 export interface EducationEntry {
+  knowledge?: KnowledgeRecord;
+  id?: string;
   type: TimelineEntryType;
   degree: string;
   school: string;
@@ -77,6 +83,7 @@ export interface EducationEntry {
 }
 
 export interface ResearchEntry {
+  knowledge?: KnowledgeRecord;
   slug: string;
   title: string;
   desc: string;
@@ -87,6 +94,7 @@ export interface ResearchEntry {
 }
 
 export interface ProjectEntry {
+  knowledge?: KnowledgeRecord;
   slug: string;
   name: string;
   period: string;

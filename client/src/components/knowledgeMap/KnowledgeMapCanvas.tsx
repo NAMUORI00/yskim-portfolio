@@ -205,6 +205,7 @@ export interface KnowledgeMapCanvasProps {
   moving?: boolean;
   density?: LabelDensity;
   showTitles?: boolean;
+  layerLabels?: Record<MapLayer, string>;
   describedBy?: string;
   onHover?: (id: string | null) => void;
   onKeyboardFocus?: (id: string | null) => void;
@@ -339,6 +340,7 @@ export function KnowledgeMapCanvas({
   moving = false,
   density = "quiet",
   showTitles = variant !== "drawer",
+  layerLabels,
   describedBy,
   onHover,
   onKeyboardFocus,
@@ -473,7 +475,7 @@ export function KnowledgeMapCanvas({
             aria-hidden="true"
           >
             <span className="km-layer-glyph" data-layer={layer} />
-            <span className="km-layer-name">{copy.layers[layer]}</span>
+            <span className="km-layer-name">{layerLabels?.[layer] ?? copy.layers[layer]}</span>
             <span className="km-layer-count">{counts[layer]}</span>
           </div>
         ))}
