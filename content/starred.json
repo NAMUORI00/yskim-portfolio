@@ -14,19 +14,19 @@
   {
     "name": "noahware/hyper-reV",
     "href": "https://github.com/noahware/hyper-reV",
-    "stars": "790",
+    "stars": "792",
     "desc": "memory introspection and reverse engineering hypervisor powered by leveraging Hyper-V"
   },
   {
     "name": "lidge-jun/opencodex",
     "href": "https://github.com/lidge-jun/opencodex",
-    "stars": "16.7K",
+    "stars": "16.8K",
     "desc": "Universal provider proxy for OpenAI Codex & Claude Code — use any LLM (Claude, Gemini, Grok, DeepSeek, Ollama…) with Codex CLI, App, SDK, and Claude Code"
   },
   {
     "name": "MengTo/Skills",
     "href": "https://github.com/MengTo/Skills",
-    "stars": "6.5K",
+    "stars": "6.6K",
     "desc": "Agent skills for designers and builders using Codex, Claude, Cursor, and other AI coding agents"
   },
   {
