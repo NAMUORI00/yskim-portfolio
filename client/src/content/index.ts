@@ -1,3 +1,4 @@
+import { knowledgeSkills } from "./knowledge";
 import site from "@content/site.json";
 import profile from "@content/profile.json";
 import education from "@content/education.json";
@@ -93,6 +94,7 @@ function parseResearch(source: string): ResearchEntry {
   const { data, body } = parseFrontmatter(source);
   return {
     slug: String(data.slug ?? ""),
+    knowledge: data.knowledge as ResearchEntry["knowledge"],
     title: String(data.title ?? ""),
     status: status(data.status),
     desc: String(data.desc ?? ""),
@@ -112,6 +114,7 @@ function parseProject(source: string): ProjectEntry {
   const slug = String(data.slug ?? "");
   return {
     slug,
+    knowledge: data.knowledge as ProjectEntry["knowledge"],
     name,
     period: String(data.period ?? ""),
     status: status(data.status),
@@ -147,7 +150,7 @@ function moduleSources(modules: Record<string, string>): string[] {
     .map(([, source]) => source);
 }
 
-export const portfolioContent = validatePortfolioContent({
+const baseContent = validatePortfolioContent({
   site,
   profile,
   education,
@@ -156,6 +159,8 @@ export const portfolioContent = validatePortfolioContent({
   skills,
   starred,
 });
+
+export const portfolioContent = { ...baseContent, skills: knowledgeSkills(baseContent) };
 
 export const englishTranslations = englishTranslationsData as EnglishTranslations;
 

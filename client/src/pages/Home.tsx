@@ -1,4 +1,4 @@
-import { renderProposedGraph } from "@/components/knowledgeMap/renderKnowledgeMap";
+import { renderGraph3D } from "@/components/knowledgeGraph3d/renderGraph3D";
 /*
  * Design: Minimal Two-Column Portfolio / CV  (v5 — 타이포그래피 정비)
  * ─────────────────────────────────────────────────────────────────────────
@@ -44,7 +44,6 @@ import {
   PROJECT_FILTERS,
   createProjectFilterSelection,
   filterProjectsBySelection,
-  hasProjectOverflow,
   isProjectFilterSelected,
   projectCategoryLabel,
   projectEvaluationRows,
@@ -61,7 +60,7 @@ const ACTIVE_SECTION_ANCHOR_RATIO = 0.5;
 const ACTIVE_SCROLL_END_TOLERANCE = 4;
 const MIN_SCROLL_END_PADDING = 48;
 const SCROLL_END_PADDING_GAP = 16;
-const PROJECT_VISIBLE_COUNT = 7;
+const PROJECT_PAGE_SIZE = 4;
 
 // 프로젝트 "자세히 보기"의 한 문장·흐름 도식·비교/모듈/출처/소개 전문은 처음 펼칠 때 불러옵니다 (첫 화면 번들에 넣지 않음).
 const ProjectInsightPanel = lazy(() => import("@/components/capabilities/ProjectInsightPanel"));
@@ -456,7 +455,7 @@ function PreferenceSegmentedControl({
    메인 컴포넌트
 ════════════════════════════ */
 export default function Home() {
-  return <HomeView renderKnowledgeGraph={renderProposedGraph} />;
+  return <HomeView renderKnowledgeGraph={renderGraph3D} />;
 }
 
 /** 지식 그래프 자리에 넘기는 값 — /design/knowledge-graph 미리보기만 씁니다. */
@@ -513,8 +512,15 @@ export function HomeView({ renderKnowledgeGraph }: { renderKnowledgeGraph?: (slo
   const themeToggleLabel = theme === "dark" ? label("lightMode", "라이트 모드") : label("darkMode", "다크 모드");
   const languageToggleLabel = locale === "en" ? label("languageToKorean", "한국어") : label("languageToEnglish", "English");
   const visibleProjects = useMemo(() => filterProjectsBySelection(PROJECTS, projectFilters), [PROJECTS, projectFilters]);
-  const [showAllProjects, setShowAllProjects] = useState(false);
-  const projectHasOverflow = !showAllProjects && hasProjectOverflow(visibleProjects, PROJECT_VISIBLE_COUNT);
+  const [projectPage, setProjectPage] = useState(1);
+  const projectPageCount = Math.max(1, Math.ceil(visibleProjects.length / PROJECT_PAGE_SIZE));
+  const currentProjectPage = Math.min(projectPage, projectPageCount);
+  const pageProjects = visibleProjects.slice((currentProjectPage - 1) * PROJECT_PAGE_SIZE, currentProjectPage * PROJECT_PAGE_SIZE);
+  const changeProjectPage = (page: number) => {
+    setProjectPage(Math.max(1, Math.min(page, projectPageCount)));
+    setSelectedProjectSlug(null);
+    setFocusedGraphNodeId(null);
+  };
   const selectedProject = PROJECTS.find((project) => project.slug === selectedProjectSlug) ?? null;
   const activeProjectGraphNodeId = focusedGraphNodeId ?? (selectedProject ? `project:${selectedProject.slug}` : null);
 
@@ -967,20 +973,37 @@ export function HomeView({ renderKnowledgeGraph }: { renderKnowledgeGraph?: (slo
                   type="button"
                   className={isProjectFilterSelected(projectFilters, filter) ? "active" : ""}
                   aria-pressed={isProjectFilterSelected(projectFilters, filter)}
-                  onClick={() => setProjectFilters(toggleProjectFilterChip(projectFilters, filter))}
+                  onClick={() => { setProjectFilters(toggleProjectFilterChip(projectFilters, filter)); setProjectPage(1); }}
                 >
                   {projectFilterLabel(filter, locale)}
                 </button>
               ))}
               <span className="project-filter-count">{visibleProjects.length} / {PROJECTS.length}</span>
             </div>
-            <div className={projectHasOverflow ? "project-scroll-panel has-overflow" : "project-scroll-panel"}>
+            <div className="project-page-panel">
+              {visibleProjects.length > 0 && (
+                <nav className="project-pagination" aria-label={locale === "en" ? "Project pages" : "프로젝트 페이지"}>
+                  <span className="project-page-status" role="status" aria-live="polite">
+                    {locale === "en"
+                      ? `${(currentProjectPage - 1) * PROJECT_PAGE_SIZE + 1}–${Math.min(currentProjectPage * PROJECT_PAGE_SIZE, visibleProjects.length)} of ${visibleProjects.length}`
+                      : `총 ${visibleProjects.length}개 중 ${(currentProjectPage - 1) * PROJECT_PAGE_SIZE + 1}–${Math.min(currentProjectPage * PROJECT_PAGE_SIZE, visibleProjects.length)}개`}
+                  </span>
+                  {projectPageCount > 1 && <div className="project-page-buttons">
+                    <button type="button" disabled={currentProjectPage === 1} onClick={() => changeProjectPage(currentProjectPage - 1)} aria-controls="project-page-list">{locale === "en" ? "Previous" : "이전"}</button>
+                    {Array.from({ length: projectPageCount }, (_, index) => index + 1).map(page => (
+                      <button key={page} type="button" aria-label={locale === "en" ? `Page ${page}` : `${page}페이지`} aria-current={page === currentProjectPage ? "page" : undefined} aria-controls="project-page-list" onClick={() => changeProjectPage(page)}>{page}</button>
+                    ))}
+                    <button type="button" disabled={currentProjectPage === projectPageCount} onClick={() => changeProjectPage(currentProjectPage + 1)} aria-controls="project-page-list">{locale === "en" ? "Next" : "다음"}</button>
+                  </div>}
+                </nav>
+              )}
+              <div id="project-page-list">
                 {visibleProjects.length === 0 && (
                   <div className="project-empty-state">
                     {locale === "en" ? "No projects match the selected filters." : "선택한 필터와 일치하는 프로젝트가 없습니다."}
                   </div>
                 )}
-                {visibleProjects.map((proj, idx) => {
+                {pageProjects.map((proj, idx) => {
                 const graphNodeId = `project:${proj.slug}`;
                 const projectDetailPanelId = `project-detail-panel-${proj.slug}`;
                 const isProjectExpanded = selectedProjectSlug === proj.slug;
@@ -994,7 +1017,7 @@ export function HomeView({ renderKnowledgeGraph }: { renderKnowledgeGraph?: (slo
                       display: "flex",
                       flexDirection: "column",
                       gap: "0.35rem",
-                      borderBottom: idx < visibleProjects.length - 1 ? `1px solid ${T.border}` : "none",
+                      borderBottom: idx < pageProjects.length - 1 ? `1px solid ${T.border}` : "none",
                       background: activeProjectGraphNodeId === graphNodeId ? T.bg : T.surface,
                       transition: "background 0.15s",
                     }}
@@ -1197,13 +1220,8 @@ export function HomeView({ renderKnowledgeGraph }: { renderKnowledgeGraph?: (slo
                   </div>
                 );
                 })}
-                {projectHasOverflow && <div className="project-scroll-fade" aria-hidden="true" />}
+              </div>
             </div>
-            {hasProjectOverflow(visibleProjects, PROJECT_VISIBLE_COUNT) && (
-              <button type="button" className="project-scroll-hint" onClick={() => setShowAllProjects(!showAllProjects)} aria-expanded={showAllProjects}>
-                {showAllProjects ? (locale === "en" ? "Collapse project list" : "프로젝트 목록 접기") : (locale === "en" ? `Expand all ${visibleProjects.length} projects` : `전체 ${visibleProjects.length}개 프로젝트 펼쳐 보기`)}
-              </button>
-            )}
           </FadeSection>
 
           {/* ── 기술 스택 ── */}
@@ -1518,63 +1536,43 @@ export function HomeView({ renderKnowledgeGraph }: { renderKnowledgeGraph?: (slo
           font-size: 0.75rem;
           line-height: 1.35;
         }
-        .project-scroll-panel {
+        .project-page-panel {
           position: relative;
           border: 1px solid ${T.border};
           border-radius: 4px;
           overflow: hidden;
           background: ${T.surface};
         }
-        .project-scroll-panel.has-overflow {
-          max-height: 1120px;
-          overflow-y: auto;
-          overscroll-behavior: contain;
-          scrollbar-color: ${T.green} ${T.bg};
-          scrollbar-width: thin;
-        }
-        .project-scroll-panel.has-overflow::-webkit-scrollbar {
-          width: 8px;
-        }
-        .project-scroll-panel.has-overflow::-webkit-scrollbar-track {
-          background: ${T.bg};
-        }
-        .project-scroll-panel.has-overflow::-webkit-scrollbar-thumb {
-          background: ${T.green};
-          border: 2px solid ${T.bg};
-          border-radius: 999px;
-        }
-        .project-scroll-fade {
-          position: sticky;
-          bottom: 0;
-          left: 0;
-          right: 0;
-          height: 42px;
-          margin-top: -42px;
-          background: linear-gradient(to bottom, transparent, ${T.surface});
-          pointer-events: none;
-        }
-        .project-scroll-hint {
-          appearance: none;
-          display: inline-flex;
+        .project-pagination {
+          display: flex;
+          flex-wrap: wrap;
           align-items: center;
-          min-height: 2.25rem;
-          margin: 0.6rem 0 0;
-          padding: 0 0.9rem;
-          border: 1px solid ${T.green}40;
-          border-radius: 999px;
-          background: ${T.surface};
-          color: ${T.green};
+          justify-content: space-between;
+          gap: 0.65rem;
+          padding: 0.75rem 1.1rem;
+          border-bottom: 1px solid ${T.border};
           font-family: ${FONT_SANS};
+        }
+        .project-page-status { color: ${T.muted}; font-size: 0.8125rem; }
+        .project-page-buttons { display: flex; flex-wrap: wrap; gap: 0.25rem; }
+        .project-pagination button {
+          min-height: 2.25rem;
+          min-width: 2.25rem;
+          padding: 0.3rem 0.55rem;
+          border: 1px solid ${T.border};
+          border-radius: 4px;
+          background: ${T.surface};
+          color: ${T.text};
+          font: inherit;
           font-size: 0.8125rem;
-          line-height: 1.4;
           cursor: pointer;
         }
-        .project-scroll-hint:hover,
-        .project-scroll-hint:focus-visible {
-          border-color: ${T.green};
-          background: ${T.greenBg};
-          outline: none;
+        .project-pagination button:hover:not(:disabled),
+        .project-pagination button[aria-current="page"] {
+          color: ${T.green}; background: ${T.greenBg}; border-color: ${T.green};
         }
+        .project-pagination button:focus-visible { outline: 2px solid ${T.green}; outline-offset: 2px; }
+        .project-pagination button:disabled { opacity: 0.4; cursor: default; }
         .project-empty-state {
           padding: 1.25rem 1.1rem;
           color: ${T.muted};
@@ -1949,12 +1947,6 @@ export function HomeView({ renderKnowledgeGraph }: { renderKnowledgeGraph?: (slo
              grid-template-columns: minmax(0, 1fr);
              padding: 0.6rem 0.85rem;
            }
-           .project-scroll-panel.has-overflow {
-             max-height: min(80vh, 860px);
-           }
-           .project-scroll-hint {
-             margin-left: 0;
-           }
            .project-evidence-grid {
              grid-template-columns: 1fr;
            }
@@ -1973,7 +1965,7 @@ export function HomeView({ renderKnowledgeGraph }: { renderKnowledgeGraph?: (slo
           .project-filter-rail button,
           .project-detail-button,
           .project-external-link,
-          .project-scroll-hint,
+          .project-pagination button,
           .project-detail-source summary {
             min-height: 2.75rem;
           }

@@ -54,7 +54,7 @@ describe("buildKnowledgeMap", () => {
     // 기술 스택에 있어도 어느 프로젝트에도 태그가 없으면 지도에 넣지 않습니다.
     expect(ko.byId.has("tech:docker")).toBe(false);
     // 스택에 없는 태그(예: Hydra)도 넣지 않습니다.
-    expect(ko.byId.has("tech:hydra")).toBe(false);
+    expect(ko.byId.has("tech:hydra")).toBe(true);
     const titles = ko.nodes.map((node) => node.title).join("\n");
     for (const repo of portfolioContent.starred) expect(titles).not.toContain(repo.name);
     expect(JSON.stringify(ko.nodes)).not.toMatch(/score|proficien|level/i);

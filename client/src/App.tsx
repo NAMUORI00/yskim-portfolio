@@ -12,6 +12,8 @@ import Home from "./pages/Home";
 
 // 지식 그래프 시안 비교용 로컬 검토 라우트 — 이 주소를 열 때만 불러옵니다 (공개 홈 번들에 넣지 않음).
 const KnowledgeGraphPreview = lazy(() => import("./pages/KnowledgeGraphPreview"));
+// 3D 지식 그래프 시안 (기준: 지금 공개 중인 층위형 지도) — 마찬가지로 이 주소를 열 때만 불러옵니다.
+const KnowledgeGraph3DPreview = lazy(() => import("./pages/KnowledgeGraph3DPreview"));
 
 function Router() {
   return (
@@ -21,6 +23,11 @@ function Router() {
       <Route path={"/projects/:slug"} component={ProjectDetail} />
       <Route path={"/research/:slug"} component={ResearchDetail} />
       <Route path={"/design/capabilities"} component={CapabilitiesPreview} />
+      <Route path={"/design/knowledge-graph-3d"}>
+        <Suspense fallback={null}>
+          <KnowledgeGraph3DPreview />
+        </Suspense>
+      </Route>
       <Route path={"/design/knowledge-graph"}>
         <Suspense fallback={null}>
           <KnowledgeGraphPreview />

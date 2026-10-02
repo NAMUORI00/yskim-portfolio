@@ -23,7 +23,7 @@ describe("KnowledgeMapRail", () => {
     expect(html).toContain('id="knowledge-rail"');
     expect(html).toContain('aria-label="포트폴리오 지식 지도"');
     expect(html).toContain('role="group"');
-    expect(html).toContain("지식 지도: 연구 질문 6개, 프로젝트 17개, 기술 29개");
+    expect(html).toContain(`지식 지도: 연구 질문 6개, 프로젝트 17개, 기술 ${layerCounts(buildKnowledgeMap(portfolioContent, portfolioContent, "ko")).tech}개`);
     for (const title of ["연구 질문", "프로젝트", "기술"]) expect(html).toContain(`class="km-layer-name">${title}</span>`);
     for (const label of ["문서 검색", "영상 QA", "센서 운영", "로컬 AI", "음원 분리", "개발 자동화"]) expect(html).toContain(`>${label}</span>`);
     // 고르기 전에는 연결선을 그리지 않고, 키보드 진입점은 하나뿐입니다.

@@ -1,0 +1,242 @@
+{
+  "counts": {
+    "domains": 8,
+    "evidenced": 84,
+    "interest": 5,
+    "listed": 9,
+    "built": 80,
+    "studied": 16,
+    "links": 101,
+    "kinds": {
+      "tech": 41,
+      "concept": 23,
+      "method": 20
+    }
+  },
+  "errors": [],
+  "unmappedTags": [
+    {
+      "project": "food-scan",
+      "tag": "Google Vision API",
+      "status": "review candidate; not evidence of implementation"
+    },
+    {
+      "project": "unity-hackathon",
+      "tag": "팀 개발",
+      "status": "review candidate; not evidence of implementation"
+    },
+    {
+      "project": "hangul-clock",
+      "tag": "창업동아리",
+      "status": "review candidate; not evidence of implementation"
+    },
+    {
+      "project": "js-quiz-app",
+      "tag": "JSON",
+      "status": "review candidate; not evidence of implementation"
+    },
+    {
+      "project": "aerospace-rag",
+      "tag": "LLM",
+      "status": "review candidate; not evidence of implementation"
+    },
+    {
+      "project": "cross-review-bridge",
+      "tag": "AI",
+      "status": "review candidate; not evidence of implementation"
+    },
+    {
+      "project": "cross-review-bridge",
+      "tag": "자동화",
+      "status": "review candidate; not evidence of implementation"
+    },
+    {
+      "project": "mediamtx-installer",
+      "tag": "Ubuntu",
+      "status": "review candidate; not evidence of implementation"
+    },
+    {
+      "project": "mediamtx-installer",
+      "tag": "스트리밍",
+      "status": "review candidate; not evidence of implementation"
+    }
+  ],
+  "policy": "Structured source claims create knowledge; free-text mentions and unmatched tags never establish proficiency.",
+  "sources": [
+    {
+      "id": "project:smartfarm-rag",
+      "title": "질문에 맞는 문서 검색과 스마트팜 운영 지원",
+      "status": "관련 KCI 논문 1편 게재"
+    },
+    {
+      "id": "project:mv-evirag",
+      "title": "다중 시점 감시 영상의 질의응답과 선택적 응답",
+      "status": "IEEE Access 심사 중 · 2026.08 투고 · 제1저자"
+    },
+    {
+      "id": "project:music-splitter-web",
+      "title": "AI 음원 분리 웹 서비스",
+      "status": "음원 업로드 → AI 분리 → 결과 다운로드 구현"
+    },
+    {
+      "id": "project:food-scan",
+      "title": "음식 사진으로 영양정보를 확인하는 앱",
+      "status": "2022년 제2회 안동대·제주대 연계 캡스톤 장려상"
+    },
+    {
+      "id": "project:tourism-data",
+      "title": "관광 데이터를 활용한 모빌리티 배치 제안",
+      "status": "2021 빅데이터 스마트관광 해커톤 장려상"
+    },
+    {
+      "id": "work:kakao",
+      "title": "AI 개발 인턴 · 카카오 · 카카오트랙 연계 현장실습",
+      "status": "카카오 · 카카오트랙 연계 현장실습 · 2023.01 — 2023.02 · Python·PyTorch 기반 음원 악보 전사 프로젝트와 Bootstrap 웹 화면을 개발했습니다. 팀장으로 아이디어 구체화, 주요 개발과 진행 관리를 담당했습니다."
+    },
+    {
+      "id": "research:audio-voice",
+      "title": "음원 분리 모델과 사용자 기능 연결",
+      "status": "연구 관심 분야 글"
+    },
+    {
+      "id": "project:music-source-separation",
+      "title": "음원 분리 모델의 학습과 실험 관리",
+      "status": "Hydra 설정 기반 음원 분리 모델 학습 실험 관리"
+    },
+    {
+      "id": "research:edge-llm",
+      "title": "로컬 AI 실행과 실험 환경 구성",
+      "status": "연구 관심 분야 글"
+    },
+    {
+      "id": "code:mv-evirag",
+      "title": "다중 시점 영상 질의응답 — 코드로 확인한 흐름",
+      "status": "연구 저장소의 평가 실행 코드 · 실행 기록 아님"
+    },
+    {
+      "id": "paper:ieee",
+      "title": "Role-Separated Selective Response for Question Answering in Multi-View Video Surveillance",
+      "status": "IEEE Access · 심사 중 · 제1저자 · 2026.08 · 여러 카메라의 영상으로 질문에 답할 때, 입력 영상의 선택과 답변·보류, 최종 답변의 제공을 서로 다른 단계로 나누어 연구했습니다. 영상에 답변에 필요한 정보가 있는 경우와 없는 경우를 함께 학습하고, 답변 비율과 오류를 평가했습니다."
+    },
+    {
+      "id": "paper:kci",
+      "title": "스마트팜 RAG를 위한 질의 적응형 검색 채널 제어",
+      "status": "한국정보기술학회논문지 · KCI 게재 · 제1저자 · 2026 · 질문에 따라 문서 검색 방법의 조합을 선택하는 방법을 연구했습니다. 검색 채널을 결합하는 방식과 선택 절차를 구현하고, 공개 자료를 이용해 기존 검색 방식과 비교했습니다."
+    },
+    {
+      "id": "paper:kiit",
+      "title": "근거 추적형 로컬 RAG 기반 온디바이스 의료 질의응답 시스템",
+      "status": "한국정보기술학회 하계종합학술대회 · 발표 · 제1저자 · 2026 · 기기에서 실행하는 의료 질의응답 시스템을 다루었습니다. 답변에 사용한 문서 근거를 추적할 수 있도록 구성하는 로컬 RAG 연구입니다."
+    },
+    {
+      "id": "work:ml-lab",
+      "title": "석사과정 학생연구원 · 제주대학교 컴퓨터공학과 머신러닝연구실",
+      "status": "제주대학교 컴퓨터공학과 머신러닝연구실 · 2025.03 — 현재 · 문서·영상 근거 기반 질의응답의 연구 설계, 구현과 평가를 수행합니다."
+    },
+    {
+      "id": "stack:skills",
+      "title": "기술 스택 목록",
+      "status": "연결된 작업 기록 없음"
+    },
+    {
+      "id": "project:aerospace-rag",
+      "title": "항공우주 업무 문서 검색과 질의응답",
+      "status": "Qdrant·BM25·Graph 검색과 Ollama 답변 생성 연동"
+    },
+    {
+      "id": "research:rag",
+      "title": "질문에 맞는 문서 검색과 근거 있는 답변",
+      "status": "연구 관심 분야 글"
+    },
+    {
+      "id": "research:video-qa",
+      "title": "영상 근거에 따라 답하거나 보류하는 AI",
+      "status": "연구 관심 분야 글"
+    },
+    {
+      "id": "code:music-splitter",
+      "title": "음원 분리 웹 서비스 — 코드로 확인한 흐름",
+      "status": "공개 저장소 코드 · 실행 기록 아님"
+    },
+    {
+      "id": "project:spring-community-board",
+      "title": "회원·게시글·댓글 관리 웹 서비스",
+      "status": "Spring Boot·JPA 기반 회원·게시글·댓글 CRUD 구현"
+    },
+    {
+      "id": "work:tilon-backend",
+      "title": "백엔드 개발 인턴 · 틸론소프트",
+      "status": "틸론소프트 · 2023.07 — 2023.08 · Java·Spring Boot 기반 게시판 포털을 개발했습니다. 게시글 CRUD, 회원가입·로그인, 검색·페이지네이션과 데이터베이스 연동을 구현했습니다."
+    },
+    {
+      "id": "project:smart-home-2017",
+      "title": "센서 데이터를 웹에서 확인하는 스마트홈",
+      "status": "2017 컴퓨터공학과 전시회 기업체우수상"
+    },
+    {
+      "id": "record:smartfarm",
+      "title": "스마트팜 운영 지원 대시보드 — 화면 기록",
+      "status": "2026-10-01 기록 · 시뮬레이터 값 · 실제 농장 아님"
+    },
+    {
+      "id": "project:js-quiz-app",
+      "title": "문제 풀이와 오답 복습을 제공하는 웹 앱",
+      "status": "문제 표시·채점·오답 복습 기능 구현"
+    },
+    {
+      "id": "project:good-price-jeju",
+      "title": "공공데이터로 착한가격업소를 찾는 서비스",
+      "status": "공공데이터·지도 기반 업소 안내 서비스 개발"
+    },
+    {
+      "id": "project:introduce-cv-page",
+      "title": "글 작성과 변경 검토를 연결한 블로그",
+      "status": "마크다운 편집과 GitHub PR 생성 흐름 연동"
+    },
+    {
+      "id": "work:tilon-frontend",
+      "title": "프론트엔드 개발 인턴 · 틸론소프트",
+      "status": "틸론소프트 · 2022.07 — 2022.08 · Vue.js 기반 회사 소개 웹페이지 개편에 참여하고 화면 구현을 지원했습니다."
+    },
+    {
+      "id": "project:unity-hackathon",
+      "title": "Unity로 제작한 해커톤 게임",
+      "status": "2017 AR·VR 해커톤 장려상"
+    },
+    {
+      "id": "project:golden-glove",
+      "title": "손가락 움직임으로 연주하는 음악 장갑",
+      "status": "2023년 제3회 안동대·제주대 연계 캡스톤 우수상"
+    },
+    {
+      "id": "project:hangul-clock",
+      "title": "Arduino로 제작한 한글시계",
+      "status": "창업동아리 한글시계 제작"
+    },
+    {
+      "id": "research:sensor-operations",
+      "title": "센서 변화와 사람의 판단을 연결하는 운영 지원",
+      "status": "연구 관심 분야 글"
+    },
+    {
+      "id": "project:mediamtx-installer",
+      "title": "영상 스트리밍 서버 설치 자동화",
+      "status": "Ubuntu 24.04용 MediaMTX 설치 절차 스크립트화"
+    },
+    {
+      "id": "project:cross-review-bridge",
+      "title": "외부 AI를 활용한 코드 검토 흐름",
+      "status": "운영자 승인을 포함한 외부 AI 교차 리뷰 흐름 구현"
+    },
+    {
+      "id": "site:portfolio",
+      "title": "이 포트폴리오 사이트",
+      "status": "사이트 저장소 설명"
+    },
+    {
+      "id": "research:agentic-workflow",
+      "title": "검토와 승인을 포함한 개발 업무 자동화",
+      "status": "연구 관심 분야 글"
+    }
+  ]
+}

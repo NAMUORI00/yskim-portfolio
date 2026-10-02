@@ -1,6 +1,10 @@
 import { z } from "zod";
 import type { PortfolioContent, ProjectCategory, ProjectEntry, ProjectFocus, ProjectProofLevel } from "./types";
 
+const knowledgeSchema = z.object({
+  claims: z.array(z.object({node:z.string().min(1), mode:z.enum(["built","studied","interest","listed"]), quote:z.string().min(1)})),
+  relations: z.array(z.object({from:z.string().min(1),to:z.string().min(1),relation:z.enum(["uses","implements","applies","supports","prerequisite"]),quote:z.string().min(1)})),
+}).optional();
 const statusSchema = z.enum(["draft", "published", "archived"]);
 const timelineEntryTypeSchema = z.enum(["education", "research", "publication", "project", "award", "talk", "work", "milestone"]);
 const projectCategorySchema = z.enum(["career", "toy", "undergraduate"]);
@@ -82,6 +86,8 @@ export const profileSchema = z.object({
 });
 
 export const educationSchema = z.object({
+  knowledge: knowledgeSchema,
+  id: z.string().optional(),
   type: timelineEntryTypeSchema.default("education"),
   degree: z.string().min(1),
   school: z.string().min(1),
@@ -99,6 +105,7 @@ export const educationSchema = z.object({
 });
 
 export const researchSchema = z.object({
+  knowledge: knowledgeSchema,
   slug: z.string().min(1),
   title: z.string().min(1),
   desc: z.string().min(1),
@@ -109,6 +116,7 @@ export const researchSchema = z.object({
 });
 
 export const projectSchema = z.object({
+  knowledge: knowledgeSchema,
   slug: z.string().min(1),
   name: z.string().min(1),
   period: z.string().min(1),

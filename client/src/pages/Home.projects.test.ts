@@ -77,16 +77,16 @@ describe("Home projects section", () => {
     expect(block).toContain("projectEvidenceMetrics(selectedProject)");
   });
 
-  it("shows seven projects before using the side scroll panel", () => {
+  it("renders only the current project page and resets pagination on filtering", () => {
     const block = projectsBlock();
-
-    expect(source).toContain("const PROJECT_VISIBLE_COUNT = 7");
-    expect(source).toContain("const projectHasOverflow = !showAllProjects && hasProjectOverflow(visibleProjects, PROJECT_VISIBLE_COUNT)");
-    expect(block).not.toContain('className="project-bucket-layout"');
-    expect(block).not.toContain('className="project-year-rail"');
-    expect(block).toContain('className={projectHasOverflow ? "project-scroll-panel has-overflow" : "project-scroll-panel"}');
-    expect(block).toContain('className="project-scroll-fade"');
-    expect(block).toContain("setShowAllProjects(!showAllProjects)");
+    expect(source).toContain("const PROJECT_PAGE_SIZE = 4");
+    expect(block).toContain("pageProjects.map");
+    expect(block).not.toContain("visibleProjects.map");
+    expect(block).toContain("setProjectPage(1)");
+    expect(block).toContain('aria-current={page === currentProjectPage ? "page" : undefined}');
+    expect(block).toContain("disabled={currentProjectPage === 1}");
+    expect(block).toContain("disabled={currentProjectPage === projectPageCount}");
+    expect(block).not.toContain("project-scroll");
   });
 
   it("uses sans for project reading controls and emphasized metrics while preserving mono for compact tokens", () => {
@@ -130,12 +130,12 @@ describe("Home projects section", () => {
   it("keeps project controls compact for a mouse and widens them to 44px on touch screens", () => {
     const detailButtonCss = sourceBetween(source, ".project-detail-button {", ".project-detail-button:hover");
     const filterButtonCss = sourceBetween(source, ".project-filter-rail button {", ".project-filter-rail button:hover");
-    const scrollHintCss = sourceBetween(source, ".project-scroll-hint {", ".project-scroll-hint:hover");
+    const scrollHintCss = sourceBetween(source, ".project-pagination button {", ".project-pagination button:hover");
 
     for (const css of [detailButtonCss, scrollHintCss]) expect(css).toContain("min-height: 2.25rem;");
     expect(filterButtonCss).toContain("min-height: 2rem;");
     const touchCss = sourceBetween(source, "@media (pointer: coarse) {", ".mobile-overlay {");
-    for (const selector of [".project-filter-rail button", ".project-detail-button", ".project-external-link", ".project-scroll-hint"]) {
+    for (const selector of [".project-filter-rail button", ".project-detail-button", ".project-external-link", ".project-pagination button"]) {
       expect(touchCss).toContain(selector);
     }
     expect(touchCss).toContain("min-height: 2.75rem;");
@@ -146,7 +146,7 @@ describe("Home projects section", () => {
 
   it("lazy-loads the one-sentence outcome, flow diagram and optional details inside the expanded project panel", () => {
     const block = projectsBlock();
-    const panel = sourceBetween(block, 'className="project-detail-panel"', '{projectHasOverflow && <div className="project-scroll-fade"');
+    const panel = sourceBetween(block, 'className="project-detail-panel"', '</ProjectDialog>');
 
     expect(source).toContain('const ProjectInsightPanel = lazy(() => import("@/components/capabilities/ProjectInsightPanel"));');
     expect(source).not.toContain('import ProjectInsightPanel from');
