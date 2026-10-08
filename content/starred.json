@@ -2,7 +2,7 @@
   {
     "name": "BlackSnufkin/BYOVD",
     "href": "https://github.com/BlackSnufkin/BYOVD",
-    "stars": "964",
+    "stars": "965",
     "desc": "BYOVD research use cases featuring vulnerable driver discovery and reverse engineering methodology.  (CVE-2025-52915,  CVE-2025-1055, CVE-2026-3609, CVE-2026-8501)."
   },
   {
@@ -14,19 +14,19 @@
   {
     "name": "noahware/hyper-reV",
     "href": "https://github.com/noahware/hyper-reV",
-    "stars": "794",
+    "stars": "795",
     "desc": "memory introspection and reverse engineering hypervisor powered by leveraging Hyper-V"
   },
   {
     "name": "lidge-jun/opencodex",
     "href": "https://github.com/lidge-jun/opencodex",
-    "stars": "17K",
+    "stars": "17.1K",
     "desc": "Universal provider proxy for OpenAI Codex & Claude Code — use any LLM (Claude, Gemini, Grok, DeepSeek, Ollama…) with Codex CLI, App, SDK, and Claude Code"
   },
   {
     "name": "MengTo/Skills",
     "href": "https://github.com/MengTo/Skills",
-    "stars": "6.6K",
+    "stars": "6.7K",
     "desc": "Agent skills for designers and builders using Codex, Claude, Cursor, and other AI coding agents"
   },
   {
