@@ -2,7 +2,7 @@
   {
     "name": "BlackSnufkin/BYOVD",
     "href": "https://github.com/BlackSnufkin/BYOVD",
-    "stars": "965",
+    "stars": "967",
     "desc": "BYOVD research use cases featuring vulnerable driver discovery and reverse engineering methodology.  (CVE-2025-52915,  CVE-2025-1055, CVE-2026-3609, CVE-2026-8501)."
   },
   {
@@ -14,7 +14,7 @@
   {
     "name": "noahware/hyper-reV",
     "href": "https://github.com/noahware/hyper-reV",
-    "stars": "795",
+    "stars": "796",
     "desc": "memory introspection and reverse engineering hypervisor powered by leveraging Hyper-V"
   },
   {
