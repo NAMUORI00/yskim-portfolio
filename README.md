@@ -1,56 +1,32 @@
 # 김유석 포트폴리오
 
-[English](README.en.md) · [사이트](https://namuori.net) · [GitHub](https://github.com/NAMUORI00/yskim-portfolio)
+[English](README.en.md) | [사이트 namuori.net](https://namuori.net)
 
-콘텐츠, 이미지, 화면 코드를 이 저장소에서 관리합니다. `main`에 변경을 반영하면 Cloudflare Pages의 GitHub 연동이 사이트를 빌드하고 배포합니다.
+연구와 프로젝트, 기술 스택, 지식 맵을 한곳에 모은 개인 포트폴리오 사이트의 소스입니다. 콘텐츠를 Git으로 관리하고, `main`에 반영하면 Cloudflare Pages가 자동으로 빌드하고 배포합니다.
 
 ```text
-Git 저장소의 content/ + client/ → main push → Cloudflare Pages → namuori.net
+content/ + client/ → main push → Cloudflare Pages → namuori.net
 ```
 
-## 수정할 파일
+## 주요 기능
 
-| 내용 | 원본 |
-|---|---|
-| 프로필과 소개 | `content/profile.json` |
-| 논문·학력·경력 | `content/education.json` |
-| 기술·관심 오픈소스 | `content/skills.json`, `content/starred.json` |
-| 연구 관심 분야 | `content/research/*.mdx` |
-| 프로젝트 | `content/projects/*.mdx` |
-| 프로젝트 자세히 보기(요약·비교·모듈) | `client/src/components/capabilities/projectInsights.ts`, 모듈 흐름 도식은 같은 폴더의 `capability*.ts` |
-| 표시 순서 | `content/order.json` |
-| 영어 번역 | `content/i18n/en.json` |
-| 사이트 정보 | `content/site.json` |
-| 이미지·첨부 | `client/public/` |
-| 화면과 스타일 | `client/src/` |
+- 프로젝트와 연구 소개 (MDX), 프로젝트별 요약과 모듈 흐름 도식
+- 논문, 학력, 경력, 기술 스택과 관심 오픈소스
+- 분야별 지식 맵
+- 한국어와 영어 전환
+- GitHub 스타 목록 일일 자동 동기화
 
-MDX의 앞부분에는 제목·설명·상태 등 메타데이터를, 아래에는 본문을 작성합니다. 공개 항목은 `status: published`로 지정합니다. 한국어를 수정하면 같은 키의 영어 번역도 갱신합니다. 변경 사항은 Git diff로 검토합니다.
+## 기술 스택
 
-## 개발과 확인
+React 19, TypeScript, Vite, Tailwind CSS, Framer Motion, Vitest, GitHub Actions, Cloudflare Pages
+
+## 개발
 
 ```bash
 corepack enable
 pnpm install --frozen-lockfile
 pnpm dev
-pnpm check
-pnpm test
-pnpm build
+pnpm check && pnpm test && pnpm build
 ```
 
-외부 CMS나 API 키 없이 저장소만으로 빌드됩니다. GitHub Actions는 타입·테스트·빌드를 검사하고, Cloudflare Pages가 배포합니다. 검증 워크플로가 Pages 배포를 차단하는 구조는 아니므로 push 전에 로컬 검사도 수행합니다.
-
-## 배포
-
-- Pages 프로젝트: `namuori-portfolio-cms` (기존 도메인 연결 유지)
-- 운영 브랜치: `main`
-- 빌드 명령: `pnpm build`
-- 출력: `dist/public`
-- 운영 주소: `https://namuori.net`
-
-## 이전 Notion 연동
-
-2026-10-01부터 Notion 자동 동기화와 미디어 프록시를 제거했습니다. 기존 포트폴리오 관리 페이지는 전체 백업 후 휴지통으로 이동했으며, 블로그용 Notion 페이지는 유지합니다. `content/`는 캐시가 아닌 정식 원본이며 자동 가져오기로 덮어쓰지 않습니다. 이전에 내려받은 정적 이미지도 Git에서 계속 관리합니다. [전환 기록](docs/notion-cms.md)
-
-## 관심 오픈소스 자동 갱신
-
-GitHub 공개 스타 목록의 최근 6개를 매일 07:23 KST에 갱신합니다(예약 실행은 지연될 수 있습니다). `.github/workflows/sync-starred.yml`에서 `scripts/sync-starred.mjs`를 실행하고 검사 후 변경이 있을 때만 Git에 저장합니다. Cloudflare는 main의 변경을 자동 배포합니다. API 오류 시 기존 목록을 보존하며 개인 토큰이나 비공개 저장소를 사용하지 않습니다. 수동 갱신은 Actions의 Update recent GitHub stars에서 실행할 수 있습니다.
+외부 CMS나 API 키 없이 저장소만으로 빌드됩니다. 콘텐츠 파일 위치와 배포 설정은 [docs/editing.md](docs/editing.md)에 정리했습니다.
