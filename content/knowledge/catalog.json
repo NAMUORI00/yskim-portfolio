@@ -1790,7 +1790,8 @@
       "id": "site:portfolio",
       "kind": "site",
       "files": [
-        "README.md"
+        "README.md",
+        "docs/editing.md"
       ],
       "title": {
         "ko": "이 포트폴리오 사이트",
