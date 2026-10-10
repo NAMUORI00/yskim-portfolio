@@ -1,0 +1,37 @@
+# 콘텐츠 수정과 운영
+
+[README로 돌아가기](../README.md)
+
+## 수정할 파일
+
+| 내용 | 원본 |
+|---|---|
+| 프로필과 소개 | `content/profile.json` |
+| 논문·학력·경력 | `content/education.json` |
+| 기술·관심 오픈소스 | `content/skills.json`, `content/starred.json` |
+| 연구 관심 분야 | `content/research/*.mdx` |
+| 프로젝트 | `content/projects/*.mdx` |
+| 프로젝트 자세히 보기(요약·비교·모듈) | `client/src/components/capabilities/projectInsights.ts`, 모듈 흐름 도식은 같은 폴더의 `capability*.ts` |
+| 표시 순서 | `content/order.json` |
+| 영어 번역 | `content/i18n/en.json` |
+| 사이트 정보 | `content/site.json` |
+| 이미지·첨부 | `client/public/` |
+| 화면과 스타일 | `client/src/` |
+
+MDX의 앞부분에는 제목·설명·상태 등 메타데이터를, 아래에는 본문을 작성합니다. 공개 항목은 `status: published`로 지정합니다. 한국어를 수정하면 같은 키의 영어 번역도 갱신합니다. 변경 사항은 Git diff로 검토합니다.
+
+## 배포
+
+- Pages 프로젝트: `namuori-portfolio-cms` (기존 도메인 연결 유지)
+- 운영 브랜치: `main`
+- 빌드 명령: `pnpm build`
+- 출력: `dist/public`
+- 운영 주소: `https://namuori.net`
+
+## 관심 오픈소스 자동 갱신
+
+GitHub 공개 스타 목록의 최근 6개를 매일 07:23 KST에 갱신합니다(예약 실행은 지연될 수 있습니다). `.github/workflows/sync-starred.yml`에서 `scripts/sync-starred.mjs`를 실행하고 검사 후 변경이 있을 때만 Git에 저장합니다. Cloudflare는 main의 변경을 자동 배포합니다. API 오류 시 기존 목록을 보존하며 개인 토큰이나 비공개 저장소를 사용하지 않습니다. 수동 갱신은 Actions의 Update recent GitHub stars에서 실행할 수 있습니다.
+
+## 이전 Notion 연동
+
+2026-10-01부터 Notion 자동 동기화와 미디어 프록시를 제거했습니다. 기존 포트폴리오 관리 페이지는 전체 백업 후 휴지통으로 이동했으며, 블로그용 Notion 페이지는 유지합니다. `content/`는 캐시가 아닌 정식 원본이며 자동 가져오기로 덮어쓰지 않습니다. 이전에 내려받은 정적 이미지도 Git에서 계속 관리합니다. [전환 기록](notion-cms.md)
