@@ -2,7 +2,7 @@
   {
     "name": "BlackSnufkin/BYOVD",
     "href": "https://github.com/BlackSnufkin/BYOVD",
-    "stars": "969",
+    "stars": "971",
     "desc": "BYOVD research use cases featuring vulnerable driver discovery and reverse engineering methodology.  (CVE-2025-52915,  CVE-2025-1055, CVE-2026-3609, CVE-2026-8501)."
   },
   {
@@ -32,7 +32,7 @@
   {
     "name": "lidge-jun/agbrowse",
     "href": "https://github.com/lidge-jun/agbrowse",
-    "stars": "230",
+    "stars": "231",
     "desc": "Ultimate browser automation toolkit for AI agents. Zero MCP token tax, JS evaluate, vision-click with DPR correction."
   }
 ]
