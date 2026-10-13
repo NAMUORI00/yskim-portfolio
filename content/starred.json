@@ -1,20 +1,26 @@
 [
   {
+    "name": "ChenLiu-1996/figures4papers",
+    "href": "https://github.com/ChenLiu-1996/figures4papers",
+    "stars": "8.4K",
+    "desc": "My Python scripts to make high-quality figures for publications in top AI conferences and journals."
+  },
+  {
     "name": "jiwoochris/artex-ko",
     "href": "https://github.com/jiwoochris/artex-ko",
-    "stars": "1.3K",
+    "stars": "1.4K",
     "desc": "ARTEX 한국어판 · AI 자율 침투 테스트 프레임워크(upstream: Autumn-27/ARTEX, AGPL-3.0)"
   },
   {
     "name": "morluto/rea",
     "href": "https://github.com/morluto/rea",
-    "stars": "106.3K",
+    "stars": "164.1K",
     "desc": "Reverse engineer anything with agents, from app behavior down to native binaries."
   },
   {
     "name": "BlackSnufkin/BYOVD",
     "href": "https://github.com/BlackSnufkin/BYOVD",
-    "stars": "971",
+    "stars": "974",
     "desc": "BYOVD research use cases featuring vulnerable driver discovery and reverse engineering methodology.  (CVE-2025-52915,  CVE-2025-1055, CVE-2026-3609, CVE-2026-8501)."
   },
   {
@@ -26,13 +32,7 @@
   {
     "name": "noahware/hyper-reV",
     "href": "https://github.com/noahware/hyper-reV",
-    "stars": "799",
+    "stars": "801",
     "desc": "memory introspection and reverse engineering hypervisor powered by leveraging Hyper-V"
-  },
-  {
-    "name": "lidge-jun/opencodex",
-    "href": "https://github.com/lidge-jun/opencodex",
-    "stars": "17.3K",
-    "desc": "Universal provider proxy for OpenAI Codex & Claude Code — use any LLM (Claude, Gemini, Grok, DeepSeek, Ollama…) with Codex CLI, App, SDK, and Claude Code"
   }
 ]
