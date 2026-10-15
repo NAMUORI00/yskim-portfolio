@@ -2,19 +2,19 @@
   {
     "name": "ChenLiu-1996/figures4papers",
     "href": "https://github.com/ChenLiu-1996/figures4papers",
-    "stars": "8.5K",
+    "stars": "8.6K",
     "desc": "My Python scripts to make high-quality figures for publications in top AI conferences and journals."
   },
   {
     "name": "jiwoochris/artex-global",
     "href": "https://github.com/jiwoochris/artex-global",
-    "stars": "1.4K",
+    "stars": "1.5K",
     "desc": "ARTEX 한국어판 · AI 자율 침투 테스트 프레임워크(upstream: Autumn-27/ARTEX, AGPL-3.0)"
   },
   {
     "name": "morluto/rea",
     "href": "https://github.com/morluto/rea",
-    "stars": "208.1K",
+    "stars": "241.7K",
     "desc": "Reverse engineer anything with agents, from app behavior down to native binaries."
   },
   {
@@ -32,7 +32,7 @@
   {
     "name": "noahware/hyper-reV",
     "href": "https://github.com/noahware/hyper-reV",
-    "stars": "802",
+    "stars": "803",
     "desc": "memory introspection and reverse engineering hypervisor powered by leveraging Hyper-V"
   }
 ]
