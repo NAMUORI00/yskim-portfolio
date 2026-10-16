@@ -14,13 +14,13 @@
   {
     "name": "morluto/rea",
     "href": "https://github.com/morluto/rea",
-    "stars": "241.7K",
+    "stars": "269.8K",
     "desc": "Reverse engineer anything with agents, from app behavior down to native binaries."
   },
   {
     "name": "BlackSnufkin/BYOVD",
     "href": "https://github.com/BlackSnufkin/BYOVD",
-    "stars": "976",
+    "stars": "977",
     "desc": "BYOVD research use cases featuring vulnerable driver discovery and reverse engineering methodology.  (CVE-2025-52915,  CVE-2025-1055, CVE-2026-3609, CVE-2026-8501)."
   },
   {
@@ -32,7 +32,7 @@
   {
     "name": "noahware/hyper-reV",
     "href": "https://github.com/noahware/hyper-reV",
-    "stars": "803",
+    "stars": "804",
     "desc": "memory introspection and reverse engineering hypervisor powered by leveraging Hyper-V"
   }
 ]
