@@ -1,5 +1,11 @@
 [
   {
+    "name": "SHODAN-HORAI/SHODAN-Stat-Editor",
+    "href": "https://github.com/SHODAN-HORAI/SHODAN-Stat-Editor",
+    "stars": "57",
+    "desc": "In-game stat editor for Helldivers 2: weapons, beams, stratagems and sentries. Press F8, change the numbers, saved for every launch."
+  },
+  {
     "name": "ChenLiu-1996/figures4papers",
     "href": "https://github.com/ChenLiu-1996/figures4papers",
     "stars": "8.6K",
@@ -8,31 +14,25 @@
   {
     "name": "jiwoochris/artex-global",
     "href": "https://github.com/jiwoochris/artex-global",
-    "stars": "1.5K",
+    "stars": "1.6K",
     "desc": "ARTEX 한국어판 · AI 자율 침투 테스트 프레임워크(upstream: Autumn-27/ARTEX, AGPL-3.0)"
   },
   {
     "name": "morluto/rea",
     "href": "https://github.com/morluto/rea",
-    "stars": "269.8K",
+    "stars": "291K",
     "desc": "Reverse engineer anything with agents, from app behavior down to native binaries."
   },
   {
     "name": "BlackSnufkin/BYOVD",
     "href": "https://github.com/BlackSnufkin/BYOVD",
-    "stars": "977",
+    "stars": "978",
     "desc": "BYOVD research use cases featuring vulnerable driver discovery and reverse engineering methodology.  (CVE-2025-52915,  CVE-2025-1055, CVE-2026-3609, CVE-2026-8501)."
   },
   {
     "name": "AlSch092/UltimateAntiCheat",
     "href": "https://github.com/AlSch092/UltimateAntiCheat",
-    "stars": "653",
+    "stars": "652",
     "desc": "UltimateAnticheat is an open source usermode anti-cheat system made to detect and prevent common attack vectors in game cheating (C++, Windows)"
-  },
-  {
-    "name": "noahware/hyper-reV",
-    "href": "https://github.com/noahware/hyper-reV",
-    "stars": "804",
-    "desc": "memory introspection and reverse engineering hypervisor powered by leveraging Hyper-V"
   }
 ]
