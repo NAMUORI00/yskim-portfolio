@@ -2,7 +2,7 @@
   {
     "name": "SHODAN-HORAI/SHODAN-Stat-Editor",
     "href": "https://github.com/SHODAN-HORAI/SHODAN-Stat-Editor",
-    "stars": "58",
+    "stars": "59",
     "desc": "In-game stat editor for Helldivers 2: weapons, beams, stratagems and sentries. Press F8, change the numbers, saved for every launch."
   },
   {
@@ -14,19 +14,19 @@
   {
     "name": "jiwoochris/artex-global",
     "href": "https://github.com/jiwoochris/artex-global",
-    "stars": "1.6K",
+    "stars": "1.7K",
     "desc": "ARTEX 한국어판 · AI 자율 침투 테스트 프레임워크(upstream: Autumn-27/ARTEX, AGPL-3.0)"
   },
   {
     "name": "morluto/rea",
     "href": "https://github.com/morluto/rea",
-    "stars": "307.5K",
+    "stars": "322K",
     "desc": "Reverse engineer anything with agents, from app behavior down to native binaries."
   },
   {
     "name": "BlackSnufkin/BYOVD",
     "href": "https://github.com/BlackSnufkin/BYOVD",
-    "stars": "977",
+    "stars": "978",
     "desc": "BYOVD research use cases featuring vulnerable driver discovery and reverse engineering methodology.  (CVE-2025-52915,  CVE-2025-1055, CVE-2026-3609, CVE-2026-8501)."
   },
   {
