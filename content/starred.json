@@ -2,7 +2,7 @@
   {
     "name": "SHODAN-HORAI/SHODAN-Stat-Editor",
     "href": "https://github.com/SHODAN-HORAI/SHODAN-Stat-Editor",
-    "stars": "59",
+    "stars": "60",
     "desc": "In-game stat editor for Helldivers 2: weapons, beams, stratagems and sentries. Press F8, change the numbers, saved for every launch."
   },
   {
@@ -20,19 +20,19 @@
   {
     "name": "morluto/rea",
     "href": "https://github.com/morluto/rea",
-    "stars": "322K",
+    "stars": "337K",
     "desc": "Reverse engineer anything with agents, from app behavior down to native binaries."
   },
   {
     "name": "BlackSnufkin/BYOVD",
     "href": "https://github.com/BlackSnufkin/BYOVD",
-    "stars": "978",
+    "stars": "977",
     "desc": "BYOVD research use cases featuring vulnerable driver discovery and reverse engineering methodology.  (CVE-2025-52915,  CVE-2025-1055, CVE-2026-3609, CVE-2026-8501)."
   },
   {
     "name": "AlSch092/UltimateAntiCheat",
     "href": "https://github.com/AlSch092/UltimateAntiCheat",
-    "stars": "651",
+    "stars": "652",
     "desc": "UltimateAnticheat is an open source usermode anti-cheat system made to detect and prevent common attack vectors in game cheating (C++, Windows)"
   }
 ]
