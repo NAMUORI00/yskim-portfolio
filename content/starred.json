@@ -2,7 +2,7 @@
   {
     "name": "SHODAN-HORAI/SHODAN-Stat-Editor",
     "href": "https://github.com/SHODAN-HORAI/SHODAN-Stat-Editor",
-    "stars": "84",
+    "stars": "91",
     "desc": "Windows program that changes the stats of every weapon, stratagem, mecha and armor passive in Helldivers 2. It edits the game's data files while the game is closed, so no mod loader is needed. Works with EAC and alongside other mods."
   },
   {
@@ -20,13 +20,13 @@
   {
     "name": "morluto/rea",
     "href": "https://github.com/morluto/rea",
-    "stars": "373.2K",
+    "stars": "378.7K",
     "desc": "Reverse engineer anything with agents, from app behavior down to native binaries."
   },
   {
     "name": "BlackSnufkin/BYOVD",
     "href": "https://github.com/BlackSnufkin/BYOVD",
-    "stars": "986",
+    "stars": "988",
     "desc": "BYOVD research use cases featuring vulnerable driver discovery and reverse engineering methodology.  (CVE-2025-52915,  CVE-2025-1055, CVE-2026-3609, CVE-2026-8501)."
   },
   {
