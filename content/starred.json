@@ -2,7 +2,7 @@
   {
     "name": "SHODAN-HORAI/SHODAN-Stat-Editor",
     "href": "https://github.com/SHODAN-HORAI/SHODAN-Stat-Editor",
-    "stars": "91",
+    "stars": "97",
     "desc": "Windows program that changes the stats of every weapon, stratagem, mecha and armor passive in Helldivers 2. It edits the game's data files while the game is closed, so no mod loader is needed. Works with EAC and alongside other mods."
   },
   {
@@ -14,25 +14,25 @@
   {
     "name": "jiwoochris/artex-global",
     "href": "https://github.com/jiwoochris/artex-global",
-    "stars": "2.1K",
+    "stars": "2.2K",
     "desc": "ARTEX 한국어판 · AI 자율 침투 테스트 프레임워크(upstream: Autumn-27/ARTEX, AGPL-3.0)"
   },
   {
     "name": "morluto/rea",
     "href": "https://github.com/morluto/rea",
-    "stars": "378.7K",
+    "stars": "384.6K",
     "desc": "Reverse engineer anything with agents, from app behavior down to native binaries."
   },
   {
     "name": "BlackSnufkin/BYOVD",
     "href": "https://github.com/BlackSnufkin/BYOVD",
-    "stars": "988",
+    "stars": "987",
     "desc": "BYOVD research use cases featuring vulnerable driver discovery and reverse engineering methodology.  (CVE-2025-52915,  CVE-2025-1055, CVE-2026-3609, CVE-2026-8501)."
   },
   {
     "name": "AlSch092/UltimateAntiCheat",
     "href": "https://github.com/AlSch092/UltimateAntiCheat",
-    "stars": "652",
+    "stars": "651",
     "desc": "UltimateAnticheat is an open source usermode anti-cheat system made to detect and prevent common attack vectors in game cheating (C++, Windows)"
   }
 ]
