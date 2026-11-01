@@ -2,19 +2,19 @@
   {
     "name": "togg53192-cmd/jailbreaks",
     "href": "https://github.com/togg53192-cmd/jailbreaks",
-    "stars": "11.1K",
+    "stars": "12.3K",
     "desc": "LIST OF ALL MY JAILBREAKS"
   },
   {
     "name": "416rehman/DeepZero",
     "href": "https://github.com/416rehman/DeepZero",
-    "stars": "763",
+    "stars": "765",
     "desc": "Find zero-days while you sleep. DeepZero is an automated vulnerability research framework that parses, decompiles, and analyzes thousands of Windows kernel drivers for exploitable IOCTLs natively using AI agents."
   },
   {
     "name": "SHODAN-HORAI/SHODAN-Stat-Editor",
     "href": "https://github.com/SHODAN-HORAI/SHODAN-Stat-Editor",
-    "stars": "116",
+    "stars": "121",
     "desc": "Windows program that changes the stats of every weapon, stratagem, mecha and armor passive in Helldivers 2. It edits the game's data files while the game is closed, so no mod loader is needed. Works with EAC and alongside other mods."
   },
   {
@@ -32,7 +32,7 @@
   {
     "name": "morluto/rea",
     "href": "https://github.com/morluto/rea",
-    "stars": "412.4K",
+    "stars": "415.6K",
     "desc": "Reverse engineer anything with agents, from app behavior down to native binaries."
   }
 ]
