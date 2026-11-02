@@ -348,4 +348,3 @@ export async function numberPages(bytes: ArrayBuffer | Uint8Array) {
     type: "application/pdf",
   });
 }
-
