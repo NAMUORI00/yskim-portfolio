@@ -162,7 +162,7 @@
     "audio-voice": {
       "title": "Connecting Separation and Transcription Models to User Features",
       "desc": "I compare models that separate vocals and instruments or transcribe audio into piano scores, and connect their results to features people use directly on the web.",
-      "body": "I compare models that separate vocals and instruments or transcribe audio into piano scores, and connect their results to features people use directly on the web.\n\n## From model experiments to delivered results\n\nManaged audio-separation training experiments with PyTorch, CUDA and Hydra configuration. In an internship hackathon I connected Spring Boot, FastAPI and Spleeter into a web service that uploads audio and returns five separated stems. At Kakao I compared public transcription models, chose ByteDance's model, and completed Doremi Sketch, which turns audio and YouTube links into piano-score PDFs.\n\n## What I want to explore next\n\nComparing processing progress and separation and transcription quality on consistent criteria, and reducing response delays in web services.\n\n## Related project\n\n[Implementation and my role](/projects/music-splitter-web)"
+      "body": "I compare models that separate vocals and instruments or transcribe audio into piano scores, and connect their results to features people use directly on the web.\n\n## From model experiments to delivered results\n\nManaged audio-separation training experiments with PyTorch, CUDA and Hydra configuration. In an internship project I connected Spring Boot, FastAPI and Spleeter into a web service that uploads audio and returns five separated stems. At Kakao I compared public transcription models, chose ByteDance's model, and completed Doremi Sketch, which turns audio and YouTube links into piano-score PDFs.\n\n## What I want to explore next\n\nComparing processing progress and separation and transcription quality on consistent criteria, and reducing response delays in web services.\n\n## Related project\n\n[Implementation and my role](/projects/music-splitter-web)"
     },
     "agentic-workflow": {
       "title": "Coding-agent Harnesses and Approval-based Development Automation",
@@ -211,7 +211,7 @@
     },
     "music-splitter-web": {
       "name": "AI Audio Separation Web Service",
-      "period": "Jun 2023 internship project hackathon",
+      "period": "Jun 2023 internship project",
       "desc": "Built a web service that accepts an audio upload, separates it into five stems, and lets users download the results.",
       "metric": "Implemented audio upload → AI separation → result download",
       "tags": [
@@ -222,7 +222,7 @@
         "FastAPI",
         "Spleeter"
       ],
-      "body": "Built a web service that accepts an audio upload, separates it into five stems, and lets users download the results.\n\n\n## My role\n\n\nDeveloped web-to-server API integration, AI audio separation integration, and signup/login functionality.\n\n\n## What I built\n\n\nConnected a Spring Boot web server to a Python FastAPI server, covering file upload, AI processing, and result download.\n\n\nUsed the existing Spleeter five-stem model and implemented signup/login with Spring Security.\n\n\n## Results and execution environment\n\n\nEvidence: Implemented audio upload → AI separation → result download\n\n\nBuilt during a one-month internship project hackathon in June 2023 as a locally run web service. Running separation inference on its own server, apart from the web server, kept web pages responsive during AI processing.\n\n\n## Technologies\n\n\nJava, Spring Boot, Spring Security, Python, FastAPI, Spleeter"
+      "body": "Built a web service that accepts an audio upload, separates it into five stems, and lets users download the results.\n\n\n## My role\n\n\nDeveloped web-to-server API integration, AI audio separation integration, and signup/login functionality.\n\n\n## What I built\n\n\nConnected a Spring Boot web server to a Python FastAPI server, covering file upload, AI processing, and result download.\n\n\nUsed the existing Spleeter five-stem model and implemented signup/login with Spring Security.\n\n\n## Results and execution environment\n\n\nEvidence: Implemented audio upload → AI separation → result download\n\n\nBuilt during a one-month internship project in June 2023 as a locally run web service. Running separation inference on its own server, apart from the web server, kept web pages responsive during AI processing.\n\n\n## Technologies\n\n\nJava, Spring Boot, Spring Security, Python, FastAPI, Spleeter"
     },
     "golden-glove": {
       "name": "Music-playing Glove",
