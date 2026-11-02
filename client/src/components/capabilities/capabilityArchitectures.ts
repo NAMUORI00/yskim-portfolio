@@ -415,7 +415,7 @@ export const ARCHITECTURES: Record<string, ProjectArchitecture> = {
         nodes: [
           { id: "team", lane: "team", label: t("다른 대학 학생들과 팀 구성", "Team with students from other universities"), detail: t("해커톤에서 팀을 꾸려 게임 제작에 참여했습니다.", "Formed a team at the hackathon and took part in building the game.") },
           { id: "build", lane: "team", label: t("Unity 게임 제작", "Building the game in Unity"), tech: ["Unity"], detail: t("해커톤 기간 동안 Unity로 팀 프로젝트를 진행했습니다.", "The team project was built in Unity during the hackathon.") },
-          { id: "game", lane: "outcome", label: t("해커톤 게임 · 장려상", "Hackathon game · encouragement award"), detail: t("2017 AR·VR 해커톤 장려상", "2017 AR/VR hackathon encouragement award") },
+          { id: "game", lane: "outcome", label: t("해커톤 게임 · 우수상", "Hackathon game · excellence award"), detail: t("2017 AR·VR 해커톤 우수상", "2017 AR/VR hackathon excellence award") },
         ],
         edges: [t("팀 구성", "team formed"), t("완성한 게임", "finished game")],
       },

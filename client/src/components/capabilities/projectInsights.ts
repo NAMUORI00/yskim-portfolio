@@ -314,7 +314,7 @@ export const PROJECT_INSIGHTS: Record<string, ProjectInsight> = {
       "음식 사진을 찍으면 인식 결과에서 음식을 고르고, 그 음식의 영양정보를 앱에서 바로 확인할 수 있게 합니다.",
       "Take a photo of a meal, pick the food from the recognition result, and see its nutrition information in the app.",
     ),
-    status: [{ kind: "award", text: t("2022 연계 캡스톤 장려상", "2022 joint capstone encouragement award") }],
+    status: [{ kind: "award", text: t("2022 연계 캡스톤 우수상", "2022 joint capstone excellence award") }],
     modules: [
       {
         name: t("앱–서버 연결", "App–server link"),
@@ -498,11 +498,11 @@ export const PROJECT_INSIGHTS: Record<string, ProjectInsight> = {
       "AR·VR 해커톤 기간 동안 다른 대학 학생들과 팀을 이루어 Unity 게임을 만들었습니다.",
       "A Unity game built during an AR/VR hackathon with students from other universities.",
     ),
-    status: [{ kind: "award", text: t("2017 AR·VR 해커톤 장려상", "2017 AR/VR hackathon encouragement award") }],
+    status: [{ kind: "award", text: t("2017 AR·VR 해커톤 우수상", "2017 AR/VR hackathon excellence award") }],
     modules: [],
     comparisons: [],
     sparse: t(
-      "남아 있는 기록은 팀 구성, Unity 게임 제작 참여, 장려상 수상까지입니다. 구성 요소를 나눌 만큼의 기록이 없어 도식과 비교는 생략했습니다.",
+      "남아 있는 기록은 팀 구성, Unity 게임 제작 참여, 우수상 수상까지입니다. 구성 요소를 나눌 만큼의 기록이 없어 도식과 비교는 생략했습니다.",
       "The surviving record covers forming the team, taking part in building the Unity game and the award. There is not enough record to break it into components, so the diagram and comparison are left out.",
     ),
   },
@@ -586,7 +586,7 @@ export const PROJECT_INSIGHTS: Record<string, ProjectInsight> = {
       "장갑을 낀 손가락의 움직임으로 음악을 연주하는 키트로, 어린 학생의 코딩 학습에 쓰도록 만들었습니다.",
       "A kit that plays music from the movements of gloved fingers, made for young students learning to code.",
     ),
-    status: [{ kind: "award", text: t("2023 연계 캡스톤 우수상", "2023 joint capstone excellence award") }],
+    status: [{ kind: "award", text: t("2023 연계 캡스톤 최우수상", "2023 joint capstone top excellence award") }],
     modules: [
       {
         name: t("장갑 회로", "Glove circuit"),

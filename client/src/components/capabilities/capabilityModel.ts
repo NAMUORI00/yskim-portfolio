@@ -195,8 +195,8 @@ export const CAPABILITIES: CapabilityDefinition[] = [
         { ko: "팀 진행 관리", en: "Team coordination" },
       ],
       output: [
-        { ko: "2023 연계 캡스톤 우수상", en: "2023 joint capstone excellence award" },
-        { ko: "2022 연계 캡스톤 장려상", en: "2022 joint capstone encouragement award" },
+        { ko: "2023 연계 캡스톤 최우수상", en: "2023 joint capstone top excellence award" },
+        { ko: "2022 연계 캡스톤 우수상", en: "2022 joint capstone excellence award" },
         { ko: "지도 기반 업소 안내 서비스", en: "Map-based business finder service" },
       ],
     },
