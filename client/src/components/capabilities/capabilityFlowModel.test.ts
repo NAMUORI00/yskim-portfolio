@@ -68,8 +68,8 @@ function allText(flow: FlowView): string[] {
 }
 
 describe("capability flow model", () => {
-  it("keeps all 17 projects, each with at least one flow", () => {
-    expect(ALL_SLUGS).toHaveLength(17);
+  it("keeps all 21 projects, each with at least one flow", () => {
+    expect(ALL_SLUGS).toHaveLength(21);
     for (const slug of ALL_SLUGS) expect(flowViewsFor(slug).length).toBeGreaterThan(0);
     for (const slugs of Object.values(AREA_PROJECTS)) for (const slug of slugs) expect(ARCHITECTURES[slug]).toBeDefined();
   });

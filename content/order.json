@@ -10,7 +10,11 @@
   "projects": [
     "smartfarm-rag",
     "mv-evirag",
+    "llm-selective-revision",
+    "ondevice-medical-qa",
     "music-splitter-web",
+    "doremi-sketch",
+    "gpu-server-portal",
     "golden-glove",
     "food-scan",
     "tourism-data",

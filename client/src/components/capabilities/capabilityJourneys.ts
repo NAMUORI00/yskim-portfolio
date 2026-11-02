@@ -455,6 +455,10 @@ const EXPLANATORY_ICONS: Record<string, DiagramIcons[]> = {
   "hangul-clock": [{ nodes: { club: "team", clock: "clock" }, edges: ["device"] }],
   "mediamtx-installer": [{ nodes: { steps: "operator", script: "terminal", server: "server" }, edges: ["list", "terminal"] }],
   "cross-review-bridge": [{ nodes: { reviewer: "model", bridge: "terminal", approve: "operator", codex: "code" }, edges: ["document", "list", "check"] }],
+  "llm-selective-revision": [{ nodes: { change: "sensor", links: "records", rewrite: "model", recheck: "check" }, edges: ["sensor", "text", "text"] }],
+  "ondevice-medical-qa": [{ nodes: { ask: "phone", search: "search", generate: "model", show: "phone" }, edges: ["text", "document", "text"] }],
+  "doremi-sketch": [{ nodes: { input: "audioFile", fetch: "server", model: "model", pdf: "music" }, edges: ["audio", "audio", "music"] }],
+  "gpu-server-portal": [{ nodes: { shared: "gpu", split: "folder", portal: "browser" }, edges: ["server", "folder"] }],
 };
 
 export const LANE_ICON: Record<LaneId, FlowIcon> = {

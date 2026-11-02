@@ -157,7 +157,7 @@
     "edge-llm": {
       "title": "On-device AI and Shared GPU Server Workspaces",
       "desc": "I work on on-device AI that runs inside a device without an external server, and on splitting a GPU server shared by several labs into per-researcher workspaces. My experience includes local execution with llama.cpp and quantized models, PyTorch and CUDA training environments, and experiment management through configuration files.",
-      "body": "I work on on-device AI that runs inside a device without an external server, and on splitting a GPU server shared by several labs into per-researcher workspaces. My experience includes local execution with llama.cpp and quantized models, PyTorch and CUDA training environments, and experiment management through configuration files.\n\n## Running models and dividing workspaces\n\nI led the partitioning of a DGX H200 GPU server shared by three labs into per-researcher workspaces and built its web portal; all three labs now use the server this way. On device, I built a medical question-answering app that runs without internet permission on a Pixel 7-based Android emulator.\n\n## What I want to explore next\n\nRefining quantized-model execution to fit device memory limits, and automating workspace management on the shared GPU server.\n\n## Related project\n\n[Implementation and my role](/projects/music-source-separation)"
+      "body": "I work on on-device AI that runs inside a device without an external server, and on splitting a GPU server shared by several labs into per-researcher workspaces. My experience includes local execution with llama.cpp and quantized models, PyTorch and CUDA training environments, and experiment management through configuration files.\n\n## Running models and dividing workspaces\n\nI led the partitioning of a DGX H200 GPU server shared by three labs into per-researcher workspaces and built its web portal; all three labs now use the server this way. On device, I built a medical question-answering app that runs without internet permission on a Pixel 7-based Android emulator.\n\n## What I want to explore next\n\nRefining quantized-model execution to fit device memory limits, and automating workspace management on the shared GPU server.\n\n## Related project\n\n[Implementation and my role](/projects/ondevice-medical-qa)"
     },
     "audio-voice": {
       "title": "Connecting Separation and Transcription Models to User Features",
@@ -177,7 +177,7 @@
     "sensor-operations": {
       "title": "Answer Revision on Sensor Change and Approval-based Operations",
       "desc": "I research operations support that links answer sentences to the sensor values they depend on, rewrites only the affected answer units when values change, and controls equipment only after operator approval.",
-      "body": "I research operations support that links answer sentences to the sensor values they depend on, rewrites only the affected answer units when values change, and controls equipment only after operator approval.\n\n## Operations that reflect the current state\n\nIn my master's thesis research, re-checking sensor state just before execution and revising only the affected answer units kept the same response-state consistency as full regeneration while rewriting 26.5% less. In the SmartFarm operations-support system I check the quality and change of observed values and execute only operator-approved adjustments through to a result check. Validation is limited to a simulator and does not represent real farm-control performance.\n\n## What I want to explore next\n\nLowering the cost of updating dependencies when sensor values change continuously, and showing the evidence behind judgements and the action history in a way users can follow.\n\n## Related project\n\n[Implementation and my role](/projects/smartfarm-rag)"
+      "body": "I research operations support that links answer sentences to the sensor values they depend on, rewrites only the affected answer units when values change, and controls equipment only after operator approval.\n\n## Operations that reflect the current state\n\nIn my master's thesis research, re-checking sensor state just before execution and revising only the affected answer units kept the same response-state consistency as full regeneration while rewriting 26.5% less. In the SmartFarm operations-support system I check the quality and change of observed values and execute only operator-approved adjustments through to a result check. Validation is limited to a simulator and does not represent real farm-control performance.\n\n## What I want to explore next\n\nLowering the cost of updating dependencies when sensor values change continuously, and showing the evidence behind judgements and the action history in a way users can follow.\n\n## Related project\n\n[Implementation and my role](/projects/llm-selective-revision)"
     }
   },
   "projects": {
@@ -392,6 +392,59 @@
         "JPA"
       ],
       "body": "A web community board with member management and create, read, update, and delete operations for posts and comments, using Spring Boot and JPA.\n\n\n## Overview\n\n\nA Spring Boot-based CRUD board with member, post, and comment features.\n\n\n## Implementation\n\n- Metric: Implemented member, post, and comment CRUD with Spring Boot and JPA"
+    },
+    "llm-selective-revision": {
+      "name": "Selective Revision of LLM Answers on Sensor Change",
+      "period": "Master's thesis research",
+      "desc": "Researched and implemented a method that links answer sentences to the sensor values they depend on and rewrites only the affected answer units when those values change.",
+      "metric": "Rewrites 26.5% less while keeping the same response-state consistency as full regeneration",
+      "tags": [
+        "Python",
+        "LLM",
+        "pytest",
+        "GitHub Actions"
+      ],
+      "body": "Researched and implemented a method that links answer sentences to the sensor values they depend on and rewrites only the affected answer units when those values change.\n\n## My role\n\nResearch design, implementation of the selective-revision structure, comparison with full regeneration, and writing the master's thesis.\n\n## What I built\n\nEach answer sentence is linked to the sensor values it depends on, and when a value changes only the affected answer units are rewritten. Sensor state is checked again just before the answer is used for an action, so the answer does not drift from the current state.\n\n## Results\n\nEvidence: Rewrites 26.5% less while keeping the same response-state consistency as full regeneration\n\nCompared with regenerating the whole answer whenever a sensor value changes, it keeps the same response-state consistency while rewriting 26.5% less.\n\n## Technologies\n\nPython, pytest, GitHub Actions"
+    },
+    "ondevice-medical-qa": {
+      "name": "Evidence-traced On-device Medical QA App",
+      "period": "2026",
+      "desc": "Developed an on-device question-answering app that searches medical Q&A data, generates answers and shows the evidence inside an Android device without an external server.",
+      "metric": "RAGAS answer relevancy 0.52→0.69 (PC development path), first-author domestic conference talk",
+      "tags": [
+        "Android",
+        "Kotlin",
+        "LiteRT-LM",
+        "Gemma 4 E2B",
+        "RAG",
+        "Ollama",
+        "RAGAS"
+      ],
+      "body": "Developed an on-device question-answering app that searches medical Q&A data, generates answers and shows the evidence inside an Android device without an external server.\n\n## My role\n\nSystem design, app implementation, answer-quality evaluation design, and the first-author conference talk.\n\n## What I built\n\nGenerates answers on the device with LiteRT-LM and Gemma 4 E2B, searches medical Q&A data stored on the device, and shows the evidence used with each answer.\n\n## Results and validation scope\n\nEvidence: RAGAS answer relevancy 0.52→0.69 (PC development path), first-author domestic conference talk\n\nChecked on a Pixel 7-based Android emulator, without internet permission, from evidence search to answer generation. Adding medical Q&A retrieval to the same model raised mean RAGAS answer relevancy from 0.52 to 0.69; this comparison was run on the PC development path (Ollama).\n\n## Technologies\n\nAndroid, Kotlin, LiteRT-LM, Gemma 4 E2B, Python, Ollama, RAGAS"
+    },
+    "gpu-server-portal": {
+      "name": "Workspaces and Web Portal for a GPU Server Shared by Three Labs",
+      "period": "Graduate lab work",
+      "desc": "Led the partitioning of a DGX H200 GPU server shared by three labs into per-researcher workspaces and built its web portal.",
+      "metric": "All three labs now share the server this way",
+      "tags": [
+        "DGX H200",
+        "GPU server",
+        "Web portal"
+      ],
+      "body": "Led the partitioning of a DGX H200 GPU server shared by three labs into per-researcher workspaces and built its web portal.\n\n## My role\n\nLed the partitioning design and the web portal, and wrote Korean and English guides so Korean and international researchers can use the server through the same procedure.\n\n## Results\n\nEvidence: All three labs now share the server this way\n\nPer-researcher workspaces became the way three labs use the server. I also supported the internal network configuration and researchers' use of LLMs."
+    },
+    "doremi-sketch": {
+      "name": "Doremi Sketch: Piano Scores from Audio and YouTube Links",
+      "period": "2023.01 — 2023.02",
+      "desc": "As team lead of three during the Kakao AI development internship, completed an AI web service that turns audio files or YouTube links into piano-score PDFs in three weeks.",
+      "metric": "Team lead of three, service completed in three weeks",
+      "tags": [
+        "Python",
+        "PyTorch",
+        "Bootstrap"
+      ],
+      "body": "As team lead of three during the Kakao AI development internship, completed an AI web service that turns audio files or YouTube links into piano-score PDFs in three weeks.\n\n## My role\n\nAs team lead of three I set the development direction and took on YouTube audio fetching, processing status, output of AI results as score PDFs, the web pages, and fixing deployment errors.\n\n## What I built\n\nEarly on I compared public piano transcription models and chose ByteDance's model, which recognizes notes more accurately than the earlier leading model and also detects pedals. The service connects an audio file or YouTube link to a transcription delivered as a score PDF.\n\n## Results\n\nEvidence: Team lead of three, service completed in three weeks\n\n## Technologies\n\nPython, PyTorch, Bootstrap"
     }
   },
   "skills": {

@@ -23,14 +23,14 @@ function render(locale: "ko" | "en") {
 const count = (html: string, needle: string) => html.split(needle).length - 1;
 
 describe("CapabilityFlowSection (compact preview)", () => {
-  it("lists all 17 published projects as compact rows with a wide-view action for every flow", () => {
-    expect(published.length).toBe(17);
+  it("lists all 21 published projects as compact rows with a wide-view action for every flow", () => {
+    expect(published.length).toBe(21);
     const html = render("ko");
-    expect(count(html, 'class="cfr"')).toBe(17);
-    // 프로젝트 17개 흐름 + 스마트팜의 추가 흐름 2개 = 19개, 그리고 위쪽 실제 기록 카드의 재생 단추 1개
-    expect(count(html, 'class="cfm-wide"')).toBe(19);
+    expect(count(html, 'class="cfr"')).toBe(21);
+    // 프로젝트 21개 흐름 + 스마트팜의 추가 흐름 2개 = 23개, 그리고 위쪽 실제 기록 카드의 재생 단추 1개
+    expect(count(html, 'class="cfm-wide"')).toBe(23);
     expect(count(html, 'class="cfm-wide is-primary"')).toBe(1);
-    expect(count(html, ">넓게 보기<")).toBeGreaterThanOrEqual(19);
+    expect(count(html, ">넓게 보기<")).toBeGreaterThanOrEqual(23);
   });
 
   it("makes the recorded Smartfarm example easy to find and clearly labelled", () => {
@@ -45,7 +45,7 @@ describe("CapabilityFlowSection (compact preview)", () => {
     // 기록이 있는 프로젝트는 하나, 코드로 확인한 흐름은 둘, 나머지는 설명용 흐름으로 표시됩니다.
     expect(count(html, "기록된 예시 포함")).toBe(1);
     expect(count(html, 'class="cfm-badge is-code"')).toBe(2);
-    expect(count(html, 'class="cfm-badge is-explanatory"')).toBe(14);
+    expect(count(html, 'class="cfm-badge is-explanatory"')).toBe(18);
   });
 
   it("stays static until the wide view is opened (no dialog, no running animation)", () => {
@@ -66,6 +66,6 @@ describe("CapabilityFlowSection (compact preview)", () => {
     expect(html).toContain("Play in wide view");
     expect(html).toContain("Actual run record · simulator");
     expect(html).toContain("Zone A readings");
-    expect(count(html, 'class="cfr"')).toBe(17);
+    expect(count(html, 'class="cfr"')).toBe(21);
   });
 });

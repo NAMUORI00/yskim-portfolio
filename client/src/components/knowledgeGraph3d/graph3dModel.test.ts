@@ -20,7 +20,7 @@ describe("buildKnowledgeGraph", () => {
   });
 
   it("counts real knowledge separately from interest-only and stack-only items (the numbers the preview notes cite)", () => {
-    expect(ko.counts).toMatchObject({ domains: 8, evidenced: 86, built: 81, studied: 17, interest: 5, listed: 8, links: 101 });
+    expect(ko.counts).toMatchObject({ domains: 8, evidenced: 87, built: 83, studied: 18, interest: 4, listed: 8, links: 101 });
     expect(EDGES).toHaveLength(101);
     const relations = ko.links.reduce<Record<string, number>>((acc, link) => ({ ...acc, [link.relation]: (acc[link.relation] ?? 0) + 1 }), {});
     expect(relations).toEqual({ uses: 49, implements: 8, applies: 9, supports: 22, prerequisite: 13 });
@@ -29,11 +29,11 @@ describe("buildKnowledgeGraph", () => {
     expect(Array.from(cross.values()).reduce((sum, value) => sum + value, 0)).toBe(32);
     expect(cross.size).toBe(14);
     expect(cross.get("media|ml")).toBe(11);
-    // 근거 출처 35곳: 프로젝트 17 · 연구 글 6 · 논문 3 · 경력 4 · 코드로 확인한 흐름 2 · 화면 기록 1 · 이 사이트 1 · 기술 스택 목록 1
-    expect(ko.evidence.size).toBe(35);
+    // 근거 출처 39곳: 프로젝트 21 · 연구 글 6 · 논문 3 · 경력 4 · 코드로 확인한 흐름 2 · 화면 기록 1 · 이 사이트 1 · 기술 스택 목록 1
+    expect(ko.evidence.size).toBe(39);
     expect(ko.domains.map((domain) => [domain.id, domain.evidenced, domain.members.length])).toEqual([
       ["ml", 12, 15],
-      ["retrieval", 11, 14],
+      ["retrieval", 12, 14],
       ["media", 12, 12],
       ["backend", 10, 10],
       ["frontend", 13, 14],
@@ -41,17 +41,17 @@ describe("buildKnowledgeGraph", () => {
       ["device", 10, 11],
       ["infra", 13, 16],
     ]);
-    expect(ko.counts.kinds).toEqual({ tech: 42, concept: 23, method: 21 });
+    expect(ko.counts.kinds).toEqual({ tech: 42, concept: 24, method: 21 });
     for (const domain of ko.domains) expect(domain.evidenced, domain.id).toBeGreaterThanOrEqual(3);
     expect(ko.domains.reduce((sum, domain) => sum + domain.members.length, 0)).toBe(ko.nodes.length);
     // 성격은 근거에서만 나옵니다: 구현 근거, 연구·실험 근거, 둘 다
     expect(ko.byId.get("spring-boot")).toMatchObject({ status: "evidenced", built: true, studied: false });
-    expect(ko.byId.get("evidence-tracing")).toMatchObject({ status: "evidenced", built: false, studied: true });
+    expect(ko.byId.get("evidence-tracing")).toMatchObject({ status: "evidenced", built: true, studied: true });
     expect(ko.byId.get("channel-control")).toMatchObject({ built: true, studied: true });
-    expect(ko.byId.get("rag-eval")).toMatchObject({ status: "interest", built: false, studied: false });
+    expect(ko.byId.get("chunking")).toMatchObject({ status: "interest", built: false, studied: false });
     expect(ko.byId.get("aws")).toMatchObject({ status: "listed", built: false, studied: false });
     expect(ko.byId.get("aws")!.did).toContain("작업 기록은 아직 없습니다");
-    expect(en.byId.get("rag-eval")!.did).toContain("no work on it is documented");
+    expect(en.byId.get("chunking")!.did).toContain("no work on it is documented");
   });
 
   it("names evidence the way a visitor reads it — titles, status and links inside this site, never file paths", () => {

@@ -1,0 +1,47 @@
+---
+knowledge: {"claims":[{"node":"local-inference","mode":"built","quote":"LiteRT-LM과 Gemma 4 E2B로 기기 안에서 답변을 생성하고"},{"node":"evidence-tracing","mode":"built","quote":"답변에 쓴 근거를 함께 표시했습니다."},{"node":"rag","mode":"built","quote":"기기에 저장한 의료 문답 데이터를 검색해"},{"node":"rag-eval","mode":"studied","quote":"RAGAS 답변 관련성 평균을 0.52에서 0.69로 높였으며"},{"node":"mobile-app","mode":"built","quote":"외부 서버 없이 안드로이드 기기 안에서 의료 문답 검색과 답변 생성, 근거 표시를 수행하는 온디바이스 질의응답 앱을 개발했습니다."},{"node":"ollama","mode":"built","quote":"이 비교는 PC 개발 경로(Ollama)에서 수행했습니다."},{"node":"python","mode":"built","quote":"Android, Kotlin, LiteRT-LM, Gemma 4 E2B, Python, Ollama, RAGAS"}],"relations":[]}
+slug: ondevice-medical-qa
+name: 근거 추적형 온디바이스 의료 질의응답 앱
+period: "2026"
+status: published
+desc: 외부 서버 없이 안드로이드 기기 안에서 의료 문답 검색과 답변 생성, 근거 표시를 수행하는 온디바이스 질의응답 앱을 개발했습니다.
+metric: RAGAS 답변 관련성 0.52→0.69(PC 개발 경로), 국내 학술대회 제1저자 발표
+category: career
+focus: research
+proofLevel: core
+tags:
+  - Android
+  - Kotlin
+  - LiteRT-LM
+  - Gemma 4 E2B
+  - RAG
+  - Ollama
+  - RAGAS
+link: https://github.com/NAMUORI00/ondevice-medical-rag
+highlight: true
+private: false
+---
+
+외부 서버 없이 안드로이드 기기 안에서 의료 문답 검색과 답변 생성, 근거 표시를 수행하는 온디바이스 질의응답 앱을 개발했습니다.
+
+
+## 맡은 역할
+
+시스템 설계, 앱 구현, 답변 품질 평가 설계와 제1저자 학술대회 발표를 담당했습니다.
+
+
+## 구현한 기능
+
+LiteRT-LM과 Gemma 4 E2B로 기기 안에서 답변을 생성하고, 기기에 저장한 의료 문답 데이터를 검색해 답변에 쓴 근거를 함께 표시했습니다.
+
+
+## 결과와 검증 범위
+
+성과: RAGAS 답변 관련성 0.52→0.69(PC 개발 경로), 국내 학술대회 제1저자 발표
+
+Pixel 7 기반 안드로이드 에뮬레이터에서 인터넷 권한 없이 근거 검색부터 답변 생성까지 동작을 확인했습니다. 같은 모델에 의료 문답 검색을 결합해 RAGAS 답변 관련성 평균을 0.52에서 0.69로 높였으며, 이 비교는 PC 개발 경로(Ollama)에서 수행했습니다.
+
+
+## 사용 기술
+
+Android, Kotlin, LiteRT-LM, Gemma 4 E2B, Python, Ollama, RAGAS

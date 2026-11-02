@@ -1,0 +1,44 @@
+---
+knowledge: {"claims":[{"node":"answer-revision","mode":"built","quote":"센서 값이 바뀌면 영향받은 답변 단위만 다시 작성합니다."},{"node":"baseline-comparison","mode":"studied","quote":"센서 값이 바뀔 때마다 답변 전체를 다시 생성하는 방식과 비교해"},{"node":"python","mode":"built","quote":"Python, pytest, GitHub Actions"},{"node":"github-actions","mode":"built","quote":"Python, pytest, GitHub Actions"}],"relations":[]}
+slug: llm-selective-revision
+name: 센서 상태 변화에 따른 LLM 답변의 선택적 수정
+period: 석사학위논문 연구
+status: published
+desc: 답변 문장이 의존하는 센서 값을 미리 연결해 두고, 센서 값이 바뀌면 영향받은 답변 단위만 다시 작성하는 방법을 연구하고 구현했습니다.
+metric: 전체 재생성과 같은 응답-상태 일치율을 유지하며 다시 쓰는 분량 26.5% 감소
+category: career
+focus: research
+proofLevel: core
+tags:
+  - Python
+  - LLM
+  - pytest
+  - GitHub Actions
+link: ""
+highlight: true
+private: true
+---
+
+답변 문장이 의존하는 센서 값을 미리 연결해 두고, 센서 값이 바뀌면 영향받은 답변 단위만 다시 작성하는 방법을 연구하고 구현했습니다.
+
+
+## 맡은 역할
+
+연구 설계, 선택적 수정 구조 구현, 전체 재생성 방식과의 비교 평가, 석사학위논문 작성을 담당합니다.
+
+
+## 구현한 기능
+
+답변의 각 문장이 어떤 센서 값에 의존하는지 연결해 두고, 센서 값이 바뀌면 영향받은 답변 단위만 다시 작성합니다. 답변을 실행에 쓰기 직전에는 센서 상태를 다시 확인해 답변과 현재 상태가 어긋나지 않게 했습니다.
+
+
+## 결과
+
+성과: 전체 재생성과 같은 응답-상태 일치율을 유지하며 다시 쓰는 분량 26.5% 감소
+
+센서 값이 바뀔 때마다 답변 전체를 다시 생성하는 방식과 비교해, 같은 응답-상태 일치율을 유지하면서 다시 작성하는 분량을 26.5% 줄였습니다.
+
+
+## 사용 기술
+
+Python, pytest, GitHub Actions
