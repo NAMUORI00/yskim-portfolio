@@ -146,7 +146,7 @@ describe("layoutDomainDetail — honest layers by kind", () => {
     const { layout } = detail("ko", "retrieval", "rail", 240);
     const gutters = layout.rows.flatMap((row) => (row.gutter ? [row.gutter.key] : []));
     expect(gutters).toEqual(expect.arrayContaining(["interest", "listed", "paper", "project", "research"]));
-    expect(layout.items.get("rag-eval")!.group).toBe("interest");
+    expect(layout.items.get("chunking")!.group).toBe("interest");
     expect(layout.items.get("langchain")!.group).toBe("listed");
     expect(layout.items.get("paper:kci")!.group).toBe("paper");
     expect(layout.items.get("paper:kci")!.text).toContain("스마트팜");

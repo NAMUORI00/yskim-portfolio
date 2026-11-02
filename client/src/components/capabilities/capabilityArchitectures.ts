@@ -67,12 +67,12 @@ const t = (ko: string, en: string): Localized => ({ ko, en });
 
 /** 영역별 프로젝트 (한 영역 안에서는 중복 없음, 영역 사이에는 겹칠 수 있음) */
 export const AREA_PROJECTS: Record<CapabilityId, string[]> = {
-  ai: ["mv-evirag", "smartfarm-rag", "aerospace-rag", "music-source-separation"],
-  product: ["music-splitter-web", "food-scan", "spring-community-board", "introduce-cv-page", "js-quiz-app", "good-price-jeju", "unity-hackathon"],
+  ai: ["mv-evirag", "smartfarm-rag", "llm-selective-revision", "ondevice-medical-qa", "aerospace-rag", "music-source-separation"],
+  product: ["music-splitter-web", "doremi-sketch", "food-scan", "spring-community-board", "introduce-cv-page", "js-quiz-app", "good-price-jeju", "unity-hackathon"],
   data: ["tourism-data", "good-price-jeju"],
   embedded: ["smart-home-2017", "golden-glove", "hangul-clock"],
-  automation: ["mediamtx-installer", "cross-review-bridge", "introduce-cv-page"],
-  leadership: ["golden-glove", "food-scan", "good-price-jeju"],
+  automation: ["gpu-server-portal", "mediamtx-installer", "cross-review-bridge", "introduce-cv-page"],
+  leadership: ["doremi-sketch", "golden-glove", "food-scan", "good-price-jeju"],
 };
 
 export const ARCHITECTURES: Record<string, ProjectArchitecture> = {
@@ -528,6 +528,81 @@ export const ARCHITECTURES: Record<string, ProjectArchitecture> = {
           { id: "codex", lane: "ai", label: t("Codex 개발 작업", "Codex development work"), detail: t("승인된 검토 의견이 Codex 쪽 개발 작업으로 이어집니다.", "Approved review items flow into the Codex-side development work.") },
         ],
         edges: [t("코드 검토 결과", "review results"), t("검토 의견", "review items"), t("승인된 의견", "approved items")],
+      },
+    ],
+  },
+
+  "llm-selective-revision": {
+    slug: "llm-selective-revision",
+    purpose: t("센서 변화에 맞춰 답변의 필요한 부분만 고치는 선택적 수정", "Selective revision that fixes only the needed parts of an answer when sensors change"),
+    scope: "overview",
+    note: t("비공개 연구 저장소와 학위논문 원고에 적은 구조의 개요입니다.", "An overview of the structure described in the private research repository and the thesis manuscript."),
+    diagrams: [
+      {
+        lanes: ["field", "data", "ai", "outcome"],
+        nodes: [
+          { id: "change", lane: "field", label: t("센서 값 변화", "Sensor value change"), detail: t("센서 값이 바뀌면 수정 과정이 시작됩니다.", "A change in a sensor value starts the revision.") },
+          { id: "links", lane: "data", label: t("문장과 센서 연결 정보", "Sentence-to-sensor links"), box: t("문장 연결 정보", "Sentence links"), detail: t("답변의 각 문장이 의존하는 센서 값을 미리 연결해 둡니다.", "Each answer sentence is linked in advance to the sensor values it depends on.") },
+          { id: "rewrite", lane: "ai", label: t("영향받은 답변 단위만 다시 작성", "Rewrite only affected answer units"), box: t("부분 재작성", "Partial rewrite"), tech: ["Python"], detail: t("바뀐 값에 기대는 답변 단위만 LLM으로 다시 작성합니다.", "Only the answer units that rely on the changed values are rewritten with an LLM.") },
+          { id: "recheck", lane: "outcome", label: t("실행 직전 상태 재확인", "State re-check before use"), box: t("상태 재확인", "State re-check"), detail: t("답변을 실행에 쓰기 직전에 센서 상태를 다시 확인합니다.", "Sensor state is checked again just before the answer is used for an action.") },
+        ],
+        edges: [t("바뀐 센서", "changed sensors"), t("영향받은 문장", "affected sentences"), t("수정한 답변", "revised answer")],
+      },
+    ],
+  },
+
+  "ondevice-medical-qa": {
+    slug: "ondevice-medical-qa",
+    purpose: t("외부 서버 없이 기기 안에서 근거를 찾아 답하는 의료 질의응답 앱", "A medical question-answering app that finds evidence and answers inside the device"),
+    scope: "overview",
+    note: t("Pixel 7 기반 안드로이드 에뮬레이터에서 확인한 흐름입니다.", "The flow as checked on a Pixel 7-based Android emulator."),
+    diagrams: [
+      {
+        lanes: ["user", "data", "ai"],
+        nodes: [
+          { id: "ask", lane: "user", label: t("앱에서 의료 질문 입력", "Ask a medical question in the app"), box: t("질문 입력", "Ask"), tech: ["Android", "Kotlin"], detail: t("안드로이드 앱 화면에서 질문을 입력합니다.", "The question is entered in the Android app.") },
+          { id: "search", lane: "data", label: t("기기 내 의료 문답 검색", "On-device medical Q&A search"), box: t("문답 검색", "Q&A search"), detail: t("기기에 저장한 의료 문답 데이터에서 근거를 찾습니다.", "Evidence is found in medical Q&A data stored on the device.") },
+          { id: "generate", lane: "ai", label: t("기기 내 답변 생성", "On-device answer generation"), box: t("답변 생성", "Answer"), tech: ["LiteRT-LM", "Gemma 4 E2B"], detail: t("LiteRT-LM과 Gemma 4 E2B로 기기 안에서 답변을 만듭니다.", "LiteRT-LM and Gemma 4 E2B generate the answer on the device.") },
+          { id: "show", lane: "user", label: t("답변과 근거 표시", "Answer with evidence"), box: t("근거 표시", "Evidence shown"), detail: t("답변과 함께 참고한 근거를 보여 줍니다.", "The answer is shown with the evidence it used.") },
+        ],
+        edges: [t("질문", "question"), t("찾은 근거", "retrieved evidence"), t("답변과 근거", "answer and evidence")],
+      },
+    ],
+  },
+
+  "doremi-sketch": {
+    slug: "doremi-sketch",
+    purpose: t("음원이나 유튜브 링크를 피아노 악보 PDF로 만드는 AI 웹 서비스", "An AI web service that turns audio or a YouTube link into a piano-score PDF"),
+    scope: "overview",
+    note: t("팀 저장소가 비공개라 이력 기록을 바탕으로 적은 개요입니다.", "The team repository is private, so this overview follows the career record."),
+    diagrams: [
+      {
+        lanes: ["user", "server", "ai", "outcome"],
+        nodes: [
+          { id: "input", lane: "user", label: t("음원 파일이나 유튜브 링크", "Audio file or YouTube link"), box: t("음원 입력", "Audio input"), detail: t("사용자가 음원 파일을 올리거나 유튜브 링크를 넣습니다.", "The user uploads an audio file or enters a YouTube link.") },
+          { id: "fetch", lane: "server", label: t("음원 수집과 처리 상태 표시", "Audio fetch and status"), box: t("수집과 상태", "Fetch and status"), tech: ["Python"], detail: t("유튜브 음원을 받아 오고, 처리 상태를 화면에 보여 줍니다.", "Fetches YouTube audio and shows the processing status on screen.") },
+          { id: "model", lane: "ai", label: t("ByteDance 피아노 채보 모델", "ByteDance piano transcription model"), box: t("채보 모델", "Transcription"), tech: ["PyTorch"], detail: t("공개 모델들을 비교해 고른 채보 모델이 음원을 음표로 옮깁니다.", "The transcription model, chosen after comparing public models, turns audio into notes.") },
+          { id: "pdf", lane: "outcome", label: t("악보 PDF", "Score PDF"), detail: t("채보 결과를 악보 PDF로 만들어 제공합니다.", "The transcription result is delivered as a score PDF.") },
+        ],
+        edges: [t("음원", "audio"), t("음원 데이터", "audio data"), t("채보 결과", "transcription")],
+      },
+    ],
+  },
+
+  "gpu-server-portal": {
+    slug: "gpu-server-portal",
+    purpose: t("공용 GPU 서버를 연구원별 작업 공간으로 나눠 쓰는 체계", "Sharing one GPU server as per-researcher workspaces"),
+    scope: "overview",
+    note: t("저장소가 공개되지 않아 이력 기록을 바탕으로 적은 개요입니다.", "No public repository; this overview follows the career record."),
+    diagrams: [
+      {
+        lanes: ["server", "tool", "user"],
+        nodes: [
+          { id: "shared", lane: "server", label: t("3개 연구실 공용 DGX H200", "DGX H200 shared by three labs"), box: t("공용 DGX H200", "Shared DGX H200"), detail: t("3개 연구실이 함께 쓰는 GPU 서버입니다.", "The GPU server shared by three labs.") },
+          { id: "split", lane: "tool", label: t("연구원별 작업 공간 분할", "Per-researcher workspaces"), box: t("작업 공간 분할", "Workspaces"), detail: t("서버를 연구원마다 작업 공간으로 나눕니다.", "The server is divided into a workspace for each researcher.") },
+          { id: "portal", lane: "user", label: t("웹 포털과 두 언어 설명서", "Web portal and bilingual guides"), box: t("웹 포털", "Web portal"), detail: t("연구원들이 웹 포털과 한국어, 영어 설명서에 따라 같은 절차로 서버를 씁니다.", "Researchers use the server through the web portal and Korean and English guides, following the same procedure.") },
+        ],
+        edges: [t("공용 서버", "shared server"), t("나눈 작업 공간", "divided workspaces")],
       },
     ],
   },

@@ -98,9 +98,17 @@ export const RESEARCH_SLOTS = ["rag", "video-qa", "edge-llm", "sensor-operations
  * 설명에서 문구가 사라지면 연결도 함께 빠집니다.
  */
 export const MENTIONED_PROJECTS: Record<string, Array<{ slug: string; anchor: string }>> = {
-  rag: [{ slug: "aerospace-rag", anchor: "항공우주 문서" }],
-  "audio-voice": [{ slug: "music-source-separation", anchor: "음원 분리 학습 실험" }],
+  rag: [
+    { slug: "aerospace-rag", anchor: "항공우주 문서" },
+    { slug: "ondevice-medical-qa", anchor: "온디바이스 의료 질의응답" },
+  ],
+  "audio-voice": [
+    { slug: "music-source-separation", anchor: "음원 분리 학습 실험" },
+    { slug: "doremi-sketch", anchor: "도레미 스케치" },
+  ],
   "agentic-workflow": [{ slug: "mediamtx-installer", anchor: "영상 스트리밍 서버 설치 스크립트" }],
+  "sensor-operations": [{ slug: "smartfarm-rag", anchor: "스마트팜 운영 지원 시스템" }],
+  "edge-llm": [{ slug: "music-source-separation", anchor: "PyTorch와 CUDA 기반 학습 환경" }],
 };
 
 export function normalizeTech(value: string): string {

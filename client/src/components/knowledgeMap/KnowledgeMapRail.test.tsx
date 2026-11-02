@@ -142,7 +142,7 @@ describe("KnowledgeMapRail interaction", () => {
     const python = dialog.querySelector<HTMLButtonElement>('[data-node-id="tech:python"]')!;
     act(() => python.click());
     expect(python.getAttribute("aria-pressed")).toBe("true");
-    expect(dialog.querySelector(".km-dialog-inspector")?.textContent).toContain("이 포트폴리오의 프로젝트 8개에서 사용");
+    expect(dialog.querySelector(".km-dialog-inspector")?.textContent).toContain("이 포트폴리오의 프로젝트 10개에서 사용");
 
     act(() => key(document.activeElement ?? document.body, "Escape"));
     expect(document.querySelector('[role="dialog"]')).not.toBeNull();

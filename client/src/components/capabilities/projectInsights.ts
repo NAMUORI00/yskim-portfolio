@@ -696,6 +696,166 @@ export const PROJECT_INSIGHTS: Record<string, ProjectInsight> = {
       },
     ],
   },
+
+  "llm-selective-revision": {
+    slug: "llm-selective-revision",
+    enables: t(
+      "센서 값이 바뀌어도 답변 전체를 새로 쓰지 않고, 영향받은 문장만 고쳐 답변을 현재 상태에 맞춥니다.",
+      "Keeps an answer in line with the current state by rewriting only the sentences a sensor change affects, instead of the whole answer.",
+    ),
+    status: [{ kind: "implemented", text: t("석사학위논문 연구, 작성 중", "Master's thesis research · in progress") }],
+    modules: [
+      {
+        name: t("문장별 센서 의존 연결", "Sentence-to-sensor links"),
+        role: t("답변의 각 문장이 어떤 센서 값에 기대는지 미리 연결", "Records which sensor values each answer sentence depends on"),
+      },
+      {
+        name: t("영향받은 답변 단위 재작성", "Rewriting affected answer units"),
+        role: t("바뀐 센서 값에 기대는 답변 단위만 골라 다시 작성", "Picks only the answer units that rely on the changed values and rewrites them"),
+      },
+      {
+        name: t("실행 직전 상태 재확인", "State re-check before use"),
+        role: t("답변을 실행에 쓰기 직전에 센서 상태를 다시 확인", "Re-checks sensor state just before the answer is used for an action"),
+      },
+    ],
+    comparisons: [
+      {
+        basis: "source",
+        topic: t("센서 값이 바뀌었을 때 답변을 고치는 방법", "Updating an answer when sensor values change"),
+        before: {
+          title: t("전체 재생성", "Full regeneration"),
+          text: t("센서 값이 바뀔 때마다 답변 전체를 다시 생성합니다.", "The whole answer is generated again whenever a sensor value changes."),
+        },
+        after: {
+          title: t("선택적 수정", "Selective revision"),
+          text: t("영향받은 답변 단위만 다시 작성하고 나머지 문장은 그대로 둡니다.", "Only the affected answer units are rewritten; the other sentences stay as they are."),
+        },
+        note: t(
+          "두 방식을 비교한 결과 수치는 프로젝트 기록과 학위논문에 있으며 여기에는 옮기지 않았습니다.",
+          "The measured comparison of the two approaches is in the project record and the thesis and is not repeated here.",
+        ),
+      },
+    ],
+  },
+
+  "ondevice-medical-qa": {
+    slug: "ondevice-medical-qa",
+    enables: t(
+      "인터넷 없이 안드로이드 기기 안에서 의료 질문에 답하고, 답변에 쓴 근거를 함께 보여 줍니다.",
+      "Answers medical questions inside an Android device without internet and shows the evidence each answer used.",
+    ),
+    status: [
+      { kind: "published", text: t("학술대회 발표, 제1저자", "Conference talk · first author") },
+      { kind: "implemented", text: t("안드로이드 에뮬레이터 동작 확인", "Checked on an Android emulator") },
+    ],
+    modules: [
+      {
+        name: t("기기 내 문답 검색", "On-device Q&A search"),
+        role: t("기기에 저장한 의료 문답 데이터에서 질문에 맞는 근거를 찾음", "Finds evidence for the question in medical Q&A data stored on the device"),
+      },
+      {
+        name: t("기기 내 답변 생성", "On-device answer generation"),
+        role: t("LiteRT-LM과 Gemma 4 E2B로 기기 안에서 답변을 생성", "Generates the answer on the device with LiteRT-LM and Gemma 4 E2B"),
+      },
+      {
+        name: t("근거 표시 화면", "Evidence view"),
+        role: t("답변과 함께 참고한 근거를 화면에 표시", "Shows the evidence used alongside each answer"),
+      },
+    ],
+    comparisons: [
+      {
+        basis: "illustrative",
+        topic: t("근거 없이 답할 때와 근거를 붙일 때", "Answering with and without evidence"),
+        before: {
+          title: t("모델만으로 답할 때", "The model alone"),
+          text: t("모델이 아는 내용만으로 답하면 무엇을 근거로 했는지 확인하기 어렵습니다.", "When the model answers from what it knows, it is hard to check what the answer rests on."),
+        },
+        after: {
+          title: t("검색 근거를 붙인 답변", "Answers with retrieved evidence"),
+          text: t("기기에 저장한 문답에서 찾은 근거를 답변과 함께 보여 줍니다.", "The evidence found in the Q&A stored on the device is shown with the answer."),
+        },
+        note: t(
+          "RAGAS 비교 결과는 PC 개발 경로에서 잰 값으로, 프로젝트 기록에만 적었습니다.",
+          "The RAGAS comparison was measured on the PC development path and appears only in the project record.",
+        ),
+      },
+    ],
+  },
+
+  "doremi-sketch": {
+    slug: "doremi-sketch",
+    enables: t(
+      "음원 파일이나 유튜브 링크를 넣으면 피아노 악보 PDF로 받아 볼 수 있게 합니다.",
+      "Turns an audio file or a YouTube link into a piano-score PDF.",
+    ),
+    status: [{ kind: "implemented", text: t("인턴 팀 프로젝트, 3인 팀 팀장", "Internship team project · team lead of three") }],
+    modules: [
+      {
+        name: t("유튜브 음원 수집", "YouTube audio fetch"),
+        role: t("유튜브 링크에서 음원을 받아 채보 모델로 넘김", "Fetches audio from a YouTube link and passes it to the transcription model"),
+      },
+      {
+        name: t("처리 상태 표시", "Processing status"),
+        role: t("채보가 진행되는 동안 처리 상태를 화면에 표시", "Shows processing status on screen while transcription runs"),
+      },
+      {
+        name: t("악보 PDF 출력", "Score PDF output"),
+        role: t("AI 채보 결과를 악보 PDF로 만들어 제공", "Turns the AI transcription result into a score PDF"),
+      },
+    ],
+    comparisons: [
+      {
+        basis: "split",
+        topic: t("가져다 쓴 모델과 만든 부분", "The model used and the parts built"),
+        before: {
+          title: t("ByteDance 피아노 채보 모델", "ByteDance piano transcription model"),
+          text: t("공개 채보 모델들을 비교해 고른 기존 모델로, 음원을 음표로 옮깁니다.", "An existing model, chosen after comparing public transcription models, that turns audio into notes."),
+        },
+        after: {
+          title: t("웹 서비스로 연결한 부분", "Parts that make it a web service"),
+          text: t("유튜브 음원 수집, 처리 상태 표시, 악보 PDF 출력, 웹 화면을 만들어 모델을 서비스로 연결했습니다.", "YouTube audio fetch, processing status, score PDF output and the web pages connect the model to a service."),
+        },
+        note: t("3인 팀 프로젝트이며, 위의 부분은 팀장으로 맡은 담당 업무입니다.", "A three-person team project; the parts above are the work I took on as team lead."),
+      },
+    ],
+  },
+
+  "gpu-server-portal": {
+    slug: "gpu-server-portal",
+    enables: t(
+      "여러 연구실이 GPU 서버 한 대를 연구원별 작업 공간으로 나눠 같은 절차로 씁니다.",
+      "Lets several labs share one GPU server as per-researcher workspaces, following the same procedure.",
+    ),
+    status: [{ kind: "implemented", text: t("3개 연구실 사용 중", "In use by three labs") }],
+    modules: [
+      {
+        name: t("작업 공간 분할 방식", "Workspace partitioning"),
+        role: t("공용 DGX H200 서버를 연구원별 작업 공간으로 나누는 규칙", "Rules for dividing the shared DGX H200 server into per-researcher workspaces"),
+      },
+      {
+        name: t("웹 포털", "Web portal"),
+        role: t("연구원들이 나눈 서버를 쓰도록 만든 웹 화면", "A web page built so researchers can use the divided server"),
+      },
+      {
+        name: t("한국어와 영어 운영 설명서", "Korean and English guides"),
+        role: t("한국인과 외국인 연구원이 같은 절차로 서버를 쓰도록 안내", "Guides Korean and international researchers through the same procedure"),
+      },
+    ],
+    comparisons: [
+      {
+        basis: "source",
+        topic: t("공용 GPU 서버를 쓰는 방식", "How the shared GPU server is used"),
+        before: {
+          title: t("한 대를 함께 쓰는 서버", "One shared server"),
+          text: t("3개 연구실이 DGX H200 서버 한 대를 함께 씁니다.", "Three labs share a single DGX H200 server."),
+        },
+        after: {
+          title: t("연구원별 작업 공간", "Per-researcher workspaces"),
+          text: t("연구원마다 나눈 작업 공간을 웹 포털과 두 언어 설명서에 따라 같은 절차로 씁니다.", "Each researcher uses a divided workspace through the web portal and bilingual guides, following the same procedure."),
+        },
+      },
+    ],
+  },
 };
 
 export function insightFor(slug: string): ProjectInsight | null {

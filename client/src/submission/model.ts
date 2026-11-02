@@ -124,4 +124,4 @@ export function recommendationReason(project: ProjectEntry, purpose: Purpose) {
 }
 
 export const submissionIntroduction =
-  "문서 검색 기반 질의응답, 다중 시점 영상 질의응답, 음원 분리 기능을 연구하고 개발했습니다. 연구 설계와 비교 실험을 진행하고, AI 기능 구현과 웹 서비스 연동을 수행했습니다.";
+  "믿고 쓸 수 있는 LLM, RAG, VLM, AI 에이전트를 연구부터 서비스 배포까지 책임집니다. 질문 유형별 RAG, 근거가 있을 때만 답하는 다중 시점 VLM, 센서 변화에 맞춰 답변을 고치는 선택적 수정을 연구했고, 운영자 승인 후에만 설비를 제어하는 MCP 서버와 웹 서비스를 구현했습니다.";

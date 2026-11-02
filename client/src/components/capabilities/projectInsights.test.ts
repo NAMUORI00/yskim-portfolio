@@ -22,7 +22,7 @@ const allLines = (insight: ProjectInsight) => texts(insight).flatMap((value) => 
 
 describe("project insights (expanded project details)", () => {
   it("covers every published project with Korean and English text", () => {
-    expect(published).toHaveLength(17);
+    expect(published).toHaveLength(21);
     expect(Object.keys(PROJECT_INSIGHTS).sort()).toEqual(published.map((project) => project.slug).sort());
     for (const [slug, insight] of Object.entries(PROJECT_INSIGHTS)) {
       expect(insight.slug).toBe(slug);

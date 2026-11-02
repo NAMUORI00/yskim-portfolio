@@ -24,7 +24,8 @@ describe("buildKnowledgeMap", () => {
   it("links a research question only to projects its own text names", () => {
     expect(below("research:rag")).toEqual(expect.arrayContaining(["project:smartfarm-rag", "project:aerospace-rag"]));
     expect(below("research:video-qa")).toEqual(["project:mv-evirag"]);
-    expect(below("research:sensor-operations")).toEqual(["project:smartfarm-rag"]);
+    expect(below("research:sensor-operations")).toEqual(expect.arrayContaining(["project:llm-selective-revision", "project:smartfarm-rag"]));
+    expect(below("research:sensor-operations")).toHaveLength(2);
     expect(below("research:audio-voice")).toEqual(expect.arrayContaining(["project:music-splitter-web", "project:music-source-separation"]));
     for (const research of portfolioContent.research) {
       const text = `${research.desc}\n${research.body}`;
