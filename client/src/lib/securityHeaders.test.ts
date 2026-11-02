@@ -9,6 +9,9 @@ describe("Cloudflare Pages security headers", () => {
     const headers = readFileSync(headersPath, "utf8");
 
     expect(headers).toContain("Content-Security-Policy:");
+    expect(headers).toContain("script-src 'self' 'wasm-unsafe-eval';");
+    expect(headers).not.toContain("'unsafe-eval'");
+    expect(headers).toContain("frame-src blob:");
     expect(headers).toContain("Strict-Transport-Security:");
     expect(headers).toContain("X-Frame-Options: DENY");
     expect(headers).toContain("Permissions-Policy:");

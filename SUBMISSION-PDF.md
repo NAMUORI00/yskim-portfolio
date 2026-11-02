@@ -26,4 +26,4 @@ Set `SUBMISSION_STRESS_PATH` to a file path to also export the all-projects, lon
 
 PDF tests cover embedded fonts, links, A4 sizing, final pagination and all-project generation. Editor tests cover independent selections, reordering, stale preview invalidation, empty selections and errors. Visually inspect rendered PDFs whenever typography or layout changes.
 
-The narrow `frame-src blob:` CSP addition permits local PDF previews; object embedding stays disabled. Fonts are bundled under `client/public/fonts` with their OFL license.
+The narrow `wasm-unsafe-eval` script directive permits the bundled Yoga PDF layout engine (general JavaScript `unsafe-eval` stays disabled). The `frame-src blob:` CSP addition permits local PDF previews; object embedding stays disabled. Fonts are bundled under `client/public/fonts` with their OFL license.
