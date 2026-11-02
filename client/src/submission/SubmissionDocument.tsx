@@ -423,9 +423,6 @@ export function SubmissionDocument({
               </View>
             ))}
           <View wrap={false} style={{ marginTop: 14 }}>
-            <Link src={`https://namuori.net/projects/${p.slug}`} style={s.link}>
-              포트폴리오: namuori.net/projects/{p.slug}
-            </Link>
             {p.link && (
               <Link
                 src={p.link}
