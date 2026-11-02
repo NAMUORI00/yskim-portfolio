@@ -1,18 +1,5 @@
 // Submission-only wording. Exact source matches keep editorial changes from
 // silently replacing facts when the project record is updated.
-export const submissionWording: Record<string, Record<string, string>> = {
-  "music-splitter-web": {
-    "학부 프로젝트로 로컬 환경에서 실행하는 웹 서비스를 개발했습니다. 기존 AI 모델을 실제 웹 기능으로 연결한 경험입니다.":
-      "Spring Boot와 Python FastAPI 서버에 Spleeter를 연동해 음원 업로드, 보컬과 악기 분리, 결과 다운로드를 웹에서 처리하도록 구현했습니다. 회원 인증과 서버 API를 연결해 로컬 환경에서 실행 가능한 서비스로 구성했습니다.",
-  },
-  "smartfarm-rag": {
-    "문서의 단어, 의미, 정보 간 관계를 활용하는 검색 방식을 결합했습니다. 질문의 특징에 따라 적합한 검색 조합을 선택하도록 구현했습니다. 이러한 문서 검색과 AI 답변 생성을 연결하는 방식을 RAG라고 합니다.":
-      "단어, 의미, 관계 기반 검색을 결합하고, 질문의 특징에 따라 검색 조합을 선택하는 RAG 질의응답 기능을 구현했습니다.",
-    "별도로 개발한 스마트팜 운영 시스템에서는 관측 정보, 문서 근거, AI 설명, 운영자 승인과 실행 결과 확인을 연결했습니다. 이 운영 흐름은 시뮬레이션 환경에서 검증했습니다.":
-      "스마트팜 운영 시스템에서 관측 정보 확인, 문서 근거 조회, AI 설명, 운영자 승인, 실행 결과 확인으로 이어지는 운영 판단과 조치 흐름을 구성했습니다. 이 운영 흐름은 시뮬레이션 환경에서 검증했습니다.",
-  },
-  "mv-evirag": {
-    "얼마나 많은 질문에 답했는지와 잘못된 답변이 얼마나 나왔는지를 함께 평가했습니다. 실험 절차와 모델 응답을 관리하고 비교 결과를 논문으로 정리했습니다.":
-      "답변 비율과 오류율을 함께 평가해 선택적 응답의 특성을 분석하고, 실험 절차와 모델 응답의 비교 결과를 논문으로 정리했습니다.",
-  },
-};
+// The project records were rewritten on 2026-11-02 in the concise form the PDF
+// needs, so no rewrite is registered at the moment.
+export const submissionWording: Record<string, Record<string, string>> = {};

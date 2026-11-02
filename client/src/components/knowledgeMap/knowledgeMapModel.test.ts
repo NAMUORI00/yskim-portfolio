@@ -52,7 +52,7 @@ describe("buildKnowledgeMap", () => {
       expect(projectCount(ko, node.id)).toBeGreaterThan(0);
     }
     // 기술 스택에 있어도 어느 프로젝트에도 태그가 없으면 지도에 넣지 않습니다.
-    expect(ko.byId.has("tech:docker")).toBe(false);
+    expect(ko.byId.has("tech:aws")).toBe(false);
     // 스택에 없는 태그(예: Hydra)도 넣지 않습니다.
     expect(ko.byId.has("tech:hydra")).toBe(true);
     const titles = ko.nodes.map((node) => node.title).join("\n");
@@ -67,7 +67,7 @@ describe("buildKnowledgeMap", () => {
     expect(en.byId.get("tech:회로")?.label).toBe("Circuitry");
     expect(en.byId.get("research:rag")?.title).toBe(englishTranslations.research?.rag?.title);
     expect(en.byId.get("project:smartfarm-rag")?.metric).toBe(englishTranslations.projects?.["smartfarm-rag"]?.metric);
-    expect(ko.byId.get("project:smartfarm-rag")?.metric).toBe("관련 KCI 논문 1편 게재");
+    expect(ko.byId.get("project:smartfarm-rag")?.metric).toBe("nDCG@10 0.72→0.90, 엣지 장비 응답 시간 약 12% 단축, KCI 제1저자 게재");
   });
 
   it("gives every node a short, recognisable label and keeps the full name for reading", () => {

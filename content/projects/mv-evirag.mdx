@@ -1,11 +1,11 @@
 ---
-knowledge: {"claims":[{"node":"python","mode":"built","quote":"Python과 PyTorch로 학습·평가 코드를 구현하고 LoRA를 활용했습니다."},{"node":"pytorch","mode":"built","quote":"Python과 PyTorch로 학습·평가 코드를 구현하고 LoRA를 활용했습니다."},{"node":"training","mode":"built","quote":"연구 설계부터 모델 학습과 구현, 비교 실험, 제1저자 논문 작성까지 담당했습니다."},{"node":"lora","mode":"built","quote":"Python과 PyTorch로 학습·평가 코드를 구현하고 LoRA를 활용했습니다."},{"node":"baseline-comparison","mode":"studied","quote":"연구 설계부터 모델 학습과 구현, 비교 실험, 제1저자 논문 작성까지 담당했습니다."},{"node":"experiment-config","mode":"built","quote":"실험 절차와 모델 응답을 관리하고 비교 결과를 논문으로 정리했습니다."},{"node":"selective-prediction","mode":"studied","quote":"얼마나 많은 질문에 답했는지와 잘못된 답변이 얼마나 나왔는지를 함께 평가했습니다."},{"node":"mv-video-qa","mode":"built","quote":"이 연구에서는 세 판단을 별도의 단계로 나누고, 영상에 담긴 정보에 따라 답변하거나 보류하는 방법을 학습했습니다."},{"node":"availability","mode":"studied","quote":"영상 평가에는 관심 영역을 제공한 입력과 규칙으로 정한 정보 가용성 조건을 사용했습니다."},{"node":"abstention","mode":"built","quote":"답변에 필요한 정보가 있는 입력과 없는 입력을 함께 학습했습니다."},{"node":"confidence-release","mode":"built","quote":"답변을 생성한 뒤에는 응답의 확신도를 바탕으로 제공 여부를 판단하도록 구성했습니다."}],"relations":[{"from":"training","to":"python","relation":"uses","quote":"Python과 PyTorch로 학습·평가 코드를 구현하고 LoRA를 활용했습니다."},{"from":"training","to":"pytorch","relation":"uses","quote":"Python과 PyTorch로 학습·평가 코드를 구현하고 LoRA를 활용했습니다."},{"from":"training","to":"lora","relation":"prerequisite","quote":"Python과 PyTorch로 학습·평가 코드를 구현하고 LoRA를 활용했습니다."},{"from":"experiment-config","to":"mv-video-qa","relation":"supports","quote":"실험 절차와 모델 응답을 관리하고 비교 결과를 논문으로 정리했습니다."},{"from":"selective-prediction","to":"mv-video-qa","relation":"applies","quote":"얼마나 많은 질문에 답했는지와 잘못된 답변이 얼마나 나왔는지를 함께 평가했습니다."},{"from":"rag","to":"mv-video-qa","relation":"applies","quote":"- RAG"},{"from":"abstention","to":"mv-video-qa","relation":"supports","quote":"영상에 담긴 정보에 따라 답변하거나 보류하는 방법을 학습했습니다."},{"from":"confidence-release","to":"mv-video-qa","relation":"supports","quote":"답변을 생성한 뒤에는 응답의 확신도를 바탕으로 제공 여부를 판단하도록 구성했습니다."}]}
+knowledge: {"claims":[{"node":"python","mode":"built","quote":"Python과 PyTorch로 학습과 평가 코드를 구현하고"},{"node":"pytorch","mode":"built","quote":"Python과 PyTorch로 학습과 평가 코드를 구현하고"},{"node":"training","mode":"built","quote":"연구 설계부터 모델 학습과 구현, 비교 실험, 제1저자 논문 작성까지 담당했습니다."},{"node":"lora","mode":"built","quote":"LoRA로 VLM을 미세조정했습니다."},{"node":"baseline-comparison","mode":"studied","quote":"연구 설계부터 모델 학습과 구현, 비교 실험, 제1저자 논문 작성까지 담당했습니다."},{"node":"experiment-config","mode":"built","quote":"실험 전에 평가 문항과 비교 조건을 고정하고"},{"node":"selective-prediction","mode":"studied","quote":"답변 비율과 오류를 함께 평가했습니다."},{"node":"mv-video-qa","mode":"built","quote":"입력 영상의 선택과 답변 여부를 같은 판단으로 다루지 않고"},{"node":"availability","mode":"studied","quote":"영상 평가에는 관심 영역을 제공한 입력과 규칙으로 정한 정보 가용성 조건을 사용했습니다."},{"node":"abstention","mode":"built","quote":"영상에 근거가 있으면 답하고 부족하면 보류하도록 만들었습니다."},{"node":"confidence-release","mode":"built","quote":"답변을 생성한 뒤에는 응답의 확신도를 바탕으로 제공 여부를 판단합니다."}],"relations":[{"from":"training","to":"python","relation":"uses","quote":"Python과 PyTorch로 학습과 평가 코드를 구현하고"},{"from":"training","to":"pytorch","relation":"uses","quote":"Python과 PyTorch로 학습과 평가 코드를 구현하고"},{"from":"training","to":"lora","relation":"prerequisite","quote":"LoRA로 VLM을 미세조정했습니다."},{"from":"experiment-config","to":"mv-video-qa","relation":"supports","quote":"실험 전에 평가 문항과 비교 조건을 고정하고"},{"from":"selective-prediction","to":"mv-video-qa","relation":"applies","quote":"답변 비율과 오류를 함께 평가했습니다."},{"from":"rag","to":"mv-video-qa","relation":"applies","quote":"- RAG"},{"from":"abstention","to":"mv-video-qa","relation":"supports","quote":"영상에 근거가 있으면 답하고 부족하면 보류하도록 만들었습니다."},{"from":"confidence-release","to":"mv-video-qa","relation":"supports","quote":"답변을 생성한 뒤에는 응답의 확신도를 바탕으로 제공 여부를 판단합니다."}]}
 slug: mv-evirag
 name: 다중 시점 감시 영상의 질의응답과 선택적 응답
 period: 석사과정 연구
 status: published
-desc: 여러 카메라의 영상으로 질문에 답하려면 어떤 영상을 살펴볼지, 주어진 영상으로 답할 수 있는지, 생성한 답변을 제공할지를 판단해야 합니다. 이 연구에서는 세 판단을 별도의 단계로 나누고, 영상에 담긴 정보에 따라 답변하거나 보류하는 방법을 학습했습니다.
-metric: IEEE Access 심사 중 · 2026.08 투고 · 제1저자
+desc: CCTV 다중 시점 영상에서 화면 선택, 답변 가능 여부 판단, 답변 공개 여부를 단계별로 분리하고, VLM을 LoRA로 미세조정해 근거가 있으면 답하고 부족하면 보류하도록 구현했습니다.
+metric: 보류 지시만 준 같은 모델 대비 오답 27건→0건, 정답 140건→247건, 국제 학술지 제1저자 심사 중
 category: career
 focus: research
 proofLevel: core
@@ -19,37 +19,30 @@ highlight: true
 private: false
 ---
 
-여러 카메라의 영상으로 질문에 답하려면 어떤 영상을 살펴볼지, 주어진 영상으로 답할 수 있는지, 생성한 답변을 제공할지를 판단해야 합니다. 이 연구에서는 세 판단을 별도의 단계로 나누고, 영상에 담긴 정보에 따라 답변하거나 보류하는 방법을 학습했습니다.
+CCTV 다중 시점 영상에서 화면 선택, 답변 가능 여부 판단, 답변 공개 여부를 단계별로 분리하고, VLM을 LoRA로 미세조정해 근거가 있으면 답하고 부족하면 보류하도록 구현했습니다.
 
 
 ## 맡은 역할
-
 
 연구 설계부터 모델 학습과 구현, 비교 실험, 제1저자 논문 작성까지 담당했습니다.
 
 
 ## 영상 선택과 답변 판단
 
+질문과 관련된 사람이 영상에 나타나더라도, 행동을 판단하는 데 필요한 부분이 가려져 있으면 답하기 어렵습니다. 그래서 입력 영상의 선택과 답변 여부를 같은 판단으로 다루지 않고 단계마다 쓸 수 있는 정보를 나눴습니다.
 
-질문과 관련된 사람이 영상에 나타나더라도, 행동을 판단하는 데 필요한 부분이 가려져 있으면 답하기 어려울 수 있습니다. 이에 따라 입력 영상의 선택과 답변 여부를 같은 판단으로 취급하지 않고, 각 단계에서 사용할 수 있는 정보를 나누어 다루었습니다.
-
-
-답변에 필요한 정보가 있는 입력과 없는 입력을 함께 학습했습니다. 답변을 생성한 뒤에는 응답의 확신도를 바탕으로 제공 여부를 판단하도록 구성했습니다.
+답변에 필요한 정보가 있는 입력과 없는 입력을 함께 학습해, 영상에 근거가 있으면 답하고 부족하면 보류하도록 만들었습니다. 답변을 생성한 뒤에는 응답의 확신도를 바탕으로 제공 여부를 판단합니다.
 
 
 ## 실험과 논문
 
+성과: 보류 지시만 준 같은 모델 대비 오답 27건→0건, 정답 140건→247건, 국제 학술지 제1저자 심사 중
 
-얼마나 많은 질문에 답했는지와 잘못된 답변이 얼마나 나왔는지를 함께 평가했습니다. 실험 절차와 모델 응답을 관리하고 비교 결과를 논문으로 정리했습니다.
+실험 전에 평가 문항과 비교 조건을 고정하고, 답변 비율과 오류를 함께 평가했습니다. 보류 지시만 준 같은 모델은 답할 수 있는 질문까지 보류했지만, 미세조정한 모델은 오답을 27건에서 0건으로 줄이면서 정답을 140건에서 247건으로 늘렸습니다.
 
-
-성과: IEEE Access 심사 중 · 2026.08 투고 · 제1저자
-
-
-논문 제목: Role-Separated Selective Response for Question Answering in Multi-View Video Surveillance
+논문 제목: Role-Separated Selective Response for Question Answering in Multi-View Video Surveillance (IEEE Access 심사 중, 2026.08 투고, 제1저자)
 
 
 ## 사용 기술
 
-
-Python과 PyTorch로 학습·평가 코드를 구현하고 LoRA를 활용했습니다. 영상 평가에는 관심 영역을 제공한 입력과 규칙으로 정한 정보 가용성 조건을 사용했습니다.
+Python과 PyTorch로 학습과 평가 코드를 구현하고 LoRA로 VLM을 미세조정했습니다. 영상 평가에는 관심 영역을 제공한 입력과 규칙으로 정한 정보 가용성 조건을 사용했습니다.

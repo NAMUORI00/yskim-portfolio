@@ -50,8 +50,8 @@ export const CAREER_COPY = {
     submitted: (period: string) => `${period} 투고`,
     expandAll: "모두 펼치기",
     collapseAll: "모두 접기",
-    expandAllLabel: "논문·연구·경력 설명 모두 펼치기",
-    collapseAllLabel: "논문·연구·경력 설명 모두 접기",
+    expandAllLabel: "논문, 연구, 경력 설명 모두 펼치기",
+    collapseAllLabel: "논문, 연구, 경력 설명 모두 접기",
   },
   en: {
     groups: {

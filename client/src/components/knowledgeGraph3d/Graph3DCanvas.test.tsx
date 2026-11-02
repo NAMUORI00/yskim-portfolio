@@ -83,7 +83,7 @@ describe("KnowledgeGraph3DRail markup — the whole view", () => {
     expect(html).toContain('id="knowledge-rail"');
     expect(html).toContain('aria-label="3D 지식 지도"');
     expect(html).toContain('role="group"');
-    expect(html).toContain(`aria-label="${names.ko}의 지식 지도: 가운데에 ${names.ko}, 둘레에 분야 8곳과 근거가 있는 지식 84개. 분야를 고르면 펼칩니다"`);
+    expect(html).toContain(`aria-label="${names.ko}의 지식 지도: 가운데에 ${names.ko}, 둘레에 분야 8곳과 근거가 있는 지식 86개. 분야를 고르면 펼칩니다"`);
     // 가운데는 언어와 관계없이 ME 하나만 표시합니다.
     expect(html).toMatch(/class="kg3-core-label"[^>]*><b[^>]*>Me<\/b><\/span>/);
     for (const domain of graph.domains) expect(html).toContain(`<span class="kg3-domain-name">${domain.label}</span><span class="kg3-domain-count">${domain.evidenced}</span>`);
@@ -132,7 +132,7 @@ describe("KnowledgeGraph3DRail markup — the whole view", () => {
     expect(html).toContain("Wide view");
     expect(html).toContain(DARK.green);
     const positions = (markup: string) => Array.from(markup.matchAll(/class="kg3-star" data-node-id="([^"]+)"[^>]*style="left:([\d.]+)px;top:([\d.]+)px/g), (match) => match.slice(1).join(" "));
-    expect(positions(html).length).toBe(98);
+    expect(positions(html).length).toBe(99);
     expect(positions(html)).toEqual(positions(korean));
   });
 

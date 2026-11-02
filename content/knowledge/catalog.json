@@ -1383,6 +1383,23 @@
       }
     },
     {
+      "id": "answer-revision",
+      "kind": "method",
+      "domain": "device",
+      "label": {
+        "ko": "선택적 답변 수정",
+        "en": "Answer revision"
+      },
+      "title": {
+        "ko": "센서 변화에 따른 답변의 선택적 수정",
+        "en": "Selective answer revision on sensor change"
+      },
+      "what": {
+        "ko": "답변의 각 문장이 의존하는 센서 값을 연결해 두고, 값이 바뀌면 영향받은 부분만 다시 쓰는 방법입니다.",
+        "en": "Linking each answer sentence to the sensor values it depends on and rewriting only the affected parts when those values change."
+      }
+    },
+    {
       "id": "shell",
       "kind": "tech",
       "domain": "infra",
@@ -1716,7 +1733,7 @@
       "files": [
         "content/education.json"
       ],
-      "ref": "석사과정 학생연구원",
+      "ref": "석사과정 학생참여연구원",
       "short": {
         "ko": "연구실",
         "en": "ML lab"

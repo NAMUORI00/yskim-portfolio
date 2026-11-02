@@ -1,6 +1,6 @@
 {
-  "title": "김유석 | AI/LLM 개발자 포트폴리오",
-  "description": "질의 적응형 RAG, 영상 질의응답, AI 서비스와 백엔드를 개발하는 김유석의 포트폴리오. 컴퓨터공학 석사과정, 2027년 3월 졸업 예정.",
+  "title": "김유석 | LLM, RAG, VLM, AI 에이전트 개발자 포트폴리오",
+  "description": "질문 유형별 RAG, 다중 시점 VLM, 운영자 승인형 MCP 서버와 AI 서비스를 연구하고 개발하는 김유석의 포트폴리오입니다. 컴퓨터공학 석사과정, 2027년 3월 졸업 예정.",
   "url": "https://namuori.net",
   "navigation": [
     {
@@ -10,12 +10,12 @@
     },
     {
       "id": "education",
-      "label": "논문·연구·경력",
+      "label": "논문, 연구, 경력",
       "icon": "graduation"
     },
     {
       "id": "projects",
-      "label": "프로젝트·개발 활동",
+      "label": "프로젝트와 개발 활동",
       "icon": "code"
     },
     {
@@ -25,7 +25,7 @@
     },
     {
       "id": "research",
-      "label": "연구·개발 관심 분야",
+      "label": "연구와 개발 관심 분야",
       "icon": "flask"
     },
     {

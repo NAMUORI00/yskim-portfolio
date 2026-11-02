@@ -88,10 +88,10 @@ describe("project insights (expanded project details)", () => {
     expect(mv.basis).toBe("illustrative");
     expect(mv.note?.ko).toContain("심사 중");
     expect(mv.note?.ko).toContain("수치를 옮기지 않았습니다");
-    // 스마트팜의 설계 비교는 프로젝트 기록에 적힌 "추가 AI 호출 대체"입니다.
+    // 스마트팜의 설계 비교는 프로젝트 기록에 적힌 "질문마다 LLM을 추가 호출하던 과정을 없앰"입니다.
     const source = PROJECT_INSIGHTS["smartfarm-rag"].comparisons.find((comparison) => comparison.basis === "source");
     expect(source?.after.text.ko).toContain("추가 AI 호출 없이");
-    expect(published.find((project) => project.slug === "smartfarm-rag")?.body).toContain("추가 AI 호출을 대체");
+    expect(published.find((project) => project.slug === "smartfarm-rag")?.body).toContain("질문마다 LLM을 추가 호출하던 과정을 없앴습니다.");
   });
 
   it("keeps the Smartfarm sensor example a simulator record, not physical farm control", () => {

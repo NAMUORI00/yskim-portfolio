@@ -1,21 +1,24 @@
 ---
-knowledge: {"claims":[{"node":"cloudflare","mode":"built","quote":"이 포트폴리오도 콘텐츠와 코드를 Git에서 관리하고 Cloudflare 배포로 연결합니다."},{"node":"install-automation","mode":"built","quote":"설치 절차를 스크립트로 실행하고"},{"node":"human-approval","mode":"built","quote":"외부 AI 검토 결과를 운영자 승인 단계에 연결하는 도구를 개발했습니다."},{"node":"git-content","mode":"built","quote":"이 포트폴리오도 콘텐츠와 코드를 Git에서 관리하고 Cloudflare 배포로 연결합니다."},{"node":"run-records","mode":"interest","quote":"자동화의 실행 상태와 변경 근거를 남기고"}],"relations":[{"from":"human-approval","to":"run-records","relation":"prerequisite","quote":"자동화의 실행 상태와 변경 근거를 남기고, 사람이 검토할 지점을 분명하게 드러내는 개발 도구를 만들고자 합니다."}]}
+knowledge: {"claims":[{"node":"cloudflare","mode":"built","quote":"이 포트폴리오도 콘텐츠와 코드를 Git에서 관리하고 Cloudflare 배포로 연결합니다."},{"node":"install-automation","mode":"built","quote":"영상 스트리밍 서버 설치 스크립트를 만들었습니다."},{"node":"human-approval","mode":"built","quote":"외부 AI의 검토를 사람 승인 아래 주고받는 Codex 플러그인"},{"node":"git-content","mode":"built","quote":"이 포트폴리오도 콘텐츠와 코드를 Git에서 관리하고 Cloudflare 배포로 연결합니다."},{"node":"run-records","mode":"interest","quote":"자동화의 실행 상태와 변경 근거를 남겨"}],"relations":[{"from":"human-approval","to":"run-records","relation":"prerequisite","quote":"자동화의 실행 상태와 변경 근거를 남겨 사람이 검토할 지점을 분명하게 드러냅니다."}]}
 slug: agentic-workflow
-title: 검토와 승인을 포함한 개발 업무 자동화
+title: 코딩 에이전트 하네스와 승인 기반 개발 자동화
 status: published
-desc: 반복되는 개발 환경 설정과 AI 코드 검토를 사람이 확인할 수 있는 작업 흐름으로 정리합니다. 영상 스트리밍 서버 설치 스크립트와 외부 AI 검토 결과를 운영자 승인 단계에 연결하는 도구를 개발했습니다.
+desc: pi, dsh, Claude Code, Codex, Cursor 프록시 같은 코딩 에이전트를 함께 쓰며, 에이전트가 맡은 일을 사람이 검토하고 승인할 수 있는 하네스 도구를 만들어 개발에 활용합니다.
 showDiagram: false
 ---
 
-반복되는 개발 환경 설정과 AI 코드 검토를 사람이 확인할 수 있는 작업 흐름으로 정리합니다. 영상 스트리밍 서버 설치 스크립트와 외부 AI 검토 결과를 운영자 승인 단계에 연결하는 도구를 개발했습니다.
+pi, dsh, Claude Code, Codex, Cursor 프록시 같은 코딩 에이전트를 함께 쓰며, 에이전트가 맡은 일을 사람이 검토하고 승인할 수 있는 하네스 도구를 만들어 개발에 활용합니다.
 
-## 반복 작업과 검토 절차를 도구로 구성
 
-설치 절차를 스크립트로 실행하고, 외부 AI의 검토 결과를 개발 작업에서 확인하는 흐름을 구현했습니다. 이 포트폴리오도 콘텐츠와 코드를 Git에서 관리하고 Cloudflare 배포로 연결합니다.
+## 하네스 도구와 반복 작업 자동화
+
+외부 AI의 검토를 사람 승인 아래 주고받는 Codex 플러그인, 노션을 에이전트의 기억 저장소로 쓰는 MCP 서버, 영상 스트리밍 서버 설치 스크립트를 만들었습니다. 이 포트폴리오도 콘텐츠와 코드를 Git에서 관리하고 Cloudflare 배포로 연결합니다.
+
 
 ## 더 탐구하고 싶은 내용
 
-자동화의 실행 상태와 변경 근거를 남기고, 사람이 검토할 지점을 분명하게 드러내는 개발 도구를 만들고자 합니다.
+에이전트 사이의 역할 분담 기준과 작업 맥락 저장 구조를 다듬고, 자동화의 실행 상태와 변경 근거를 남겨 사람이 검토할 지점을 분명하게 드러냅니다.
+
 
 ## 관련 프로젝트
 
