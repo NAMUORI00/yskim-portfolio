@@ -674,6 +674,7 @@ export function HomeView({ renderKnowledgeGraph }: { renderKnowledgeGraph?: (slo
               marginBottom: "0.65rem",
             }}
           >
+            <a href="/insights" style={{ display: "block", color: T.green, fontSize: "0.8rem", marginBottom: "16px" }}>{locale === "en" ? "Submission PDFs →" : "인사이트 · 제출 문서 →"}</a>
             {label("contact", "CONTACT")}
           </div>
           <div style={{ display: "grid", gap: "0.35rem" }}>
@@ -836,6 +837,7 @@ export function HomeView({ renderKnowledgeGraph }: { renderKnowledgeGraph?: (slo
             letterSpacing: "0.08em",
             marginBottom: "0.75rem",
           }}>
+            <a href="/insights" style={{ display: "block", color: T.green, fontSize: "0.8rem", marginBottom: "16px" }}>{locale === "en" ? "Submission PDFs →" : "인사이트 · 제출 문서 →"}</a>
             {label("contact", "CONTACT")}
           </div>
           {PROFILE.contacts.map((c) => (

@@ -15,10 +15,13 @@ const KnowledgeGraphPreview = lazy(() => import("./pages/KnowledgeGraphPreview")
 // 3D 지식 그래프 시안 (기준: 지금 공개 중인 층위형 지도) — 마찬가지로 이 주소를 열 때만 불러옵니다.
 const KnowledgeGraph3DPreview = lazy(() => import("./pages/KnowledgeGraph3DPreview"));
 
+const SubmissionStudio = lazy(() => import("./pages/SubmissionStudio"));
+
 function Router() {
   return (
     <Switch>
       <Route path={"/"} component={Home} />
+      <Route path="/insights"><Suspense fallback={<p>제출 문서를 불러오는 중…</p>}><SubmissionStudio /></Suspense></Route>
       <Route path={"/cv"} component={CV} />
       <Route path={"/projects/:slug"} component={ProjectDetail} />
       <Route path={"/research/:slug"} component={ResearchDetail} />
