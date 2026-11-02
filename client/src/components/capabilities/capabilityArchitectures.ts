@@ -282,7 +282,7 @@ export const ARCHITECTURES: Record<string, ProjectArchitecture> = {
     slug: "music-splitter-web",
     purpose: t("음원 업로드 → AI 5개 음원 분리 → 다운로드 웹 서비스", "Upload audio → AI five-stem separation → download"),
     scope: "detailed",
-    note: t("학부 프로젝트로 로컬 환경에서 실행하는 웹 서비스입니다.", "An undergraduate web service run in a local environment."),
+    note: t("인턴 실습 프로젝트로 로컬 환경에서 실행하는 웹 서비스입니다.", "An internship practice project run in a local environment."),
     diagrams: [
       {
         lanes: ["user", "server", "ai"],

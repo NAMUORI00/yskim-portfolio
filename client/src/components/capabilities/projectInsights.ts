@@ -190,7 +190,7 @@ export const PROJECT_INSIGHTS: Record<string, ProjectInsight> = {
       "웹 화면에서 음원 파일을 올리면 보컬·드럼·베이스·피아노·나머지 다섯 개 음원으로 나누어, 바로 들어 보고 내려받을 수 있게 합니다.",
       "Upload an audio file on a web page and get it split into five stems — vocals, drums, bass, piano and other — ready to play and download.",
     ),
-    status: [{ kind: "implemented", text: t("학부 프로젝트 · 로컬 실행", "Undergraduate project · run locally") }],
+    status: [{ kind: "implemented", text: t("인턴 실습 프로젝트, 로컬 실행", "Internship practice project · run locally") }],
     modules: [
       {
         name: t("로그인·업로드 화면", "Login and upload page"),

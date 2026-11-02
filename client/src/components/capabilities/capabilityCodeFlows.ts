@@ -135,7 +135,7 @@ export const MUSIC_SPLITTER_CODE_FLOW: FlowView = {
     ],
     limits: [
       NOT_A_RUN,
-      t("학부 프로젝트로 로컬 환경에서 실행한 웹 서비스입니다.", "An undergraduate web service run in a local environment."),
+      t("인턴 실습 프로젝트로 로컬 환경에서 실행한 웹 서비스입니다.", "An internship practice project run in a local environment."),
       t(
         "로그인은 Spring 서버에서 처리하며, 브라우저가 직접 부르는 /audio 경로는 같은 로그인 검사를 거치지 않습니다.",
         "Login is handled by the Spring server; the /audio path the browser calls directly does not go through that login check.",
