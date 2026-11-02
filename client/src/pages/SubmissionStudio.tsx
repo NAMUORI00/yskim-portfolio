@@ -254,7 +254,7 @@ export default function SubmissionStudio() {
                 </p>
               )}
               <p className="submission-note">
-                A4, PDF 한 파일, 한글 검색 및 복사, 포트폴리오 링크
+                A4, PDF 한 파일, 한글 검색 및 복사, GitHub 링크
               </p>
             </section>
             {error && (
@@ -323,13 +323,15 @@ export default function SubmissionStudio() {
                           ))}
                         </div>
                       )}
-                      <a
-                        href={`https://namuori.net/projects/${p.slug}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        포트폴리오 보기
-                      </a>
+                      {p.link && (
+                        <a
+                          href={p.link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          GitHub
+                        </a>
+                      )}
                     </article>
                   );
                 })}
