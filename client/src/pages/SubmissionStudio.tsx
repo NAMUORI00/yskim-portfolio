@@ -1,3 +1,8 @@
+import {
+  officialSourceUrl,
+  officialFields,
+  type OfficialDetails,
+} from "@/submission/officialForm";
 import { useEffect, useRef, useState } from "react";
 import { Link } from "wouter";
 import { portfolioContent as content } from "@/content";
@@ -33,6 +38,7 @@ export default function SubmissionStudio() {
   );
   const [detail, setDetail] = useState<Detail>("standard");
   const [introduction, setIntroduction] = useState(submissionIntroduction);
+  const [officialDetails, setOfficialDetails] = useState<OfficialDetails>({});
   const [busy, setBusy] = useState(false),
     [error, setError] = useState("");
   const [preview, setPreview] = useState<{ url: string; blob: Blob } | null>(
@@ -74,6 +80,7 @@ export default function SubmissionStudio() {
         kind: "combined",
         detail,
         introduction,
+        officialDetails,
       });
       if (!mounted.current) return;
       const url = URL.createObjectURL(blob);
@@ -212,6 +219,49 @@ export default function SubmissionStudio() {
               </label>
             </section>
             <section>
+              <h2>공식 이력서</h2>
+              <p>
+                고용노동부의 표준 이력서 원본 서식을 사용합니다. 가운뎃점은
+                쉼표로 바꾸며, 경력기술서와 포트폴리오를 뒤에 붙입니다.
+              </p>
+              <a
+                href={officialSourceUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                공식 양식 출처
+              </a>
+              <p>
+                원본의 주요 경력 두 칸에는 선택한 근무 경력을 순서대로 넣습니다.
+                전체 경력은 뒤의 경력기술서에 포함됩니다.
+              </p>
+              <details>
+                <summary>주소, 연락처 및 추가 항목 입력</summary>
+                <p>
+                  비워 두면 PDF에도 빈칸으로 표시됩니다. 입력 내용은 서버에
+                  전송하거나 저장하지 않습니다.
+                </p>
+                {officialFields.map(([key, label, limit]) => (
+                  <label key={key}>
+                    {label}
+                    <input
+                      type="text"
+                      value={officialDetails[key] ?? ""}
+                      maxLength={limit}
+                      autoComplete="off"
+                      onChange={event => {
+                        invalidate();
+                        setOfficialDetails(previous => ({
+                          ...previous,
+                          [key]: event.target.value,
+                        }));
+                      }}
+                    />
+                  </label>
+                ))}
+              </details>
+            </section>
+            <section>
               <h2>소개</h2>
               <label>
                 소개 문구
@@ -244,7 +294,10 @@ export default function SubmissionStudio() {
           <div className="submission-preview">
             <section>
               <h2>이력서 및 포트폴리오</h2>
-              <p>이력 및 보유기술 → 경력기술서 → 프로젝트 설명 및 핵심 도식</p>
+              <p>
+                공식 이력서 → 경력기술서 → 학력 및 연구활동 → 프로젝트
+                포트폴리오
+              </p>
               <button className="primary" disabled={!valid} onClick={generate}>
                 {busy ? "PDF 생성 중…" : "PDF 미리보기 생성"}
               </button>

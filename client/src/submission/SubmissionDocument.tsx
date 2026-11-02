@@ -1,3 +1,9 @@
+import { OfficialResume } from "./OfficialResume";
+import {
+  officialTemplatePath,
+  introductionBreak,
+  type OfficialDetails,
+} from "./officialForm";
 import { technicalSkills, projectDiagram } from "./presentation";
 import React from "react";
 import {
@@ -29,7 +35,7 @@ import {
 // Apply submission typography to source-backed text without editing site records.
 function submissionText(children: React.ReactNode): React.ReactNode {
   return React.Children.map(children, child =>
-    typeof child === "string" ? child.replace(/\s*[·ㆍ]\s*/g, ", ") : child
+    typeof child === "string" ? child.replace(/\s*[·ㆍ‧․]\s*/g, ", ") : child
   );
 }
 function Text({ children, ...props }: React.PropsWithChildren<TextProps>) {
@@ -234,6 +240,7 @@ export interface SubmissionProps {
   kind: DocumentKind;
   detail: Detail;
   introduction: string;
+  officialDetails?: OfficialDetails;
 }
 function CoreDiagram({ project }: { project: ProjectEntry }) {
   const diagram = projectDiagram(project);
@@ -278,6 +285,7 @@ export function SubmissionDocument({
   selection,
   detail,
   introduction,
+  officialDetails,
 }: SubmissionProps) {
   const { projects, records } = selectedItems(content, selection);
   const { profile } = content;
@@ -285,18 +293,6 @@ export function SubmissionDocument({
     e => e.type === "work" || e.type === "research"
   );
   const skills = technicalSkills(projects, records);
-  const contactNames: Record<string, string> = {
-    email: "이메일",
-    github: "GitHub",
-    website: "포트폴리오",
-    external: "블로그",
-  };
-  const identity: [string, string][] = [
-    ["성명", `${profile.name} (${profile.romanizedName})`],
-    ...profile.contacts.map(
-      c => [contactNames[c.type] ?? "연락처", c.label] as [string, string]
-    ),
-  ];
   const footer = () => (
     <Text fixed style={s.footer}>
       {profile.name}
@@ -308,62 +304,21 @@ export function SubmissionDocument({
       author={profile.name}
       language="ko-KR"
     >
-      <Page size="A4" style={s.page}>
-        <Text style={s.title}>이력서 및 포트폴리오</Text>
-        <Fields
-          rows={identity}
-          links={Object.fromEntries(
-            profile.contacts.map(c => [
-              contactNames[c.type] ?? "연락처",
-              c.href,
-            ])
-          )}
-        />
-        {introduction.trim() && (
-          <>
-            <Section>소개</Section>
-            <Text style={s.p}>{introduction}</Text>
-          </>
-        )}
-        {skills.length > 0 && (
-          <>
-            <Section>보유기술</Section>
-            <Fields rows={skills.map(g => [g.label, g.items.join(", ")])} />
-          </>
-        )}
-        <RecordTable
-          title="학력사항"
-          entries={records.filter(e => e.type === "education")}
-        />
-        <RecordTable
-          title="경력사항"
-          entries={records.filter(e => e.type === "work")}
-        />
-        <RecordTable
-          title="연구경력"
-          entries={records.filter(e => e.type === "research")}
-        />
-        <RecordTable
-          title="논문 및 학술활동"
-          entries={records.filter(
-            e => e.type === "publication" || e.type === "talk"
-          )}
-        />
-        <RecordTable
-          title="수상 및 기타 활동"
-          entries={records.filter(
-            e =>
-              ![
-                "education",
-                "work",
-                "research",
-                "publication",
-                "talk",
-              ].includes(e.type)
-          )}
-        />
-        {footer()}
-      </Page>
+      <OfficialResume
+        content={content}
+        careers={careers}
+        introduction={introduction}
+        details={officialDetails}
+      />
+      {introduction.length > 180 && (
+        <Page size="A4" style={s.page}>
+          <Text style={s.title}>자기소개 (계속)</Text>
+          <Text style={s.p}>
+            {introduction.slice(introductionBreak(introduction))}
+          </Text>
+          {footer()}
+        </Page>
+      )}
       {careers.length > 0 && (
         <Page size="A4" style={s.page}>
           <Text style={s.title}>경력기술서</Text>
@@ -395,6 +350,42 @@ export function SubmissionDocument({
               ))}
             </View>
           ))}
+          {footer()}
+        </Page>
+      )}
+      {(skills.length > 0 ||
+        records.some(e => !["work", "research"].includes(e.type))) && (
+        <Page size="A4" style={s.page}>
+          <Text style={s.title}>학력 및 연구활동</Text>
+          {skills.length > 0 && (
+            <>
+              <Section>보유기술</Section>
+              <Fields rows={skills.map(g => [g.label, g.items.join(", ")])} />
+            </>
+          )}
+          <RecordTable
+            title="학력사항"
+            entries={records.filter(e => e.type === "education")}
+          />
+          <RecordTable
+            title="논문 및 학술활동"
+            entries={records.filter(
+              e => e.type === "publication" || e.type === "talk"
+            )}
+          />
+          <RecordTable
+            title="수상 및 기타 활동"
+            entries={records.filter(
+              e =>
+                ![
+                  "education",
+                  "work",
+                  "research",
+                  "publication",
+                  "talk",
+                ].includes(e.type)
+            )}
+          />
           {footer()}
         </Page>
       )}
@@ -441,12 +432,37 @@ export function SubmissionDocument({
 export async function generateSubmission(props: SubmissionProps) {
   registerSubmissionFonts(window.location.origin);
   const raw = await pdf(<SubmissionDocument {...props} />).toBlob();
-  return numberPages(await raw.arrayBuffer());
+  const response = await fetch(officialTemplatePath);
+  if (!response.ok)
+    throw new Error("Official resume template could not be loaded");
+  return numberPages(
+    await raw.arrayBuffer(),
+    new Uint8Array(await response.arrayBuffer())
+  );
 }
-export async function numberPages(bytes: ArrayBuffer | Uint8Array) {
+export async function numberPages(
+  bytes: ArrayBuffer | Uint8Array,
+  template: Uint8Array
+) {
   const { PDFDocument, StandardFonts, rgb } = await import("pdf-lib");
-  const doc = await PDFDocument.load(bytes),
-    font = await doc.embedFont(StandardFonts.Helvetica);
+  const rendered = await PDFDocument.load(bytes);
+  const source = await PDFDocument.load(template);
+  if (source.getPageCount() !== 1)
+    throw new Error("Expected the one-page official resume form");
+  const doc = await PDFDocument.create();
+  const [form] = await doc.copyPages(source, [0]);
+  doc.addPage(form);
+  const overlay = await doc.embedPage(rendered.getPage(0));
+  form.drawPage(overlay, { x: 0, y: 0, width: 595, height: 841 });
+  const rest = await doc.copyPages(
+    rendered,
+    rendered.getPageIndices().slice(1)
+  );
+  rest.forEach(page => doc.addPage(page));
+  doc.setTitle(rendered.getTitle() ?? "이력서 및 포트폴리오");
+  doc.setAuthor(rendered.getAuthor() ?? "");
+  doc.setLanguage("ko-KR");
+  const font = await doc.embedFont(StandardFonts.Helvetica);
   doc.getPages().forEach((page, index) =>
     page.drawText(`${index + 1} / ${doc.getPageCount()}`, {
       x: 515,

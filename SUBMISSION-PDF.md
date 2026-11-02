@@ -1,14 +1,13 @@
 # Submission PDF
 
-`/insights` creates one Korean PDF containing the selected resume records, career details and portfolio projects. Each project includes a short description, a three-node core diagram, work/results and a portfolio link. The home links to this editor.
+`/insights` creates a single Korean A4 PDF: the Ministry of Employment and Labor's actual standard resume form, career details, academic/research background, and selected project portfolios. Source and limited punctuation adaptations are documented in `client/public/forms/README.md`.
 
-The editor supports purpose presets, inclusion/exclusion, order, an editable introduction, summary/standard/detailed levels, preview and one PDF download. There is no document-type switch or ZIP export. Edits are session-only. Source content is not modified.
+The editor supports purpose presets, inclusion/exclusion, order, introduction editing, optional personal form inputs, summary/standard/detailed levels, preview and one PDF download. Personal inputs and edits are session-only, not sent to a server. Source content is not modified. Unprovided form values stay empty; no qualification or support status is inferred.
 
-Skills use conventional technical categories and only technologies in selected projects/records. Three representative projects have explicit source-backed core flows. Other projects use up to three recorded modules without implying sequence; sparse records receive no invented diagram.
+The actual original PDF first page is copied with pdf-lib and filled by overlaying Korean text. The original first-page title, labels and table lines are retained. Middle dots become commas per user preference. Long introductions continue on another page. All selected career entries are included in the appendix, beyond the two fixed original employment rows.
 
-Submission-specific wording is mapped to exact source paragraphs in `wording.ts`. Tests detect source drift. Published/review statuses and local/simulation scope are retained. No unmeasured improvement metrics are generated.
+Skills use conventional technical categories and only selected source technologies. Project diagrams have at most three core nodes. Project footers contain only the recorded GitHub link; missing links are omitted. Exact-source wording mappings retain publication/review status and local/simulation scope.
 
-PDF libraries load on demand. OFL Korean fonts are bundled locally; output is searchable A4 with clickable links and page numbers. `wasm-unsafe-eval` permits the bundled Yoga layout engine while JavaScript `unsafe-eval` stays disabled. `frame-src blob:` permits the PDF preview. Native inline PDF rendering depends on the browser; download/new-window links are available.
+PDF libraries load on demand. Korean fonts are bundled locally. CSP permits Yoga WASM and blob PDF previews, not general JavaScript unsafe-eval. The official PDF template must load successfully; no fallback to a different form is produced.
 
-Validation: `pnpm check`, `pnpm test`, `pnpm build`.
-Set `SUBMISSION_OUTPUT_DIR` and run `pnpm exec vitest run src/submission/SubmissionDocument.test.tsx` to generate `combined.pdf`. Set `SUBMISSION_STRESS_PATH` to additionally save the all-projects/long-introduction fixture. Default content produces six pages. Render and visually inspect changed layouts.
+Validation: `pnpm check`, `pnpm test`, `pnpm build`. Set `SUBMISSION_OUTPUT_DIR`, `SUBMISSION_STRESS_PATH`, `SUBMISSION_FIELDS_PATH` before `pnpm exec vitest run src/submission/SubmissionDocument.test.tsx` for standard, all-project/long-introduction, and synthetic optional-field PDF fixtures. Verify actual rendered first-page values and original table geometry, then visually inspect every page. Default output is six pages.

@@ -3,7 +3,7 @@ import React from "react";
 import { describe, expect, it } from "vitest";
 import { PDFDocument } from "pdf-lib";
 import { renderToBuffer } from "@react-pdf/renderer";
-import { mkdirSync, writeFileSync } from "node:fs";
+import { mkdirSync, writeFileSync, readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { portfolioContent } from "@/content";
 import {
@@ -32,10 +32,24 @@ describe("real PDF rendering", () => {
         />
       );
       expect(buffer.subarray(0, 5).toString()).toBe("%PDF-");
+      const rawDoc = await PDFDocument.load(buffer);
+      expect(rawDoc.getPage(0).getHeight()).toBeGreaterThan(840);
       expect(buffer.toString("latin1")).toContain("/FontFile2");
       expect(buffer.toString("latin1")).toContain("/URI");
       const finalized = new Uint8Array(
-        await (await numberPages(buffer)).arrayBuffer()
+        await (
+          await numberPages(
+            buffer,
+            readFileSync(
+              fileURLToPath(
+                new URL(
+                  "../../public/forms/moel-standard-resume.pdf",
+                  import.meta.url
+                )
+              )
+            )
+          )
+        ).arrayBuffer()
       );
       const parsed = await PDFDocument.load(finalized);
       expect(parsed.getPageCount()).toBeGreaterThanOrEqual(2);
@@ -77,11 +91,66 @@ describe("real PDF rendering", () => {
       />
     );
     const bytes = new Uint8Array(
-      await (await numberPages(buffer)).arrayBuffer()
+      await (
+        await numberPages(
+          buffer,
+          readFileSync(
+            fileURLToPath(
+              new URL(
+                "../../public/forms/moel-standard-resume.pdf",
+                import.meta.url
+              )
+            )
+          )
+        )
+      ).arrayBuffer()
     );
     const parsed = await PDFDocument.load(bytes);
     expect(parsed.getPageCount()).toBeGreaterThanOrEqual(projects.length + 1);
     if (process.env.SUBMISSION_STRESS_PATH)
       writeFileSync(process.env.SUBMISSION_STRESS_PATH, bytes);
+  }, 60000);
+  it("fills optional form fields without changing the template page size", async () => {
+    registerSubmissionFonts(
+      fileURLToPath(new URL("../../public", import.meta.url)).replace(
+        /\\/g,
+        "/"
+      )
+    );
+    const buffer = await renderToBuffer(
+      <SubmissionDocument
+        content={portfolioContent}
+        selection={recommend(portfolioContent, "ai")}
+        kind="combined"
+        detail="standard"
+        introduction={submissionIntroduction}
+        officialDetails={{
+          address: "테스트 주소 123 (00000)",
+          telephone: "02-0000-0000",
+          mobile: "010-0000-0000",
+          qualification1: "테스트 자격증",
+          qualificationDate1: "2024년 1월",
+          specialty: "연구 및 개발",
+          veteranNumber: "테스트 번호",
+          disabilityType: "테스트",
+          disabilityDegree: "테스트",
+          disabilityNumber: "테스트 번호",
+          basicLivelihood: "테스트",
+          singleParent: "테스트",
+        }}
+      />
+    );
+    const template = readFileSync(
+      fileURLToPath(
+        new URL("../../public/forms/moel-standard-resume.pdf", import.meta.url)
+      )
+    );
+    const final = new Uint8Array(
+      await (await numberPages(buffer, template)).arrayBuffer()
+    );
+    const doc = await PDFDocument.load(final);
+    expect(doc.getPage(0).getSize()).toEqual({ width: 595, height: 841 });
+    if (process.env.SUBMISSION_FIELDS_PATH)
+      writeFileSync(process.env.SUBMISSION_FIELDS_PATH, final);
   }, 60000);
 });
