@@ -70,20 +70,20 @@ describe("CareerRecords (홈 논문·연구·경력)", () => {
 
     expect(research).toContain("연구 경험");
     expect(research).toContain("연구실 연구 참여");
-    expect(research).toContain("석사과정 학생연구원");
-    expect(research).toContain("연구참여확약에 따른 석사과정 연구 활동");
+    expect(research).toContain("석사과정 학생참여연구원");
+    expect(research).toContain("DGX H200 GPU 서버의 연구원별 작업 공간 분할 주도");
     expect(employment).not.toContain("학생연구원");
     expect(employment).not.toContain("머신러닝연구실");
 
     expect(employment).toContain("경력");
     expect(employment).not.toContain("유급 근무");
-    for (const place of ["카카오 · 카카오트랙 연계 현장실습", "틸론소프트", "제주중학교", "제주과학고등학교"]) expect(employment).toContain(place);
+    for (const place of ["카카오, 카카오트랙 연계 현장실습", "틸론소프트", "제주중학교", "제주과학고등학교"]) expect(employment).toContain(place);
     expect(count(employment, 'class="career-item"')).toBe(entriesFor("ko").filter((entry) => entry.type === "work").length);
 
     const english = render("en");
-    expect(groupMarkup(english, "research")).toContain("Graduate Student Researcher");
+    expect(groupMarkup(english, "research")).toContain("Graduate Research Assistant");
     expect(groupMarkup(english, "research")).toContain("Lab research participation");
-    expect(groupMarkup(english, "employment")).not.toContain("Graduate Student Researcher");
+    expect(groupMarkup(english, "employment")).not.toContain("Graduate Research Assistant");
     expect(groupMarkup(english, "employment")).not.toContain("Paid positions");
   });
 

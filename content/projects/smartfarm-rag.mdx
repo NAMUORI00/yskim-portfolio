@@ -1,54 +1,48 @@
 ---
-knowledge: {"claims":[{"node":"python","mode":"built","quote":"Python · RAG · FastAPI"},{"node":"baseline-comparison","mode":"studied","quote":"공개 자료를 사용해 기존 검색 방식과 비교 실험을 수행했습니다."},{"node":"rag","mode":"built","quote":"이러한 문서 검색과 AI 답변 생성을 연결하는 방식을 RAG라고 합니다."},{"node":"lexical","mode":"built","quote":"문서의 단어, 의미, 정보 간 관계를 활용하는 검색 방식을 결합했습니다."},{"node":"semantic","mode":"built","quote":"문서의 단어, 의미, 정보 간 관계를 활용하는 검색 방식을 결합했습니다."},{"node":"graph-retrieval","mode":"built","quote":"문서의 단어, 의미, 정보 간 관계를 활용하는 검색 방식을 결합했습니다."},{"node":"hybrid","mode":"built","quote":"문서의 단어, 의미, 정보 간 관계를 활용하는 검색 방식을 결합했습니다."},{"node":"channel-control","mode":"built","quote":"질문의 특징에 따라 적합한 검색 조합을 선택하도록 구현했습니다."},{"node":"channel-control","mode":"built","quote":"검색 조합의 사전 비교 결과를 활용해, 검색 비율을 정하기 위한 추가 AI 호출을 대체했습니다."},{"node":"grounded-answer","mode":"built","quote":"관측 정보, 문서 근거, AI 설명, 운영자 승인과 실행 결과 확인을 연결했습니다."},{"node":"fastapi","mode":"built","quote":"Python · RAG · FastAPI"},{"node":"operations-flow","mode":"built","quote":"별도로 개발한 스마트팜 운영 시스템에서는 관측 정보, 문서 근거, AI 설명, 운영자 승인과 실행 결과 확인을 연결했습니다."},{"node":"simulation","mode":"built","quote":"이 운영 흐름은 시뮬레이션 환경에서 검증했습니다."},{"node":"human-approval","mode":"built","quote":"운영자 승인과 실행 결과 확인을 연결했습니다."}],"relations":[{"from":"baseline-comparison","to":"channel-control","relation":"applies","quote":"공개 자료를 사용해 기존 검색 방식과 비교 실험을 수행했습니다."},{"from":"lexical","to":"hybrid","relation":"supports","quote":"문서의 단어, 의미, 정보 간 관계를 활용하는 검색 방식을 결합했습니다."},{"from":"semantic","to":"hybrid","relation":"supports","quote":"문서의 단어, 의미, 정보 간 관계를 활용하는 검색 방식을 결합했습니다."},{"from":"graph-retrieval","to":"hybrid","relation":"supports","quote":"문서의 단어, 의미, 정보 간 관계를 활용하는 검색 방식을 결합했습니다."},{"from":"channel-control","to":"python","relation":"uses","quote":"Python · RAG · FastAPI"},{"from":"hybrid","to":"rag","relation":"supports","quote":"이러한 문서 검색과 AI 답변 생성을 연결하는 방식을 RAG라고 합니다."},{"from":"grounded-answer","to":"rag","relation":"supports","quote":"이러한 문서 검색과 AI 답변 생성을 연결하는 방식을 RAG라고 합니다."},{"from":"human-approval","to":"operations-flow","relation":"supports","quote":"운영자 승인과 실행 결과 확인을 연결했습니다."},{"from":"grounded-answer","to":"operations-flow","relation":"supports","quote":"관측 정보, 문서 근거, AI 설명"},{"from":"simulation","to":"operations-flow","relation":"supports","quote":"이 운영 흐름은 시뮬레이션 환경에서 검증했습니다."},{"from":"operations-flow","to":"fastapi","relation":"uses","quote":"Python · RAG · FastAPI"}]}
+knowledge: {"claims":[{"node":"python","mode":"built","quote":"Python, RAG, MCP, FastAPI, Docker, GitHub Actions"},{"node":"baseline-comparison","mode":"studied","quote":"세 검색을 같은 비율로 결합한 방식과 비교해 nDCG@10을 0.72에서 0.90으로 높였고"},{"node":"rag","mode":"built","quote":"키워드, 벡터, 그래프 검색을 질문 유형별로 미리 정한 가중치로 결합해"},{"node":"lexical","mode":"built","quote":"키워드, 벡터, 그래프 검색을 질문 유형별로 미리 정한 가중치로 결합해"},{"node":"semantic","mode":"built","quote":"키워드, 벡터, 그래프 검색을 질문 유형별로 미리 정한 가중치로 결합해"},{"node":"graph-retrieval","mode":"built","quote":"키워드, 벡터, 그래프 검색을 질문 유형별로 미리 정한 가중치로 결합해"},{"node":"hybrid","mode":"built","quote":"키워드, 벡터, 그래프 검색을 질문 유형별로 미리 정한 가중치로 결합해"},{"node":"channel-control","mode":"built","quote":"질문마다 LLM을 추가 호출하던 과정을 없앴습니다."},{"node":"grounded-answer","mode":"built","quote":"그래프 근거 신뢰도가 낮거나 설정 검증에 실패할 때는 안전한 검색으로 전환하도록 구성했습니다."},{"node":"fastapi","mode":"built","quote":"Python, RAG, MCP, FastAPI, Docker, GitHub Actions"},{"node":"docker","mode":"built","quote":"Python, RAG, MCP, FastAPI, Docker, GitHub Actions"},{"node":"github-actions","mode":"built","quote":"Python, RAG, MCP, FastAPI, Docker, GitHub Actions"},{"node":"operations-flow","mode":"built","quote":"AI 에이전트용 MCP 서버에서는 조회 도구와 제어 도구를 나누고, 운영자 승인 후에만 제어를 실행하며 모든 요청을 기록합니다."},{"node":"simulation","mode":"built","quote":"운영 흐름은 시뮬레이션 환경에서 검증했습니다."},{"node":"human-approval","mode":"built","quote":"운영자 승인 후에만 제어를 실행하며 모든 요청을 기록합니다."}],"relations":[{"from":"baseline-comparison","to":"channel-control","relation":"applies","quote":"세 검색을 같은 비율로 결합한 방식과 비교해 nDCG@10을 0.72에서 0.90으로 높였고"},{"from":"lexical","to":"hybrid","relation":"supports","quote":"키워드, 벡터, 그래프 검색을 질문 유형별로 미리 정한 가중치로 결합해"},{"from":"semantic","to":"hybrid","relation":"supports","quote":"키워드, 벡터, 그래프 검색을 질문 유형별로 미리 정한 가중치로 결합해"},{"from":"graph-retrieval","to":"hybrid","relation":"supports","quote":"키워드, 벡터, 그래프 검색을 질문 유형별로 미리 정한 가중치로 결합해"},{"from":"channel-control","to":"python","relation":"uses","quote":"Python, RAG, MCP, FastAPI, Docker, GitHub Actions"},{"from":"hybrid","to":"rag","relation":"supports","quote":"키워드, 벡터, 그래프 검색을 질문 유형별로 미리 정한 가중치로 결합해"},{"from":"grounded-answer","to":"rag","relation":"supports","quote":"그래프 근거 신뢰도가 낮거나 설정 검증에 실패할 때는 안전한 검색으로 전환하도록 구성했습니다."},{"from":"human-approval","to":"operations-flow","relation":"supports","quote":"운영자 승인 후에만 제어를 실행하며 모든 요청을 기록합니다."},{"from":"simulation","to":"operations-flow","relation":"supports","quote":"운영 흐름은 시뮬레이션 환경에서 검증했습니다."},{"from":"operations-flow","to":"fastapi","relation":"uses","quote":"Python, RAG, MCP, FastAPI, Docker, GitHub Actions"},{"from":"grounded-answer","to":"operations-flow","relation":"supports","quote":"관측 정보, 문서 근거, AI 설명"}]}
 slug: smartfarm-rag
 name: 질문에 맞는 문서 검색과 스마트팜 운영 지원
 period: 석사과정 연구
 status: published
-desc: 질문에 맞는 문서 검색 방법을 선택하는 AI 질의응답 기능을 개발하고, 관련 연구를 KCI 논문으로 게재했습니다.
-metric: 관련 KCI 논문 1편 게재
+desc: 키워드, 벡터, 그래프 검색을 질문 유형별로 미리 정한 가중치로 결합해 질문마다 LLM을 추가 호출하던 과정을 없애고, 운영자 승인 후에만 제어를 실행하는 AI 에이전트용 MCP 서버를 구현했습니다.
+metric: nDCG@10 0.72→0.90, 엣지 장비 응답 시간 약 12% 단축, KCI 제1저자 게재
 category: career
 focus: research
 proofLevel: core
 tags:
   - Python
   - RAG
+  - MCP
   - FastAPI
+  - Docker
+  - GitHub Actions
 link: https://github.com/NAMUORI00/smartfarm-adaptive-rag
 highlight: true
 private: false
 ---
 
-질문에 맞는 문서 검색 방법을 선택하는 AI 질의응답 기능을 개발하고, 관련 연구를 KCI 논문으로 게재했습니다.
+키워드, 벡터, 그래프 검색을 질문 유형별로 미리 정한 가중치로 결합해 질문마다 LLM을 추가 호출하던 과정을 없애고, 운영자 승인 후에만 제어를 실행하는 AI 에이전트용 MCP 서버를 구현했습니다.
 
 
 ## 맡은 역할
 
-
-연구 방법 설계, AI 기능 구현, 기존 방식과의 비교 실험, 제1저자 논문 작성을 담당했습니다.
+연구 방법 설계, 검색 기능과 MCP 서버 구현, 기존 방식과의 비교 실험, 제1저자 논문 작성을 담당했습니다.
 
 
 ## 구현한 기능
 
+키워드, 벡터, 그래프 검색을 질문 유형별로 미리 정한 가중치로 결합해 질문마다 LLM을 추가 호출하던 과정을 없앴습니다. 그래프 근거 신뢰도가 낮거나 설정 검증에 실패할 때는 안전한 검색으로 전환하도록 구성했습니다.
 
-문서의 단어, 의미, 정보 간 관계를 활용하는 검색 방식을 결합했습니다. 질문의 특징에 따라 적합한 검색 조합을 선택하도록 구현했습니다. 이러한 문서 검색과 AI 답변 생성을 연결하는 방식을 RAG라고 합니다.
-
-
-검색 조합의 사전 비교 결과를 활용해, 검색 비율을 정하기 위한 추가 AI 호출을 대체했습니다.
+AI 에이전트용 MCP 서버에서는 조회 도구와 제어 도구를 나누고, 운영자 승인 후에만 제어를 실행하며 모든 요청을 기록합니다.
 
 
-## 비교 실험과 운영 시스템
+## 비교 실험과 운영 검증
 
+성과: nDCG@10 0.72→0.90, 엣지 장비 응답 시간 약 12% 단축, KCI 제1저자 게재
 
-성과: 관련 KCI 논문 1편 게재
-
-
-공개 자료를 사용해 기존 검색 방식과 비교 실험을 수행했습니다.
-
-
-별도로 개발한 스마트팜 운영 시스템에서는 관측 정보, 문서 근거, AI 설명, 운영자 승인과 실행 결과 확인을 연결했습니다. 이 운영 흐름은 시뮬레이션 환경에서 검증했습니다.
+세 검색을 같은 비율로 결합한 방식과 비교해 nDCG@10을 0.72에서 0.90으로 높였고, 질문마다 LLM으로 가중치를 정하던 방식보다 엣지 장비 응답 시간을 약 12% 줄였습니다. 운영 지원 시스템에서는 관측 정보, 문서 근거, AI 설명, 운영자 승인, 실행 결과 확인을 연결했습니다. 이 운영 흐름은 시뮬레이션 환경에서 검증했습니다.
 
 
 ## 사용 기술
 
-
-Python · RAG · FastAPI
+Python, RAG, MCP, FastAPI, Docker, GitHub Actions

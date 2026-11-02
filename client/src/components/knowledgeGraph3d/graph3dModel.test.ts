@@ -20,7 +20,7 @@ describe("buildKnowledgeGraph", () => {
   });
 
   it("counts real knowledge separately from interest-only and stack-only items (the numbers the preview notes cite)", () => {
-    expect(ko.counts).toMatchObject({ domains: 8, evidenced: 84, built: 80, studied: 16, interest: 5, listed: 9, links: 101 });
+    expect(ko.counts).toMatchObject({ domains: 8, evidenced: 86, built: 81, studied: 17, interest: 5, listed: 8, links: 101 });
     expect(EDGES).toHaveLength(101);
     const relations = ko.links.reduce<Record<string, number>>((acc, link) => ({ ...acc, [link.relation]: (acc[link.relation] ?? 0) + 1 }), {});
     expect(relations).toEqual({ uses: 49, implements: 8, applies: 9, supports: 22, prerequisite: 13 });
@@ -38,10 +38,10 @@ describe("buildKnowledgeGraph", () => {
       ["backend", 10, 10],
       ["frontend", 13, 14],
       ["data", 5, 7],
-      ["device", 9, 10],
-      ["infra", 12, 16],
+      ["device", 10, 11],
+      ["infra", 13, 16],
     ]);
-    expect(ko.counts.kinds).toEqual({ tech: 41, concept: 23, method: 20 });
+    expect(ko.counts.kinds).toEqual({ tech: 42, concept: 23, method: 21 });
     for (const domain of ko.domains) expect(domain.evidenced, domain.id).toBeGreaterThanOrEqual(3);
     expect(ko.domains.reduce((sum, domain) => sum + domain.members.length, 0)).toBe(ko.nodes.length);
     // 성격은 근거에서만 나옵니다: 구현 근거, 연구·실험 근거, 둘 다
@@ -49,8 +49,8 @@ describe("buildKnowledgeGraph", () => {
     expect(ko.byId.get("evidence-tracing")).toMatchObject({ status: "evidenced", built: false, studied: true });
     expect(ko.byId.get("channel-control")).toMatchObject({ built: true, studied: true });
     expect(ko.byId.get("rag-eval")).toMatchObject({ status: "interest", built: false, studied: false });
-    expect(ko.byId.get("docker")).toMatchObject({ status: "listed", built: false, studied: false });
-    expect(ko.byId.get("docker")!.did).toContain("작업 기록은 아직 없습니다");
+    expect(ko.byId.get("aws")).toMatchObject({ status: "listed", built: false, studied: false });
+    expect(ko.byId.get("aws")!.did).toContain("작업 기록은 아직 없습니다");
     expect(en.byId.get("rag-eval")!.did).toContain("no work on it is documented");
   });
 
@@ -60,16 +60,16 @@ describe("buildKnowledgeGraph", () => {
       expect(`${item.title} ${item.status} ${item.href ?? ""}`, item.id).not.toMatch(/content\/|\.mdx|\.json|\.ts\b|client\/src|README/);
       expect(item.title.trim().length, item.id).toBeGreaterThan(0);
     }
-    expect(ko.evidence.get("project:mv-evirag")).toMatchObject({ title: "다중 시점 감시 영상의 질의응답과 선택적 응답", status: "IEEE Access 심사 중 · 2026.08 투고 · 제1저자", href: "/projects/mv-evirag" });
+    expect(ko.evidence.get("project:mv-evirag")).toMatchObject({ title: "다중 시점 감시 영상의 질의응답과 선택적 응답", status: "보류 지시만 준 같은 모델 대비 오답 27건→0건, 정답 140건→247건, 국제 학술지 제1저자 심사 중", href: "/projects/mv-evirag" });
     expect(ko.evidence.get("paper:ieee")!.status).toContain("IEEE Access · 심사 중 · 제1저자");
     expect(en.evidence.get("paper:ieee")!.status).toContain("IEEE Access · Under review · First author");
     expect(ko.evidence.get("paper:kci")!.status).toContain("한국정보기술학회논문지 · KCI 게재 · 제1저자");
     expect(ko.evidence.get("paper:kiit")!.status).toContain("발표");
-    expect(ko.evidence.get("project:smartfarm-rag")!.status).toBe("관련 KCI 논문 1편 게재");
+    expect(ko.evidence.get("project:smartfarm-rag")!.status).toBe("nDCG@10 0.72→0.90, 엣지 장비 응답 시간 약 12% 단축, KCI 제1저자 게재");
     expect(ko.evidence.get("record:smartfarm")!.status).toContain("실제 농장 아님");
     expect(ko.evidence.get("project:music-source-separation")!.status).toBe("Hydra 설정 기반 음원 분리 모델 학습 실험 관리");
     expect(en.evidence.get("research:rag")).toMatchObject({ title: "Question-adaptive Retrieval and Grounded Answers", href: "/research/rag" });
-    expect(en.evidence.get("work:kakao")!.title).toBe("AI Development Intern · Kakao · Kakao Track field placement");
+    expect(en.evidence.get("work:kakao")!.title).toBe("AI Development Intern · Kakao, Kakao Track field placement");
   });
 
   it("gives evidence the same short names as the approved layered map, without changing any status", () => {

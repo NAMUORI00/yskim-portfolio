@@ -45,9 +45,9 @@ describe("KnowledgeMapRail", () => {
     expect(html).toMatch(/data-node-id="tech:fastapi"[^>]*data-state="path"/);
     expect(html).toMatch(/data-node-id="project:mv-evirag"[^>]*data-state="dim"/);
     expect(html).toMatch(/data-node-id="tech:arduino"[^>]*data-state="dim"/);
-    // 연구 2 → 프로젝트, 프로젝트 → 기술 3 만 잇습니다.
-    expect(html.match(/class="km-thread"/g)).toHaveLength(5);
-    expect(html).toContain("관련 KCI 논문 1편 게재");
+    // 연구 2 → 프로젝트, 프로젝트 → 기술 5 만 잇습니다.
+    expect(html.match(/class="km-thread"/g)).toHaveLength(7);
+    expect(html).toContain("nDCG@10 0.72→0.90, 엣지 장비 응답 시간 약 12% 단축, KCI 제1저자 게재");
     expect(html).toContain("프로젝트 목록에서 보기");
   });
 

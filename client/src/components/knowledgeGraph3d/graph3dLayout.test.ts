@@ -321,7 +321,7 @@ describe("node size and label threshold", () => {
   it("shows only field names in the quiet rail, adding technologies or studied knowledge for the section being read", () => {
     expect(labelled({})).toEqual([]);
     expect(labelled({ emphasis: "tech" })).toEqual(expect.arrayContaining(["python", "fastapi", "arduino"]));
-    expect(labelled({ emphasis: "tech" })).not.toContain("docker");
+    expect(labelled({ emphasis: "tech" })).not.toContain("aws");
     expect(labelled({ emphasis: "studied" })).toEqual(expect.arrayContaining(["channel-control", "selective-prediction", "evidence-tracing"]));
     expect(labelled({ emphasis: "studied" })).not.toContain("crud");
   });
@@ -334,6 +334,6 @@ describe("node size and label threshold", () => {
     expect(closer.length).toBeLessThan(closest.length);
     expect(closest).toHaveLength(ko.nodes.length);
     expect(wide).not.toContain("python");
-    expect(closer).not.toContain("docker");
+    expect(closer).not.toContain("aws");
   });
 });

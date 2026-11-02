@@ -56,7 +56,7 @@ describe("KnowledgeMapRail interaction", () => {
     const detail = container.querySelector(".km-detail")!;
     expect(detail.textContent).toContain("질문에 맞는 문서 검색과 근거 있는 답변");
     expect(detail.textContent).toContain("스마트팜 RAG");
-    expect(detail.textContent).toContain("관련 KCI 논문 1편 게재");
+    expect(detail.textContent).toContain("nDCG@10 0.72→0.90, 엣지 장비 응답 시간 약 12% 단축, KCI 제1저자 게재");
     expect(detail.textContent).toContain("고정됨");
     expect(container.querySelectorAll(".km-thread").length).toBeGreaterThan(2);
     expect(node("project:mv-evirag").dataset.state).toBe("dim");

@@ -1,11 +1,11 @@
 ---
-knowledge: {"claims":[{"node":"powershell","mode":"built","quote":"- PowerShell"},{"node":"human-approval","mode":"built","quote":"사람이 승인하는 단계를 포함해 리뷰 흐름을 구성했습니다."},{"node":"ai-review-loop","mode":"built","quote":"외부 AI 리뷰어와 Codex 사이의 인간 승인 기반 리뷰 루프를 설계한 자동화 시스템입니다."}],"relations":[{"from":"ai-review-loop","to":"powershell","relation":"uses","quote":"- PowerShell"},{"from":"ai-review-loop","to":"human-approval","relation":"implements","quote":"사람이 승인하는 단계를 포함해 리뷰 흐름을 구성했습니다."}]}
+knowledge: {"claims":[{"node":"powershell","mode":"built","quote":"- PowerShell"},{"node":"human-approval","mode":"built","quote":"프로젝트 내용을 외부 AI로 보내기 전에 사람 승인을 받습니다."},{"node":"ai-review-loop","mode":"built","quote":"돌아온 의견을 반영, 고려, 거절, 사용자 결정 필요로 분류하고 로컬에서 검증한 뒤 반영합니다."}],"relations":[{"from":"ai-review-loop","to":"powershell","relation":"uses","quote":"- PowerShell"},{"from":"ai-review-loop","to":"human-approval","relation":"implements","quote":"프로젝트 내용을 외부 AI로 보내기 전에 사람 승인을 받습니다."}]}
 slug: cross-review-bridge
-name: 외부 AI를 활용한 코드 검토 흐름
+name: 외부 AI 교차 검토를 승인 단계로 묶은 Codex 플러그인
 period: "2026.05"
 status: published
-desc: 외부 AI의 코드 검토 결과를 개발 작업에 연결하는 도구입니다. 사람이 승인하는 단계를 포함해 리뷰 흐름을 구성했습니다.
-metric: 운영자 승인을 포함한 외부 AI 교차 리뷰 흐름 구현
+desc: Codex Desktop 작업 공간에서 ChatGPT 웹 같은 외부 AI의 검토를 받을 때, 보낼 내용을 사람이 승인하고 돌아온 의견을 로컬에서 검증한 뒤 반영하도록 만든 하네스 도구입니다.
+metric: 검토 요청 생성, 비밀 정보 가림, 사람 승인, 의견 분류로 이어지는 교차 검토 흐름 구현
 category: toy
 focus: tool
 proofLevel: supporting
@@ -18,15 +18,22 @@ highlight: false
 private: false
 ---
 
-외부 AI의 코드 검토 결과를 개발 작업에 연결하는 도구입니다. 사람이 승인하는 단계를 포함해 리뷰 흐름을 구성했습니다.
+Codex Desktop 작업 공간에서 ChatGPT 웹 같은 외부 AI의 검토를 받을 때, 보낼 내용을 사람이 승인하고 돌아온 의견을 로컬에서 검증한 뒤 반영하도록 만든 하네스 도구입니다.
 
 
 ## 개요
 
-
-외부 AI 리뷰어와 Codex 사이의 인간 승인 기반 리뷰 루프를 설계한 자동화 시스템입니다.
+코딩 에이전트는 로컬 작업 공간에서 빠르게 일하지만, 더 강한 검토자의 두 번째 의견이 설계와 정확성 문제를 잡아냅니다. 프로젝트 내용을 외부 서비스로 보내는 일에는 사람의 결정과 돌아온 내용의 로컬 확인이 필요해, 이를 승인 단계가 있는 반복 가능한 흐름으로 만들었습니다.
 
 
 ## 구현 결과
 
-- Metric: 운영자 승인을 포함한 외부 AI 교차 리뷰 흐름 구현
+- 로컬 프로젝트 맥락으로 검토 요청서와 전체 작업 맥락을 담은 ZIP 묶음을 만듭니다.
+- 요청서를 만들기 전에 흔한 비밀 정보 형식을 가립니다.
+- 프로젝트 내용을 외부 AI로 보내기 전에 사람 승인을 받습니다.
+- 돌아온 의견을 반영, 고려, 거절, 사용자 결정 필요로 분류하고 로컬에서 검증한 뒤 반영합니다.
+
+
+## 사용 기술
+
+Codex 플러그인과 스킬, PowerShell

@@ -455,7 +455,7 @@ describe("wide view", () => {
     expect(box.dataset.mode).toBe("detail");
     expect(box.querySelector('.kg3-dv[data-variant="explorer"]')).not.toBeNull();
     expect(chip("fusion", box).getAttribute("aria-pressed")).toBe("true");
-    expect(box.querySelector(".km-dialog-inspector")?.textContent).toContain("검색 결과를 통합하는 구조를 구현했습니다.");
+    expect(box.querySelector(".km-dialog-inspector")?.textContent).toContain("키워드, 벡터, 그래프 검색을 질문 유형별로 미리 정한 가중치로 결합해");
     // 레일은 넓게 보기에 가려진 동안 시계를 멈춥니다.
     leaveRegion();
     expect(pending()).toBe(false);

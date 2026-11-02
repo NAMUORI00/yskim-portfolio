@@ -62,7 +62,7 @@ describe("knowledge sources", () => {
       if (def.kind === "paper" || def.kind === "work") {
         const entry = portfolioContent.education.find((item) => item.degree === def.ref);
         expect(entry?.status, id).toBe("published");
-        expect(entry?.type, id).toBe(def.kind === "paper" ? "publication" : def.ref === "석사과정 학생연구원" ? "research" : "work");
+        expect(entry?.type, id).toBe(def.kind === "paper" ? "publication" : def.ref === "석사과정 학생참여연구원" ? "research" : "work");
       }
     }
   });

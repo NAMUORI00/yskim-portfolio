@@ -959,7 +959,7 @@ export function HomeView({ renderKnowledgeGraph }: { renderKnowledgeGraph?: (slo
               icon="graduation"
               T={T}
             >
-              {locale === "en" ? "Research & Experience" : "논문·연구·경력"}
+              {locale === "en" ? "Research & Experience" : "논문, 연구, 경력"}
             </SectionTitle>
             {/* 논문 · 연구 경험(연구실 연구 참여) · 경력(유급 근무) · 학력·수상·어학을 나눠 한 화면에 요약하고, 설명은 기록마다 펼칩니다. */}
             <CareerRecords state={careerRecords} T={T} locale={locale} />
@@ -967,7 +967,7 @@ export function HomeView({ renderKnowledgeGraph }: { renderKnowledgeGraph?: (slo
 
           {/* ── 프로젝트 ── */}
           <FadeSection>
-            <SectionTitle id="projects" icon="code" T={T}>{locale === "en" ? "Projects & Activities" : "프로젝트·개발 활동"}</SectionTitle>
+            <SectionTitle id="projects" icon="code" T={T}>{locale === "en" ? "Projects & Activities" : "프로젝트와 개발 활동"}</SectionTitle>
             <div className="project-filter-rail" role="group" aria-label={locale === "en" ? "Project filters" : "프로젝트 필터"}>
               {PROJECT_FILTERS.map((filter) => (
                 <button
@@ -1248,7 +1248,7 @@ export function HomeView({ renderKnowledgeGraph }: { renderKnowledgeGraph?: (slo
 
           {/* ── 연구 관심사 ── */}
           <FadeSection>
-            <SectionTitle id="research" icon="flask" T={T}>{locale === "en" ? "Research & Development Interests" : "연구·개발 관심 분야"}</SectionTitle>
+            <SectionTitle id="research" icon="flask" T={T}>{locale === "en" ? "Research & Development Interests" : "연구와 개발 관심 분야"}</SectionTitle>
             <ResearchInterests items={RESEARCH_INTERESTS} T={T} locale={locale} />
           </FadeSection>
 

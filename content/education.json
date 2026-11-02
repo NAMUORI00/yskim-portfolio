@@ -4,7 +4,7 @@
     "degree": "스마트팜 RAG를 위한 질의 적응형 검색 채널 제어",
     "school": "한국정보기술학회논문지 · KCI 게재 · 제1저자",
     "period": "2026",
-    "note": "질문에 따라 문서 검색 방법의 조합을 선택하는 방법을 연구했습니다. 검색 채널을 결합하는 방식과 선택 절차를 구현하고, 공개 자료를 이용해 기존 검색 방식과 비교했습니다.",
+    "note": "키워드, 벡터, 그래프 검색을 질문 유형별로 미리 정한 가중치로 결합해 질문마다 LLM을 추가 호출하던 과정을 없앴습니다. 세 검색을 같은 비율로 결합한 방식보다 nDCG@10을 0.72에서 0.90으로 높였습니다.",
     "current": false,
     "status": "published",
     "highlight": true,
@@ -18,12 +18,12 @@
         {
           "node": "baseline-comparison",
           "mode": "studied",
-          "quote": "공개 자료를 이용해 기존 검색 방식과 비교했습니다."
+          "quote": "세 검색을 같은 비율로 결합한 방식보다 nDCG@10을 0.72에서 0.90으로 높였습니다."
         },
         {
           "node": "channel-control",
           "mode": "studied",
-          "quote": "검색 채널을 결합하는 방식과 선택 절차를 구현하고"
+          "quote": "키워드, 벡터, 그래프 검색을 질문 유형별로 미리 정한 가중치로 결합해"
         }
       ],
       "relations": []
@@ -34,7 +34,7 @@
     "degree": "근거 추적형 로컬 RAG 기반 온디바이스 의료 질의응답 시스템",
     "school": "한국정보기술학회 하계종합학술대회 · 발표 · 제1저자",
     "period": "2026",
-    "note": "기기에서 실행하는 의료 질의응답 시스템을 다루었습니다. 답변에 사용한 문서 근거를 추적할 수 있도록 구성하는 로컬 RAG 연구입니다.",
+    "note": "외부 서버 없이 안드로이드 기기 안에서 의료 문답 검색과 답변 생성, 근거 표시를 수행하는 온디바이스 질의응답 시스템을 다뤘습니다. 답변에 사용한 문서 근거를 추적할 수 있도록 구성한 로컬 RAG 연구입니다.",
     "current": false,
     "status": "published",
     "highlight": true,
@@ -48,12 +48,12 @@
         {
           "node": "local-inference",
           "mode": "studied",
-          "quote": "기기에서 실행하는 의료 질의응답 시스템을 다루었습니다."
+          "quote": "외부 서버 없이 안드로이드 기기 안에서 의료 문답 검색과 답변 생성, 근거 표시를 수행하는 온디바이스 질의응답 시스템을 다뤘습니다."
         },
         {
           "node": "evidence-tracing",
           "mode": "studied",
-          "quote": "답변에 사용한 문서 근거를 추적할 수 있도록 구성하는 로컬 RAG 연구입니다."
+          "quote": "답변에 사용한 문서 근거를 추적할 수 있도록 구성한 로컬 RAG 연구입니다."
         }
       ],
       "relations": [
@@ -67,7 +67,7 @@
           "from": "evidence-tracing",
           "to": "grounded-answer",
           "relation": "supports",
-          "quote": "답변에 사용한 문서 근거를 추적할 수 있도록 구성하는 로컬 RAG 연구입니다."
+          "quote": "답변에 사용한 문서 근거를 추적할 수 있도록 구성한 로컬 RAG 연구입니다."
         }
       ]
     }
@@ -77,7 +77,7 @@
     "degree": "Role-Separated Selective Response for Question Answering in Multi-View Video Surveillance",
     "school": "IEEE Access · 심사 중 · 제1저자",
     "period": "2026.08",
-    "note": "여러 카메라의 영상으로 질문에 답할 때, 입력 영상의 선택과 답변·보류, 최종 답변의 제공을 서로 다른 단계로 나누어 연구했습니다. 영상에 답변에 필요한 정보가 있는 경우와 없는 경우를 함께 학습하고, 답변 비율과 오류를 평가했습니다.",
+    "note": "CCTV 영상에서 화면 선택, 답변 가능 여부 판단, 답변 공개 여부를 단계별로 분리하고 VLM을 LoRA로 미세조정했습니다. 실험 전에 평가 문항과 비교 조건을 고정해 보류 지시만 준 같은 모델 대비 오답을 27건에서 0건으로 줄이고 정답을 140건에서 247건으로 늘렸습니다.",
     "current": false,
     "status": "published",
     "highlight": true,
@@ -91,7 +91,12 @@
         {
           "node": "training",
           "mode": "studied",
-          "quote": "영상에 답변에 필요한 정보가 있는 경우와 없는 경우를 함께 학습하고"
+          "quote": "VLM을 LoRA로 미세조정했습니다."
+        },
+        {
+          "node": "lora",
+          "mode": "studied",
+          "quote": "VLM을 LoRA로 미세조정했습니다."
         },
         {
           "node": "selective-prediction",
@@ -101,12 +106,12 @@
         {
           "node": "mv-video-qa",
           "mode": "studied",
-          "quote": "입력 영상의 선택과 답변·보류, 최종 답변의 제공을 서로 다른 단계로 나누어 연구했습니다."
+          "quote": "CCTV 영상에서 화면 선택, 답변 가능 여부 판단, 답변 공개 여부를 단계별로 분리하고"
         },
         {
           "node": "abstention",
           "mode": "studied",
-          "quote": "영상에 답변에 필요한 정보가 있는 경우와 없는 경우를 함께 학습하고"
+          "quote": "보류 지시만 준 같은 모델 대비 오답을 27건에서 0건으로 줄이고 정답을 140건에서 247건으로 늘렸습니다."
         }
       ],
       "relations": [
@@ -121,17 +126,17 @@
   },
   {
     "type": "research",
-    "degree": "석사과정 학생연구원",
+    "degree": "석사과정 학생참여연구원",
     "school": "제주대학교 컴퓨터공학과 머신러닝연구실",
     "period": "2025.03 — 현재",
-    "note": "문서·영상 근거 기반 질의응답의 연구 설계, 구현과 평가를 수행합니다.",
+    "note": "교육부 RISE 제주산업 AX 초거대 AI 최적화 연구 등 국가 연구과제 4건에 참여하며 RAG, VLM, 센서 연동 LLM 답변 수정 연구와 공용 GPU 서버 분할을 수행합니다.",
     "current": true,
     "status": "published",
     "highlight": true,
     "bullets": [
-      "질의 적응형 RAG 및 MV-EviRAG 연구",
-      "연구실 LLM 활용과 서버·내부망 설정 지원",
-      "연구참여확약에 따른 석사과정 연구 활동"
+      "제1저자 연구 3건(KCI 학술지 게재 1편, 국내 학술대회 발표 1편, 국제 학술지 심사 중 1편)과 석사학위논문(센서 상태 변화에 따른 LLM 답변의 선택적 수정) 작성",
+      "3개 연구실이 함께 쓰는 DGX H200 GPU 서버의 연구원별 작업 공간 분할 주도와 웹 포털 개발, 현재 3개 연구실이 사용",
+      "내부망 구성, 연구원들의 LLM 활용, 외국인 연구자 행정 지원"
     ],
     "links": [],
     "relatedProjects": [],
@@ -142,7 +147,7 @@
         {
           "node": "local-inference",
           "mode": "built",
-          "quote": "연구실 LLM 활용과 서버·내부망 설정 지원"
+          "quote": "연구원들의 LLM 활용"
         }
       ],
       "relations": []
@@ -153,7 +158,7 @@
     "degree": "백엔드 개발 인턴",
     "school": "틸론소프트",
     "period": "2023.07 — 2023.08",
-    "note": "Java·Spring Boot 기반 게시판 포털을 개발했습니다. 게시글 CRUD, 회원가입·로그인, 검색·페이지네이션과 데이터베이스 연동을 구현했습니다.",
+    "note": "Java, Spring Boot 기반 게시판을 개발했습니다. 게시글 CRUD, Spring Security와 JWT 로그인, 검색과 페이지네이션, JPA 기반 MySQL 연동을 구현했습니다.",
     "current": false,
     "status": "published",
     "highlight": true,
@@ -167,27 +172,42 @@
         {
           "node": "spring-boot",
           "mode": "built",
-          "quote": "Java·Spring Boot 기반 게시판 포털을 개발했습니다."
+          "quote": "Java, Spring Boot 기반 게시판을 개발했습니다."
         },
         {
           "node": "java",
           "mode": "built",
-          "quote": "Java·Spring Boot 기반 게시판 포털을 개발했습니다."
+          "quote": "Java, Spring Boot 기반 게시판을 개발했습니다."
         },
         {
           "node": "auth",
           "mode": "built",
-          "quote": "게시글 CRUD, 회원가입·로그인, 검색·페이지네이션과 데이터베이스 연동을 구현했습니다."
+          "quote": "Spring Security와 JWT 로그인"
+        },
+        {
+          "node": "spring-security",
+          "mode": "built",
+          "quote": "Spring Security와 JWT 로그인"
         },
         {
           "node": "crud",
           "mode": "built",
-          "quote": "게시글 CRUD, 회원가입·로그인, 검색·페이지네이션과 데이터베이스 연동을 구현했습니다."
+          "quote": "게시글 CRUD"
         },
         {
           "node": "db-integration",
           "mode": "built",
-          "quote": "검색·페이지네이션과 데이터베이스 연동을 구현했습니다."
+          "quote": "JPA 기반 MySQL 연동을 구현했습니다."
+        },
+        {
+          "node": "jpa",
+          "mode": "built",
+          "quote": "JPA 기반 MySQL 연동을 구현했습니다."
+        },
+        {
+          "node": "mysql",
+          "mode": "built",
+          "quote": "JPA 기반 MySQL 연동을 구현했습니다."
         }
       ],
       "relations": [
@@ -195,7 +215,7 @@
           "from": "java",
           "to": "spring-boot",
           "relation": "prerequisite",
-          "quote": "Java·Spring Boot 기반 게시판 포털을 개발했습니다."
+          "quote": "Java, Spring Boot 기반 게시판을 개발했습니다."
         }
       ]
     }
@@ -203,9 +223,9 @@
   {
     "type": "work",
     "degree": "AI 개발 인턴",
-    "school": "카카오 · 카카오트랙 연계 현장실습",
+    "school": "카카오, 카카오트랙 연계 현장실습",
     "period": "2023.01 — 2023.02",
-    "note": "Python·PyTorch 기반 음원 악보 전사 프로젝트와 Bootstrap 웹 화면을 개발했습니다. 팀장으로 아이디어 구체화, 주요 개발과 진행 관리를 담당했습니다.",
+    "note": "3인 팀의 팀장으로 음원이나 유튜브 링크를 피아노 악보 PDF로 만드는 AI 웹 서비스 도레미 스케치를 3주 만에 완성했습니다. 공개 채보 모델들을 비교해 ByteDance 모델을 골라 개발 방향을 정했고, Python, PyTorch 기반 악보 전사와 Bootstrap 웹 화면을 개발했습니다.",
     "current": false,
     "status": "published",
     "highlight": true,
@@ -219,17 +239,17 @@
         {
           "node": "python",
           "mode": "built",
-          "quote": "Python·PyTorch 기반 음원 악보 전사 프로젝트"
+          "quote": "Python, PyTorch 기반 악보 전사"
         },
         {
           "node": "pytorch",
           "mode": "built",
-          "quote": "Python·PyTorch 기반 음원 악보 전사 프로젝트"
+          "quote": "Python, PyTorch 기반 악보 전사"
         },
         {
           "node": "transcription",
           "mode": "built",
-          "quote": "Python·PyTorch 기반 음원 악보 전사 프로젝트와 Bootstrap 웹 화면을 개발했습니다."
+          "quote": "Python, PyTorch 기반 악보 전사"
         },
         {
           "node": "bootstrap",
@@ -242,13 +262,13 @@
           "from": "transcription",
           "to": "python",
           "relation": "uses",
-          "quote": "Python·PyTorch 기반 음원 악보 전사 프로젝트"
+          "quote": "Python, PyTorch 기반 악보 전사"
         },
         {
           "from": "transcription",
           "to": "pytorch",
           "relation": "uses",
-          "quote": "Python·PyTorch 기반 음원 악보 전사 프로젝트"
+          "quote": "Python, PyTorch 기반 악보 전사"
         },
         {
           "from": "web-ui",
@@ -264,7 +284,7 @@
     "degree": "프론트엔드 개발 인턴",
     "school": "틸론소프트",
     "period": "2022.07 — 2022.08",
-    "note": "Vue.js 기반 회사 소개 웹페이지 개편에 참여하고 화면 구현을 지원했습니다.",
+    "note": "Vue.js 기반 회사 소개 웹페이지 개편에서 화면 구현을 담당했습니다.",
     "current": false,
     "status": "published",
     "highlight": false,
@@ -278,12 +298,12 @@
         {
           "node": "vue",
           "mode": "built",
-          "quote": "Vue.js 기반 회사 소개 웹페이지 개편에 참여하고 화면 구현을 지원했습니다."
+          "quote": "Vue.js 기반 회사 소개 웹페이지 개편에서 화면 구현을 담당했습니다."
         },
         {
           "node": "web-ui",
           "mode": "built",
-          "quote": "Vue.js 기반 회사 소개 웹페이지 개편에 참여하고 화면 구현을 지원했습니다."
+          "quote": "Vue.js 기반 회사 소개 웹페이지 개편에서 화면 구현을 담당했습니다."
         }
       ],
       "relations": []
@@ -291,7 +311,7 @@
   },
   {
     "type": "work",
-    "degree": "코딩교육 보조강사 · 단기",
+    "degree": "코딩교육 보조강사 (단기)",
     "school": "제주중학교",
     "period": "2020.10",
     "note": "방과후 코딩교육의 학생 실습과 알고리즘 설명을 지원했습니다.",
@@ -305,10 +325,10 @@
   },
   {
     "type": "work",
-    "degree": "코딩교육 보조강사 · 단기",
+    "degree": "코딩교육 보조강사 (단기)",
     "school": "제주과학고등학교",
     "period": "2017.07",
-    "note": "코딩교육 학습자료·실습환경 준비와 학생 질의응답을 지원했습니다.",
+    "note": "코딩교육 학습자료와 실습환경 준비와 학생 질의응답을 지원했습니다.",
     "current": false,
     "status": "published",
     "highlight": false,
@@ -322,13 +342,13 @@
     "degree": "컴퓨터공학 석사과정",
     "school": "제주대학교 일반대학원",
     "period": "2025.03 — 2027.03 졸업 예정",
-    "note": "질의 적응형 RAG와 영상 근거 기반 질의응답 연구.",
+    "note": "질문 유형별 RAG, 다중 시점 VLM, 센서 상태 변화에 따른 LLM 답변의 선택적 수정 연구.",
     "current": true,
     "status": "published",
     "highlight": true,
     "bullets": [
       "학점 4.49 / 4.5",
-      "연구 방법 설계·구현·비교 실험 및 제1저자 논문 작성"
+      "국가 연구과제 4건 참여, 제1저자 연구 3건과 석사학위논문 작성 중"
     ],
     "links": [],
     "relatedProjects": [],
@@ -336,16 +356,16 @@
   },
   {
     "type": "education",
-    "degree": "컴퓨터 공학 학사",
+    "degree": "컴퓨터공학 학사",
     "school": "제주대학교",
     "period": "2017.03 — 2024.02",
-    "note": "컴퓨터공학과 졸업, 블록체인보안 이중전공.",
+    "note": "컴퓨터공학과 졸업, 블록체인보안 복수전공.",
     "current": false,
     "status": "published",
     "highlight": true,
     "bullets": [
       "학점 3.73 / 4.5",
-      "AI 음원 분리 웹 서비스, 캡스톤 및 스마트홈 모니터링 프로젝트 개발"
+      "캡스톤 디자인, 해커톤, 스마트홈 모니터링 프로젝트 개발"
     ],
     "links": [],
     "relatedProjects": [],
@@ -353,19 +373,19 @@
   },
   {
     "type": "award",
-    "degree": "캡스톤·해커톤·전시회 수상 5건",
+    "degree": "캡스톤, 해커톤, 전시회 수상 5건",
     "school": "개발 및 팀 프로젝트",
     "period": "2017 — 2023",
-    "note": "수상 프로젝트에서 아이디어, 개발 및 협업 경험을 쌓았습니다.",
+    "note": "캡스톤, 해커톤, 전시회에서 팀 프로젝트로 수상했습니다.",
     "current": false,
     "status": "published",
     "highlight": false,
     "bullets": [
-      "2023.06 연계 캡스톤 우수상: 음악 연주 장갑 키트 회로·펌웨어 구현, 팀장",
-      "2022.11 연계 캡스톤 장려상: Python·Flutter 음식 인식/영양정보 앱, 팀장",
-      "2021.11 스마트관광 해커톤 장려상: Python 데이터 전처리·시각화",
-      "2017.11 컴퓨터공학과 전시회 기업체우수상: Arduino·PHP·MySQL 스마트홈 모니터링",
-      "2017.08 AR·VR 해커톤 장려상: Unity 게임 팀 개발"
+      "2023.06 연계 캡스톤 최우수상: 음악 연주 장갑 키트 회로와 펌웨어 구현, 팀장",
+      "2022.11 연계 캡스톤 우수상: Python, Flutter 음식 인식과 영양정보 앱, 팀장",
+      "2021.11 스마트관광 해커톤 장려상: Python 데이터 전처리와 시각화",
+      "2017.11 컴퓨터공학과 전시회 기업체우수상: Arduino, PHP, MySQL 스마트홈 모니터링",
+      "2017.08 AR, VR 해커톤 우수상: Unity 게임 팀 개발"
     ],
     "links": [],
     "relatedProjects": [],

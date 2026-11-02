@@ -1,21 +1,24 @@
 ---
-knowledge: {"claims":[{"node":"cuda","mode":"built","quote":"PyTorch·CUDA 기반 학습 환경"},{"node":"llama-cpp","mode":"built","quote":"llama.cpp와 양자화 모델을 이용한 로컬 실행 환경"},{"node":"experiment-config","mode":"built","quote":"설정 파일을 통한 실험 관리를 경험했습니다."},{"node":"local-inference","mode":"built","quote":"llama.cpp와 양자화 모델을 이용한 로컬 실행 환경"},{"node":"resource-aware","mode":"interest","quote":"장비의 메모리와 연산 제약에 맞는 실행 구성을 검토하고"}],"relations":[{"from":"training","to":"cuda","relation":"uses","quote":"PyTorch·CUDA 기반 학습 환경"},{"from":"experiment-config","to":"training","relation":"supports","quote":"설정 파일을 통한 실험 관리를 경험했습니다."},{"from":"local-inference","to":"llama-cpp","relation":"uses","quote":"llama.cpp와 양자화 모델을 이용한 로컬 실행 환경"},{"from":"local-inference","to":"resource-aware","relation":"prerequisite","quote":"장비의 메모리와 연산 제약에 맞는 실행 구성을 검토하고"}]}
+knowledge: {"claims":[{"node":"cuda","mode":"built","quote":"PyTorch와 CUDA 기반 학습 환경"},{"node":"llama-cpp","mode":"built","quote":"llama.cpp와 양자화 모델을 이용한 로컬 실행"},{"node":"experiment-config","mode":"built","quote":"설정 파일을 통한 실험 관리를 경험했습니다."},{"node":"local-inference","mode":"built","quote":"Pixel 7 기반 안드로이드 에뮬레이터에서 인터넷 권한 없이 동작하는 의료 질의응답 앱을 구현했습니다."},{"node":"resource-aware","mode":"interest","quote":"기기 메모리 제약에 맞춘 양자화 모델 실행 구성을 다듬고"}],"relations":[{"from":"training","to":"cuda","relation":"uses","quote":"PyTorch와 CUDA 기반 학습 환경"},{"from":"experiment-config","to":"training","relation":"supports","quote":"설정 파일을 통한 실험 관리를 경험했습니다."},{"from":"local-inference","to":"llama-cpp","relation":"uses","quote":"llama.cpp와 양자화 모델을 이용한 로컬 실행"},{"from":"local-inference","to":"resource-aware","relation":"prerequisite","quote":"기기 메모리 제약에 맞춘 양자화 모델 실행 구성을 다듬고"}]}
 slug: edge-llm
-title: 로컬 AI 실행과 실험 환경 구성
+title: 온디바이스 AI 실행과 공용 GPU 서버 작업 공간
 status: published
-desc: 개인 PC와 GPU 서버에서 모델을 실행하고 학습·평가 조건을 관리하는 방법을 탐구합니다. llama.cpp와 양자화 모델을 이용한 로컬 실행 환경, PyTorch·CUDA 기반 학습 환경, 설정 파일을 통한 실험 관리를 경험했습니다.
+desc: 외부 서버 없이 기기 안에서 동작하는 온디바이스 AI와, 여러 연구실이 함께 쓰는 GPU 서버를 연구원별 작업 공간으로 나눠 쓰는 환경을 다룹니다. llama.cpp와 양자화 모델을 이용한 로컬 실행, PyTorch와 CUDA 기반 학습 환경, 설정 파일을 통한 실험 관리를 경험했습니다.
 showDiagram: false
 ---
 
-개인 PC와 GPU 서버에서 모델을 실행하고 학습·평가 조건을 관리하는 방법을 탐구합니다. llama.cpp와 양자화 모델을 이용한 로컬 실행 환경, PyTorch·CUDA 기반 학습 환경, 설정 파일을 통한 실험 관리를 경험했습니다.
+외부 서버 없이 기기 안에서 동작하는 온디바이스 AI와, 여러 연구실이 함께 쓰는 GPU 서버를 연구원별 작업 공간으로 나눠 쓰는 환경을 다룹니다. llama.cpp와 양자화 모델을 이용한 로컬 실행, PyTorch와 CUDA 기반 학습 환경, 설정 파일을 통한 실험 관리를 경험했습니다.
 
-## 모델을 실행하고 실험 조건을 관리하는 작업
 
-장비에 맞는 모델 실행 환경을 구성하고, 설정을 기록해 실험을 이어갈 수 있도록 정리했습니다. 모델을 연결하는 작업뿐 아니라 실행 과정과 결과를 확인하는 흐름에도 관심이 있습니다.
+## 모델을 실행하고 작업 공간을 나누는 일
+
+3개 연구실이 함께 쓰는 DGX H200 GPU 서버의 연구원별 작업 공간 분할을 주도하고 웹 포털을 개발해, 현재 3개 연구실이 그 방식으로 서버를 사용하고 있습니다. 온디바이스 환경에서는 Pixel 7 기반 안드로이드 에뮬레이터에서 인터넷 권한 없이 동작하는 의료 질의응답 앱을 구현했습니다.
+
 
 ## 더 탐구하고 싶은 내용
 
-장비의 메모리와 연산 제약에 맞는 실행 구성을 검토하고, 반복 실험의 설정과 결과를 비교하기 쉽게 관리하고자 합니다.
+기기 메모리 제약에 맞춘 양자화 모델 실행 구성을 다듬고, 공용 GPU 서버의 작업 환경 관리를 자동화합니다.
+
 
 ## 관련 프로젝트
 

@@ -93,6 +93,6 @@ describe("submission wording source coverage", () => {
       .join(" ");
     expect(text).not.toContain("연결한 경험입니다");
     expect(text).toContain("로컬 환경");
-    expect(text).toContain("회원 인증과 서버 API");
+    expect(text).toContain("웹 페이지 응답이 지연되지 않게");
   });
 });
