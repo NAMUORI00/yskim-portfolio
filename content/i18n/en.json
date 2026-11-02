@@ -33,11 +33,11 @@
     "name": "Kim Yuseok",
     "status": "Expected March 2027, open to opportunities",
     "headline": "LLM, RAG, VLM and AI agent research and systems, M.S. student in Computer Engineering",
-    "summaryLead": "I take trustworthy LLM, RAG, VLM and AI-agent systems from research through to deployed services.",
+    "summaryLead": "I'm interested in getting AI to give answers you can trust, not just answers that sound plausible.",
     "summary": [
-      "As a graduate research assistant in the Machine Learning Lab at Jeju National University, I research hybrid RAG weighted by question type, step-wise selective response for multi-view video VLMs, and rewriting only the answer units affected when sensor states change. I take part in four national research projects, including the Ministry of Education's RISE Jeju Industry AX large-scale AI optimization project, and as first author have one KCI journal paper published, one domestic conference presentation, and one international journal paper under review.",
-      "In the CCTV VLM study I separated view selection, answerability and answer release into stages and fine-tuned the VLM with LoRA, cutting wrong answers from 27 to 0 while answering more questions than the same model given only an abstention instruction. In the SmartFarm RAG work I fixed retrieval weights per question type in advance, removing the extra LLM call per question and raising nDCG@10 from 0.72 to 0.90, and built an MCP server that controls equipment only after operator approval.",
-      "I led the partitioning of a DGX H200 GPU server shared by three labs into per-researcher workspaces and built its web portal; all three labs now use the server this way. During internships at Kakao and Tilonsoft I built Doremi Sketch, a piano-transcription AI web service, a Spring Boot backend, and Vue.js interfaces. I develop with coding agents such as pi, dsh, Claude Code, Codex and a Cursor proxy, and build harness tools for them, including external-AI cross review and a Notion memory MCP server."
+      "I have researched video question answering that holds back when evidence is thin, and RAG that shifts its retrieval weights by question type. I have also built answers that rewrite only what changed when sensor values shift, and an AI agent that moves equipment only after a person approves; all of it comes from the same interest.",
+      "I used to enjoy wiring things up from device firmware to web pages and watching features actually work. Connecting a public AI model to a service during my Kakao internship drew me into this field, and writing papers gave me the habit of checking what improved and why with experiments under the same conditions.",
+      "These days I build with coding agents such as pi, dsh, Claude Code and Codex, and in Cursor I try out several coding LLM APIs connected through a proxy. I also enjoy making tools for agents, like having them cross-review each other's results or plugging in Notion as their memory. I designed a way to split a GPU server shared by several labs into per-user workspaces, and every lab now uses the server that way."
     ],
     "contacts": {
       "email": {
