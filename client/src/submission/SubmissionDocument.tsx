@@ -403,6 +403,19 @@ export function SubmissionDocument({
               />
               <Text style={s.p}>{p.desc}</Text>
               <ProjectBody project={p} detail="summary" />
+              <View wrap={false} style={{ flexDirection: "row", gap: 14 }}>
+                <Link
+                  src={`https://namuori.net/projects/${p.slug}`}
+                  style={s.link}
+                >
+                  프로젝트 상세
+                </Link>
+                {p.link && (
+                  <Link src={p.link} style={s.link}>
+                    GitHub
+                  </Link>
+                )}
+              </View>
             </View>
           ))}
           {footer()}
