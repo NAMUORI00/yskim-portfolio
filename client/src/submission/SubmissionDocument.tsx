@@ -54,7 +54,7 @@ const s = StyleSheet.create({
     letterSpacing: 3,
   },
   projectTitle: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 700,
     lineHeight: 1.45,
     marginBottom: 14,
@@ -423,7 +423,11 @@ export function SubmissionDocument({
       )}
       {kind === "portfolio" &&
         projects.map(p => (
-          <Page key={p.slug} size="A4" style={s.page}>
+          <Page
+            key={p.slug}
+            size="A4"
+            style={[s.page, { fontSize: 10.5, lineHeight: 1.6 }]}
+          >
             <Text style={s.projectTitle}>{p.name}</Text>
             <Fields
               rows={[
@@ -446,15 +450,25 @@ export function SubmissionDocument({
                   ))}
                 </>
               )}
-            <Section>관련 자료</Section>
-            <Link src={`https://namuori.net/projects/${p.slug}`} style={s.link}>
-              https://namuori.net/projects/{p.slug}
-            </Link>
-            {p.link && (
-              <Link src={p.link} style={s.link}>
-                {p.link}
+            <View
+              wrap={false}
+              style={{ flexDirection: "row", gap: 14, marginTop: 14 }}
+            >
+              <Link
+                src={`https://namuori.net/projects/${p.slug}`}
+                style={[s.link, { color: "#666666", textDecoration: "none" }]}
+              >
+                프로젝트 상세
               </Link>
-            )}
+              {p.link && (
+                <Link
+                  src={p.link}
+                  style={[s.link, { color: "#666666", textDecoration: "none" }]}
+                >
+                  GitHub
+                </Link>
+              )}
+            </View>
             {footer()}
           </Page>
         ))}
