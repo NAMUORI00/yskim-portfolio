@@ -1,3 +1,4 @@
+import { technicalSkills, projectDiagram } from "./presentation";
 import React from "react";
 import {
   Document,
@@ -220,10 +221,47 @@ export interface SubmissionProps {
   detail: Detail;
   introduction: string;
 }
+function CoreDiagram({ project }: { project: ProjectEntry }) {
+  const diagram = projectDiagram(project);
+  if (!diagram.nodes.length) return null;
+  return (
+    <View wrap={false} style={{ marginTop: 12, marginBottom: 16 }}>
+      <View style={{ flexDirection: "row", alignItems: "center" }}>
+        {diagram.nodes.map((node, i) => (
+          <React.Fragment key={node}>
+            {i > 0 && (
+              <Text
+                style={{ width: 24, textAlign: "center", color: "#777777" }}
+              >
+                {diagram.sequence ? "→" : "·"}
+              </Text>
+            )}
+            <View
+              style={{
+                flex: 1,
+                minHeight: 43,
+                justifyContent: "center",
+                borderWidth: 0.7,
+                borderColor: "#a7b1b8",
+                backgroundColor: "#f4f6f7",
+                padding: 8,
+              }}
+            >
+              <Text
+                style={{ fontSize: 10, fontWeight: 700, textAlign: "center" }}
+              >
+                {node}
+              </Text>
+            </View>
+          </React.Fragment>
+        ))}
+      </View>
+    </View>
+  );
+}
 export function SubmissionDocument({
   content,
   selection,
-  kind,
   detail,
   introduction,
 }: SubmissionProps) {
@@ -232,11 +270,11 @@ export function SubmissionDocument({
   const careers = records.filter(
     e => e.type === "work" || e.type === "research"
   );
-  const tags = Array.from(new Set(projects.flatMap(p => p.tags)));
+  const skills = technicalSkills(projects, records);
   const contactNames: Record<string, string> = {
     email: "이메일",
     github: "GitHub",
-    website: "홈페이지",
+    website: "포트폴리오",
     external: "블로그",
   };
   const identity: [string, string][] = [
@@ -252,14 +290,12 @@ export function SubmissionDocument({
   );
   return (
     <Document
-      title={`${profile.name} ${documentNames[kind]}`}
+      title={`${profile.name} 이력서 및 포트폴리오`}
       author={profile.name}
       language="ko-KR"
     >
       <Page size="A4" style={s.page}>
-        <Text style={s.title}>
-          {kind === "resume" ? "이 력 서" : "포트폴리오"}
-        </Text>
+        <Text style={s.title}>이력서 및 포트폴리오</Text>
         <Fields
           rows={identity}
           links={Object.fromEntries(
@@ -269,90 +305,56 @@ export function SubmissionDocument({
             ])
           )}
         />
-        {kind === "resume" ? (
+        {introduction.trim() && (
           <>
-            <RecordTable
-              title="학력사항"
-              entries={records.filter(e => e.type === "education")}
-            />
-            <RecordTable
-              title="경력사항"
-              entries={records.filter(e => e.type === "work")}
-            />
-            <RecordTable
-              title="연구경력"
-              entries={records.filter(e => e.type === "research")}
-            />
-            {tags.length > 0 && (
-              <>
-                <Section>보유기술</Section>
-                <Text style={s.p}>{tags.join(" · ")}</Text>
-              </>
-            )}
-            <RecordTable
-              title="논문 및 학술활동"
-              entries={records.filter(
-                e => e.type === "publication" || e.type === "talk"
-              )}
-            />
-            <RecordTable
-              title="수상 및 기타 활동"
-              entries={records.filter(
-                e =>
-                  ![
-                    "education",
-                    "work",
-                    "research",
-                    "publication",
-                    "talk",
-                  ].includes(e.type)
-              )}
-            />
-          </>
-        ) : (
-          <>
-            {introduction.trim() && (
-              <>
-                <Section>소개</Section>
-                <Text style={s.p}>{introduction}</Text>
-              </>
-            )}
-            {tags.length > 0 && (
-              <>
-                <Section>보유기술</Section>
-                <Text style={s.p}>{tags.join(" · ")}</Text>
-              </>
-            )}
-            <Section>프로젝트 목록</Section>
-            <View style={s.table}>
-              <Row
-                heading
-                cells={["프로젝트명", "기간", "주요 내용"]}
-                widths={[35, 20, 45]}
-              />
-              {projects.map(p => (
-                <Row
-                  key={p.slug}
-                  cells={[p.name, p.period, p.desc]}
-                  widths={[35, 20, 45]}
-                />
-              ))}
-            </View>
+            <Section>소개</Section>
+            <Text style={s.p}>{introduction}</Text>
           </>
         )}
+        {skills.length > 0 && (
+          <>
+            <Section>보유기술</Section>
+            <Fields rows={skills.map(g => [g.label, g.items.join(" · ")])} />
+          </>
+        )}
+        <RecordTable
+          title="학력사항"
+          entries={records.filter(e => e.type === "education")}
+        />
+        <RecordTable
+          title="경력사항"
+          entries={records.filter(e => e.type === "work")}
+        />
+        <RecordTable
+          title="연구경력"
+          entries={records.filter(e => e.type === "research")}
+        />
+        <RecordTable
+          title="논문 및 학술활동"
+          entries={records.filter(
+            e => e.type === "publication" || e.type === "talk"
+          )}
+        />
+        <RecordTable
+          title="수상 및 기타 활동"
+          entries={records.filter(
+            e =>
+              ![
+                "education",
+                "work",
+                "research",
+                "publication",
+                "talk",
+              ].includes(e.type)
+          )}
+        />
         {footer()}
       </Page>
-      {kind === "resume" && (careers.length > 0 || introduction.trim()) && (
+      {careers.length > 0 && (
         <Page size="A4" style={s.page}>
           <Text style={s.title}>경력기술서</Text>
-          {introduction.trim() && (
-            <>
-              <Section>경력 요약</Section>
-              <Text style={s.p}>{introduction}</Text>
-            </>
-          )}
-          {careers.map((e, index) => (
-            <View key={index} style={{ marginBottom: 8 }}>
+          {careers.map((e, i) => (
+            <View key={i} style={{ marginBottom: 8 }}>
               <Text style={s.sub} minPresenceAhead={80}>
                 {e.school}
               </Text>
@@ -366,19 +368,14 @@ export function SubmissionDocument({
               />
               {e.note && <Text style={s.p}>{e.note}</Text>}
               {(detail === "summary" ? e.bullets.slice(0, 2) : e.bullets).map(
-                (b, i) => (
-                  <Text key={i} style={s.p}>
+                (b, j) => (
+                  <Text style={s.p} key={j}>
                     • {b}
                   </Text>
                 )
               )}
-              {e.relatedSkills.length > 0 && (
-                <Text style={s.p}>
-                  사용 기술: {e.relatedSkills.join(" · ")}
-                </Text>
-              )}
               {e.links.map(l => (
-                <Link key={l.href} src={l.href} style={s.link}>
+                <Link src={l.href} key={l.href} style={s.link}>
                   {l.label}
                 </Link>
               ))}
@@ -387,91 +384,46 @@ export function SubmissionDocument({
           {footer()}
         </Page>
       )}
-      {kind === "resume" && projects.length > 0 && (
-        <Page size="A4" style={s.page}>
-          <Text style={s.title}>주요 수행 프로젝트</Text>
-          {projects.map(p => (
-            <View key={p.slug} style={{ marginBottom: 10 }}>
-              <Text style={s.sub} minPresenceAhead={80}>
-                {p.name}
-              </Text>
-              <Fields
-                rows={[
-                  ["수행 기간", p.period],
-                  ["사용 기술", p.tags.join(" · ")],
-                ]}
-              />
-              <Text style={s.p}>{p.desc}</Text>
-              <ProjectBody project={p} detail="summary" />
-              <View wrap={false} style={{ flexDirection: "row", gap: 14 }}>
-                <Link
-                  src={`https://namuori.net/projects/${p.slug}`}
-                  style={s.link}
-                >
-                  프로젝트 상세
-                </Link>
-                {p.link && (
-                  <Link src={p.link} style={s.link}>
-                    GitHub
-                  </Link>
-                )}
+      {projects.map(p => (
+        <Page
+          key={p.slug}
+          size="A4"
+          style={[s.page, { fontSize: 10.5, lineHeight: 1.6 }]}
+        >
+          <Text style={s.projectTitle}>{p.name}</Text>
+          <Fields
+            rows={[
+              ["수행 기간", p.period],
+              ["사용 기술", p.tags.join(" · ")],
+            ]}
+          />
+          <Section>프로젝트 개요</Section>
+          <Text style={s.p}>{p.desc}</Text>
+          <CoreDiagram project={p} />
+          <ProjectBody project={p} detail={detail} />
+          {detail === "detailed" &&
+            PROJECT_INSIGHTS[p.slug]?.modules.map((m, i) => (
+              <View key={i} wrap={false}>
+                <Text style={s.sub}>{m.name.ko}</Text>
+                <Text style={s.p}>{m.role.ko}</Text>
               </View>
-            </View>
-          ))}
+            ))}
+          <View wrap={false} style={{ marginTop: 14 }}>
+            <Link src={`https://namuori.net/projects/${p.slug}`} style={s.link}>
+              포트폴리오 · namuori.net/projects/{p.slug}
+            </Link>
+            {p.link && (
+              <Link
+                src={p.link}
+                style={[s.link, { fontSize: 8, color: "#666666" }]}
+              >
+                GitHub
+              </Link>
+            )}
+          </View>
           {footer()}
         </Page>
-      )}
-      {kind === "portfolio" &&
-        projects.map(p => (
-          <Page
-            key={p.slug}
-            size="A4"
-            style={[s.page, { fontSize: 10.5, lineHeight: 1.6 }]}
-          >
-            <Text style={s.projectTitle}>{p.name}</Text>
-            <Fields
-              rows={[
-                ["수행 기간", p.period],
-                ["사용 기술", p.tags.join(" · ")],
-              ]}
-            />
-            <Section>프로젝트 개요</Section>
-            <Text style={s.p}>{p.desc}</Text>
-            <ProjectBody project={p} detail={detail} />
-            {detail === "detailed" &&
-              PROJECT_INSIGHTS[p.slug]?.modules.length > 0 && (
-                <>
-                  <Section>세부 구현 내용</Section>
-                  {PROJECT_INSIGHTS[p.slug].modules.map((m, i) => (
-                    <View key={i} wrap={false}>
-                      <Text style={s.sub}>{m.name.ko}</Text>
-                      <Text style={s.p}>{m.role.ko}</Text>
-                    </View>
-                  ))}
-                </>
-              )}
-            <View
-              wrap={false}
-              style={{ flexDirection: "row", gap: 14, marginTop: 14 }}
-            >
-              <Link
-                src={`https://namuori.net/projects/${p.slug}`}
-                style={[s.link, { color: "#666666", textDecoration: "none" }]}
-              >
-                프로젝트 상세
-              </Link>
-              {p.link && (
-                <Link
-                  src={p.link}
-                  style={[s.link, { color: "#666666", textDecoration: "none" }]}
-                >
-                  GitHub
-                </Link>
-              )}
-            </View>
-            {footer()}
-          </Page>
-        ))}
+      ))}
     </Document>
   );
 }

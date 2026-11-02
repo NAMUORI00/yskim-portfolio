@@ -31,18 +31,8 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 describe("submission editor", () => {
-  it("keeps document selections independent and updates order", () => {
-    const first = container.querySelector<HTMLInputElement>(
-      'input[type="checkbox"]'
-    )!;
-    act(() => first.click());
-    expect(
-      container.querySelector(".submission-outline")!.textContent
-    ).not.toContain("01 · 질문에 맞는");
-    act(() => button("포트폴리오").click());
-    expect(
-      container.querySelector(".submission-outline")!.textContent
-    ).toContain("01 · 질문에 맞는");
+  it("offers only one PDF and lets projects be ordered", () => {
+    expect(container.textContent).not.toContain("ZIP");
     const down = container.querySelector<HTMLButtonElement>(
       'button[aria-label="질문에 맞는 문서 검색과 스마트팜 운영 지원 아래로"]'
     )!;
@@ -54,7 +44,7 @@ describe("submission editor", () => {
   it("invalidates the generated PDF after changing content", async () => {
     await act(async () => button("PDF 미리보기 생성").click());
     expect(container.querySelector("iframe")?.src).toBe("blob:test-pdf");
-    expect(generate.mock.calls[0][0].kind).toBe("resume");
+    expect(generate.mock.calls[0][0].kind).toBe("combined");
     act(() =>
       container
         .querySelector<HTMLInputElement>('input[type="checkbox"]')!
@@ -63,14 +53,12 @@ describe("submission editor", () => {
     expect(container.querySelector("iframe")).toBeNull();
     expect(URL.revokeObjectURL).toHaveBeenCalledWith("blob:test-pdf");
   });
-  it("disables portfolio generation when no projects are selected", () => {
-    act(() => button("포트폴리오").click());
+  it("disables generation when no records or projects are selected", () => {
     for (const input of Array.from(
       container.querySelectorAll<HTMLInputElement>("input:checked")
     ))
       act(() => input.click());
     expect(button("PDF 미리보기 생성").disabled).toBe(true);
-    expect(button("두 문서 ZIP 다운로드").disabled).toBe(true);
   });
   it("shows errors without discarding selections", async () => {
     vi.spyOn(console, "error").mockImplementation(() => {});

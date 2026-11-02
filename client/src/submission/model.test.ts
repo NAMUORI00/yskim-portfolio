@@ -1,3 +1,4 @@
+import { submissionWording } from "./wording";
 import { describe, expect, it } from "vitest";
 import { portfolioContent } from "@/content";
 import {
@@ -72,5 +73,26 @@ describe("submission document content", () => {
     ).toContain("심사 중");
     expect(items.records.some(e => e.type === "research")).toBe(true);
     expect(items.records.some(e => e.type === "work")).toBe(true);
+  });
+});
+
+describe("submission wording source coverage", () => {
+  it("ties every rewrite to an existing source paragraph", () => {
+    for (const [slug, edits] of Object.entries(submissionWording)) {
+      const project = portfolioContent.projects.find(p => p.slug === slug)!;
+      for (const original of Object.keys(edits))
+        expect(project.body).toContain(original);
+    }
+  });
+  it("describes the audio service result while preserving its execution scope", () => {
+    const project = portfolioContent.projects.find(
+      p => p.slug === "music-splitter-web"
+    )!;
+    const text = projectBlocks(project, "summary")
+      .map(b => b.text)
+      .join(" ");
+    expect(text).not.toContain("연결한 경험입니다");
+    expect(text).toContain("로컬 환경");
+    expect(text).toContain("회원 인증과 서버 API");
   });
 });

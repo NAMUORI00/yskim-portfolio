@@ -1,31 +1,14 @@
-# Submission PDF studio
+# Submission PDF
 
-Open `/insights` through either home navigation contact area. The existing `content/profile.json`, `content/education.json`, project MDX and `PROJECT_INSIGHTS` are the source of truth. Public, non-private projects only are selectable.
+`/insights` creates one Korean PDF containing the selected resume records, career details and portfolio projects. Each project includes a short description, a three-node core diagram, work/results and a portfolio link. The home links to this editor.
 
-## First version
+The editor supports purpose presets, inclusion/exclusion, order, an editable introduction, summary/standard/detailed levels, preview and one PDF download. There is no document-type switch or ZIP export. Edits are session-only. Source content is not modified.
 
-- Separate resume/career-history and portfolio configurations.
-- Rule-based purpose presets, inclusion/exclusion, keyboard-accessible ordering, editable introduction and summary/standard/detailed content levels.
-- Browser-only A4 generation with locally hosted OFL Korean fonts, searchable text, links, automatic page wrapping and final page numbering.
-- Actual PDF preview/download and a ZIP containing both PDFs. Native PDF preview depends on browser support; download/new-window links remain available.
-- Lazy-load PDF libraries on generation. No service credentials, AI calls or server-side document storage.
-- Changes invalidate previous previews. Fields are disabled during rendering; failed generation preserves editor state.
-- Session-only edits; navigating away resets them. Saved submissions, English output and AI rewriting are outside this first version.
+Skills use conventional technical categories and only technologies in selected projects/records. Three representative projects have explicit source-backed core flows. Other projects use up to three recorded modules without implying sequence; sparse records receive no invented diagram.
 
-## Verification
+Submission-specific wording is mapped to exact source paragraphs in `wording.ts`. Tests detect source drift. Published/review statuses and local/simulation scope are retained. No unmeasured improvement metrics are generated.
 
-Run `pnpm check`, `pnpm test`, `pnpm build`.
+PDF libraries load on demand. OFL Korean fonts are bundled locally; output is searchable A4 with clickable links and page numbers. `wasm-unsafe-eval` permits the bundled Yoga layout engine while JavaScript `unsafe-eval` stays disabled. `frame-src blob:` permits the PDF preview. Native inline PDF rendering depends on the browser; download/new-window links are available.
 
-To export the two default examples from the real renderer test, set `SUBMISSION_OUTPUT_DIR` to an existing or new destination and run:
-
-```
-pnpm exec vitest run src/submission/SubmissionDocument.test.tsx
-```
-
-Set `SUBMISSION_STRESS_PATH` to a file path to also export the all-projects, long-introduction fixture. Default content currently produces 4 resume pages and 4 portfolio pages; all 17 public projects in detailed mode with the long introduction produce 20 pages. Counts change with source content.
-
-PDF tests cover embedded fonts, links, A4 sizing, final pagination and all-project generation. Editor tests cover independent selections, reordering, stale preview invalidation, empty selections and errors. Visually inspect rendered PDFs whenever typography or layout changes.
-
-The narrow `wasm-unsafe-eval` script directive permits the bundled Yoga PDF layout engine (general JavaScript `unsafe-eval` stays disabled). The `frame-src blob:` CSP addition permits local PDF previews; object embedding stays disabled. Fonts are bundled under `client/public/fonts` with their OFL license.
-
-PDF templates use monochrome Korean submission headings and bordered tables. Employment and education are grouped separately; ordering applies within each group. Decorative English labels, template instructions and illustrative comparisons are excluded from the documents.
+Validation: `pnpm check`, `pnpm test`, `pnpm build`.
+Set `SUBMISSION_OUTPUT_DIR` and run `pnpm exec vitest run src/submission/SubmissionDocument.test.tsx` to generate `combined.pdf`. Set `SUBMISSION_STRESS_PATH` to additionally save the all-projects/long-introduction fixture. Default content produces six pages. Render and visually inspect changed layouts.

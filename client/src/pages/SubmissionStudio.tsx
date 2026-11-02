@@ -1,121 +1,92 @@
-import { submissionIntroduction } from "@/submission/model";
 import { useEffect, useRef, useState } from "react";
 import { Link } from "wouter";
 import { portfolioContent as content } from "@/content";
 import {
   availableProjects,
   availableRecords,
-  documentNames,
   moveItem,
   purposeNames,
   recommendationReason,
   recommend,
   recordId,
   selectedItems,
+  submissionIntroduction,
   typeNames,
   type Detail,
-  type DocumentKind,
   type Purpose,
   type Selection,
 } from "@/submission/model";
+import { technicalSkills, projectDiagram } from "@/submission/presentation";
 import "./SubmissionStudio.css";
-
-const initialIntroduction = submissionIntroduction;
-function download(blob: Blob, name: string) {
+function download(blob: Blob) {
   const url = URL.createObjectURL(blob),
-    anchor = document.createElement("a");
-  anchor.href = url;
-  anchor.download = name;
-  anchor.click();
+    a = document.createElement("a");
+  a.href = url;
+  a.download = `${content.profile.name}_이력서_포트폴리오.pdf`;
+  a.click();
   setTimeout(() => URL.revokeObjectURL(url), 30000);
 }
 export default function SubmissionStudio() {
-  const [kind, setKind] = useState<DocumentKind>("resume");
   const [purpose, setPurpose] = useState<Purpose>("ai");
-  const [selections, setSelections] = useState<Record<DocumentKind, Selection>>(
-    () => ({
-      resume: recommend(content, "ai"),
-      portfolio: recommend(content, "ai"),
-    })
+  const [selection, setSelection] = useState<Selection>(() =>
+    recommend(content, "ai")
   );
-  const [details, setDetails] = useState<Record<DocumentKind, Detail>>({
-    resume: "standard",
-    portfolio: "standard",
-  });
-  const [introductions, setIntroductions] = useState({
-    resume: initialIntroduction,
-    portfolio: initialIntroduction,
-  });
+  const [detail, setDetail] = useState<Detail>("standard");
+  const [introduction, setIntroduction] = useState(submissionIntroduction);
   const [busy, setBusy] = useState(false),
     [error, setError] = useState("");
-  const [preview, setPreview] = useState<{
-    url: string;
-    blob: Blob;
-    kind: DocumentKind;
-  } | null>(null);
-  const previewRef = useRef<string | null>(null);
-  useEffect(
-    () => () => {
-      if (previewRef.current) URL.revokeObjectURL(previewRef.current);
-    },
-    []
+  const [preview, setPreview] = useState<{ url: string; blob: Blob } | null>(
+    null
   );
+  const previewRef = useRef<string | null>(null),
+    mounted = useRef(true);
+  useEffect(() => {
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+      if (previewRef.current) URL.revokeObjectURL(previewRef.current);
+    };
+  }, []);
   function invalidate() {
     if (previewRef.current) URL.revokeObjectURL(previewRef.current);
     previewRef.current = null;
     setPreview(null);
     setError("");
   }
-  function update(selection: Selection) {
+  function update(next: Selection) {
     invalidate();
-    setSelections(v => ({ ...v, [kind]: selection }));
+    setSelection(next);
   }
-  const selection = selections[kind],
-    chosen = selectedItems(content, selection);
-  const valid = (k: DocumentKind) =>
-    k === "portfolio"
-      ? selections[k].projects.length > 0
-      : selections[k].records.length > 0;
-  async function generate(both = false) {
-    if (busy) return;
+  const chosen = selectedItems(content, selection),
+    skills = technicalSkills(chosen.projects, chosen.records);
+  const valid = chosen.projects.length > 0 || chosen.records.length > 0;
+  async function generate() {
+    if (busy || !valid) return;
     invalidate();
     setBusy(true);
     try {
       const { generateSubmission } = await import(
         "@/submission/SubmissionDocument"
       );
-      const make = (k: DocumentKind) =>
-        generateSubmission({
-          content,
-          selection: selections[k],
-          kind: k,
-          detail: details[k],
-          introduction: introductions[k],
-        });
-      if (both) {
-        const { zipSync } = await import("fflate");
-        const files: Record<string, Uint8Array> = {};
-        // The PDF renderer owns shared font/layout state: render sequentially.
-        for (const k of ["resume", "portfolio"] as const)
-          files[`${content.profile.name}_${documentNames[k]}.pdf`] =
-            new Uint8Array(await (await make(k)).arrayBuffer());
-        download(
-          new Blob([zipSync(files) as BlobPart], { type: "application/zip" }),
-          `${content.profile.name}_제출문서.zip`
-        );
-      } else {
-        const blob = await make(kind),
-          url = URL.createObjectURL(blob);
-        previewRef.current = url;
-        setPreview({ url, blob, kind });
-      }
+      const blob = await generateSubmission({
+        content,
+        selection,
+        kind: "combined",
+        detail,
+        introduction,
+      });
+      if (!mounted.current) return;
+      const url = URL.createObjectURL(blob);
+      previewRef.current = url;
+      setPreview({ url, blob });
     } catch (e) {
       console.error("Submission PDF generation failed", e);
-      setError(
-        "PDF를 만들지 못했습니다. 연결 상태를 확인하고 다시 시도해 주세요. 편집 내용은 유지됩니다."
-      );
+      if (mounted.current)
+        setError(
+          "PDF를 만들지 못했습니다. 연결 상태를 확인하고 다시 시도해 주세요. 편집 내용은 유지됩니다."
+        );
     } finally {
-      setBusy(false);
+      if (mounted.current) setBusy(false);
     }
   }
   function picker(axis: "projects" | "records") {
@@ -200,33 +171,15 @@ export default function SubmissionStudio() {
     <main className="submission-studio">
       <header className="submission-header">
         <Link href="/">← 포트폴리오 홈</Link>
-        <p className="submission-kicker">NAMUORI · SUBMISSION STUDIO</p>
-        <h1>인사이트 · 제출 문서</h1>
-        <p>
-          같은 경험을 두 가지 문서로. 내용을 고르고, 순서를 정하고, 제출할 PDF를
-          확인하세요.
-        </p>
+        <h1>제출용 포트폴리오</h1>
+        <p>이력과 프로젝트를 하나의 PDF로 정리합니다.</p>
       </header>
       <fieldset disabled={busy} className="submission-controls">
         <legend className="sr-only">문서 편집</legend>
-        <div className="submission-tabs" role="group" aria-label="편집할 문서">
-          {(["resume", "portfolio"] as const).map(k => (
-            <button
-              key={k}
-              aria-pressed={kind === k}
-              onClick={() => {
-                invalidate();
-                setKind(k);
-              }}
-            >
-              {documentNames[k]}
-            </button>
-          ))}
-        </div>
         <div className="submission-layout">
           <aside className="submission-editor">
             <section>
-              <h2>01 · 제출 목적과 분량</h2>
+              <h2>제출 목적과 분량</h2>
               <label>
                 지원 분야
                 <select
@@ -234,111 +187,74 @@ export default function SubmissionStudio() {
                   onChange={e => setPurpose(e.target.value as Purpose)}
                 >
                   {Object.entries(purposeNames).map(([id, name]) => (
-                    <option value={id} key={id}>
+                    <option key={id} value={id}>
                       {name}
                     </option>
                   ))}
                 </select>
               </label>
               <button onClick={() => update(recommend(content, purpose))}>
-                현재 문서에 추천 구성 적용
+                추천 구성 적용
               </button>
-              <small>
-                선택과 순서를 추천 구성으로 바꿉니다. 다른 문서의 구성은
-                유지됩니다.
-              </small>
               <label>
                 설명 분량
                 <select
-                  value={details[kind]}
+                  value={detail}
                   onChange={e => {
                     invalidate();
-                    setDetails(v => ({
-                      ...v,
-                      [kind]: e.target.value as Detail,
-                    }));
+                    setDetail(e.target.value as Detail);
                   }}
                 >
-                  <option value="summary">요약 · 역할과 결과 중심</option>
-                  <option value="standard">기본 · 구현 내용 포함</option>
-                  <option value="detailed">상세 · 구성과 비교 설명 포함</option>
+                  <option value="summary">요약</option>
+                  <option value="standard">기본</option>
+                  <option value="detailed">상세</option>
                 </select>
               </label>
-              <small>
-                페이지를 줄이기 위해 글자를 축소하거나 내용을 잘라내지 않습니다.
-                실제 쪽수는 PDF 미리보기에서 확인하세요.
-              </small>
             </section>
             <section>
-              <h2>02 · 소개 문구</h2>
+              <h2>소개</h2>
               <label>
-                현재 문서의 소개
+                소개 문구
                 <textarea
-                  rows={6}
+                  rows={5}
                   maxLength={3000}
-                  value={introductions[kind]}
+                  value={introduction}
                   onChange={e => {
                     invalidate();
-                    setIntroductions(v => ({ ...v, [kind]: e.target.value }));
+                    setIntroduction(e.target.value);
                   }}
                 />
               </label>
               <small>
-                사이트 원문은 바뀌지 않습니다. 편집 내용은 이 화면을 떠나면
+                사이트 원문은 변경되지 않습니다. 화면을 떠나면 편집 내용은
                 초기화됩니다.
               </small>
             </section>
             <section>
-              <h2>03 · 프로젝트 선택·순서</h2>
-              <p>
-                선택 {chosen.projects.length}개 · 위아래 버튼으로 순서를 바꿀 수
-                있습니다.
-              </p>
+              <h2>프로젝트</h2>
+              <p>선택 {chosen.projects.length}개</p>
               {picker("projects")}
             </section>
-            {kind === "resume" && (
-              <section>
-                <h2>04 · 이력 선택·순서</h2>
-                <p>
-                  선택 {chosen.records.length}개 · 기업 경력과 연구 경험은
-                  별도로 표기합니다.
-                </p>
-                {picker("records")}
-              </section>
-            )}
+            <section>
+              <h2>학력·경력</h2>
+              <p>선택 {chosen.records.length}개 · 항목별로 묶어 출력합니다.</p>
+              {picker("records")}
+            </section>
           </aside>
           <div className="submission-preview">
-            <section className="submission-actions">
-              <h2>{documentNames[kind]}</h2>
-              <p>
-                {kind === "resume"
-                  ? "이력 요약 → 경력·연구 상세 → 주요 프로젝트 기여"
-                  : "소개·대표 작업 → 프로젝트별 상세·구현 구성·근거 링크"}
-              </p>
-              <div className="submission-buttons">
-                <button
-                  className="primary"
-                  disabled={!valid(kind)}
-                  onClick={() => generate()}
-                >
-                  {busy ? "PDF 생성 중…" : "PDF 미리보기 생성"}
-                </button>
-                <button
-                  disabled={!valid("resume") || !valid("portfolio")}
-                  onClick={() => generate(true)}
-                >
-                  두 문서 ZIP 다운로드
-                </button>
-              </div>
-              {!valid(kind) && (
+            <section>
+              <h2>이력서 및 포트폴리오</h2>
+              <p>이력·보유기술 → 경력기술서 → 프로젝트 설명·핵심 도식</p>
+              <button className="primary" disabled={!valid} onClick={generate}>
+                {busy ? "PDF 생성 중…" : "PDF 미리보기 생성"}
+              </button>
+              {!valid && (
                 <p role="status">
-                  {kind === "resume"
-                    ? "이력을 하나 이상 선택해 주세요."
-                    : "프로젝트를 하나 이상 선택해 주세요."}
+                  이력이나 프로젝트를 하나 이상 선택해 주세요.
                 </p>
               )}
               <p className="submission-note">
-                A4 · 한글 글꼴 포함 · 텍스트 검색·복사 · 페이지 번호 · 원문 링크
+                A4 · PDF 한 파일 · 한글 검색·복사 · 포트폴리오 링크
               </p>
             </section>
             {error && (
@@ -351,12 +267,7 @@ export default function SubmissionStudio() {
                 <div className="submission-buttons">
                   <button
                     className="primary"
-                    onClick={() =>
-                      download(
-                        preview.blob,
-                        `${content.profile.name}_${documentNames[preview.kind]}.pdf`
-                      )
-                    }
+                    onClick={() => download(preview.blob)}
                   >
                     PDF 다운로드
                   </button>
@@ -365,51 +276,65 @@ export default function SubmissionStudio() {
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    PDF 새 창에서 보기
+                    새 창에서 보기
                   </a>
                 </div>
                 <iframe
-                  title={`${documentNames[kind]} PDF 미리보기`}
+                  title="이력서 및 포트폴리오 PDF 미리보기"
                   src={preview.url}
                   className="submission-pdf"
                 />
                 <small>
-                  브라우저에서 PDF가 표시되지 않으면 다운로드하거나 새 창으로
-                  여세요.
+                  PDF가 표시되지 않으면 다운로드하거나 새 창으로 여세요.
                 </small>
               </section>
             ) : (
               <section className="submission-outline">
-                <p className="submission-kicker">DOCUMENT OUTLINE</p>
                 <h2>{content.profile.name}</h2>
-                <p className="submission-introduction">{introductions[kind]}</p>
-                {kind === "resume" && (
-                  <>
-                    <h3>이력 요약</h3>
-                    {chosen.records.map(e => (
-                      <p key={recordId(e)}>
-                        <strong>{e.degree}</strong>
-                        <br />
-                        <small>
-                          {e.period} · {e.school}
-                        </small>
-                      </p>
-                    ))}
-                  </>
-                )}
-                <h3>선정 프로젝트</h3>
-                {chosen.projects.map((p, index) => (
-                  <article key={p.slug}>
-                    <h3>
-                      {String(index + 1).padStart(2, "0")} · {p.name}
-                    </h3>
-                    <p>{p.desc}</p>
-                    <small>{p.metric}</small>
-                  </article>
+                <p className="submission-introduction">{introduction}</p>
+                <h3>보유기술</h3>
+                {skills.map(g => (
+                  <p key={g.label}>
+                    <strong>{g.label}</strong>
+                    <br />
+                    {g.items.join(" · ")}
+                  </p>
                 ))}
+                <h3>프로젝트</h3>
+                {chosen.projects.map((p, index) => {
+                  const diagram = projectDiagram(p);
+                  return (
+                    <article key={p.slug}>
+                      <h3>
+                        {String(index + 1).padStart(2, "0")} · {p.name}
+                      </h3>
+                      <p>{p.desc}</p>
+                      {diagram.nodes.length > 0 && (
+                        <div className="submission-flow">
+                          {diagram.nodes.map((node, i) => (
+                            <span key={node}>
+                              {i > 0 && (
+                                <b aria-hidden="true">
+                                  {diagram.sequence ? "→" : "·"}
+                                </b>
+                              )}
+                              <em>{node}</em>
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                      <a
+                        href={`https://namuori.net/projects/${p.slug}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        포트폴리오 보기
+                      </a>
+                    </article>
+                  );
+                })}
                 <p className="submission-note">
-                  내용 구성 미리보기입니다. 위 버튼으로 실제 PDF의 페이지 배치를
-                  확인하세요.
+                  PDF 미리보기를 생성하면 실제 페이지 배치를 확인할 수 있습니다.
                 </p>
               </section>
             )}
@@ -417,9 +342,7 @@ export default function SubmissionStudio() {
         </div>
       </fieldset>
       <p role="status" aria-live="polite">
-        {busy
-          ? "한글 글꼴과 문서를 준비하고 있습니다. 잠시 기다려 주세요."
-          : ""}
+        {busy ? "문서를 준비하고 있습니다." : ""}
       </p>
     </main>
   );

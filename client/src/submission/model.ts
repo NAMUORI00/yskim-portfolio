@@ -1,3 +1,4 @@
+import { submissionWording } from "./wording";
 import type {
   EducationEntry,
   PortfolioContent,
@@ -5,13 +6,10 @@ import type {
 } from "@/content/types";
 import { marked } from "marked";
 
-export type DocumentKind = "resume" | "portfolio";
+export type DocumentKind = "combined";
 export type Detail = "summary" | "standard" | "detailed";
 export type Purpose = "ai" | "research" | "service";
-export const documentNames = {
-  resume: "이력서·경력기술서",
-  portfolio: "포트폴리오",
-};
+export const documentNames = { combined: "이력서 및 포트폴리오" };
 export const purposeNames = {
   ai: "AI·LLM 개발",
   research: "연구개발",
@@ -103,7 +101,10 @@ export function bodyBlocks(body: string): BodyBlock[] {
     .filter(b => b.text);
 }
 export function projectBlocks(project: ProjectEntry, detail: Detail) {
-  const blocks = bodyBlocks(project.body);
+  const blocks = bodyBlocks(project.body).map(block => ({
+    ...block,
+    text: submissionWording[project.slug]?.[block.text] ?? block.text,
+  }));
   if (detail !== "summary") return blocks;
   // Keep role and evidence/limitations even when shortening implementation details.
   return blocks.filter(

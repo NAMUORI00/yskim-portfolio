@@ -196,3 +196,29 @@
     display: none;
   }
 }
+
+.submission-flow {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin: 16px 0;
+}
+.submission-flow span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+}
+.submission-flow em {
+  font-style: normal;
+  background: #f4f6f7;
+  border: 1px solid #ccd3d8;
+  padding: 12px 8px;
+  text-align: center;
+  flex: 1;
+  font-size: 13px;
+}
+.submission-flow b {
+  font-weight: 400;
+  color: #777;
+}

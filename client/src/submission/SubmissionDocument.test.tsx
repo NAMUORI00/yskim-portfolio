@@ -14,14 +14,14 @@ import {
 import { recommend, availableProjects, type DocumentKind } from "./model";
 
 describe("real PDF rendering", () => {
-  it("renders both A4 documents with embedded Korean fonts", async () => {
+  it("renders the combined A4 document with embedded Korean fonts", async () => {
     registerSubmissionFonts(
       fileURLToPath(new URL("../../public", import.meta.url)).replace(
         /\\/g,
         "/"
       )
     );
-    for (const kind of ["resume", "portfolio"] as DocumentKind[]) {
+    for (const kind of ["combined"] as DocumentKind[]) {
       const buffer = await renderToBuffer(
         <SubmissionDocument
           content={portfolioContent}
@@ -69,7 +69,7 @@ describe("real PDF rendering", () => {
       <SubmissionDocument
         content={portfolioContent}
         selection={{ projects: projects.map(p => p.slug), records: [] }}
-        kind="portfolio"
+        kind="combined"
         detail="detailed"
         introduction={"연구와 개발 경험을 바탕으로 사용자 기능을 구현합니다. ".repeat(
           60
