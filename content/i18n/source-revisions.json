@@ -1,7 +1,7 @@
 {
   "project:smartfarm-rag": "fe41200e",
   "project:mv-evirag": "faa71367",
-  "project:music-splitter-web": "a680aba9",
+  "project:music-splitter-web": "a6157331",
   "project:golden-glove": "18eb5654",
   "project:food-scan": "671143a6",
   "project:tourism-data": "ab9531bc",
@@ -20,7 +20,7 @@
   "research:video-qa": "1786fde9",
   "research:sensor-operations": "bf4bcbde",
   "research:edge-llm": "9f82b358",
-  "research:audio-voice": "2481240",
+  "research:audio-voice": "cc192943",
   "research:agentic-workflow": "fd96c7cb",
   "paper:kci": "2f43d42b",
   "paper:kiit": "73abb36e",
