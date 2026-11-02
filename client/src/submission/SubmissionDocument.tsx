@@ -9,12 +9,15 @@ import {
   StyleSheet,
   pdf,
 } from "@react-pdf/renderer";
-import type { PortfolioContent } from "@/content/types";
+import type {
+  EducationEntry,
+  PortfolioContent,
+  ProjectEntry,
+} from "@/content/types";
 import { PROJECT_INSIGHTS } from "@/components/capabilities/projectInsights";
 import {
   documentNames,
   selectedItems,
-  typeNames,
   projectBlocks,
   type Selection,
   type Detail,
@@ -36,55 +39,180 @@ export function registerSubmissionFonts(base = "") {
 const s = StyleSheet.create({
   page: {
     fontFamily: "Submission",
-    fontSize: 10,
+    fontSize: 9.5,
     lineHeight: 1.4,
-    paddingTop: 36,
-    paddingHorizontal: 44,
+    paddingTop: 38,
+    paddingHorizontal: 40,
     paddingBottom: 48,
-    color: "#202a25",
+    color: "#222222",
   },
-  eyebrow: { fontSize: 9, color: "#2d6a4f", marginBottom: 10 },
-  title: { fontSize: 25, fontWeight: 700, lineHeight: 1.35, marginBottom: 10 },
-  subtitle: { fontSize: 12, marginBottom: 8 },
-  h2: {
-    fontSize: 15,
+  title: {
+    fontSize: 23,
     fontWeight: 700,
-    color: "#24563f",
-    marginTop: 10,
+    textAlign: "center",
+    marginBottom: 16,
+    letterSpacing: 3,
+  },
+  projectTitle: {
+    fontSize: 16,
+    fontWeight: 700,
+    lineHeight: 1.45,
+    marginBottom: 14,
+  },
+  section: {
+    fontSize: 11,
+    fontWeight: 700,
+    marginTop: 12,
     marginBottom: 6,
-  },
-  h3: { fontSize: 11, fontWeight: 700, marginTop: 8, marginBottom: 4 },
-  p: { marginBottom: 7 },
-  meta: { fontSize: 9, color: "#59665f", marginBottom: 6 },
-  rule: {
+    paddingBottom: 4,
     borderBottomWidth: 1,
-    borderBottomColor: "#adc2b4",
-    paddingBottom: 8,
-    marginBottom: 8,
+    borderBottomColor: "#444444",
   },
-  row: {
-    paddingVertical: 7,
-    borderBottomWidth: 0.5,
-    borderBottomColor: "#dbe3dd",
+  sub: { fontSize: 10, fontWeight: 700, marginTop: 7, marginBottom: 5 },
+  p: { marginBottom: 6 },
+  table: {
+    borderTopWidth: 0.6,
+    borderLeftWidth: 0.6,
+    borderColor: "#999999",
+    marginBottom: 4,
   },
-  link: { fontSize: 9, color: "#2d6a4f", marginBottom: 5 },
+  row: { flexDirection: "row" },
+  cell: {
+    paddingHorizontal: 7,
+    paddingVertical: 4,
+    borderRightWidth: 0.6,
+    borderBottomWidth: 0.6,
+    borderColor: "#999999",
+    fontSize: 9,
+  },
+  label: { backgroundColor: "#f1f1f1", fontWeight: 700 },
+  link: { color: "#333333", fontSize: 8.5 },
   footer: {
     position: "absolute",
-    top: 805,
-    left: 44,
-    width: 500,
-    height: 16,
+    bottom: 25,
+    left: 40,
     fontSize: 8,
-    color: "#65736b",
-  },
-  module: {
-    backgroundColor: "#f0f5f1",
-    padding: 8,
-    marginBottom: 5,
-    borderLeftWidth: 2,
-    borderLeftColor: "#2d6a4f",
+    color: "#666666",
   },
 });
+function Section({ children }: { children: React.ReactNode }) {
+  return (
+    <Text style={s.section} minPresenceAhead={95}>
+      {children}
+    </Text>
+  );
+}
+function Row({
+  cells,
+  widths,
+  heading = false,
+}: {
+  cells: string[];
+  widths: number[];
+  heading?: boolean;
+}) {
+  return (
+    <View style={s.row} wrap={false}>
+      {cells.map((cell, i) => (
+        <Text
+          key={i}
+          style={[
+            s.cell,
+            { width: `${widths[i]}%` },
+            ...(heading ? [s.label] : []),
+          ]}
+        >
+          {cell}
+        </Text>
+      ))}
+    </View>
+  );
+}
+function Fields({
+  rows,
+  links = {},
+}: {
+  rows: [string, string][];
+  links?: Record<string, string>;
+}) {
+  return (
+    <View style={s.table}>
+      {rows.map(([label, value], i) => (
+        <View key={i} style={s.row} wrap={false}>
+          <Text style={[s.cell, s.label, { width: "18%" }]}>{label}</Text>
+          <View style={[s.cell, { width: "82%" }]}>
+            {links[label] ? (
+              <Link src={links[label]} style={s.link}>
+                {value}
+              </Link>
+            ) : (
+              <Text>{value}</Text>
+            )}
+          </View>
+        </View>
+      ))}
+    </View>
+  );
+}
+function RecordTable({
+  title,
+  entries,
+}: {
+  title: string;
+  entries: EducationEntry[];
+}) {
+  if (!entries.length) return null;
+  return (
+    <View wrap={false}>
+      <Section>{title}</Section>
+      <View style={s.table}>
+        <Row heading cells={["기간", "기관", "내용"]} widths={[24, 33, 43]} />
+        {entries.map((e, i) => (
+          <Row
+            key={i}
+            cells={[e.period, e.school, e.degree]}
+            widths={[24, 33, 43]}
+          />
+        ))}
+      </View>
+    </View>
+  );
+}
+function projectSections(p: ProjectEntry, detail: Detail) {
+  return projectBlocks(p, detail).filter(
+    b => b.text !== p.desc && b.heading !== "사용 기술"
+  );
+}
+function headingName(heading: string) {
+  if (/역할/.test(heading)) return "담당 업무";
+  if (/구현한 기능/.test(heading)) return "주요 수행 내용";
+  if (/결과|실험|성과/.test(heading)) return "성과 및 검증";
+  return heading;
+}
+function ProjectBody({
+  project,
+  detail,
+}: {
+  project: ProjectEntry;
+  detail: Detail;
+}) {
+  return (
+    <>
+      {projectSections(project, detail).map((b, i, blocks) => (
+        <React.Fragment key={i}>
+          {b.heading && b.heading !== blocks[i - 1]?.heading && (
+            <Text style={s.sub} minPresenceAhead={35}>
+              {headingName(b.heading)}
+            </Text>
+          )}
+          <Text style={s.p} orphans={2} widows={2}>
+            {b.text.replace(/^성과:\s*/, "")}
+          </Text>
+        </React.Fragment>
+      ))}
+    </>
+  );
+}
 export interface SubmissionProps {
   content: PortfolioContent;
   selection: Selection;
@@ -101,34 +229,26 @@ export function SubmissionDocument({
 }: SubmissionProps) {
   const { projects, records } = selectedItems(content, selection);
   const { profile } = content;
-  const detailedRecords = records.filter(
-    e => detail === "detailed" || e.type === "work" || e.type === "research"
+  const careers = records.filter(
+    e => e.type === "work" || e.type === "research"
   );
   const tags = Array.from(new Set(projects.flatMap(p => p.tags)));
+  const contactNames: Record<string, string> = {
+    email: "이메일",
+    github: "GitHub",
+    website: "홈페이지",
+    external: "블로그",
+  };
+  const identity: [string, string][] = [
+    ["성명", `${profile.name} (${profile.romanizedName})`],
+    ...profile.contacts.map(
+      c => [contactNames[c.type] ?? "연락처", c.label] as [string, string]
+    ),
+  ];
   const footer = () => (
-    <Text
-      fixed
-      style={{ position: "absolute", bottom: 25, left: 44, fontSize: 8 }}
-    >
-      김유석 · namuori.net
+    <Text fixed style={s.footer}>
+      {profile.name}
     </Text>
-  );
-  const head = (
-    <View style={s.rule}>
-      <Text style={s.eyebrow}>
-        {documentNames[kind]} · {profile.romanizedName}
-      </Text>
-      <Text style={s.title}>{profile.name}</Text>
-      <Text style={s.subtitle}>{profile.headline}</Text>
-      <Text style={s.meta}>{profile.status}</Text>
-      <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 10 }}>
-        {profile.contacts.map(c => (
-          <Link key={c.id} src={c.href} style={s.link}>
-            {c.label}
-          </Link>
-        ))}
-      </View>
-    </View>
   );
   return (
     <Document
@@ -137,63 +257,113 @@ export function SubmissionDocument({
       language="ko-KR"
     >
       <Page size="A4" style={s.page}>
-        {head}
-        <Text style={s.h2}>소개</Text>
-        <Text style={s.p}>{introduction}</Text>
-        {tags.length > 0 && (
+        <Text style={s.title}>
+          {kind === "resume" ? "이 력 서" : "포트폴리오"}
+        </Text>
+        <Fields
+          rows={identity}
+          links={Object.fromEntries(
+            profile.contacts.map(c => [
+              contactNames[c.type] ?? "연락처",
+              c.href,
+            ])
+          )}
+        />
+        {kind === "resume" ? (
           <>
-            <Text style={s.h2}>주요 기술 · 선정 프로젝트 기준</Text>
-            <Text style={s.p}>{tags.join(" · ")}</Text>
+            <RecordTable
+              title="학력사항"
+              entries={records.filter(e => e.type === "education")}
+            />
+            <RecordTable
+              title="경력사항"
+              entries={records.filter(e => e.type === "work")}
+            />
+            <RecordTable
+              title="연구경력"
+              entries={records.filter(e => e.type === "research")}
+            />
+            {tags.length > 0 && (
+              <>
+                <Section>보유기술</Section>
+                <Text style={s.p}>{tags.join(" · ")}</Text>
+              </>
+            )}
+            <RecordTable
+              title="논문 및 학술활동"
+              entries={records.filter(
+                e => e.type === "publication" || e.type === "talk"
+              )}
+            />
+            <RecordTable
+              title="수상 및 기타 활동"
+              entries={records.filter(
+                e =>
+                  ![
+                    "education",
+                    "work",
+                    "research",
+                    "publication",
+                    "talk",
+                  ].includes(e.type)
+              )}
+            />
+          </>
+        ) : (
+          <>
+            {introduction.trim() && (
+              <>
+                <Section>소개</Section>
+                <Text style={s.p}>{introduction}</Text>
+              </>
+            )}
+            {tags.length > 0 && (
+              <>
+                <Section>보유기술</Section>
+                <Text style={s.p}>{tags.join(" · ")}</Text>
+              </>
+            )}
+            <Section>프로젝트 목록</Section>
+            <View style={s.table}>
+              <Row
+                heading
+                cells={["프로젝트명", "기간", "주요 내용"]}
+                widths={[35, 20, 45]}
+              />
+              {projects.map(p => (
+                <Row
+                  key={p.slug}
+                  cells={[p.name, p.period, p.desc]}
+                  widths={[35, 20, 45]}
+                />
+              ))}
+            </View>
           </>
         )}
-        <Text style={s.h2} minPresenceAhead={60}>
-          {kind === "resume" ? "이력 요약" : "대표 프로젝트"}
-        </Text>
-        {kind === "resume"
-          ? records.map((e, index) => (
-              <View
-                key={index}
-                style={{
-                  paddingVertical: 3,
-                  borderBottomWidth: 0.5,
-                  borderBottomColor: "#dbe3dd",
-                }}
-                wrap={false}
-              >
-                <Text style={{ fontSize: 9, fontWeight: 700 }}>
-                  {e.degree} · {e.period}
-                </Text>
-                <Text style={{ fontSize: 8, color: "#59665f" }}>
-                  {typeNames[e.type]} · {e.school}
-                  {e.current ? " · 진행 중" : ""}
-                </Text>
-              </View>
-            ))
-          : projects.map((p, index) => (
-              <View key={p.slug} style={s.row} wrap={false}>
-                <Text style={s.h3}>
-                  {String(index + 1).padStart(2, "0")} {p.name}
-                </Text>
-                <Text>{p.desc}</Text>
-                <Text style={s.meta}>{p.metric}</Text>
-              </View>
-            ))}
         {footer()}
       </Page>
-      {kind === "resume" && detailedRecords.length > 0 && (
+      {kind === "resume" && (careers.length > 0 || introduction.trim()) && (
         <Page size="A4" style={s.page}>
-          <Text style={s.eyebrow}>EXPERIENCE & RESEARCH</Text>
-          <Text style={s.title}>경력·연구 상세</Text>
-          {detailedRecords.map((e, index) => (
+          <Text style={s.title}>경력기술서</Text>
+          {introduction.trim() && (
+            <>
+              <Section>경력 요약</Section>
+              <Text style={s.p}>{introduction}</Text>
+            </>
+          )}
+          {careers.map((e, index) => (
             <View key={index} style={{ marginBottom: 8 }}>
-              <View wrap={false}>
-                <Text style={s.meta}>
-                  {typeNames[e.type]} · {e.period}
-                  {e.current ? " · 진행 중" : ""}
-                </Text>
-                <Text style={s.h3}>{e.degree}</Text>
-                <Text style={s.meta}>{e.school}</Text>
-              </View>
+              <Text style={s.sub} minPresenceAhead={80}>
+                {e.school}
+              </Text>
+              <Fields
+                rows={[
+                  [
+                    e.type === "research" ? "참여 정보" : "근무 정보",
+                    `${e.period} · ${e.degree}`,
+                  ],
+                ]}
+              />
               {e.note && <Text style={s.p}>{e.note}</Text>}
               {(detail === "summary" ? e.bullets.slice(0, 2) : e.bullets).map(
                 (b, i) => (
@@ -203,10 +373,12 @@ export function SubmissionDocument({
                 )
               )}
               {e.relatedSkills.length > 0 && (
-                <Text style={s.meta}>{e.relatedSkills.join(" · ")}</Text>
+                <Text style={s.p}>
+                  사용 기술: {e.relatedSkills.join(" · ")}
+                </Text>
               )}
               {e.links.map(l => (
-                <Link key={l.href} style={s.link} src={l.href}>
+                <Link key={l.href} src={l.href} style={s.link}>
                   {l.label}
                 </Link>
               ))}
@@ -217,110 +389,62 @@ export function SubmissionDocument({
       )}
       {kind === "resume" && projects.length > 0 && (
         <Page size="A4" style={s.page}>
-          <Text style={s.title}>주요 프로젝트 기여</Text>
+          <Text style={s.title}>주요 수행 프로젝트</Text>
           {projects.map(p => (
-            <View key={p.slug} style={{ marginBottom: 20 }}>
-              <Text style={s.h2} minPresenceAhead={60}>
+            <View key={p.slug} style={{ marginBottom: 10 }}>
+              <Text style={s.sub} minPresenceAhead={80}>
                 {p.name}
               </Text>
-              <Text style={s.meta}>
-                {p.period} · {p.tags.join(" · ")}
-              </Text>
+              <Fields
+                rows={[
+                  ["수행 기간", p.period],
+                  ["사용 기술", p.tags.join(" · ")],
+                ]}
+              />
               <Text style={s.p}>{p.desc}</Text>
-              {projectBlocks(p, "summary").map((b, i) => (
-                <Text style={s.p} key={i}>
-                  {b.text}
-                </Text>
-              ))}
-              <Link
-                src={`https://namuori.net/projects/${p.slug}`}
-                style={s.link}
-              >
-                프로젝트 상세 · namuori.net/projects/{p.slug}
-              </Link>
+              <ProjectBody project={p} detail="summary" />
             </View>
           ))}
           {footer()}
         </Page>
       )}
       {kind === "portfolio" &&
-        projects.map((p, index) => {
-          const insight = PROJECT_INSIGHTS[p.slug];
-          return (
-            <Page size="A4" style={s.page} key={p.slug}>
-              <Text style={s.eyebrow}>
-                PROJECT {String(index + 1).padStart(2, "0")} · {p.period}
-              </Text>
-              <Text style={s.title}>{p.name}</Text>
-              <Text style={s.meta}>{p.tags.join(" · ")}</Text>
-              <Text style={s.p}>{p.desc}</Text>
-              {projectBlocks(p, detail)
-                .filter(b => b.text !== p.desc && b.heading !== "사용 기술")
-                .map((b, i, blocks) => (
-                  <React.Fragment key={i}>
-                    {b.heading && b.heading !== blocks[i - 1]?.heading && (
-                      <Text style={s.h3} minPresenceAhead={35}>
-                        {b.heading}
-                      </Text>
-                    )}
-                    <Text style={s.p} orphans={2} widows={2}>
-                      {b.text}
-                    </Text>
-                  </React.Fragment>
-                ))}
-              {detail !== "summary" && insight?.modules.length > 0 && (
+        projects.map(p => (
+          <Page key={p.slug} size="A4" style={s.page}>
+            <Text style={s.projectTitle}>{p.name}</Text>
+            <Fields
+              rows={[
+                ["수행 기간", p.period],
+                ["사용 기술", p.tags.join(" · ")],
+              ]}
+            />
+            <Section>프로젝트 개요</Section>
+            <Text style={s.p}>{p.desc}</Text>
+            <ProjectBody project={p} detail={detail} />
+            {detail === "detailed" &&
+              PROJECT_INSIGHTS[p.slug]?.modules.length > 0 && (
                 <>
-                  <Text style={s.h2} minPresenceAhead={70}>
-                    구현 구성
-                  </Text>
-                  {insight.modules.map((m, i) => (
-                    <View key={i} style={s.module} wrap={false}>
-                      <Text style={s.h3}>{m.name.ko}</Text>
-                      <Text>{m.role.ko}</Text>
+                  <Section>세부 구현 내용</Section>
+                  {PROJECT_INSIGHTS[p.slug].modules.map((m, i) => (
+                    <View key={i} wrap={false}>
+                      <Text style={s.sub}>{m.name.ko}</Text>
+                      <Text style={s.p}>{m.role.ko}</Text>
                     </View>
                   ))}
                 </>
               )}
-              {detail === "detailed" &&
-                insight?.comparisons.map((c, i) => (
-                  <View key={i} style={s.row}>
-                    <Text style={s.h3} minPresenceAhead={45}>
-                      {c.topic.ko}
-                    </Text>
-                    <Text style={s.meta}>
-                      {c.basis === "illustrative"
-                        ? "이해를 위한 비교 예시 · 실험 결과 아님"
-                        : "프로젝트 기록에 따른 비교"}
-                    </Text>
-                    <Text style={s.p}>
-                      {c.before.title.ko}: {c.before.text.ko}
-                    </Text>
-                    <Text style={s.p}>
-                      {c.after.title.ko}: {c.after.text.ko}
-                    </Text>
-                    {c.note && <Text style={s.meta}>{c.note.ko}</Text>}
-                  </View>
-                ))}
-              {insight && (
-                <Text style={s.meta}>
-                  {insight.status.map(v => v.text.ko).join(" · ")}
-                </Text>
-              )}
-              <Link
-                src={`https://namuori.net/projects/${p.slug}`}
-                style={s.link}
-              >
-                프로젝트 원문 · namuori.net/projects/{p.slug}
+            <Section>관련 자료</Section>
+            <Link src={`https://namuori.net/projects/${p.slug}`} style={s.link}>
+              https://namuori.net/projects/{p.slug}
+            </Link>
+            {p.link && (
+              <Link src={p.link} style={s.link}>
+                {p.link}
               </Link>
-              {p.link && (
-                <Link src={p.link} style={s.link}>
-                  {p.link}
-                </Link>
-              )}
-              {footer()}
-            </Page>
-          );
-        })}
+            )}
+            {footer()}
+          </Page>
+        ))}
     </Document>
   );
 }
@@ -329,21 +453,19 @@ export async function generateSubmission(props: SubmissionProps) {
   const raw = await pdf(<SubmissionDocument {...props} />).toBlob();
   return numberPages(await raw.arrayBuffer());
 }
-
-// Number the finalized pages, after automatic wrapping has established their count.
 export async function numberPages(bytes: ArrayBuffer | Uint8Array) {
   const { PDFDocument, StandardFonts, rgb } = await import("pdf-lib");
-  const doc = await PDFDocument.load(bytes);
-  const font = await doc.embedFont(StandardFonts.Helvetica);
-  doc.getPages().forEach((page, index) => {
+  const doc = await PDFDocument.load(bytes),
+    font = await doc.embedFont(StandardFonts.Helvetica);
+  doc.getPages().forEach((page, index) =>
     page.drawText(`${index + 1} / ${doc.getPageCount()}`, {
       x: 515,
       y: 25,
       size: 8,
       font,
-      color: rgb(0.35, 0.4, 0.37),
-    });
-  });
+      color: rgb(0.4, 0.4, 0.4),
+    })
+  );
   return new Blob([(await doc.save()) as BlobPart], {
     type: "application/pdf",
   });

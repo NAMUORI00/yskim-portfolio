@@ -1,3 +1,4 @@
+import { submissionIntroduction } from "./model";
 import React from "react";
 import { describe, expect, it } from "vitest";
 import { PDFDocument } from "pdf-lib";
@@ -27,7 +28,7 @@ describe("real PDF rendering", () => {
           selection={recommend(portfolioContent, "ai")}
           kind={kind}
           detail="standard"
-          introduction={`${portfolioContent.profile.summaryLead}\n${portfolioContent.profile.summary[0]}`}
+          introduction={submissionIntroduction}
         />
       );
       expect(buffer.subarray(0, 5).toString()).toBe("%PDF-");

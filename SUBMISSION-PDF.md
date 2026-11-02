@@ -22,8 +22,10 @@ To export the two default examples from the real renderer test, set `SUBMISSION_
 pnpm exec vitest run src/submission/SubmissionDocument.test.tsx
 ```
 
-Set `SUBMISSION_STRESS_PATH` to a file path to also export the all-projects, long-introduction fixture. Default content currently produces 3 resume pages and 4 portfolio pages; all 17 public projects in detailed mode with the long introduction produce 23 pages. Counts change with source content.
+Set `SUBMISSION_STRESS_PATH` to a file path to also export the all-projects, long-introduction fixture. Default content currently produces 4 resume pages and 4 portfolio pages; all 17 public projects in detailed mode with the long introduction produce 20 pages. Counts change with source content.
 
 PDF tests cover embedded fonts, links, A4 sizing, final pagination and all-project generation. Editor tests cover independent selections, reordering, stale preview invalidation, empty selections and errors. Visually inspect rendered PDFs whenever typography or layout changes.
 
 The narrow `wasm-unsafe-eval` script directive permits the bundled Yoga PDF layout engine (general JavaScript `unsafe-eval` stays disabled). The `frame-src blob:` CSP addition permits local PDF previews; object embedding stays disabled. Fonts are bundled under `client/public/fonts` with their OFL license.
+
+PDF templates use monochrome Korean submission headings and bordered tables. Employment and education are grouped separately; ordering applies within each group. Decorative English labels, template instructions and illustrative comparisons are excluded from the documents.

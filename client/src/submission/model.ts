@@ -121,3 +121,6 @@ export function recommendationReason(project: ProjectEntry, purpose: Purpose) {
     ? "사이트에서 대표 작업으로 선정한 프로젝트입니다."
     : "지원 분야와 연결되는 본인 역할을 확인한 뒤 포함하세요.";
 }
+
+export const submissionIntroduction =
+  "문서 검색 기반 질의응답, 다중 시점 영상 질의응답, 음원 분리 기능을 연구·개발했습니다. 연구 설계와 비교 실험, AI 기능 구현 및 웹 서비스 연동을 수행했습니다.";

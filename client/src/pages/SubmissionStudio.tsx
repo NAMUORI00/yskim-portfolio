@@ -1,3 +1,4 @@
+import { submissionIntroduction } from "@/submission/model";
 import { useEffect, useRef, useState } from "react";
 import { Link } from "wouter";
 import { portfolioContent as content } from "@/content";
@@ -19,7 +20,7 @@ import {
 } from "@/submission/model";
 import "./SubmissionStudio.css";
 
-const initialIntroduction = `${content.profile.summaryLead}\n${content.profile.summary[0]}`;
+const initialIntroduction = submissionIntroduction;
 function download(blob: Blob, name: string) {
   const url = URL.createObjectURL(blob),
     anchor = document.createElement("a");
