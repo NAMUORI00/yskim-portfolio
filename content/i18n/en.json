@@ -33,11 +33,11 @@
     "name": "Kim Yuseok",
     "status": "Expected March 2027, open to opportunities",
     "headline": "LLM, RAG, VLM and AI agent research and systems, M.S. student in Computer Engineering",
-    "summaryLead": "I care about getting AI to give answers you can trust, not just answers that sound right.",
+    "summaryLead": "I'm interested in getting AI to give answers you can trust, not just answers that sound plausible.",
     "summary": [
-      "That is what I research as a master's student in the Machine Learning Lab at Jeju National University. A video QA model that holds back when evidence is thin, RAG that shifts its retrieval mix to fit the question type, answers that rewrite only the part a sensor change touches, and an AI agent that moves equipment only after a person approves all come from the same interest.",
-      "As an undergraduate I liked wiring things up from device firmware to web pages and watching them actually work. Connecting a public AI model to a service during my Kakao internship drew me into this field, and since writing papers in graduate school I no longer stop at something that runs: I go on to show what improved and why with experiments under the same conditions.",
-      "These days I build with coding agents such as pi, dsh, Claude Code, Codex and a Cursor proxy, and I enjoy making tools for them, like having agents cross-review each other's results or plugging in Notion as their memory. In the lab I designed a way to split a GPU server shared by three labs into per-researcher workspaces, and all three labs now use the server that way."
+      "I have researched video question answering that holds back when evidence is thin, and RAG that shifts its retrieval weights by question type. I have also built answers that rewrite only what changed when sensor values shift, and an AI agent that moves equipment only after a person approves; all of it comes from the same interest.",
+      "I used to enjoy wiring things up from device firmware to web pages and watching features actually work. Connecting a public AI model to a service during my Kakao internship drew me into this field, and writing papers gave me the habit of checking what improved and why with experiments under the same conditions.",
+      "These days I build with coding agents such as pi, dsh, Claude Code and Codex, and in Cursor I try out several coding LLM APIs connected through a proxy. I also enjoy making tools for agents, like having them cross-review each other's results or plugging in Notion as their memory. I designed a way to split a GPU server shared by several labs into per-user workspaces, and every lab now uses the server that way."
     ],
     "contacts": {
       "email": {
