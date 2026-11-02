@@ -222,3 +222,24 @@
   font-weight: 400;
   color: #777;
 }
+
+.submission-studio input[type="text"] {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #b6c5b9;
+  border-radius: 6px;
+  padding: 8px;
+  font: inherit;
+  background: white;
+  color: #202c25;
+}
+.submission-studio details label {
+  display: block;
+  margin-top: 10px;
+}
+.submission-studio summary {
+  cursor: pointer;
+  margin-top: 12px;
+  font-weight: 600;
+}

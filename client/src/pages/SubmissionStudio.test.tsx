@@ -53,6 +53,26 @@ describe("submission editor", () => {
     expect(container.querySelector("iframe")).toBeNull();
     expect(URL.revokeObjectURL).toHaveBeenCalledWith("blob:test-pdf");
   });
+
+  it("keeps optional personal fields empty by default and invalidates stale output when edited", async () => {
+    const input =
+      container.querySelector<HTMLInputElement>('input[type="text"]')!;
+    expect(input.value).toBe("");
+    await act(async () => button("PDF 미리보기 생성").click());
+    expect(generate.mock.calls[0][0].officialDetails).toEqual({});
+    act(() => {
+      Object.getOwnPropertyDescriptor(
+        HTMLInputElement.prototype,
+        "value"
+      )!.set!.call(input, "테스트 주소");
+      input.dispatchEvent(new Event("input", { bubbles: true }));
+    });
+    expect(container.querySelector("iframe")).toBeNull();
+    await act(async () => button("PDF 미리보기 생성").click());
+    expect(generate.mock.calls[1][0].officialDetails.address).toBe(
+      "테스트 주소"
+    );
+  });
   it("disables generation when no records or projects are selected", () => {
     for (const input of Array.from(
       container.querySelectorAll<HTMLInputElement>("input:checked")
