@@ -3,9 +3,10 @@ import React from "react";
 import {
   Document,
   Page,
-  Text,
+  Text as PdfText,
+  type TextProps,
   View,
-  Link,
+  Link as PdfLink,
   Font,
   StyleSheet,
   pdf,
@@ -24,6 +25,19 @@ import {
   type Detail,
   type DocumentKind,
 } from "./model";
+
+// Apply submission typography to source-backed text without editing site records.
+function submissionText(children: React.ReactNode): React.ReactNode {
+  return React.Children.map(children, child =>
+    typeof child === "string" ? child.replace(/\s*[·ㆍ]\s*/g, ", ") : child
+  );
+}
+function Text({ children, ...props }: React.PropsWithChildren<TextProps>) {
+  return <PdfText {...props}>{submissionText(children)}</PdfText>;
+}
+function Link({ children, ...props }: React.ComponentProps<typeof PdfLink>) {
+  return <PdfLink {...props}>{submissionText(children)}</PdfLink>;
+}
 
 export function registerSubmissionFonts(base = "") {
   Font.register({
@@ -233,7 +247,7 @@ function CoreDiagram({ project }: { project: ProjectEntry }) {
               <Text
                 style={{ width: 24, textAlign: "center", color: "#777777" }}
               >
-                {diagram.sequence ? "→" : "·"}
+                {diagram.sequence ? "→" : ""}
               </Text>
             )}
             <View
@@ -314,7 +328,7 @@ export function SubmissionDocument({
         {skills.length > 0 && (
           <>
             <Section>보유기술</Section>
-            <Fields rows={skills.map(g => [g.label, g.items.join(" · ")])} />
+            <Fields rows={skills.map(g => [g.label, g.items.join(", ")])} />
           </>
         )}
         <RecordTable
@@ -394,7 +408,7 @@ export function SubmissionDocument({
           <Fields
             rows={[
               ["수행 기간", p.period],
-              ["사용 기술", p.tags.join(" · ")],
+              ["사용 기술", p.tags.join(", ")],
             ]}
           />
           <Section>프로젝트 개요</Section>
@@ -410,7 +424,7 @@ export function SubmissionDocument({
             ))}
           <View wrap={false} style={{ marginTop: 14 }}>
             <Link src={`https://namuori.net/projects/${p.slug}`} style={s.link}>
-              포트폴리오 · namuori.net/projects/{p.slug}
+              포트폴리오: namuori.net/projects/{p.slug}
             </Link>
             {p.link && (
               <Link

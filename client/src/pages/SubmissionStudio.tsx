@@ -100,7 +100,7 @@ export default function SubmissionStudio() {
         : availableRecords(content).map(e => ({
             id: recordId(e),
             title: e.degree,
-            note: `${typeNames[e.type]} · ${e.period} · ${e.school}`,
+            note: `${typeNames[e.type]}, ${e.period}, ${e.school}`,
           }));
     const ids = selection[axis];
     const ordered = [
@@ -236,15 +236,15 @@ export default function SubmissionStudio() {
               {picker("projects")}
             </section>
             <section>
-              <h2>학력·경력</h2>
-              <p>선택 {chosen.records.length}개 · 항목별로 묶어 출력합니다.</p>
+              <h2>학력 및 경력</h2>
+              <p>선택 {chosen.records.length}개, 항목별로 묶어 출력합니다.</p>
               {picker("records")}
             </section>
           </aside>
           <div className="submission-preview">
             <section>
               <h2>이력서 및 포트폴리오</h2>
-              <p>이력·보유기술 → 경력기술서 → 프로젝트 설명·핵심 도식</p>
+              <p>이력 및 보유기술 → 경력기술서 → 프로젝트 설명 및 핵심 도식</p>
               <button className="primary" disabled={!valid} onClick={generate}>
                 {busy ? "PDF 생성 중…" : "PDF 미리보기 생성"}
               </button>
@@ -254,7 +254,7 @@ export default function SubmissionStudio() {
                 </p>
               )}
               <p className="submission-note">
-                A4 · PDF 한 파일 · 한글 검색·복사 · 포트폴리오 링크
+                A4, PDF 한 파일, 한글 검색 및 복사, 포트폴리오 링크
               </p>
             </section>
             {error && (
@@ -297,7 +297,7 @@ export default function SubmissionStudio() {
                   <p key={g.label}>
                     <strong>{g.label}</strong>
                     <br />
-                    {g.items.join(" · ")}
+                    {g.items.join(", ")}
                   </p>
                 ))}
                 <h3>프로젝트</h3>
@@ -306,7 +306,7 @@ export default function SubmissionStudio() {
                   return (
                     <article key={p.slug}>
                       <h3>
-                        {String(index + 1).padStart(2, "0")} · {p.name}
+                        {String(index + 1).padStart(2, "0")}, {p.name}
                       </h3>
                       <p>{p.desc}</p>
                       {diagram.nodes.length > 0 && (
@@ -315,7 +315,7 @@ export default function SubmissionStudio() {
                             <span key={node}>
                               {i > 0 && (
                                 <b aria-hidden="true">
-                                  {diagram.sequence ? "→" : "·"}
+                                  {diagram.sequence ? "→" : ""}
                                 </b>
                               )}
                               <em>{node}</em>

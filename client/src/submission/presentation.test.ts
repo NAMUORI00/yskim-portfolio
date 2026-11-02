@@ -13,7 +13,7 @@ describe("submission presentation", () => {
       "Python",
       "Java",
     ]);
-    expect(groups.find(g => g.label === "AI·머신러닝")?.items).toContain(
+    expect(groups.find(g => g.label === "AI 및 머신러닝")?.items).toContain(
       "PyTorch"
     );
     expect(groups.find(g => g.label === "백엔드")?.items).toContain("FastAPI");

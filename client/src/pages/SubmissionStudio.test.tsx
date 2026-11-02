@@ -39,7 +39,7 @@ describe("submission editor", () => {
     act(() => down.click());
     expect(
       container.querySelector(".submission-outline")!.textContent
-    ).toContain("01 · 다중 시점");
+    ).toContain("01, 다중 시점");
   });
   it("invalidates the generated PDF after changing content", async () => {
     await act(async () => button("PDF 미리보기 생성").click());
