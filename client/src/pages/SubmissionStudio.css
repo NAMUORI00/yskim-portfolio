@@ -1,0 +1,198 @@
+.submission-studio {
+  background: #f4f5f1;
+  color: #202c25;
+  min-height: 100vh;
+  padding: 36px clamp(16px, 4vw, 64px);
+  font-family: "Pretendard Variable", sans-serif;
+  line-height: 1.65;
+}
+.submission-header {
+  max-width: 1440px;
+  margin: auto auto 28px;
+}
+.submission-header a,
+.submission-studio a {
+  color: #2d6a4f;
+}
+.submission-header h1 {
+  font-size: clamp(26px, 4vw, 40px);
+  font-weight: 700;
+  margin: 8px 0;
+}
+.submission-kicker {
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  color: #42654e;
+  margin-top: 24px;
+}
+.submission-controls {
+  border: 0;
+  padding: 0;
+  min-width: 0;
+  max-width: 1440px;
+  margin: auto;
+}
+.submission-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+.submission-studio button,
+.submission-studio select {
+  border: 1px solid #b6c5b9;
+  border-radius: 7px;
+  background: white;
+  color: #254735;
+  padding: 10px 14px;
+  cursor: pointer;
+  font: inherit;
+  font-size: 14px;
+  min-height: 44px;
+}
+.submission-studio button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.submission-tabs button[aria-pressed="true"],
+.submission-studio button.primary {
+  background: #285940;
+  color: #fff;
+  border-color: #285940;
+}
+.submission-layout {
+  display: grid;
+  grid-template-columns: minmax(300px, 420px) minmax(0, 1fr);
+  gap: 28px;
+  align-items: start;
+}
+.submission-studio section {
+  background: #fff;
+  border: 1px solid #dce3dc;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 18px;
+}
+.submission-studio h2 {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0 0 16px;
+}
+.submission-studio h3 {
+  font-size: 16px;
+  font-weight: 700;
+  margin: 16px 0 8px;
+}
+.submission-studio label {
+  display: block;
+  font-size: 14px;
+}
+.submission-studio select,
+.submission-studio textarea {
+  display: block;
+  width: 100%;
+  margin: 6px 0 12px;
+}
+.submission-studio textarea {
+  border: 1px solid #b6c5b9;
+  background: white;
+  color: #202c25;
+  border-radius: 6px;
+  padding: 12px;
+  font: inherit;
+  resize: vertical;
+  min-height: 100px;
+}
+.submission-studio small {
+  display: block;
+  color: #637066;
+  font-size: 12px;
+  line-height: 1.65;
+}
+.submission-editor section > small {
+  margin: 8px 0 18px;
+}
+.submission-items {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+.submission-items li {
+  border-top: 1px solid #e1e7e1;
+  padding: 12px 0;
+}
+.submission-items label {
+  display: flex;
+  gap: 10px;
+  align-items: start;
+  cursor: pointer;
+}
+.submission-items input {
+  margin-top: 6px;
+  width: 17px;
+  height: 17px;
+  flex-shrink: 0;
+  accent-color: #285940;
+}
+.submission-order {
+  display: flex;
+  gap: 6px;
+  margin: 8px 0 0 27px;
+}
+.submission-order button {
+  min-width: 44px;
+  padding: 4px 12px;
+}
+.submission-buttons {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin: 14px 0;
+}
+.submission-note {
+  color: #647267;
+  font-size: 12px;
+  margin-top: 16px;
+}
+.submission-pdf {
+  width: 100%;
+  height: 850px;
+  border: 1px solid #dce3dc;
+  background: #e5e8e5;
+}
+.submission-outline article {
+  padding: 10px 0;
+  border-top: 1px solid #dce3dc;
+}
+.submission-introduction {
+  white-space: pre-wrap;
+}
+.submission-error {
+  background: #fff0ec;
+  padding: 16px;
+  color: #862b16;
+}
+.submission-studio :focus-visible {
+  outline: 3px solid #82ad95;
+  outline-offset: 3px;
+}
+@media (max-width: 900px) {
+  .submission-layout {
+    grid-template-columns: 1fr;
+  }
+  .submission-preview {
+    grid-row: 1;
+  }
+  .submission-pdf {
+    height: 600px;
+  }
+  .submission-studio section {
+    padding: 18px;
+  }
+}
+@media print {
+  .submission-studio {
+    display: none;
+  }
+}
