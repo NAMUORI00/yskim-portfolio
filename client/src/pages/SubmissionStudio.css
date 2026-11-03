@@ -243,3 +243,26 @@
   margin-top: 12px;
   font-weight: 600;
 }
+
+.submission-format-options {
+  display: grid;
+  gap: 8px;
+}
+.submission-format-options label {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  cursor: pointer;
+}
+.submission-format-options label:has(input:checked) {
+  border-color: var(--primary);
+  background: var(--accent);
+}
+.submission-format-options small {
+  display: block;
+  color: var(--muted-foreground);
+  margin-top: 2px;
+}

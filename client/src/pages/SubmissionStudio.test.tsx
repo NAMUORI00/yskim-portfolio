@@ -88,6 +88,6 @@ describe("submission editor", () => {
       "다시 시도"
     );
     expect(button("PDF 미리보기 생성").disabled).toBe(false);
-    expect(container.querySelectorAll("input:checked").length).toBe(15);
+    expect(container.querySelectorAll('input[type="checkbox"]:checked').length).toBe(15);
   });
 });
