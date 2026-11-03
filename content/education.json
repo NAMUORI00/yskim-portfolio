@@ -75,7 +75,7 @@
   {
     "type": "publication",
     "degree": "Role-Separated Selective Response for Question Answering in Multi-View Video Surveillance",
-    "school": "IEEE Access · 심사 중 · 제1저자",
+    "school": "IEEE Access · Minor Revision · 제1저자",
     "period": "2026.08",
     "note": "CCTV 영상에서 화면 선택, 답변 가능 여부 판단, 답변 공개 여부를 단계별로 분리하고 VLM을 LoRA로 미세조정했습니다. 실험 전에 평가 문항과 비교 조건을 고정해 보류 지시만 준 같은 모델 대비 오답을 27건에서 0건으로 줄이고 정답을 140건에서 247건으로 늘렸습니다.",
     "current": false,
@@ -134,7 +134,7 @@
     "status": "published",
     "highlight": true,
     "bullets": [
-      "제1저자 연구 3건(KCI 학술지 게재 1편, 국내 학술대회 발표 1편, 국제 학술지 심사 중 1편)과 석사학위논문(센서 상태 변화에 따른 LLM 답변의 선택적 수정) 작성",
+      "제1저자 연구 3건(KCI 학술지 게재 1편, 국내 학술대회 발표 1편, 국제 학술지 Minor Revision 1편)과 석사학위논문(센서 상태 변화에 따른 LLM 답변의 선택적 수정) 작성",
       "3개 연구실이 함께 쓰는 DGX H200 GPU 서버의 연구원별 작업 공간 분할 주도와 웹 포털 개발, 현재 3개 연구실이 사용",
       "내부망 구성, 연구원들의 LLM 활용, 외국인 연구자 행정 지원"
     ],

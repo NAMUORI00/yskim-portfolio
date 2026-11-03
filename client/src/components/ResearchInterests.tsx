@@ -12,7 +12,7 @@ type InterestKind = "published" | "review" | "simulated" | "implemented" | "expl
  */
 const STATUS: Record<string, { kind: InterestKind; ko: string; en: string }> = {
   rag: { kind: "published", ko: "KCI 논문 게재", en: "Published · KCI" },
-  "video-qa": { kind: "review", ko: "IEEE Access 심사 중", en: "Under review · IEEE Access" },
+  "video-qa": { kind: "review", ko: "IEEE Access Minor Revision", en: "Minor revision · IEEE Access" },
   "sensor-operations": { kind: "simulated", ko: "시뮬레이터에서 검증", en: "Validated on a simulator" },
   "edge-llm": { kind: "exploring", ko: "실행 환경 구성·탐색", en: "Setup and exploration" },
   "audio-voice": { kind: "implemented", ko: "학습 실험 · 웹 서비스 구현", en: "Training runs · web service" },

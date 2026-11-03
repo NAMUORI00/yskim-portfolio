@@ -69,7 +69,7 @@
     },
     {
       "degree": "Role-Separated Selective Response for Question Answering in Multi-View Video Surveillance",
-      "school": "IEEE Access · Under review · First author",
+      "school": "IEEE Access · Minor revision · First author",
       "period": "2026.08",
       "note": "Separated view selection, answerability and answer release in CCTV video into stages and fine-tuned a VLM with LoRA. With evaluation items and comparison conditions fixed before the experiments, it cut wrong answers from 27 to 0 and raised correct answers from 140 to 247 over the same model given only an abstention instruction."
     },
@@ -79,7 +79,7 @@
       "period": "Mar 2025 — present",
       "note": "Takes part in four national research projects, including the Ministry of Education's RISE Jeju Industry AX large-scale AI optimization project, researching RAG, VLMs and sensor-aware revision of LLM answers, and partitioning a shared GPU server.",
       "bullets": [
-        "Three first-author studies (one KCI journal paper, one domestic conference presentation, one international journal paper under review) and a master's thesis in progress on selectively revising LLM answers when sensor states change",
+        "Three first-author studies (one KCI journal paper, one domestic conference presentation, one international journal paper in minor revision) and a master's thesis in progress on selectively revising LLM answers when sensor states change",
         "Led the partitioning of a DGX H200 GPU server shared by three labs into per-researcher workspaces and built its web portal, now used by all three labs",
         "Support for internal network configuration, researchers' LLM use, and administration for international researchers"
       ]
@@ -172,7 +172,7 @@
     "video-qa": {
       "title": "Video-grounded Answers and Abstention",
       "desc": "I study VLMs that split view selection, answerability and answer release for multi-view CCTV video into stages, answering only with evidence and abstaining otherwise. Fine-tuning a VLM with LoRA cut wrong answers from 27 to 0 and raised correct answers from 140 to 247 over the same model given only an abstention instruction.",
-      "body": "I study VLMs that split view selection, answerability and answer release for multi-view CCTV video into stages, answering only with evidence and abstaining otherwise. Fine-tuning a VLM with LoRA cut wrong answers from 27 to 0 and raised correct answers from 140 to 247 over the same model given only an abstention instruction.\n\n## Separating view selection from response decisions\n\nFixed evaluation items and comparison conditions before the experiments to test the stage split and fine-tuning. The first-author manuscript, from research design to writing, is under review at IEEE Access (submitted August 2026).\n\n## What I want to explore next\n\nBreaking down evidence-poor conditions, such as videos where the part needed to judge an action is occluded, to make selective responses more reliable.\n\n## Related project\n\n[Implementation and my role](/projects/mv-evirag)"
+      "body": "I study VLMs that split view selection, answerability and answer release for multi-view CCTV video into stages, answering only with evidence and abstaining otherwise. Fine-tuning a VLM with LoRA cut wrong answers from 27 to 0 and raised correct answers from 140 to 247 over the same model given only an abstention instruction.\n\n## Separating view selection from response decisions\n\nFixed evaluation items and comparison conditions before the experiments to test the stage split and fine-tuning. The first-author manuscript, from research design to writing, received a minor revision decision at IEEE Access (submitted August 2026).\n\n## What I want to explore next\n\nBreaking down evidence-poor conditions, such as videos where the part needed to judge an action is occluded, to make selective responses more reliable.\n\n## Related project\n\n[Implementation and my role](/projects/mv-evirag)"
     },
     "sensor-operations": {
       "title": "Answer Revision on Sensor Change and Approval-based Operations",
@@ -200,14 +200,14 @@
       "name": "Selective Response for Multi-View Video Question Answering",
       "period": "Graduate research",
       "desc": "Separated view selection, answerability and answer release for multi-view CCTV video into stages, and fine-tuned a VLM with LoRA to answer when evidence is present and abstain when it is not.",
-      "metric": "Wrong answers 27→0 and correct answers 140→247 over the same model given only an abstention instruction; first-author international journal paper under review",
+      "metric": "Wrong answers 27→0 and correct answers 140→247 over the same model given only an abstention instruction; first-author international journal paper in minor revision",
       "tags": [
         "Python",
         "PyTorch",
         "LoRA",
         "RAG"
       ],
-      "body": "Separated view selection, answerability and answer release for multi-view CCTV video into stages, and fine-tuned a VLM with LoRA to answer when evidence is present and abstain when it is not.\n\n## My role\n\nLed research design, model training and implementation, comparative experiments, and first-author writing.\n\n## View selection and response decisions\n\nA relevant person may appear in a video while the part needed to judge an action is occluded. Input selection and answerability were therefore handled as separate decisions, with the information available at each stage kept apart.\n\nTraining on both evidence-bearing and evidence-deficient inputs taught the model to answer when the video holds evidence and abstain when it does not. After generating an answer, response confidence decides whether to release it.\n\n## Evaluation and publication\n\nEvidence: Wrong answers 27→0 and correct answers 140→247 over the same model given only an abstention instruction; first-author international journal paper under review\n\nEvaluation items and comparison conditions were fixed before the experiments, and answer coverage was evaluated together with errors. The same model given only an abstention instruction also abstained on answerable questions, while the fine-tuned model cut wrong answers from 27 to 0 and raised correct answers from 140 to 247.\n\nPaper: Role-Separated Selective Response for Question Answering in Multi-View Video Surveillance (under review at IEEE Access, submitted August 2026, first author)\n\n## Technologies\n\nImplemented training and evaluation code in Python and PyTorch and fine-tuned the VLM with LoRA. Video evaluation used inputs with regions of interest and rule-defined information-availability conditions."
+      "body": "Separated view selection, answerability and answer release for multi-view CCTV video into stages, and fine-tuned a VLM with LoRA to answer when evidence is present and abstain when it is not.\n\n## My role\n\nLed research design, model training and implementation, comparative experiments, and first-author writing.\n\n## View selection and response decisions\n\nA relevant person may appear in a video while the part needed to judge an action is occluded. Input selection and answerability were therefore handled as separate decisions, with the information available at each stage kept apart.\n\nTraining on both evidence-bearing and evidence-deficient inputs taught the model to answer when the video holds evidence and abstain when it does not. After generating an answer, response confidence decides whether to release it.\n\n## Evaluation and publication\n\nEvidence: Wrong answers 27→0 and correct answers 140→247 over the same model given only an abstention instruction; first-author international journal paper in minor revision\n\nEvaluation items and comparison conditions were fixed before the experiments, and answer coverage was evaluated together with errors. The same model given only an abstention instruction also abstained on answerable questions, while the fine-tuned model cut wrong answers from 27 to 0 and raised correct answers from 140 to 247.\n\nPaper: Role-Separated Selective Response for Question Answering in Multi-View Video Surveillance (minor revision at IEEE Access, submitted August 2026, first author)\n\n## Technologies\n\nImplemented training and evaluation code in Python and PyTorch and fine-tuned the VLM with LoRA. Video evaluation used inputs with regions of interest and rule-defined information-availability conditions."
     },
     "music-splitter-web": {
       "name": "AI Audio Separation Web Service",

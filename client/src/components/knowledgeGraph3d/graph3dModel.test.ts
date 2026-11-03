@@ -60,9 +60,9 @@ describe("buildKnowledgeGraph", () => {
       expect(`${item.title} ${item.status} ${item.href ?? ""}`, item.id).not.toMatch(/content\/|\.mdx|\.json|\.ts\b|client\/src|README/);
       expect(item.title.trim().length, item.id).toBeGreaterThan(0);
     }
-    expect(ko.evidence.get("project:mv-evirag")).toMatchObject({ title: "다중 시점 감시 영상의 질의응답과 선택적 응답", status: "보류 지시만 준 같은 모델 대비 오답 27건→0건, 정답 140건→247건, 국제 학술지 제1저자 심사 중", href: "/projects/mv-evirag" });
-    expect(ko.evidence.get("paper:ieee")!.status).toContain("IEEE Access · 심사 중 · 제1저자");
-    expect(en.evidence.get("paper:ieee")!.status).toContain("IEEE Access · Under review · First author");
+    expect(ko.evidence.get("project:mv-evirag")).toMatchObject({ title: "다중 시점 감시 영상의 질의응답과 선택적 응답", status: "보류 지시만 준 같은 모델 대비 오답 27건→0건, 정답 140건→247건, 국제 학술지 제1저자 Minor Revision", href: "/projects/mv-evirag" });
+    expect(ko.evidence.get("paper:ieee")!.status).toContain("IEEE Access · Minor Revision · 제1저자");
+    expect(en.evidence.get("paper:ieee")!.status).toContain("IEEE Access · Minor revision · First author");
     expect(ko.evidence.get("paper:kci")!.status).toContain("한국정보기술학회논문지 · KCI 게재 · 제1저자");
     expect(ko.evidence.get("paper:kiit")!.status).toContain("발표");
     expect(ko.evidence.get("project:smartfarm-rag")!.status).toBe("nDCG@10 0.72→0.90, 엣지 장비 응답 시간 약 12% 단축, KCI 제1저자 게재");

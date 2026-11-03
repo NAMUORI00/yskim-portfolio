@@ -110,7 +110,7 @@ export function projectBlocks(project: ProjectEntry, detail: Detail) {
   return blocks.filter(
     b =>
       /역할|성과|결과|비교|검증|한계/.test(b.heading ?? "") ||
-      /시뮬레|심사 중|실제.*아님|탐색|제한/.test(b.text)
+      /시뮬레|심사 중|Minor Revision|실제.*아님|탐색|제한/.test(b.text)
   );
 }
 export function recommendationReason(project: ProjectEntry, purpose: Purpose) {

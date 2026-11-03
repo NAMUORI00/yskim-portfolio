@@ -87,23 +87,23 @@ describe("CareerRecords (홈 논문·연구·경력)", () => {
     expect(groupMarkup(english, "employment")).not.toContain("Paid positions");
   });
 
-  it("marks the KCI journal paper and the conference paper as published and the IEEE Access manuscript as under review since its 2026.08 submission, all first author", () => {
+  it("marks the KCI journal paper and the conference paper as published and the IEEE Access manuscript as in minor revision (a review-stage badge, not published) since its 2026.08 submission, all first author", () => {
     const publications = groupMarkup(render("ko"), "publications");
     expect(publications).toContain('class="career-status is-published">KCI 게재<');
     expect(publications).toContain('class="career-status is-published">발표<');
-    expect(publications).toContain('class="career-status is-review">심사 중<');
+    expect(publications).toContain('class="career-status is-review">Minor Revision<');
     expect(publications).toContain("2026.08 투고");
     expect(publications).toContain("IEEE Access");
     expect(publications).toContain("Role-Separated Selective Response for Question Answering in Multi-View Video Surveillance");
     expect(count(publications, "제1저자")).toBe(3);
-    // 심사 중인 논문을 게재로 표시하지 않습니다.
+    // Minor Revision 단계의 논문을 게재로 표시하지 않습니다.
     expect(count(publications, "is-published")).toBe(2);
     expect(count(publications, "is-review")).toBe(1);
 
     const english = groupMarkup(render("en"), "publications");
     expect(english).toContain('class="career-status is-published">Published<');
     expect(english).toContain('class="career-status is-published">Presented<');
-    expect(english).toContain('class="career-status is-review">Under review<');
+    expect(english).toContain('class="career-status is-review">Minor revision<');
     expect(english).toContain("Submitted 2026.08");
     expect(count(english, "First author")).toBe(3);
   });
@@ -113,9 +113,9 @@ describe("CareerRecords (홈 논문·연구·경력)", () => {
       venue: "한국정보기술학회 하계종합학술대회 · 제1저자",
       status: { label: "발표", kind: "published" },
     });
-    expect(splitPublicationSource("IEEE Access · Under review · First author")).toEqual({
+    expect(splitPublicationSource("IEEE Access · Minor revision · First author")).toEqual({
       venue: "IEEE Access · First author",
-      status: { label: "Under review", kind: "review" },
+      status: { label: "Minor revision", kind: "review" },
     });
     // 학술대회 이름에 '발표'가 들어 있어도 상태로 읽지 않고, 상태가 없으면 원문을 그대로 둡니다.
     expect(splitPublicationSource("학술발표대회 · 제1저자")).toEqual({ venue: "학술발표대회 · 제1저자" });

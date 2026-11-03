@@ -62,15 +62,23 @@ describe("submission document content", () => {
     expect(text).toContain("시뮬레이션 환경에서 검증");
     expect(text).toContain("제1저자");
   });
+  it("keeps the Minor Revision status of the video QA paper in the shortest version", () => {
+    const p = portfolioContent.projects.find(p => p.slug === "mv-evirag")!;
+    const text = projectBlocks(p, "summary")
+      .map(b => b.text)
+      .join("\n");
+    expect(text).toContain("IEEE Access Minor Revision");
+    expect(text).not.toMatch(/게재|accepted|published/i);
+  });
   it("retains source review status and separates research from employment", () => {
     const items = selectedItems(
       portfolioContent,
       recommend(portfolioContent, "research")
     );
-    expect(
-      items.records.find(e => e.id === "paper:access")?.school ??
-        items.records.map(e => e.school).join(" ")
-    ).toContain("심사 중");
+    const ieee = items.records.find(e => e.id === "paper:ieee");
+    expect(ieee?.school).toContain("Minor Revision");
+    // Minor Revision is not acceptance; never write it as published.
+    expect(ieee?.school).not.toMatch(/게재|accepted|published/i);
     expect(items.records.some(e => e.type === "research")).toBe(true);
     expect(items.records.some(e => e.type === "work")).toBe(true);
   });
