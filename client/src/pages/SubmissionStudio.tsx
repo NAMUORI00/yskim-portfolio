@@ -4,7 +4,12 @@ import {
   type OfficialDetails,
 } from "@/submission/officialForm";
 import { useEffect, useRef, useState } from "react";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
+import {
+  designOnlyProjects,
+  printDefaultProjects,
+  writeHandoff,
+} from "@/print/printModel";
 import { portfolioContent as content } from "@/content";
 import {
   availableProjects,
@@ -39,6 +44,22 @@ export default function SubmissionStudio() {
   const [detail, setDetail] = useState<Detail>("standard");
   const [introduction, setIntroduction] = useState(submissionIntroduction);
   const [officialDetails, setOfficialDetails] = useState<OfficialDetails>({});
+  const [format, setFormat] = useState<"official" | "design">("official");
+  const [, navigate] = useLocation();
+  // 인쇄본은 저장소를 공개하지 않은 연구(석사학위논문 등)도 정리된 문구로 실을 수 있습니다.
+  const designOnly = designOnlyProjects();
+  const designProjects =
+    format === "design"
+      ? selection.projects.filter(
+          id =>
+            availableProjects(content).some(p => p.slug === id) ||
+            designOnly.some(p => p.slug === id)
+        )
+      : [];
+  function openDesign() {
+    writeHandoff({ projects: designProjects, introduction });
+    navigate("/print");
+  }
   const [busy, setBusy] = useState(false),
     [error, setError] = useState("");
   const [preview, setPreview] = useState<{ url: string; blob: Blob } | null>(
@@ -99,11 +120,20 @@ export default function SubmissionStudio() {
   function picker(axis: "projects" | "records") {
     const all =
       axis === "projects"
-        ? availableProjects(content).map(p => ({
-            id: p.slug,
-            title: p.name,
-            note: recommendationReason(p, purpose),
-          }))
+        ? [
+            ...availableProjects(content).map(p => ({
+              id: p.slug,
+              title: p.name,
+              note: recommendationReason(p, purpose),
+            })),
+            ...(format === "design"
+              ? designOnly.map(p => ({
+                  id: p.slug,
+                  title: p.name,
+                  note: "저장소를 공개하지 않은 연구로, 인쇄본에만 들어갑니다.",
+                }))
+              : []),
+          ]
         : availableRecords(content).map(e => ({
             id: recordId(e),
             title: e.degree,
@@ -179,7 +209,10 @@ export default function SubmissionStudio() {
       <header className="submission-header">
         <Link href="/">← 포트폴리오 홈</Link>
         <h1>제출용 포트폴리오</h1>
-        <p>이력과 프로젝트를 하나의 PDF로 정리합니다.</p>
+        <p>
+          이력과 프로젝트를 공식 이력서 양식 PDF나 디자인 포트폴리오 인쇄본으로
+          정리합니다.
+        </p>
       </header>
       <fieldset disabled={busy} className="submission-controls">
         <legend className="sr-only">문서 편집</legend>
@@ -218,7 +251,7 @@ export default function SubmissionStudio() {
                 </select>
               </label>
             </section>
-            <section>
+            <section hidden={format === "design"}>
               <h2>공식 이력서</h2>
               <p>
                 고용노동부의 표준 이력서 원본 서식을 사용합니다. 가운뎃점은
@@ -292,106 +325,184 @@ export default function SubmissionStudio() {
             </section>
           </aside>
           <div className="submission-preview">
-            <section>
-              <h2>이력서 및 포트폴리오</h2>
-              <p>
-                공식 이력서 → 경력기술서 → 학력 및 연구활동 → 프로젝트
-                포트폴리오
-              </p>
-              <button className="primary" disabled={!valid} onClick={generate}>
-                {busy ? "PDF 생성 중…" : "PDF 미리보기 생성"}
-              </button>
-              {!valid && (
-                <p role="status">
-                  이력이나 프로젝트를 하나 이상 선택해 주세요.
-                </p>
-              )}
-              <p className="submission-note">
-                A4, PDF 한 파일, 한글 검색 및 복사, GitHub 링크
-              </p>
+            <section className="submission-format" aria-label="문서 형식">
+              <h2>문서 형식</h2>
+              <div className="submission-format-options">
+                <label>
+                  <input
+                    type="radio"
+                    name="submission-format"
+                    checked={format === "official"}
+                    onChange={() => setFormat("official")}
+                  />
+                  <span>
+                    공식 이력서 양식 PDF
+                    <small>
+                      표준 이력서 서식, 경력기술서, 프로젝트 포트폴리오를 한
+                      파일로 만듭니다.
+                    </small>
+                  </span>
+                </label>
+                <label>
+                  <input
+                    type="radio"
+                    name="submission-format"
+                    checked={format === "design"}
+                    onChange={() => setFormat("design")}
+                  />
+                  <span>
+                    디자인 포트폴리오 인쇄본
+                    <small>
+                      사이트 스타일의 A4 인쇄본입니다. 고른 프로젝트 순서와 소개
+                      문구를 그대로 쓰고, 인쇄 창에서 PDF로 저장합니다.
+                    </small>
+                  </span>
+                </label>
+              </div>
             </section>
-            {error && (
-              <p role="alert" className="submission-error">
-                {error}
-              </p>
-            )}
-            {preview ? (
+            {format === "design" ? (
               <section>
+                <h2>디자인 포트폴리오 인쇄본</h2>
+                <p>
+                  표지와 자기소개 → 연구 개요 → 프로젝트 → 개발 경험 → 학부
+                  프로젝트와 수상 → 논문, 경력, 학력, 기술
+                </p>
                 <div className="submission-buttons">
                   <button
                     className="primary"
-                    onClick={() => download(preview.blob)}
+                    disabled={designProjects.length === 0}
+                    onClick={openDesign}
                   >
-                    PDF 다운로드
+                    인쇄본 열기
                   </button>
-                  <a
-                    href={preview.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                  <button
+                    onClick={() =>
+                      update({ ...selection, projects: printDefaultProjects() })
+                    }
                   >
-                    새 창에서 보기
-                  </a>
+                    인쇄본 기본 구성 적용
+                  </button>
                 </div>
-                <iframe
-                  title="이력서 및 포트폴리오 PDF 미리보기"
-                  src={preview.url}
-                  className="submission-pdf"
-                />
-                <small>
-                  PDF가 표시되지 않으면 다운로드하거나 새 창으로 여세요.
-                </small>
-              </section>
-            ) : (
-              <section className="submission-outline">
-                <h2>{content.profile.name}</h2>
-                <p className="submission-introduction">{introduction}</p>
-                <h3>보유기술</h3>
-                {skills.map(g => (
-                  <p key={g.label}>
-                    <strong>{g.label}</strong>
-                    <br />
-                    {g.items.join(", ")}
-                  </p>
-                ))}
-                <h3>프로젝트</h3>
-                {chosen.projects.map((p, index) => {
-                  const diagram = projectDiagram(p);
-                  return (
-                    <article key={p.slug}>
-                      <h3>
-                        {String(index + 1).padStart(2, "0")}, {p.name}
-                      </h3>
-                      <p>{p.desc}</p>
-                      {diagram.nodes.length > 0 && (
-                        <div className="submission-flow">
-                          {diagram.nodes.map((node, i) => (
-                            <span key={node}>
-                              {i > 0 && (
-                                <b aria-hidden="true">
-                                  {diagram.sequence ? "→" : ""}
-                                </b>
-                              )}
-                              <em>{node}</em>
-                            </span>
-                          ))}
-                        </div>
-                      )}
-                      {p.link && (
-                        <a
-                          href={p.link}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          GitHub
-                        </a>
-                      )}
-                    </article>
-                  );
-                })}
                 <p className="submission-note">
-                  PDF 미리보기를 생성하면 실제 페이지 배치를 확인할 수 있습니다.
+                  프로젝트 {designProjects.length}개가 한 쪽씩 들어갑니다. 기본
+                  구성은 석사과정 연구 네 건입니다.
+                </p>
+                {designProjects.length === 0 && (
+                  <p role="status">프로젝트를 하나 이상 선택해 주세요.</p>
+                )}
+                <p className="submission-note">
+                  편집한 구성은 이 탭에만 두고 서버로 보내지 않습니다.
                 </p>
               </section>
+            ) : (
+              <>
+                <section>
+                  <h2>이력서 및 포트폴리오</h2>
+                  <p>
+                    공식 이력서 → 경력기술서 → 학력 및 연구활동 → 프로젝트
+                    포트폴리오
+                  </p>
+                  <button
+                    className="primary"
+                    disabled={!valid}
+                    onClick={generate}
+                  >
+                    {busy ? "PDF 생성 중…" : "PDF 미리보기 생성"}
+                  </button>
+                  {!valid && (
+                    <p role="status">
+                      이력이나 프로젝트를 하나 이상 선택해 주세요.
+                    </p>
+                  )}
+                  <p className="submission-note">
+                    A4, PDF 한 파일, 한글 검색 및 복사, GitHub 링크
+                  </p>
+                </section>
+                {error && (
+                  <p role="alert" className="submission-error">
+                    {error}
+                  </p>
+                )}
+                {preview ? (
+                  <section>
+                    <div className="submission-buttons">
+                      <button
+                        className="primary"
+                        onClick={() => download(preview.blob)}
+                      >
+                        PDF 다운로드
+                      </button>
+                      <a
+                        href={preview.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        새 창에서 보기
+                      </a>
+                    </div>
+                    <iframe
+                      title="이력서 및 포트폴리오 PDF 미리보기"
+                      src={preview.url}
+                      className="submission-pdf"
+                    />
+                    <small>
+                      PDF가 표시되지 않으면 다운로드하거나 새 창으로 여세요.
+                    </small>
+                  </section>
+                ) : (
+                  <section className="submission-outline">
+                    <h2>{content.profile.name}</h2>
+                    <p className="submission-introduction">{introduction}</p>
+                    <h3>보유기술</h3>
+                    {skills.map(g => (
+                      <p key={g.label}>
+                        <strong>{g.label}</strong>
+                        <br />
+                        {g.items.join(", ")}
+                      </p>
+                    ))}
+                    <h3>프로젝트</h3>
+                    {chosen.projects.map((p, index) => {
+                      const diagram = projectDiagram(p);
+                      return (
+                        <article key={p.slug}>
+                          <h3>
+                            {String(index + 1).padStart(2, "0")}, {p.name}
+                          </h3>
+                          <p>{p.desc}</p>
+                          {diagram.nodes.length > 0 && (
+                            <div className="submission-flow">
+                              {diagram.nodes.map((node, i) => (
+                                <span key={node}>
+                                  {i > 0 && (
+                                    <b aria-hidden="true">
+                                      {diagram.sequence ? "→" : ""}
+                                    </b>
+                                  )}
+                                  <em>{node}</em>
+                                </span>
+                              ))}
+                            </div>
+                          )}
+                          {p.link && (
+                            <a
+                              href={p.link}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              GitHub
+                            </a>
+                          )}
+                        </article>
+                      );
+                    })}
+                    <p className="submission-note">
+                      PDF 미리보기를 생성하면 실제 페이지 배치를 확인할 수
+                      있습니다.
+                    </p>
+                  </section>
+                )}
+              </>
             )}
           </div>
         </div>

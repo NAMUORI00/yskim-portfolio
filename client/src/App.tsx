@@ -16,12 +16,15 @@ const KnowledgeGraphPreview = lazy(() => import("./pages/KnowledgeGraphPreview")
 const KnowledgeGraph3DPreview = lazy(() => import("./pages/KnowledgeGraph3DPreview"));
 
 const SubmissionStudio = lazy(() => import("./pages/SubmissionStudio"));
+// A4 인쇄용 포트폴리오 — 이 주소를 열 때만 불러옵니다.
+const PrintPortfolio = lazy(() => import("./print/PrintPortfolio"));
 
 function Router() {
   return (
     <Switch>
       <Route path={"/"} component={Home} />
       <Route path="/insights"><Suspense fallback={<p>제출 문서를 불러오는 중…</p>}><SubmissionStudio /></Suspense></Route>
+      <Route path="/print"><Suspense fallback={<p>인쇄용 포트폴리오를 불러오는 중…</p>}><PrintPortfolio /></Suspense></Route>
       <Route path={"/cv"} component={CV} />
       <Route path={"/projects/:slug"} component={ProjectDetail} />
       <Route path={"/research/:slug"} component={ResearchDetail} />
