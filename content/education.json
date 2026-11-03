@@ -341,7 +341,7 @@
     "type": "education",
     "degree": "컴퓨터공학 석사과정",
     "school": "제주대학교 일반대학원",
-    "period": "2025.03 — 2027.03 졸업 예정",
+    "period": "2025.03 — 2027.02 졸업 예정",
     "note": "질문 유형별 RAG, 다중 시점 VLM, 센서 상태 변화에 따른 LLM 답변의 선택적 수정 연구.",
     "current": true,
     "status": "published",

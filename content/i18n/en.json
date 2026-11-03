@@ -27,11 +27,11 @@
   },
   "site": {
     "title": "Kim Yuseok | LLM, RAG, VLM and AI Agent Developer Portfolio",
-    "description": "Portfolio of Kim Yuseok, who researches and builds question-type-adaptive RAG, multi-view VLMs, an operator-approved MCP server and AI services. M.S. student in Computer Engineering, expected March 2027."
+    "description": "Portfolio of Kim Yuseok, who researches and builds question-type-adaptive RAG, multi-view VLMs, an operator-approved MCP server and AI services. M.S. student in Computer Engineering, expected February 2027."
   },
   "profile": {
     "name": "Kim Yuseok",
-    "status": "Expected March 2027, open to opportunities",
+    "status": "Expected February 2027, open to opportunities",
     "headline": "LLM, RAG, VLM and AI agent research and systems, M.S. student in Computer Engineering",
     "summaryLead": "I'm interested in getting AI to give reliable answers rather than just plausible-sounding words.",
     "summary": [
@@ -117,7 +117,7 @@
     {
       "degree": "M.S. in Computer Engineering",
       "school": "Jeju National University",
-      "period": "Mar 2025 — Mar 2027 (expected)",
+      "period": "Mar 2025 — Feb 2027 (expected)",
       "note": "Research in question-type-adaptive RAG, multi-view VLMs, and selective revision of LLM answers when sensor states change.",
       "bullets": [
         "GPA: 4.49 / 4.5",
