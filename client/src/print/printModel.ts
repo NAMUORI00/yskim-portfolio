@@ -73,8 +73,18 @@ export function projectBySlug(slug: string): ProjectEntry | undefined {
   return portfolioContent.projects.find(project => project.slug === slug);
 }
 
+/** 사이트에서 비공개로 둔 프로젝트는 인쇄본에도 저장소를 적지 않습니다. */
 export function repoUrl(project: PrintProject): string {
-  return project.repo ?? projectBySlug(project.slug)?.link ?? "";
+  const source = projectBySlug(project.slug);
+  if (source?.private) return "";
+  return project.repo ?? source?.link ?? "";
+}
+
+/** 사이트 자기소개를 그대로 쓰되, print.json에서 인쇄본에서만 뺄 문장으로 정한 것은 덜어 냅니다. */
+export function aboutParagraphs(): string[] {
+  return portfolioContent.profile.summary
+    .map(paragraph => print.about.omitSentences.reduce((text, sentence) => text.replace(sentence, ""), paragraph).trim())
+    .filter(Boolean);
 }
 
 export function shortUrl(url: string): string {

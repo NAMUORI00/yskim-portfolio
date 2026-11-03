@@ -32,6 +32,9 @@
     ]
   },
   "about": {
+    "omitSentences": [
+      "연구 개발부터 서비스 배포와 운영까지 해 온 만큼, AI와 맞닿은 일이라면 어떤 자리든 맡아 적극적으로 참여하고 싶습니다."
+    ],
     "principles": [
       {
         "title": "평가 기준을 먼저 고정합니다",
@@ -380,7 +383,6 @@
           "after": "같은 수준 유지"
         }
       ],
-      "repo": "https://github.com/NAMUORI00/smartfarm-state-revalidation",
       "paper": "센서 상태 변화에 따른 LLM 답변의 선택적 수정 연구, 석사학위논문 작성 중"
     },
     {
@@ -664,8 +666,8 @@
         "text": "근거가 있을 때만 답하는 CCTV 질의응답"
       },
       {
-        "name": "smartfarm-state-revalidation",
-        "text": "센서 변화에 따른 선택적 답변 수정"
+        "name": "aerospace-rag",
+        "text": "항공우주 문서 RAG 파이프라인"
       },
       {
         "name": "ondevice-medical-rag",

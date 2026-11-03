@@ -5,6 +5,7 @@ import type { ProjectEntry } from "@/content/types";
 import { projectBlocks, submissionIntroduction } from "@/submission/model";
 import { projectDiagram } from "@/submission/presentation";
 import {
+  aboutParagraphs,
   careers,
   degrees,
   plain,
@@ -185,7 +186,7 @@ function ProjectHead({ index, title, status, summary }: { index: number; title: 
   );
 }
 
-function Meta({ period, role, tags, repo }: { period?: string; role?: string; tags: string[]; repo?: string }) {
+function Meta({ period, role, tags, repo, privateRepo }: { period?: string; role?: string; tags: string[]; repo?: string; privateRepo?: boolean }) {
   return (
     <aside className="pp-meta">
       {period && (
@@ -210,6 +211,12 @@ function Meta({ period, role, tags, repo }: { period?: string; role?: string; ta
           <dd className="pp-url">{repoName(repo)}</dd>
         </dl>
       )}
+      {!repo && privateRepo && (
+        <dl>
+          <dt>GitHub 저장소</dt>
+          <dd>비공개</dd>
+        </dl>
+      )}
     </aside>
   );
 }
@@ -223,7 +230,7 @@ function ProjectSheet({ project, index }: { project: PrintProject; index: number
     <Sheet id={`project-${index + 1}`} section={`프로젝트 ${index + 1}`}>
       <ProjectHead index={index} title={project.title} status={project.status} summary={project.summary} />
       <div className="pp-cols">
-        <Meta period={source?.period} role={role} tags={source?.tags ?? []} repo={repo} />
+        <Meta period={source?.period} role={role} tags={source?.tags ?? []} repo={repo} privateRepo={source?.private} />
         <div className="pp-main">
           <h3>문제</h3>
           <p>{project.problem}</p>
@@ -416,7 +423,7 @@ function About() {
       <h1 className="pp-title">자기소개</h1>
       <div className="pp-about">
         <div className="pp-about-text">
-          {content.profile.summary.map((paragraph, i) => (
+          {aboutParagraphs().map((paragraph, i) => (
             <p key={i}>{paragraph}</p>
           ))}
         </div>

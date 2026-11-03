@@ -4,7 +4,7 @@ import { createRoot, type Root } from "react-dom/client";
 import { afterEach, describe, expect, it } from "vitest";
 import { portfolioContent } from "@/content";
 import PrintPortfolio from "./PrintPortfolio";
-import { PRINT_HANDOFF_KEY, print, printItems, sheets, writeHandoff } from "./printModel";
+import { PRINT_HANDOFF_KEY, print, printItems, projectBySlug, repoUrl, sheets, writeHandoff } from "./printModel";
 
 (globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 
@@ -54,6 +54,20 @@ describe("print portfolio", () => {
     // 프로젝트 쪽으로 나온 음원 분리 웹은 개발 경험 쪽에서 다시 나오지 않습니다.
     const engineering = page.querySelector("#pp-engineering")!;
     expect(engineering.textContent).not.toContain("AI 음원 분리 웹 서비스");
+  });
+
+  it("leaves out repositories the site keeps private and the sentences omitted for print", () => {
+    const text = mount().textContent ?? "";
+    for (const project of print.projects.filter(project => projectBySlug(project.slug)?.private)) {
+      expect(repoUrl(project)).toBe("");
+    }
+    expect(text).not.toContain("smartfarm-state-revalidation");
+    expect(document.querySelector("#pp-project-3 .pp-meta")?.textContent).toContain("비공개");
+    // 뺄 문장은 사이트 자기소개에 실제로 있어야 하고, 인쇄본에는 나오지 않습니다.
+    for (const sentence of print.about.omitSentences) {
+      expect(portfolioContent.profile.summary.join(" ")).toContain(sentence);
+      expect(text).not.toContain(sentence);
+    }
   });
 
   it("keeps the print copy free of middle dots and solo-work wording", () => {
