@@ -22,7 +22,7 @@ export interface EvidenceSourceDef {
   ref?: string;
   /** code·record·site·stack 의 화면 이름 (project·research·paper·work 는 콘텐츠에서 가져옴) */
   title?: Localized;
-  /** 분야를 펼친 층 그림의 근거 칸에 쓰는 짧은 이름 (상태를 바꾸지 않음 — 예: IEEE 원고는 "심사 중") */
+  /** 분야를 펼친 층 그림의 근거 칸에 쓰는 짧은 이름 (상태를 바꾸지 않음 — 예: IEEE 원고는 "Minor Revision") */
   short?: Localized;
   /** paper·work 외의 상태 문구 (project 는 프로젝트 자세히 보기의 상태를 씀) */
   status?: Localized;

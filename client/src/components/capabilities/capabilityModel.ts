@@ -62,7 +62,7 @@ export const CAPABILITIES: CapabilityDefinition[] = [
       output: [
         { ko: "문서 근거 기반 질의응답 기능", en: "Document-grounded question answering" },
         { ko: "기존 방식과의 비교 실험", en: "Comparisons with existing approaches" },
-        { ko: "제1저자 논문 (KCI 게재 · IEEE Access 심사 중)", en: "First-author papers (KCI published · IEEE Access under review)" },
+        { ko: "제1저자 논문 (KCI 게재 · IEEE Access Minor Revision)", en: "First-author papers (KCI published · IEEE Access minor revision)" },
       ],
     },
     proofSlugs: ["mv-evirag", "smartfarm-rag", "aerospace-rag", "music-source-separation"],

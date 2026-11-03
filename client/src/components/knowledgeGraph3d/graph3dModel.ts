@@ -35,7 +35,7 @@ export interface KEvidence {
   title: string;
   /** 분야를 펼친 층 그림의 근거 칸에 쓰는 짧은 이름 (전체 이름은 title) */
   short: string;
-  /** 상태 문구 (예: KCI 게재 · 제1저자, IEEE Access 심사 중, 시뮬레이터 검증) */
+  /** 상태 문구 (예: KCI 게재 · 제1저자, IEEE Access Minor Revision, 시뮬레이터 검증) */
   status: string;
   href?: string;
 }
@@ -205,7 +205,7 @@ function resolveEvidence(id: string, source: PortfolioContent, localized: Portfo
     const original = source.projects.find((item) => item.slug === def.ref);
     if (!original || original.status !== "published") return null;
     const translated = localized.projects.find((item) => item.slug === def.ref) ?? original;
-    // 상태 줄은 홈 목록과 같은 한 줄 성과(metric)를 그대로 씁니다 (예: IEEE Access 심사 중 · 2026.08 투고 · 제1저자).
+    // 상태 줄은 홈 목록과 같은 한 줄 성과(metric)를 그대로 씁니다 (예: 국제 학술지 제1저자 Minor Revision).
     return { id, kind: "project", title: translated.name, short: short(translated.name), status: translated.metric || translated.period, href: def.href };
   }
   if (def.kind === "research") {

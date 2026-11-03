@@ -83,10 +83,10 @@ describe("project insights (expanded project details)", () => {
       const line = [comparison.before.title, comparison.before.text].flatMap((value) => [value.ko, value.en]).join(" ");
       expect(line).not.toMatch(/이전 버전|기존 구현|baseline|previous version/i);
     }
-    // 다중 시점 영상 연구의 비교 기준은 실험 기준이 아니라 설명용이며, 실제 결과는 심사 중인 논문에 있다고 밝힙니다.
+    // 다중 시점 영상 연구의 비교 기준은 실험 기준이 아니라 설명용이며, 실제 결과는 Minor Revision 판정을 받은 논문에 있다고 밝힙니다.
     const mv = PROJECT_INSIGHTS["mv-evirag"].comparisons[0];
     expect(mv.basis).toBe("illustrative");
-    expect(mv.note?.ko).toContain("심사 중");
+    expect(mv.note?.ko).toContain("Minor Revision");
     expect(mv.note?.ko).toContain("수치를 옮기지 않았습니다");
     // 스마트팜의 설계 비교는 프로젝트 기록에 적힌 "질문마다 LLM을 추가 호출하던 과정을 없앰"입니다.
     const source = PROJECT_INSIGHTS["smartfarm-rag"].comparisons.find((comparison) => comparison.basis === "source");

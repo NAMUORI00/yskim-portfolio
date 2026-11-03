@@ -156,16 +156,18 @@ describe("knowledge sources", () => {
     const venue = (degree: string) => portfolioContent.education.find((item) => item.degree === degree)!.school;
     expect(venue("스마트팜 RAG를 위한 질의 적응형 검색 채널 제어")).toContain("KCI 게재");
     expect(venue("근거 추적형 로컬 RAG 기반 온디바이스 의료 질의응답 시스템")).toContain("발표");
-    expect(venue("Role-Separated Selective Response for Question Answering in Multi-View Video Surveillance")).toContain("심사 중");
+    expect(venue("Role-Separated Selective Response for Question Answering in Multi-View Video Surveillance")).toContain("Minor Revision");
+    // Minor Revision 판정은 게재가 아니므로 게재·채택으로 쓰지 않습니다.
+    expect(venue("Role-Separated Selective Response for Question Answering in Multi-View Video Surveillance")).not.toMatch(/게재|채택|accepted|published/i);
 
     for (const node of NODES) {
       const ko = node.did?.ko ?? "";
       const en = node.did?.en ?? "";
-      // 심사 중인 원고를 게재된 것처럼 쓰지 않습니다.
+      // Minor Revision 단계의 원고를 게재된 것처럼 쓰지 않습니다.
       if (ko.includes("IEEE")) {
-        expect(ko, node.id).toContain("심사 중");
+        expect(ko, node.id).toContain("Minor Revision");
         expect(ko, node.id).not.toMatch(/IEEE[^.]*게재/);
-        expect(en, node.id).toContain("under review");
+        expect(en, node.id).toContain("minor revision");
       }
       // 숙련도·전문가 표현은 쓰지 않습니다.
       expect(`${ko} ${en}`, node.id).not.toMatch(/숙련|전문가|마스터|expert|proficien|master(ed|y)/i);

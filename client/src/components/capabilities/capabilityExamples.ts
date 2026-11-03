@@ -29,7 +29,7 @@ export const FLOW_EXAMPLES: Record<CapabilityId, FlowExample[]> = {
       slug: "mv-evirag",
       source: [t("질문", "Question"), t("여러 카메라 영상", "Multi-camera video")],
       work: [t("살펴볼 영상 선택", "Selecting which video to inspect"), t("LoRA 학습으로 답변 가능 여부 판단", "LoRA-trained answerability check")],
-      result: [t("답변 또는 보류", "Answer or abstain"), t("IEEE Access 심사 중 · 제1저자", "IEEE Access under review · first author")],
+      result: [t("답변 또는 보류", "Answer or abstain"), t("IEEE Access Minor Revision · 제1저자", "IEEE Access minor revision · first author")],
       links: [t("선택된 영상", "selected video"), t("판단 결과", "decision")],
     },
     {

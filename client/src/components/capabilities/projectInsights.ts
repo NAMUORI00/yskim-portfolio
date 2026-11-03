@@ -177,8 +177,8 @@ export const PROJECT_INSIGHTS: Record<string, ProjectInsight> = {
           ),
         },
         note: t(
-          "실제 비교 실험의 기준과 결과는 IEEE Access에 투고해 심사 중인 논문에 있으며, 이 페이지에는 수치를 옮기지 않았습니다.",
-          "The baselines and results of the actual experiments are in the paper under review at IEEE Access; no figures are copied here.",
+          "실제 비교 실험의 기준과 결과는 IEEE Access에 투고해 Minor Revision 판정을 받은 논문에 있으며, 이 페이지에는 수치를 옮기지 않았습니다.",
+          "The baselines and results of the actual experiments are in the paper in minor revision at IEEE Access; no figures are copied here.",
         ),
       },
     ],
