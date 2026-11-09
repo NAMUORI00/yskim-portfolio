@@ -2,13 +2,13 @@
   {
     "name": "togg53192-cmd/jailbreaks",
     "href": "https://github.com/togg53192-cmd/jailbreaks",
-    "stars": "15.2K",
+    "stars": "15.5K",
     "desc": "LIST OF ALL MY JAILBREAKS"
   },
   {
     "name": "416rehman/DeepZero",
     "href": "https://github.com/416rehman/DeepZero",
-    "stars": "770",
+    "stars": "772",
     "desc": "Find zero-days while you sleep. DeepZero is an automated vulnerability research framework that parses, decompiles, and analyzes thousands of Windows kernel drivers for exploitable IOCTLs natively using AI agents."
   },
   {
@@ -20,7 +20,7 @@
   {
     "name": "ChenLiu-1996/figures4papers",
     "href": "https://github.com/ChenLiu-1996/figures4papers",
-    "stars": "9.9K",
+    "stars": "10.2K",
     "desc": "My Python scripts to make high-quality figures for publications in top AI conferences and journals."
   },
   {
@@ -32,7 +32,7 @@
   {
     "name": "morluto/rea",
     "href": "https://github.com/morluto/rea",
-    "stars": "441.1K",
+    "stars": "443.9K",
     "desc": "Reverse engineer anything with agents, from app behavior down to native binaries."
   }
 ]
