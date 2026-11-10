@@ -2,13 +2,13 @@
   {
     "name": "togg53192-cmd/jailbreaks",
     "href": "https://github.com/togg53192-cmd/jailbreaks",
-    "stars": "15.5K",
+    "stars": "15.8K",
     "desc": "LIST OF ALL MY JAILBREAKS"
   },
   {
     "name": "416rehman/DeepZero",
     "href": "https://github.com/416rehman/DeepZero",
-    "stars": "772",
+    "stars": "775",
     "desc": "Find zero-days while you sleep. DeepZero is an automated vulnerability research framework that parses, decompiles, and analyzes thousands of Windows kernel drivers for exploitable IOCTLs natively using AI agents."
   },
   {
@@ -20,19 +20,19 @@
   {
     "name": "ChenLiu-1996/figures4papers",
     "href": "https://github.com/ChenLiu-1996/figures4papers",
-    "stars": "10.2K",
+    "stars": "10.6K",
     "desc": "My Python scripts to make high-quality figures for publications in top AI conferences and journals."
   },
   {
     "name": "jiwoochris/artex-global",
     "href": "https://github.com/jiwoochris/artex-global",
-    "stars": "2.9K",
+    "stars": "3K",
     "desc": "Global edition of ARTEX — an LLM multi-agent autonomous penetration-testing framework. English default, switchable to Korean/Chinese/Spanish/Japanese. For authorized, defensive and detection use only. (upstream: Autumn-27/ARTEX, AGPL-3.0)"
   },
   {
     "name": "morluto/rea",
     "href": "https://github.com/morluto/rea",
-    "stars": "443.9K",
+    "stars": "447.4K",
     "desc": "Reverse engineer anything with agents, from app behavior down to native binaries."
   }
 ]
