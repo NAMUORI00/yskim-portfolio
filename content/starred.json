@@ -2,7 +2,7 @@
   {
     "name": "togg53192-cmd/jailbreaks",
     "href": "https://github.com/togg53192-cmd/jailbreaks",
-    "stars": "15.8K",
+    "stars": "16K",
     "desc": "LIST OF ALL MY JAILBREAKS"
   },
   {
@@ -14,13 +14,13 @@
   {
     "name": "SHODAN-HORAI/SHODAN-Stat-Editor",
     "href": "https://github.com/SHODAN-HORAI/SHODAN-Stat-Editor",
-    "stars": "127",
+    "stars": "128",
     "desc": "Windows program that changes the stats of every weapon, stratagem, mecha and armor passive in Helldivers 2. It edits the game's data files while the game is closed, so no mod loader is needed. Works with EAC and alongside other mods."
   },
   {
     "name": "ChenLiu-1996/figures4papers",
     "href": "https://github.com/ChenLiu-1996/figures4papers",
-    "stars": "10.6K",
+    "stars": "10.9K",
     "desc": "My Python scripts to make high-quality figures for publications in top AI conferences and journals."
   },
   {
@@ -32,7 +32,7 @@
   {
     "name": "morluto/rea",
     "href": "https://github.com/morluto/rea",
-    "stars": "447.4K",
+    "stars": "450.1K",
     "desc": "Reverse engineer anything with agents, from app behavior down to native binaries."
   }
 ]
