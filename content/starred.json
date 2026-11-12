@@ -2,7 +2,7 @@
   {
     "name": "togg53192-cmd/jailbreaks",
     "href": "https://github.com/togg53192-cmd/jailbreaks",
-    "stars": "16K",
+    "stars": "16.3K",
     "desc": "LIST OF ALL MY JAILBREAKS"
   },
   {
@@ -14,25 +14,25 @@
   {
     "name": "SHODAN-HORAI/SHODAN-Stat-Editor",
     "href": "https://github.com/SHODAN-HORAI/SHODAN-Stat-Editor",
-    "stars": "128",
+    "stars": "138",
     "desc": "Windows program that changes the stats of every weapon, stratagem, mecha and armor passive in Helldivers 2. It edits the game's data files while the game is closed, so no mod loader is needed. Works with EAC and alongside other mods."
   },
   {
     "name": "ChenLiu-1996/figures4papers",
     "href": "https://github.com/ChenLiu-1996/figures4papers",
-    "stars": "10.9K",
+    "stars": "11K",
     "desc": "My Python scripts to make high-quality figures for publications in top AI conferences and journals."
   },
   {
     "name": "jiwoochris/artex-global",
     "href": "https://github.com/jiwoochris/artex-global",
-    "stars": "3K",
+    "stars": "3.1K",
     "desc": "Global edition of ARTEX — an LLM multi-agent autonomous penetration-testing framework. English default, switchable to Korean/Chinese/Spanish/Japanese. For authorized, defensive and detection use only. (upstream: Autumn-27/ARTEX, AGPL-3.0)"
   },
   {
     "name": "morluto/rea",
     "href": "https://github.com/morluto/rea",
-    "stars": "450.1K",
+    "stars": "453K",
     "desc": "Reverse engineer anything with agents, from app behavior down to native binaries."
   }
 ]
