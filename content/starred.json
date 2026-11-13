@@ -1,8 +1,20 @@
 [
   {
+    "name": "lalipa2003-arch/JailbreakHub",
+    "href": "https://github.com/lalipa2003-arch/JailbreakHub",
+    "stars": "337",
+    "desc": "A Hub/research area, for jailbreaking LLM's, and breaking their safety filters."
+  },
+  {
+    "name": "shinyobjectz/raea",
+    "href": "https://github.com/shinyobjectz/raea",
+    "stars": "2.3K",
+    "desc": "Render Anything Engine: tell your AI what to make. Videos, motion graphics, 3D and games as React and TypeScript, rendered on your own GPU. Rust + Bevy, macOS, Linux and Windows."
+  },
+  {
     "name": "togg53192-cmd/jailbreaks",
     "href": "https://github.com/togg53192-cmd/jailbreaks",
-    "stars": "16.3K",
+    "stars": "16.7K",
     "desc": "LIST OF ALL MY JAILBREAKS"
   },
   {
@@ -20,19 +32,7 @@
   {
     "name": "ChenLiu-1996/figures4papers",
     "href": "https://github.com/ChenLiu-1996/figures4papers",
-    "stars": "11K",
+    "stars": "11.2K",
     "desc": "My Python scripts to make high-quality figures for publications in top AI conferences and journals."
-  },
-  {
-    "name": "jiwoochris/artex-global",
-    "href": "https://github.com/jiwoochris/artex-global",
-    "stars": "3.1K",
-    "desc": "Global edition of ARTEX — an LLM multi-agent autonomous penetration-testing framework. English default, switchable to Korean/Chinese/Spanish/Japanese. For authorized, defensive and detection use only. (upstream: Autumn-27/ARTEX, AGPL-3.0)"
-  },
-  {
-    "name": "morluto/rea",
-    "href": "https://github.com/morluto/rea",
-    "stars": "453K",
-    "desc": "Reverse engineer anything with agents, from app behavior down to native binaries."
   }
 ]
