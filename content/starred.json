@@ -2,25 +2,25 @@
   {
     "name": "lalipa2003-arch/JailbreakHub",
     "href": "https://github.com/lalipa2003-arch/JailbreakHub",
-    "stars": "355",
+    "stars": "366",
     "desc": "A Hub/research area, for jailbreaking LLM's, and breaking their safety filters."
   },
   {
     "name": "shinyobjectz/raea",
     "href": "https://github.com/shinyobjectz/raea",
-    "stars": "2.4K",
+    "stars": "2.5K",
     "desc": "Render Anything Engine: tell your AI what to make. Videos, motion graphics, 3D and games as React and TypeScript, rendered on your own GPU. Rust + Bevy, macOS, Linux and Windows."
   },
   {
     "name": "togg53192-cmd/jailbreaks",
     "href": "https://github.com/togg53192-cmd/jailbreaks",
-    "stars": "17K",
+    "stars": "17.2K",
     "desc": "LIST OF ALL MY JAILBREAKS"
   },
   {
     "name": "416rehman/DeepZero",
     "href": "https://github.com/416rehman/DeepZero",
-    "stars": "776",
+    "stars": "777",
     "desc": "Find zero-days while you sleep. DeepZero is an automated vulnerability research framework that parses, decompiles, and analyzes thousands of Windows kernel drivers for exploitable IOCTLs natively using AI agents."
   },
   {
@@ -32,7 +32,7 @@
   {
     "name": "ChenLiu-1996/figures4papers",
     "href": "https://github.com/ChenLiu-1996/figures4papers",
-    "stars": "11.2K",
+    "stars": "11.3K",
     "desc": "My Python scripts to make high-quality figures for publications in top AI conferences and journals."
   }
 ]
